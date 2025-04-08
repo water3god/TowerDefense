@@ -1,0 +1,291 @@
+--!strict
+
+-- By Wa1er_God --
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage");
+local RunService = game:GetService("RunService");
+
+local EnemyEvents = ReplicatedStorage.Remotes.Enemy;
+local SpawnEvent = EnemyEvents.SpawnEvent;
+local SpeedEvent = EnemyEvents.SpeedEvent;
+local HealthEvent = EnemyEvents.HealthEvent;
+local LocationEvent = EnemyEvents.LocationEvent;
+local DestroyEvent = EnemyEvents.DestroyEvent;
+
+local Modules = ReplicatedStorage.Modules;
+local BezierPath = require(Modules.BezierPath);
+local Signal = require(Modules.Signal);
+local Trove = require(Modules.Trove);
+local HelperFunctions = require(Modules.HelperFunctions);
+
+local Shared = ReplicatedStorage.Shared;
+local Types = require(Shared.Types);
+
+local AnimationFolder = ReplicatedStorage.Animations;
+local EnemiesAnimations = AnimationFolder.Enemies;
+
+local ModelStorage = ReplicatedStorage.ModelStorage;
+local Rig = ModelStorage.Extra.Rig;
+
+local EnemyFolder = {};
+for _, Enemy in ipairs(ModelStorage.Enemies:GetChildren()) do
+	EnemyFolder[Enemy.Name] = Enemy;
+end
+local AdornmentFolder = {};
+for _, Adornment in ipairs(ModelStorage.Adornments:GetChildren()) do
+	AdornmentFolder[Adornment.Name] = Adornment;
+end
+
+local EnemiesFolder = workspace.GlobalWorkspace.Enemies;
+
+local function WeldParts(Character: typeof(ModelStorage.Extra.Rig), Adornment: Model, SizeRatio: number)
+	for _, Limb in ipairs(Adornment:GetChildren()) do
+		if not Limb:IsA("Model") then
+			continue;
+		end
+		local CharLimb: BasePart? = Character:FindFirstChild(Limb.Name) :: BasePart;
+		local Middle: BasePart = Limb:FindFirstChild("Middle") :: BasePart;
+
+		if not Middle then
+			warn("No BasePart Called Middle For: "..Limb.Name);
+		end
+
+		if not CharLimb then
+			continue;
+		end
+
+		for _, BasePart in ipairs(Limb:GetDescendants()) do
+			if BasePart:IsA("BasePart") and BasePart.Name ~= "Middle" then
+				BasePart.CanCollide = false;
+				BasePart.Anchored = false;
+
+				local Offset = Middle.CFrame:ToObjectSpace(BasePart.CFrame);
+				local ScaledOffset = CFrame.new(
+					Offset.X * SizeRatio, Offset.Y * SizeRatio, Offset.Z * SizeRatio
+				) * Offset.Rotation;
+
+				local WorldCFrame = ScaledOffset:ToWorldSpace(CharLimb.CFrame);
+
+				local Weld = Instance.new("WeldConstraint");
+				BasePart.CFrame = WorldCFrame;
+				Weld.Name = BasePart.Name;
+				Weld.Part0 = BasePart;
+				Weld.Part1 = Middle;
+				Weld.Parent = Middle;
+			end
+		end
+
+		Middle.CFrame = CharLimb.CFrame;
+		local Weld = Instance.new("WeldConstraint");
+		Weld.Name = "MainMiddleWeld";
+		Weld.Part0 = Middle;
+		Weld.Part1 = CharLimb;
+		Weld.Parent = Middle;
+	end
+end
+
+local function DisableHumanoid(Humanoid: Humanoid)
+	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, false);
+	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Freefall, false);
+	Humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false);
+	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Dead, false);
+	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Swimming, false);
+	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Climbing, false);
+	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Landed, false);
+	Humanoid:SetStateEnabled(Enum.HumanoidStateType.PlatformStanding, false);
+	Humanoid:SetStateEnabled(Enum.HumanoidStateType.RunningNoPhysics, false);
+	Humanoid:SetStateEnabled(Enum.HumanoidStateType.StrafingNoPhysics, false);
+	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false);
+	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Flying, false);
+	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false);
+end
+
+local function GetYOffset(Model: Model)
+	local Position, Size = Model:GetBoundingBox();
+	local PrimaryPart: BasePart = Model.PrimaryPart :: BasePart;
+
+	local HeightDifference = (PrimaryPart.Position - Position.Position).Y;
+
+	return Size.Y / 2 + HeightDifference;
+end
+
+local function AddEnemyTag(Rig: typeof(Rig))
+	for _, BasePart in ipairs(Rig:GetDescendants()) do
+		if BasePart:IsA("BasePart") then
+			BasePart.CollisionGroup = "PlacedCharacters";
+		end
+	end
+end
+
+local Enemies: {[string]: Types.EnemyClient} = {};
+local Beziers: {[string]: BezierPath.Path} = {};
+
+local EnemyModule: Types.EnemyModule = {} :: Types.EnemyModule;
+EnemyModule.__index = EnemyModule;
+
+EnemyModule.NewEnemy = Signal.new();
+
+local function NewEnemy(Input: Types.EnemyInput, SpectateFire: boolean)
+	local self = setmetatable({}, EnemyModule) :: Types.EnemyClient;
+	
+	self.UniqueId = Input.UniqueId;
+	self.Trove = Trove.new();
+	
+	self.SpeedChanged = self.Trove:Add(Signal.new(), "DisconnectAll");
+	self.HealthChanged = self.Trove:Add(Signal.new(), "DisconnectAll");
+	self.MaxHealthChanged = self.Trove:Add(Signal.new(), "DisconnectAll");
+	self.ReachedEnd = self.Trove:Add(Signal.new(), "DisconnectAll");
+	self.Destroying = self.Trove:Add(Signal.new(), "DisconnectAll");
+	
+	self.ModelName = Input.ModelName;
+	self.Health = Input.Health;
+	self.MaxHealth = Input.MaxHealth;
+	self.Speed = Input.Speed;
+	self.Reverse = Input.Reverse;
+	self.IsBoss = Input.IsBoss;
+	self.TimePosition = Input.TimePosition;
+	self.SpeedChanges = Input.SpeedChanges;
+	
+	self.OriginalSpeed = Input.OriginalSpeed;
+	self.VectorOffset = Input.VectorOffset;
+	
+	self.Bezier = Beziers[Input.BezierId];
+	self.PathLength = self.Bezier:GetPathLength();
+	
+	self.CFrame = self.Bezier:CalculateUniformCFrame(self.TimePosition);
+	
+	self.Character = self.Trove:Clone(EnemyFolder[self.ModelName]);
+	self.Root = self.Character.HumanoidRootPart;
+	self.Humanoid = self.Character.Humanoid;
+	self.Animator = self.Humanoid.Animator;
+	self.SizeRatio = self.Humanoid.BodyHeightScale.Value;
+	
+	self.YOffset = GetYOffset(self.Character);
+	self.Root.Anchored = true;
+	self.Root.CFrame = self.CFrame + Vector3.new(0, self.YOffset, 0);
+	
+	DisableHumanoid(self.Humanoid);
+	AddEnemyTag(self.Character);
+	
+	self.Animations = {};
+	
+	self.Character.Parent = EnemiesFolder;
+	
+	if Input.AdornmentName then
+		local NewAdornment = AdornmentFolder[Input.AdornmentName]:Clone();
+		WeldParts(self.Character, NewAdornment, self.SizeRatio);
+		NewAdornment.Parent = self.Character;
+		self.Adornment = NewAdornment;
+	end
+	
+	local CoreInfo = EnemiesAnimations:FindFirstChild(self.ModelName);
+	if CoreInfo then
+		for _, Animation in pairs(CoreInfo:GetChildren()) do
+			self.Animations[Animation.Name] = self.Animator:LoadAnimation(Animation);
+		end
+	end
+	
+	local WalkAnim = self.Animations["Walk"];
+	if WalkAnim then
+		WalkAnim:Play();
+		WalkAnim:AdjustSpeed(self:GetAnimationRatio());
+	end
+	
+	Enemies[self.UniqueId] = self;
+	
+	self.NewEnemy:Fire(self, SpectateFire);
+end
+
+local function EnemyDestroy(self: Types.EnemyClient, SpectateFire: boolean)
+	self.Destroying:Fire(SpectateFire);
+	Enemies[self.UniqueId] = nil;
+	self.Trove:Destroy();
+	table.clear(self :: any);
+	setmetatable(self :: any, nil);
+end
+
+function EnemyModule:GetAnimationRatio()
+	return self.Speed / self.OriginalSpeed;
+end
+
+function EnemyModule.GetEnemy(UniqueId: string)
+	return Enemies[UniqueId];
+end
+
+function EnemyModule.GetEnemies()
+	return Enemies;
+end
+
+LocationEvent.OnClientEvent:Connect(function(UniqueId: string, Waypoints: {Vector3}?)
+	if Waypoints then
+		if not Beziers[UniqueId] then
+			Beziers[UniqueId] = BezierPath.new(Waypoints, 5);
+		end
+	else
+		if Beziers[UniqueId] then
+			Beziers[UniqueId] = nil;
+		end
+	end
+end)
+
+SpawnEvent.OnClientEvent:Connect(function(Data: {[string]: Types.EnemyInput}, SpectateFire: boolean)
+	for _, EnemyInput in pairs(Data) do
+		NewEnemy(EnemyInput, SpectateFire);
+	end
+end)
+
+SpeedEvent.OnClientEvent:Connect(function(Data: {UniqueId: string, Speed: number, Time: number})
+	local Enemy = Enemies[Data.UniqueId];
+	
+	if Enemy then
+		Enemy.Speed = Data.Speed;
+		Enemy.SpeedChanges[#Enemy.SpeedChanges].TimeEnd = Data.Time;
+		table.insert(Enemy.SpeedChanges, {TimeStart = Data.Time, Speed = Data.Speed});
+		local WalkAnim = Enemy.Animations["Walk"];
+		if WalkAnim then
+			WalkAnim:AdjustSpeed(Enemy:GetAnimationRatio());
+		end
+	end
+end)
+
+DestroyEvent.OnClientEvent:Connect(function(UniqueIds: {string}, SpectateFire: boolean)
+	for _, Id in ipairs(UniqueIds) do
+		local Enemy = Enemies[Id];
+		if Enemy then
+			EnemyDestroy(Enemy, SpectateFire);
+			Enemies[Id] = nil;
+		end
+	end
+end)
+
+local function CalculateTimePosition(Enemy: Types.EnemyClient)
+	local NewTime = 0;
+	local CurrentTime = workspace:GetServerTimeNow();
+
+	for _, Data in ipairs(Enemy.SpeedChanges) do
+		local EndTime = Data.TimeEnd or CurrentTime;
+		local Difference = EndTime - Data.TimeStart;
+
+		NewTime += ((Data.Speed / Enemy.PathLength)) * Difference;
+	end
+	
+	NewTime = math.clamp(NewTime, 0, 1);
+	if Enemy.Reverse then
+		NewTime = math.abs(NewTime - 1);
+	end
+
+	return NewTime;
+end
+
+RunService.PostSimulation:Connect(function()
+	for Id, self in pairs(Enemies) do
+		local TimePosition = CalculateTimePosition(self);
+		
+		self.TimePosition = TimePosition;
+		local NewCFrame = self.Bezier:CalculateUniformCFrame(TimePosition) + self.VectorOffset;
+		self.CFrame = NewCFrame;
+		self.Root.CFrame = self.CFrame + Vector3.new(0, self.YOffset, 0);
+	end
+end)
+
+return EnemyModule;

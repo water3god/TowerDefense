@@ -1,0 +1,533 @@
+--!strict
+
+-- By Wa1er_God --
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage");
+local ServerScriptService = game:GetService("ServerScriptService");
+local ServerStorage = game:GetService("ServerStorage");
+local Players = game:GetService("Players");
+
+local Modules = ReplicatedStorage.Modules;
+local GenerateId = require(Modules.GenerateId);
+local Signal = require(Modules.Signal);
+local Trove = require(Modules.Trove);
+
+local Utility = ServerScriptService.Utility;
+local ProfileStore = require(Utility.ProfileStore);
+
+local GlobalModules = ServerScriptService.GlobalModules;
+local Unit = require(GlobalModules.Unit);
+
+local Template = require(ServerStorage.Data.DefaultData);
+
+local SettingData = require(ReplicatedStorage.Shared.Settings);
+
+type PlayerDataData<T> = {
+	_Trove: Trove.Trove;
+	
+	Player: Player;
+	Profile: ProfileStore.Profile<Template.Data>;
+	
+	CurrentRoll: string?;
+	CurrentWave: string?;
+	
+	NeededXP: number;
+	
+	SettingSignals: {[string]: Signal.Signal<any>};
+	
+	UnitEquipped: Signal.Signal<string, number>;
+	UnitUnequipped: Signal.Signal<string, number>;
+	UnitAdded: Signal.Signal<Template.UnitData>;
+	UnitChanged: Signal.Signal<Template.UnitData>;
+	UnitRemoved: Signal.Signal<Template.UnitData>;
+	
+	Rolled: Signal.Signal<any>;
+	
+	SettingChanged: Signal.Signal<string, any>;
+	
+	XPChanged: Signal.Signal<number>;
+	LeveledUp: Signal.Signal<number>;
+	
+	CoinsChanged: Signal.Signal<number>;
+	
+	Destroying: Signal.Signal<>;
+};
+
+type PlayerDataImpl = {
+	new: (Player: Player) -> PlayerData?;
+	
+	GetOwnedUnits: (self: PlayerData) -> {[string]: Template.UnitData};
+	GetEquippedUnits: (self: PlayerData) -> {string};
+	
+	OwnsUnit: (self: PlayerData, UnitId: string) -> boolean; 
+	UnitIsEquipped: (self: PlayerData, UnitId: string) -> boolean;
+	
+	EquipUnit: (self: PlayerData, UnitId: string) -> ();
+	UnequipUnit: (self: PlayerData, UnitId: string) -> ();
+	AddUnit: (self: PlayerData, UnitName: string, ExtraData: {}?) -> Template.UnitData?;
+	AddUnitFromExisting: (self: PlayerData, UnitData: Template.UnitData) -> Template.UnitData?;
+	DeleteUnit: (self: PlayerData, UniqueId: string) -> ();
+	GetUnitFromId: (self: PlayerData, UniqueId: string) -> Template.UnitData?;
+	
+	SetCoins: (self: PlayerData, Coins: number) -> ();
+	AddCoins: (self: PlayerData, Coins: number) -> ();
+	SubtractCoins: (self: PlayerData, Coins: number) -> ();
+	
+	OwnsStage: (self: PlayerData, Map: string, Index: number) -> boolean;
+	AddStage: (self: PlayerData, Map: string, Index: number) -> ();
+	
+	GetSetting: (self: PlayerData, Setting: string) -> any;
+	ChangeSetting: (self: PlayerData, Setting: string, Value: any) -> ();
+	GetSettingChangedSignal: (self: PlayerData, Setting: string) -> Signal.Signal<any>;
+	
+	ChangeInGame: (self: PlayerData, InGame: boolean) -> ();
+	
+	AddRoll: (self: PlayerData, Count: number) -> ();
+	
+	AddUnitXP: (self: PlayerData, UnitId: string, XP: number) -> ();
+	AddXP: (self: PlayerData, XP: number) -> ();
+	
+	Delete: (self: PlayerData) -> ();
+	
+	GetPlayerData: (Player: Player) -> PlayerData?;
+	GetPlayerDataAsync: (Player: Player) -> PlayerData?;
+	GetDatas: () -> {[Player]: PlayerData};
+	
+	DataAdded: Signal.Signal<PlayerData>;
+
+	__index: PlayerDataImpl;
+};
+
+export type PlayerData = typeof(setmetatable({} :: PlayerDataData<any>, {} :: PlayerDataImpl));
+
+local PlayerData: PlayerDataImpl = {} :: PlayerDataImpl;
+PlayerData.__index = PlayerData;
+
+local MainDatastore = ProfileStore.New("MainDataStorev0.01", Template);
+
+local PlayerDatas: {[Player]: PlayerData} = {};
+
+local function CalculateUnitXP(Level: number)
+	local Multiplier = 1.04;
+	local BaseXP = 100;
+	
+	return math.round(BaseXP * math.pow(Multiplier, Level));
+end
+
+local function CalculatePlayerXP(Level: number)
+	local Multiplier = 1.03;
+	local BaseXP = 100;
+
+	return math.round(BaseXP * math.pow(Multiplier, Level));
+end
+
+local LevelData: {[number]: number} = {
+	[1] = 3;
+	[10] = 4;
+	[20] = 5;
+};
+
+local function GetMaxUnits(Level: number)
+	local CurrentIndex: number = 1;
+	local MaxUnits: number = LevelData[CurrentIndex];
+	
+	for LowestLevel, UnitNum in pairs(LevelData) do
+		if LowestLevel <= Level and LowestLevel > CurrentIndex then
+			CurrentIndex = LowestLevel;
+			MaxUnits = UnitNum;
+		end
+	end
+	
+	return MaxUnits;
+end
+
+local function Reconcile(Data: {[any]: any}, Type: string)
+	if Type == "Units" then
+		for Id, UnitData in pairs(Data) do
+			if not UnitData.UniqueId then
+				UnitData.UniqueId = GenerateId.GenerateId();
+			end
+			if not UnitData.Level then
+				UnitData.Level = 1;
+				UnitData.XP = 0;
+				UnitData.NeededXP = CalculateUnitXP(1);
+			end
+			while UnitData.XP >= UnitData.NeededXP do
+				UnitData.XP -= UnitData.NeededXP;
+				UnitData.Level += 1;
+				UnitData.NeededXP = CalculateUnitXP(UnitData.Level);
+			end
+		end
+	end
+end
+
+local function Len(Table: {[any]: any} & {})
+	local Count = 0;
+	for _, _ in pairs(Table) do
+		Count += 1;
+	end
+	return Count;
+end
+
+local function SyncIds(Table: {[any]: any})
+	for UniqueId, Data in pairs(Table) do
+		if GenerateId.IdIsTaken(UniqueId) then
+			local NewId = GenerateId.GenerateId();
+			Table[UniqueId] = nil;
+			Table[NewId] = Data;
+			Table.UniqueId = NewId;
+		end
+	end
+end
+
+function PlayerData.new(Player: Player)
+	local self = setmetatable({}, PlayerData) :: PlayerData;
+	
+	self._Trove = Trove.new();
+	
+	self.UnitAdded = self._Trove:Add(Signal.new(), "DisconnectAll");
+	self.UnitChanged = self._Trove:Add(Signal.new(), "DisconnectAll");
+	self.UnitRemoved = self._Trove:Add(Signal.new(), "DisconnectAll");
+	self.UnitEquipped = self._Trove:Add(Signal.new(), "DisconnectAll");
+	self.UnitUnequipped = self._Trove:Add(Signal.new(), "DisconnectAll");
+	
+	self.SettingChanged = self._Trove:Add(Signal.new(), "DisconnectAll");
+	self.Rolled = self._Trove:Add(Signal.new(), "DisconnectAll");
+	
+	self.XPChanged = self._Trove:Add(Signal.new(), "DisconnectAll");
+	self.LeveledUp = self._Trove:Add(Signal.new(), "DisconnectAll");
+	
+	self.CoinsChanged = self._Trove:Add(Signal.new(), "DisconnectAll");
+	
+	self.Destroying = self._Trove:Add(Signal.new(), "DisconnectAll");
+	
+	self.SettingSignals = {};
+	self.Player = Player;
+	
+	local Profile = MainDatastore:StartSessionAsync("PlayerData9"..Player.UserId, {
+		Cancel = function()
+			return Player.Parent ~= Players;
+		end
+	})
+	self.Profile = Profile :: any;
+	
+	if self.Profile then
+		self.Profile:AddUserId(Player.UserId);
+		self.Profile:Reconcile();
+		Reconcile(self.Profile.Data.Units, "Units");
+	
+		local Data = self.Profile.Data;
+		
+		for UniqueId, UnitData in pairs(Data.Units) do
+			if GenerateId.IdIsTaken(UniqueId) then
+				local NewId = GenerateId.GenerateId();
+				Data.Units[UniqueId] = nil;
+				Data.Units[NewId] = UnitData;
+				Data.Units[NewId].UniqueId = NewId;
+				
+				local Index = table.find(Data.EquippedUnits, UniqueId);
+				if Index then
+					Data.EquippedUnits[Index] = NewId;
+				end
+			end
+		end
+		
+		SyncIds(Data.Gamepasses);
+		
+		self.Profile.OnSessionEnd:Connect(function()
+			self:Delete();
+		end)
+	
+		if self.Player:IsDescendantOf(Players) then
+			PlayerDatas[self.Player] = self;
+		else
+			self:Delete();
+			Player:Kick();
+			return;
+		end
+	else
+		self:Delete();
+		Player:Kick();
+		return;
+	end
+	
+	self.NeededXP = CalculatePlayerXP(self.Profile.Data.Level);
+	
+	self.DataAdded:Fire(self);
+	
+	return self;
+end
+
+function PlayerData:GetOwnedUnits()
+	return self.Profile.Data.Units;
+end
+
+function PlayerData:GetEquippedUnits()
+	return self.Profile.Data.EquippedUnits;
+end
+
+function PlayerData:OwnsUnit(UnitId: string)
+	local Data = self.Profile.Data;
+	
+	if Data.Units[UnitId] then
+		return true;
+	else
+		return false;
+	end
+end
+
+function PlayerData:UnitIsEquipped(UnitId: string)
+	local Data = self.Profile.Data;
+	
+	for _, UniqueId in pairs(Data.EquippedUnits) do
+		if UniqueId == UnitId then
+			return true;
+		end
+	end
+	
+	return false;
+end
+
+function PlayerData:EquipUnit(Id: string)
+	local Data = self.Profile.Data;
+	
+	if self:OwnsUnit(Id) and not self:UnitIsEquipped(Id) then
+		local MaxUnits = GetMaxUnits(Data.Level);
+		for i = 1, MaxUnits, 1 do
+			if Data.EquippedUnits[i] == nil then
+				Data.EquippedUnits[i] = Id;
+				self.UnitEquipped:Fire(Id, i);
+				return;
+			end
+		end
+		
+		self.UnitUnequipped:Fire(Data.EquippedUnits[MaxUnits], MaxUnits);
+		Data.EquippedUnits[MaxUnits] = Id;
+		self.UnitEquipped:Fire(Id, MaxUnits);
+	end
+end
+
+function PlayerData:UnequipUnit(Id: string)
+	local Data = self.Profile.Data;
+	
+	for Index, UniqueId in pairs(Data.EquippedUnits) do
+		if UniqueId == Id then
+			self.UnitUnequipped:Fire(Id, Index);
+			Data.EquippedUnits[Index] = nil;
+			print(self.Profile.Data.EquippedUnits);
+			return;
+		end
+	end
+end
+
+function PlayerData:AddUnit(UnitName: string, ExtraData: {}?)
+	local Data = self.Profile.Data;
+	local Length = Len(Data.Units);
+	
+	local Id = GenerateId.GenerateId();
+	
+	local UnitData = {
+		UniqueId = Id;
+		Unit = UnitName;
+		Level = 1;
+		XP = 0;
+		NeededXP = CalculateUnitXP(1);
+	};
+	
+	if ExtraData then
+		for Index, Value in pairs(ExtraData) do
+			UnitData[Index] = Value;
+		end
+	end
+	
+	Data.Units[Id] = UnitData;
+	self.UnitAdded:Fire(UnitData);
+	
+	return UnitData;
+end
+
+function PlayerData:AddUnitFromExisting(UnitData: Template.UnitData)
+	local Data = self.Profile.Data;
+	
+	Data.Units[UnitData.UniqueId] = UnitData;
+	self.UnitAdded:Fire(UnitData);
+	
+	return UnitData;
+end
+
+function PlayerData:DeleteUnit(UniqueId: string)
+	local Data = self.Profile.Data;
+	
+	for Index, EquippedId in pairs(Data.EquippedUnits) do
+		if EquippedId == UniqueId then
+			Data.EquippedUnits[Index] = nil;
+			self.UnitUnequipped:Fire(UniqueId, Index);
+		end
+	end
+	
+	if Data.Units[UniqueId] then
+		self.UnitRemoved:Fire(Data.Units[UniqueId]);
+		Data.Units[UniqueId] = nil;
+	end
+end
+
+function PlayerData:GetUnitFromId(UniqueId: string)
+	local Data = self.Profile.Data;
+	
+	return Data.Units[UniqueId];
+end
+
+function PlayerData:SetCoins(Coins: number)
+	local CoinCount = math.max(Coins, 0);
+	self.Profile.Data.Coins = CoinCount;
+	self.CoinsChanged:Fire(CoinCount);
+end
+
+function PlayerData:AddCoins(Coins: number)
+	local CurrentCoins = self.Profile.Data.Coins;
+	self:SetCoins(CurrentCoins + Coins);
+end
+
+function PlayerData:SubtractCoins(Coins: number)
+	local CurrentCoins = self.Profile.Data.Coins;
+	self:SetCoins(CurrentCoins - Coins);
+end
+
+function PlayerData:OwnsStage(Map: string, Stage: number)
+	local Data = self.Profile.Data;
+	
+	if Data.CompletedMaps[Map] then
+		if table.find(Data.CompletedMaps[Map], Stage) then
+			return true;
+		end
+	end
+	
+	return false;
+end
+
+function PlayerData:AddStage(Map: string, Stage: number)
+	local Data = self.Profile.Data;
+	
+	if typeof(Map) == "string" and typeof(Stage) == "number" then
+		if not Data.CompletedMaps[Map] then
+			Data.CompletedMaps[Map] = {};
+		end
+		
+		if not table.find(Data.CompletedMaps[Map], Stage) then
+			table.insert(Data.CompletedMaps[Map], Stage);
+		end
+	end
+end
+
+function PlayerData:GetSetting(Setting: string)
+	local Data = self.Profile.Data;
+	
+	if typeof(Setting) ~= "string" then
+		error("No Setting");
+	end
+	
+	return Data.Settings[Setting :: any];
+end
+
+function PlayerData:ChangeSetting(Setting: string, Value: any)
+	local Data = self.Profile.Data;
+	
+	if typeof(Setting) ~= "string" then
+		return;
+	end
+	
+	if table.find(SettingData.SettingIndexes, Setting) and typeof(Value) == SettingData.SettingTypes[Setting] then
+		Data.Settings[Setting :: any] = Value;
+		self.SettingChanged:Fire(Setting, Value);
+		if self.SettingSignals[Setting] then
+			self.SettingSignals[Setting]:Fire(Value);
+		end
+	end
+end
+
+function PlayerData:GetSettingChangedSignal(Setting: string)
+	if self.SettingSignals[Setting] then
+		return self.SettingSignals[Setting];
+	else
+		local Signal = self._Trove:Add(Signal.new(), "DisconnectAll");
+		
+		self.SettingSignals[Setting] = Signal;
+		return Signal;
+	end
+end
+
+function PlayerData:AddRoll(Count: number)
+	local Data = self.Profile.Data;
+	
+	Data.RollCount += Count;
+	self.Rolled:Fire(Data.RollCount);
+end
+
+function PlayerData:AddUnitXP(UnitId: string, XP: number)
+	local Data = self.Profile.Data;
+	
+	local UnitData = Data.Units[UnitId];
+	
+	if UnitData then
+		if UnitData.Level >= 100 then
+			return;
+		end
+		
+		UnitData.XP += XP;
+		while UnitData.XP >= UnitData.NeededXP do
+			UnitData.XP -= UnitData.NeededXP;
+			UnitData.Level += 1;
+			UnitData.NeededXP = CalculateUnitXP(UnitData.Level);
+			
+			if UnitData.Level >= 100 then
+				break;
+			end
+		end
+		self.UnitChanged:Fire(UnitData);
+	end
+end
+
+function PlayerData:AddXP(XP: number)
+	local Data = self.Profile.Data;
+	
+	Data.XP += XP;
+	
+	while Data.XP >= self.NeededXP do
+		Data.Level += 1;
+		Data.XP -= self.NeededXP;
+		self.NeededXP = CalculatePlayerXP(Data.Level);
+		self.LeveledUp:Fire(Data.Level);
+	end
+	
+	self.XPChanged:Fire(Data.XP);
+end
+
+function PlayerData:Delete()
+	self.Destroying:Fire();
+	PlayerDatas[self.Player] = nil;
+	self._Trove:Destroy();
+	
+	table.clear(self :: any);
+	setmetatable(self :: any, nil);
+end
+
+function PlayerData.GetPlayerData(Player: Player)
+	return PlayerDatas[Player];
+end
+
+function PlayerData.GetPlayerDataAsync(Player: Player)
+	if not PlayerDatas[Player] then
+		repeat task.wait();
+		until PlayerDatas[Player] or not Player:IsDescendantOf(Players);
+	end
+
+	return PlayerDatas[Player];
+end
+
+function PlayerData.GetDatas()
+	return PlayerDatas;
+end
+
+PlayerData.DataAdded = Signal.new();
+
+return PlayerData;

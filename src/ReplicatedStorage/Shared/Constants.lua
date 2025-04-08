@@ -1,0 +1,14 @@
+--!strict
+
+-- By Wa1er_God --
+
+local Constants = {
+	BOOTHTOUCHDELAY = 3;
+	BOOTHMAPCHOSETIME = 10;
+	BOOTHWAITTIME = 15;
+	BOOTHRELOADWAITTIME = 5;
+	
+	INFORMATIONHASHMAP = "TOWERDEFENCEHASHMAP";
+};
+
+return Constants;
