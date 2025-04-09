@@ -8,7 +8,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage");
 local RunService = game:GetService("RunService");
 
 local Modules = ReplicatedStorage.Modules;
-local HelperFunctions = require(Modules.HelperFunctions);
 local JoinDicts = require(Modules.JoinDicts);
 
 local ReactLua = Modules.ReactLua;
@@ -95,7 +94,7 @@ function DefaultGui.Frame(Properties: Properties)
 		elseif Instance.GuiState == Enum.GuiState.Press then
 		
 		elseif Instance.GuiState == Enum.GuiState.Idle then
-			
+
 		end
 	end, {});
 
