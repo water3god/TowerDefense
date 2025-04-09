@@ -9,9 +9,12 @@ local DefaultFont = Font.new("rbxasset://fonts/families/FredokaOne.json", Enum.F
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage");
 
-local ReactLua = ReplicatedStorage.Modules.ReactLua;
+local Modules = ReplicatedStorage.Modules;
+local ReactLua = Modules.ReactLua;
 local React = require(ReactLua.React);
 local e = React.createElement;
+
+local Join = require(Modules.JoinDicts);
 
 local UIStroke = require(ReplicatedStorage.Gui.CoreGame.UIStroke);
 
@@ -34,15 +37,18 @@ export type Properties = {
 	RightStrokeColor: ColorSequence?;
 	
 	OnClick: {(...any) -> (...any)}?;
+
+	native: {[any]: any}?;
+	children: {[any]: any}?;
 };
 
 local function CreateBaseFrame(Properties: Properties)
-	return e("Frame", {
+	return e("Frame", Join({
 		BackgroundTransparency = 1;
 		AnchorPoint = Vector2.new(0.5, 0.5);
 		Position = Properties.Position or UDim2.fromScale(0.5, 0.5);
 		Size = Properties.Size or UDim2.fromScale(1, 1);
-	}, {
+	}, Properties.native), {
 		UIAspectRatioConstraint = React.createElement("UIAspectRatioConstraint", {
 			AspectRatio = 1;
 		});

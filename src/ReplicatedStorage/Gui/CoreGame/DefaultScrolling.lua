@@ -11,8 +11,6 @@ local e = React.createElement;
 local Modules = ReplicatedStorage.Modules;
 local Join = require(Modules.JoinDicts);
 
-local Camera = workspace.Camera;
-
 export type Properties = {
 	BarSize: number?;
 	

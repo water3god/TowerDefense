@@ -5,4 +5,4 @@
 [tools]
 rojo = "rojo-rbx/rojo@7.4.4"
 # rojo = "rojo-rbx/rojo@6.2.0"
-ReactSpring = "chriscerie/react-spring@<version>"
+ReactSpring = "chriscerie/react-spring@2.0.0"

@@ -4,7 +4,8 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage");
 
-local ReactLua = ReplicatedStorage.Modules.ReactLua;
+local Modules = ReplicatedStorage.Modules;
+local ReactLua = Modules.ReactLua;
 local React = require(ReactLua.React);
 local e = React.createElement;
 
@@ -23,10 +24,13 @@ export type Properties = {
 	BackgroundColor: ColorSequence;
 	
 	OnClick: {(...any) -> ...any}?;
+
+	native: {[any]: any}?;
+	children: {[any]: any}?;
 };
 
 local function CreateUnitFrame(Properties: Properties)
-	return e(BaseFrame, {
+	return e(BaseFrame, ({
 		Name = Properties.UnitName;
 		LeftText = tostring(Properties.Level);
 		RightText = string.format("$%u", Properties.Cost);
@@ -42,7 +46,10 @@ local function CreateUnitFrame(Properties: Properties)
 		
 		Hovered = Properties.Hovered;
 		OnClick = Properties.OnClick;
-	})
+
+		native = Properties.native;
+		children = Properties.children;
+	}))
 end
 
 return CreateUnitFrame;

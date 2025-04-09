@@ -104,15 +104,18 @@ local function CreateInventory(Properties: Properties)
 			OnClick = {OnClick};
 
 			Hovered = if HoveredId and HoveredId == Data.UniqueId then true else false;
-		}, {
-			BeingSoldFrame = e("ImageLabel", {
-				Visible = table.find(SellingUnits, Data.UniqueId);
-				BackgroundTransparency = 1;
-				AnchorPoint = Vector2.new(0.5, 0.5);
-				Position = UDim2.fromScale(0.5, 0.5);
-				Size = UDim2.fromScale(0.9, 0.9);
-			})
+
+			children = {
+				BeingSoldFrame = e("ImageLabel", {
+					Visible = table.find(SellingUnits, Data.UniqueId);
+					BackgroundTransparency = 1;
+					AnchorPoint = Vector2.new(0.5, 0.5);
+					Position = UDim2.fromScale(0.5, 0.5);
+					Size = UDim2.fromScale(0.9, 0.9);
+				})
+			}
 		});
+		
 		local Merged = JoinDicts(Units, {[Data.Unit] = Value});
 		SetUnits(Merged);
 	end, {})
