@@ -6,6 +6,7 @@ local DefaultFont = Font.new("rbxasset://fonts/families/FredokaOne.json", Enum.F
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage");
 local RunService = game:GetService("RunService");
+local TweenService = game:GetService("TweenService");
 
 local Modules = ReplicatedStorage.Modules;
 local JoinDicts = require(Modules.JoinDicts);
@@ -50,6 +51,8 @@ export type Properties = {
 	children: {[any]: any}?;
 };
 
+local LERPSTYLE = Enum.EasingStyle.Sine;
+
 local function ReactLerp(TotalTime: number, EndValue: number, Binding: React.Binding<number>, SetBinding: React.BindingUpdater<number>)
 	React.useEffect(function()
 		local StartTime = workspace:GetServerTimeNow();
@@ -58,7 +61,8 @@ local function ReactLerp(TotalTime: number, EndValue: number, Binding: React.Bin
 		Connection = RunService.PostSimulation:Connect(function(Delta: number)
 			local Time = (workspace:GetServerTimeNow() - StartTime) + TotalTime;
 			local alpha = (math.clamp(Time / TotalTime, 0, 1));
-			SetBinding(math.lerp(StartValue, EndValue, alpha));
+			local newalpha = TweenService:GetValue(alpha, LERPSTYLE, Enum.EasingDirection.Out);
+			SetBinding(math.lerp(StartValue, EndValue, newalpha));
 
 			if alpha == 1 then
 				if Connection then

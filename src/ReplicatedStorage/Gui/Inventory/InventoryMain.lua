@@ -170,25 +170,32 @@ local function CreateInventory(Properties: Properties)
 			AspectRatio = 2;	
 		});
 		MainDataFrame = e(DefaultScrolling, {
-			BarSize = 0.1;
-			Position = UDim2.fromScale(0.385, 0.6);
-			Size = UDim2.fromScale(0.675, 0.65);
-			AutomaticCanvasSize = Enum.AutomaticSize.Y;
-			ScrollBarImageColor3 = Color3.fromRGB(68, 11, 93);
-		}, {
-			UIGridLayout = e("UIGridLayout", {
-				CellPadding = UDim2.fromScale(0, 0);
-				CellSize = UDim2.fromScale(0.2, 0.41);
-				FillDirection = Enum.FillDirection.Horizontal;
-				SortOrder = Enum.SortOrder.LayoutOrder;
-				StartCorner = Enum.StartCorner.TopLeft;
-				HorizontalAlignment = Enum.HorizontalAlignment.Left;
-				VerticalAlignment = Enum.VerticalAlignment.Top;
-			});
-			UIPadding = e("UIPadding", {
-				PaddingRight = Vector2.new(0.03, 0);
-			});
-		}, Units);
+			BarSize = 0.05;
+			native = {
+				AnchorPoint = Vector2.new(0.5, 0.5);
+				BackgroundTransparency = 1;
+				Position = UDim2.fromScale(0.385, 0.6);
+				Size = UDim2.fromScale(0.675, 0.65);
+				CanvasSize = UDim2.fromScale(0, 0);
+				AutomaticCanvasSize = Enum.AutomaticSize.Y;
+				ScrollBarImageColor3 = Color3.fromRGB(68, 11, 93);
+				BorderSizePixel = 0;
+			};
+			children = JoinDicts({
+				UIGridLayout = e("UIGridLayout", {
+					CellPadding = UDim2.fromScale(0, 0);
+					CellSize = UDim2.fromScale(0.2, 0.41);
+					FillDirection = Enum.FillDirection.Horizontal;
+					SortOrder = Enum.SortOrder.LayoutOrder;
+					StartCorner = Enum.StartCorner.TopLeft;
+					HorizontalAlignment = Enum.HorizontalAlignment.Left;
+					VerticalAlignment = Enum.VerticalAlignment.Top;
+				});
+				UIPadding = e("UIPadding", {
+					PaddingRight = UDim.new(0.03, 0);
+				});
+			}, Units);
+		});
 		CheckButton = e("ImageButton", {
 			BackgroundTransparency = 1;
 			Visible = if InSell then true else false;

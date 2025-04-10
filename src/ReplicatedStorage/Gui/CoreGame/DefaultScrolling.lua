@@ -28,7 +28,9 @@ local function CreateDefaultScrolling(Properties: Properties)
 	local Bar, SetBar = React.useState(0.1);
 	
 	React.useEffect(function()
-		SetBar(GetScrollingSize(BarSize, selfRef));
+		if selfRef.current then
+			SetBar(GetScrollingSize(BarSize, selfRef));
+		end
 	end, {Properties.BarSize})
 	
 	return e("ScrollingFrame", Join({
@@ -38,8 +40,7 @@ local function CreateDefaultScrolling(Properties: Properties)
 		[React.Change.Size] = function()
 			SetBar(GetScrollingSize(BarSize, selfRef)); 
 		end,
-	}, Properties.native
-	), Properties.children
+	}, Properties.native), Properties.children
 	);
 end
 

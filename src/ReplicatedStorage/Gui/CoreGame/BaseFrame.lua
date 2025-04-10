@@ -130,7 +130,9 @@ local function CreateBaseFrame(Properties: Properties)
 				UIStroke = e(UIStroke.UIStroke, {
 					Stroke = 0.002;
 					GradColor = Properties.LeftStrokeColor or ColorSequence.new(Color3.new(1, 1, 1));
-					Enabled = if Properties.LeftStrokeColor then true else false;
+					native = {
+						Enabled = if Properties.LeftStrokeColor then true else false
+					};
 				});
 				UIGradient = e("UIGradient", {
 					Color = Properties.LeftColor or ColorSequence.new(Color3.new(1, 1, 1));
@@ -152,7 +154,9 @@ local function CreateBaseFrame(Properties: Properties)
 				UIStroke = e(UIStroke.UIStroke, {
 					Stroke = 0.002;
 					GradColor = Properties.RightStrokeColor or ColorSequence.new(Color3.new(1, 1, 1));
-					Enabled = if Properties.RightStrokeColor then true else false;
+					native = {
+						Enabled = if Properties.RightStrokeColor then true else false
+					};
 				});
 				UIGradient = e("UIGradient", {
 					Color = Properties.RightColor or ColorSequence.new(Color3.new(1, 1, 1));
