@@ -5,11 +5,12 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage");
 
 local Modules = ReplicatedStorage.Modules;
-local ReactLua = Modules.ReactLua;
-local React = require(ReactLua.React);
+local React = require(Modules.React);
 local e = React.createElement;
 
 local Join = require(Modules.JoinDicts);
+
+local Main = require(ReplicatedStorage.Gui.CoreGame.Main);
 
 export type Properties = {
 	Position: UDim2?;
@@ -21,17 +22,17 @@ export type Properties = {
 };
 
 return function(Properties: Properties)
-	return e("ImageButton", Join({
-		BackgroundTransparency = 1;
-		AnchorPoint = Vector2.new(0.5, 0.5);
-		Position = Properties.Position;
-		Size = Properties.Size;
-		Image = "rbxassetid://101118925074854";
-		[React.Tag] = "GuiAnimateBasic" :: any;
-		[React.Event.MouseButton1Click] = Properties.OnClick,
-	}, Properties.native), {
-		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-			AspectRatio = 1;
-		})
-	}, Properties.children);
+	return e(Main.Animateables.ImageButton, {
+		native = {
+			Position = Properties.Position;
+			Size = Properties.Size;
+			Image = "rbxassetid://101118925074854";
+			[React.Event.MouseButton1Click] = Properties.OnClick,
+		};
+		children = Join({
+			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+				AspectRatio = 1;
+			});
+		}, Properties.children);
+	});
 end
