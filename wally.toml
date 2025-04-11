@@ -6,3 +6,5 @@ realm = "shared"
 
 [dependencies]
 ReactSpring = "chriscerie/react-spring@2.0.0"
+React = "jsdotlua/react@17.2.1"
+ReactRoblox = "jsdotlua/react-roblox@17.2.1"

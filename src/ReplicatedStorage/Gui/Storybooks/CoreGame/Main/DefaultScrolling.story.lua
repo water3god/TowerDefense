@@ -8,9 +8,10 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage");
 
 -- Libraries --
 
-local ReactLua = ReplicatedStorage.Modules.ReactLua;
-local React = require(ReactLua.React);
-local ReactRoblox = require(ReactLua.ReactRoblox);
+local Packages = ReplicatedStorage.Packages;
+local React = require(Packages.React);
+local ReactRoblox = require(Packages.ReactRoblox);
+local e = React.createElement;
 
 -- Reference UI --
 
@@ -28,10 +29,14 @@ local Story = {
 	reactRoblox = ReactRoblox,
 	controls = Controls,
 	story = function(Properties)
-		local Frame = React.createElement(DefaultScrolling, {
+		local Frame = e(DefaultScrolling, {
 			BarSize = Properties.controls.BarSize;
-			Size = UDim2.fromScale(1, 1);
-			Position = UDim2.fromScale(0.5, 0.5);
+			native = {
+				BackgroundTransparency = 1;
+				AnchorPoint = Vector2.new(0.5, 0.5);
+				Size = UDim2.fromScale(1, 1);
+				Position = UDim2.fromScale(0.5, 0.5);
+			}
 		})
 		return Frame;
 	end

@@ -6,9 +6,13 @@ local DefaultFont = Font.new("rbxasset://fonts/families/FredokaOne.json", Enum.F
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage");
 
-local ReactLua = ReplicatedStorage.Modules.ReactLua;
-local React = require(ReactLua.React);
+local Packages = ReplicatedStorage.Packages
+local React = require(Packages.React);
 local e = React.createElement;
+
+local Modules = ReplicatedStorage.Modules;
+local HelperFunctions = require(Modules.HelperFunctions);
+local JoinDicts = HelperFunctions.joinDicts;
 
 local Gui = ReplicatedStorage.Gui;
 local InventoryGUI = Gui.Inventory;
@@ -19,12 +23,10 @@ local Client = ReplicatedStorage.Client;
 local GlobalClient = Client.GlobalClient;
 local InventoryService = require(GlobalClient.InventoryService);
 
-local Modules = ReplicatedStorage.Modules;
-local JoinDicts = require(Modules.JoinDicts);
-
 local CoreGame = Gui.CoreGame;
 local CloseButton = require(CoreGame.CloseButton);
 local DefaultScrolling = require(CoreGame.DefaultScrolling);
+local Main = require(CoreGame.Main);
 
 local Shared = ReplicatedStorage.Shared;
 local UnitInfo = require(Shared.UnitInfo);
@@ -45,24 +47,19 @@ local function CreateBaseButton(Properties: {
 		Position: UDim2;
 		Text: string;
 	})
-	return React.createElement("ImageButton", {
-		BackgroundTransparency = 1;
-		AnchorPoint = Vector2.new(0.5, 0.5);
-		Position = Properties.Position;
-		Size = UDim2.fromScale(0.175, 0.14);
-		Image = "rbxassetid://90225038866735";
-		[React.Tag] = "GuiAnimateBasic";
-	}, {
-		TextLabel = React.createElement("TextLabel", {
-			Text = Properties.Text;
-			TextScaled = true;
-			FontFace = DefaultFont;
-			BackgroundTransparency = 1;
-			AnchorPoint = Vector2.new(0.5, 0.5);
-			Position = UDim2.fromScale(0.5, 0.5);
-			Size = UDim2.fromScale(0.9, 0.6);
-			TextColor3 = Color3.fromRGB(255, 255, 255);
-		});
+	return React.createElement(Main.Animateables.ImageButton, {
+		native = {
+			Position = Properties.Position;
+			Size = UDim2.fromScale(0.175, 0.14);
+			Image = "rbxassetid://90225038866735";
+		};
+		children = {
+			TextLabel = React.createElement(Main.TextLabel, {
+				Text = Properties.Text;
+				Position = UDim2.fromScale(0.5, 0.5);
+				Size = UDim2.fromScale(0.9, 0.6);
+			});
+		};
 	});
 end
 
@@ -92,7 +89,7 @@ local function CreateInventory(Properties: Properties)
 			end
 		end
 		
-		local Value: any = e(UnitFrame, {
+		local Value = e(UnitFrame, {
 			UnitName = Data.Unit;
 			Level = Data.Level;
 			Cost = UnitData.PlacementCost;
@@ -169,7 +166,7 @@ local function CreateInventory(Properties: Properties)
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 2;	
 		});
-		MainDataFrame = e(DefaultScrolling, {
+		MainDataFrame = e(Main.ScrollingFrame, {
 			BarSize = 0.05;
 			native = {
 				AnchorPoint = Vector2.new(0.5, 0.5);
@@ -196,16 +193,15 @@ local function CreateInventory(Properties: Properties)
 				});
 			}, Units);
 		});
-		CheckButton = e("ImageButton", {
-			BackgroundTransparency = 1;
-			Visible = if InSell then true else false;
-			AnchorPoint = Vector2.new(0.5, 0.5);
-			Position = UDim2.fromScale(0.64, 0.175);
-			Size = UDim2.fromScale(0.05, 0.1);
-			Image = "rbxassetid://78742556758797";
-			ImageColor3 = Color3.fromRGB(34, 255, 0);
-			[React.Tag] = "GuiAnimateBasic" :: any;
-			[React.Event.MouseButton1Click] = BulkSell,
+		CheckButton = e(Main.Animateables.ImageButton, {
+			native = {
+				Visible = if InSell then true else false;
+				Position = UDim2.fromScale(0.64, 0.175);
+				Size = UDim2.fromScale(0.05, 0.1);
+				Image = "rbxassetid://78742556758797";
+				ImageColor3 = Color3.fromRGB(34, 255, 0);
+				[React.Event.MouseButton1Click] = BulkSell,
+			};
 		});
 		CloseButton = e(CloseButton, {
 			Position = UDim2.fromScale(1, 0);
@@ -214,15 +210,14 @@ local function CreateInventory(Properties: Properties)
 				MainFrame.current:SetAttribute("AnimateVisible", false);
 			end,
 		});
-		SellButton = e("ImageButton", {
-			BackgroundTransparency = 1;
-			AnchorPoint = Vector2.new(0.5, 0.5);
-			Position = UDim2.fromScale(0.7, 0.175);
-			Size = UDim2.fromScale(0.05, 0.1);
-			Image = "rbxassetid://135893657768702";
-			ImageColor3 = Color3.fromRGB(255, 0, 4);
-			[React.Tag] = "GuiAnimateBasic" :: any;
-			[React.Event.MouseButton1Click] = StartSelling,
+		SellButton = e(Main.Animateables.ImageButton, {
+			native = {
+				Position = UDim2.fromScale(0.7, 0.175);
+				Size = UDim2.fromScale(0.05, 0.1);
+				Image = "rbxassetid://135893657768702";
+				ImageColor3 = Color3.fromRGB(255, 0, 4);
+				[React.Event.MouseButton1Click] = StartSelling,
+			};
 		});
 		
 		InfoFrame = e(InfoFrame, {
@@ -231,6 +226,9 @@ local function CreateInventory(Properties: Properties)
 			Type = OpenFrame;
 			Rarity = Rarity;
 			RarityData = RarityData;
+
+			OnEquipClick = OnEquip;
+			OnSellClick = IndividualSell;
 		});
 		UnitsButton = e(CreateBaseButton, {
 			Position = UDim2.fromScale(0.14, 0.175);
@@ -240,37 +238,35 @@ local function CreateInventory(Properties: Properties)
 			Position = UDim2.fromScale(0.33, 0.175);
 			Text = "Gamepasses";
 		});
-		Title = e("ImageLabel", {
-			BackgroundTransparency = 1;
-			AnchorPoint = Vector2.new(0.5, 0.5);
-			Position = UDim2.fromScale(0.15, -0.03);
-			Size = UDim2.fromScale(0.5, 0.5);
-			Image = "rbxassetid://82588529589997";
+		Title = e(Main.ImageLabel, {
+			native = {
+				Position = UDim2.fromScale(0.15, -0.03);
+				Size = UDim2.fromScale(0.5, 0.5);
+				Image = "rbxassetid://82588529589997";
+			};
 		}, {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 				AspectRatio = 4.625;	
 			});
-			TextLabel = e("TextLabel", {
-				BackgroundTransparency = 1;
-				AnchorPoint = Vector2.new(0.5, 0.5);
-				Position = UDim2.fromScale(0.5, 0.55);
-				Size = UDim2.fromScale(0.7, 0.5);
-				TextScaled = true;
-				TextXAlignment = Enum.TextXAlignment.Left;
-				TextColor3 = Color3.fromRGB(255, 255, 255);
-				Text = "INVENTORY";
-				FontFace = DefaultFont;
-			}, {
-				UIGradient = e("UIGradient", {
-					Color = ColorSequence.new(
-						{
-							ColorSequenceKeypoint.new(0, Color3.new(0.768627, 0.380392, 1)),
-							ColorSequenceKeypoint.new(0.623, Color3.new(1, 1, 1)),
-							ColorSequenceKeypoint.new(1, Color3.new(1, 1, 1))
-						}
-					);
-					Rotation = -90;
-				});
+			TextLabel = e(Main.ImageLabel, {
+				native = {
+					Position = UDim2.fromScale(0.5, 0.55);
+					Size = UDim2.fromScale(0.7, 0.5);
+					TextXAlignment = Enum.TextXAlignment.Left;
+					Text = "INVENTORY";
+				};
+				children = {
+					UIGradient = e("UIGradient", {
+						Color = ColorSequence.new(
+							{
+								ColorSequenceKeypoint.new(0, Color3.new(0.768627, 0.380392, 1)),
+								ColorSequenceKeypoint.new(0.623, Color3.new(1, 1, 1)),
+								ColorSequenceKeypoint.new(1, Color3.new(1, 1, 1))
+							}
+						);
+						Rotation = -90;
+					});
+				};
 			});
 		});
 	})

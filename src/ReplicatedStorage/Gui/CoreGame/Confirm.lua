@@ -2,26 +2,67 @@
 
 -- By Wa1er_God --
 
-local DefaultFont = Font.new("rbxasset://fonts/families/FredokaOne.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+local MinSize = 0.8;
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage");
 local Players = game:GetService("Players");
-local TweenService = game:GetService("TweenService");
+
+local Packages = ReplicatedStorage.Packages;
+local React = require(Packages.React);
+local ReactRoblox = require(Packages.ReactRoblox);
+local ReactSpring = require(Packages.ReactSpring);
+local e = React.createElement;
 
 local Modules = ReplicatedStorage.Modules;
 local HelperFunctions = require(Modules.HelperFunctions);
-local Join = require(Modules.JoinDicts);
 local Lerps = require(Modules.Lerps);
-
-local ReactLua = Modules.ReactLua;
-local React = require(ReactLua.React);
-local ReactRoblox = require(ReactLua.ReactRoblox);
-local e = React.createElement;
+local GenerateId = require(Modules.GenerateId);
+local Join = HelperFunctions.joinDicts;
 
 local Gui = ReplicatedStorage.Gui;
 local CoreGame = Gui.CoreGame;
 local CloseButton = require(CoreGame.CloseButton);
 local UIStroke = require(CoreGame.UIStroke);
+local Main = require(CoreGame.Main);
+local Hooks = require(CoreGame.Hooks);
+
+local function CreateBasicButton(Props: {OnClick: () -> ()?; native: {[any]: any}?, children: {}?, LabelText: string, Color: Color3})
+	return e(Main.Animateables.ImageButton, {
+		native = Join({
+			BackgroundTransparency = 1;
+			AnchorPoint = Vector2.new(0.5, 0.5);
+			Size = UDim2.fromScale(0.4, 0.3);
+			Image = "rbxassetid://110715473491790";
+			ImageColor3 = Props.Color;
+			[React.Event.MouseButton1Click] = Props.OnClick;
+		}, Props.native);
+		children = Join({
+			TextLabel = e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.5, 0.5);
+					Size = UDim2.fromScale(0.5, 0.5);
+					Text = Props.LabelText;
+				};
+				children = {
+					UICorner = e("UICorner", {
+						CornerRadius = UDim.new(0.1, 0);
+					});
+					UIStroke = e(UIStroke.UIStrokeBasic, {
+						Stroke = 0.002;
+					});
+				}
+			});
+			BackFrame = e(Main.Frame, {
+				native = {
+					Position = UDim2.fromScale(0.5, 0.5);
+					Size = UDim2.fromScale(0.95, 0.85);
+					BackgroundTransparency = 0;
+					BackgroundColor3 = Props.Color;
+				};
+			});
+		}, Props.children);
+	});
+end
 
 export type Properties = {
 	Title: string;
@@ -31,125 +72,106 @@ export type Properties = {
 	Handler: (End: boolean?) -> ();
 };
 
-local PlayerGui = Players.LocalPlayer.PlayerGui;
+local Component = React.Component:extend("Confirm");
 
-local Gui = Instance.new("ScreenGui");
-Gui.Name = "ConfirmGui";
-Gui.ResetOnSpawn = false;
-Gui.Parent = PlayerGui;
+local ConfirmGui = Instance.new("ScreenGui");
+ConfirmGui.Name = "ConfirmGui";
 
-local Root = ReactRoblox.createRoot(Gui);
+function Component:init()
+	self.Scale, self.SetScale = ReactSpring.useSpring(function()
+		return {Scale = 1};
+	end)
+	self.Visible, self.SetVisiblity = React.createBinding(false);
 
-local function CreateBasicButton(Props: {OnClick: () -> ()?; native: {[any]: any}?, children: {}?, LabelText: string, Color: Color3})
-	return e("ImageButton", {
-		Join({
-			BackgroundTransparency = 1;
-			AnchorPoint = Vector2.new(0.5, 0.5);
-			Size = UDim2.fromScale(0.4, 0.3);
-			Image = "rbxassetid://110715473491790";
-			ImageColor3 = Props.Color;
-			[React.Event.MouseButton1Click] = Props.OnClick;
-		}, Props.native)
-	}, Join({
-		TextLabel = e("TextLabel", {
-			AnchorPoint = Vector2.new(0.5, 0.5);
-			Position = UDim2.fromScale(0.5, 0.5);
-			Size = UDim2.fromScale(0.5, 0.5);
-			Text = Props.LabelText;
-			TextColor3 = Color3.new(1, 1, 1);
-			TextScaled = true;
-			FontFace = DefaultFont;
-		}, {
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.1, 0);
-			});
-			UIStroke = e(UIStroke.UIStrokeBasic, {
-				Stroke = 0.004;
-			});
-		});
-		BackFrame = e("Frame", {
-			AnchorPoint = Vector2.new(0.5, 0.5);
-			Position = UDim2.fromScale(0.5, 0.5);
-			Size = UDim2.fromScale(0.95, 0.85);
-			BackgroundColor3 = Props.Color;
-		});
-	}, Props.children));
+	self.Start = function()
+		self.SetScale(MinSize);
+		
+	end
+
+	self.End = function()
+		
+	end
+
+	self.Handler = function(Input: boolean?)
+		self.props.Handler(Input);
+		--self:EndAnimation();
+	end
+
+	self.OnNo = function()
+		self.Handler(false);
+	end;
+
+	self.OnYes = function()
+		self.Handler(true);
+	end
+
+	self.OnClose = function()
+		self.Handler(nil);
+	end
 end
 
-local function CreateConfirm(Properties: Properties)
-
-	local OnNo = React.useCallback(function()
-		Properties.Handler(false);
-	end, {});
-
-	local OnYes = React.useCallback(function()
-		Properties.Handler(true);
-	end, {});
-
-	local OnClose = React.useCallback(function()
-		Properties.Handler(nil);
-	end, {});
-
-	--local Scale, SetScale = UDim2.fromScale()
-
-	React.useEffect(function()
-
-	end, {});
-
-	local ConfirmFrame = e("ImageLabel", {
-		BackgroundTransparency = 1;
-		AnchorPoint = Vector2.new(0.5, 0.5);
-		Position = UDim2.fromScale(0.5, 0.5);
-		Size = UDim2.fromScale(0.25, 0.25);
-		Image = "rbxassetid://100546338175267";
-	}, {
-		Titlelabel = e("TextLabel", {
-			BackgroundTransparency = 1;
-			AnchorPoint = Vector2.new(0.5, 0.5);
-			Text = Properties.Title;
-			TextScaled = true;
-			FontFace = DefaultFont;
-			TextColor3 = Color3.new(1, 1, 1);
-			Position = UDim2.fromScale(0.5, 0.2);
-			Size = UDim2.fromScale(0.5, 0.2);
-
-		});
-		DescriptionLabel = e("TextLabel", {
-			AnchorPoint = Vector2.new(0.5, 0.5);
-			Text = Properties.Description;
-			TextScaled = true;
-			FontFace = DefaultFont;
-			TextColor3 = Color3.new(1, 1, 1);
-			Position = UDim2.fromScale(0.5, 0.425);
-			Size = UDim2.fromScale(0.9, 0.25);
-		});
-		NoButton = e(CreateBasicButton, {
-			OnClick = OnNo;
-			LabelText = Properties.NoText or "No";
-			Color = Color3.fromRGB(255, 0, 0);
-			native = {
-				Position = UDim2.fromScale(0.75, 0.75);	
-			};
-		});
-		YesButton = e(CreateBasicButton, {
-			OnClick = OnYes;
-			LabelText = Properties.YesText or "Yes";
-			Color = Color3.fromRGB(0, 255, 0);
-			native = {
-				Position = UDim2.fromScale(0.75, 0.75);
-			};
-		});
-		CloseButton = e(CloseButton, {
-			Position = UDim2.fromScale(1, 0);
-			Size = UDim2.fromScale(0.2, 0.3);
-			OnClick = OnClose;
-		});
-		UIScale = e("UIScale", {
-			Scale = 1;
-		})
-	});
-
-	Root:render(ConfirmFrame);
+function Component:EndAnimation()
+	React.useEffect(self.End, {});
 end
 
-return CreateConfirm;
+function Component:render()
+	return ReactRoblox.createPortal({
+		[GenerateId.GenerateId()] = {
+			e(Main.ImageLabel, {
+				native = {
+					Position = UDim2.fromScale(0.5, 0.5);
+					Size = UDim2.fromScale(0.25, 0.25);
+					Image = "rbxassetid://100546338175267";
+				};
+				children = {
+					UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+						AspectRatio = 1.813;
+					});
+					TitleLabel = e(Main.TextLabel, {
+						native = {
+							Text = self.props.Title;
+							Position = UDim2.fromScale(0.5, 0.2);
+							Size = UDim2.fromScale(0.5, 0.2);
+						};
+					});
+					DescriptionLabel = e(Main.TextLabel, {
+						native = {
+							Text = self.props.Description;
+							Position = UDim2.fromScale(0.5, 0.425);
+							Size = UDim2.fromScale(0.9, 0.25);
+						};
+					});
+					NoButton = e(CreateBasicButton, {
+						OnClick = self.OnNo;
+						LabelText = self.props.NoText or "No";
+						Color = Color3.fromRGB(255, 0, 0);
+						native = {
+							Position = UDim2.fromScale(0.75, 0.75);	
+						};
+					});
+					YesButton = e(CreateBasicButton, {
+						OnClick = self.OnYes;
+						LabelText = self.props.YesText or "Yes";
+						Color = Color3.fromRGB(0, 255, 0);
+						native = {
+							Position = UDim2.fromScale(0.25, 0.75);
+						};
+					});
+					CloseButton = e(CloseButton, {
+						Position = UDim2.fromScale(1, 0);
+						Size = UDim2.fromScale(0.2, 0.3);
+						OnClick = self.OnClose;
+					});
+					UIScale = e("UIScale", {
+						Scale = self.Scale;
+					})
+				};
+			});
+	}}, ConfirmGui);
+end
+
+--[[function Component:componentDidMount()
+	React.useEffect(self.Start, {});
+end]]
+
+return Component;

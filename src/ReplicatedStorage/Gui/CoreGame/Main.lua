@@ -5,15 +5,15 @@
 local DefaultFont = Font.new("rbxasset://fonts/families/FredokaOne.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal);
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage");
-local RunService = game:GetService("RunService");
-local TweenService = game:GetService("TweenService");
+
+local Packages = ReplicatedStorage.Packages
+local React = require(Packages.React);
+local ReactSpring = require(Packages.ReactSpring);
+local e = React.createElement;
 
 local Modules = ReplicatedStorage.Modules;
-local JoinDicts = require(Modules.JoinDicts);
-
-local ReactLua = Modules.ReactLua;
-local React = require(ReactLua.React);
-local e = React.createElement;
+local HelperFunctions = require(Modules.HelperFunctions);
+local JoinDicts = HelperFunctions.joinDicts;
 
 local Gui = ReplicatedStorage.Gui;
 local CoreGame = Gui.CoreGame;
@@ -28,6 +28,7 @@ local DefaultProps = {
 	AnchorPoint = Vector2.new(0.5, 0.5);
 	Position = UDim2.fromScale(0.5, 0.5);
 	Size = UDim2.fromScale(1, 1);
+	BorderSizePixel = 0;
 };
 
 local DefaultText = {
@@ -51,61 +52,12 @@ export type Properties = {
 	children: {[any]: any}?;
 };
 
-local LERPSTYLE = Enum.EasingStyle.Sine;
-
-local function ReactLerp(TotalTime: number, EndValue: number, Binding: React.Binding<number>, SetBinding: React.BindingUpdater<number>)
-	React.useEffect(function()
-		local StartTime = workspace:GetServerTimeNow();
-		local Connection: RBXScriptConnection? = nil;
-		local StartValue = Binding:getValue();
-		Connection = RunService.PostSimulation:Connect(function(Delta: number)
-			local Time = (workspace:GetServerTimeNow() - StartTime) + TotalTime;
-			local alpha = (math.clamp(Time / TotalTime, 0, 1));
-			local newalpha = TweenService:GetValue(alpha, LERPSTYLE, Enum.EasingDirection.Out);
-			SetBinding(math.lerp(StartValue, EndValue, newalpha));
-
-			if alpha == 1 then
-				if Connection then
-					Connection:Disconnect();
-				end
-			end
-		end)
-
-		return function()
-			if Connection then
-				Connection:Disconnect();
-			end
-		end
-	end, {})
-
-	return Binding, SetBinding;
-end
-
 function DefaultGui.Frame(Properties: Properties)
-	local Scale, SetScale = React.createBinding(1);
-	local Callback = React.useCallback(function(Instance: GuiObject)
-		if Instance.GuiState == Enum.GuiState.Hover then
-			ReactLerp(0.1, 1.2, Scale, SetScale)
-		elseif Instance.GuiState == Enum.GuiState.Press then
-			ReactLerp(0.1, 0.8, Scale, SetScale)
-		elseif Instance.GuiState == Enum.GuiState.Idle then
-			ReactLerp(0.1, 1, Scale, SetScale)
-		end
-	end, {});
-
 	return e("Frame",
 		JoinDicts(
 			DefaultProps,
-			{
-				BackgroundTransparency = 0;
-				[React.Change.GuiState] = Callback;
-			},
 			Properties.native
-		), {
-			UIScale = e("UIScale", {
-				Scale = Scale;
-			})
-		},
+		),
 		 Properties.children
 	);
 end
@@ -200,6 +152,7 @@ function DefaultGui.ScrollingFrame(Properties: Properties & {BarSize: number})
 			{
 				BarSize = Properties.BarSize;
 				ScrollBarImageColor3 = Color3.new(0.444053, 0.448447, 0.448447);
+				CanvasSize = UDim2.fromScale(0, 0);
 			},
 			Properties.native
 			)
@@ -222,17 +175,38 @@ local Animateables = {};
 DefaultGui.Animateables = Animateables;
 
 do
-	function Animateables.Frame(Properties: Properties)
-		local Scale, SetScale = React.createBinding(1);
+	local function ApplyEffect()
+		local Scale, API = ReactSpring.useSpring(function()
+			return {
+				to = {Scale = 1};
+				config = {mass = 1, tension = 1000, friction = 75};
+		};
+		end);
+	
 		local Callback = React.useCallback(function(Instance: GuiObject)
 			if Instance.GuiState == Enum.GuiState.Hover then
-				ReactLerp(0.1, 1.2, Scale, SetScale)
+				API.stop();
+				API.start({
+					Scale = 1.1;
+				});
 			elseif Instance.GuiState == Enum.GuiState.Press then
-				ReactLerp(0.1, 0.8, Scale, SetScale)
+				API.stop();
+				API.start({
+					Scale = 0.9;
+				});
 			elseif Instance.GuiState == Enum.GuiState.Idle then
-				ReactLerp(0.1, 1, Scale, SetScale)
+				API.stop();
+				API.start({
+					Scale = 1;
+				});
 			end
 		end, {});
+
+		return Scale, Callback;
+	end
+
+	function Animateables.Frame(Properties: Properties)
+		local Scale, Callback = ApplyEffect();
 	
 		return e(DefaultGui.Frame, {
 			native = JoinDicts(
@@ -244,7 +218,7 @@ do
 			 children = JoinDicts(
 				{
 					AnimateScale = e("UIScale", {
-						Scale = Scale;
+						Scale = Scale.Scale;
 					});
 				},
 				Properties.children
@@ -253,16 +227,7 @@ do
 	end
 	
 	function Animateables.ImageButton(Properties: Properties)
-		local Scale, SetScale = React.createBinding(1);
-		local Callback = React.useCallback(function(Instance: GuiObject)
-			if Instance.GuiState == Enum.GuiState.Hover then
-				ReactLerp(0.1, 1.2, Scale, SetScale)
-			elseif Instance.GuiState == Enum.GuiState.Press then
-				ReactLerp(0.1, 0.8, Scale, SetScale)
-			elseif Instance.GuiState == Enum.GuiState.Idle then
-				ReactLerp(0.1, 1, Scale, SetScale)
-			end
-		end, {});
+		local Scale, Callback = ApplyEffect();
 	
 		return e(DefaultGui.ImageButton, {
 			native = JoinDicts(
@@ -274,7 +239,7 @@ do
 			 children = JoinDicts(
 				{
 					AnimateScale = e("UIScale", {
-						Scale = Scale;
+						Scale = Scale.Scale;
 					});
 				},
 				Properties.children
@@ -283,16 +248,7 @@ do
 	end
 	
 	function Animateables.TextButton(Properties: Properties)
-		local Scale, SetScale = React.createBinding(1);
-		local Callback = React.useCallback(function(Instance: GuiObject)
-			if Instance.GuiState == Enum.GuiState.Hover then
-				ReactLerp(0.1, 1.2, Scale, SetScale)
-			elseif Instance.GuiState == Enum.GuiState.Press then
-				ReactLerp(0.1, 0.8, Scale, SetScale)
-			elseif Instance.GuiState == Enum.GuiState.Idle then
-				ReactLerp(0.1, 1, Scale, SetScale)
-			end
-		end, {});
+		local Scale, Callback = ApplyEffect();
 	
 		return e(DefaultGui.TextButton, {
 			native = JoinDicts(
@@ -304,7 +260,7 @@ do
 			 children = JoinDicts(
 				{
 					AnimateScale = e("UIScale", {
-						Scale = Scale;
+						Scale = Scale.Scale;
 					});
 				},
 				Properties.children
@@ -313,16 +269,7 @@ do
 	end
 	
 	function Animateables.CanvasGroup(Properties: Properties)
-		local Scale, SetScale = React.createBinding(1);
-		local Callback = React.useCallback(function(Instance: GuiObject)
-			if Instance.GuiState == Enum.GuiState.Hover then
-				ReactLerp(0.1, 1.2, Scale, SetScale)
-			elseif Instance.GuiState == Enum.GuiState.Press then
-				ReactLerp(0.1, 0.8, Scale, SetScale)
-			elseif Instance.GuiState == Enum.GuiState.Idle then
-				ReactLerp(0.1, 1, Scale, SetScale)
-			end
-		end, {});
+		local Scale, Callback = ApplyEffect();
 	
 		return e(DefaultGui.CanvasGroup, {
 			native = JoinDicts(

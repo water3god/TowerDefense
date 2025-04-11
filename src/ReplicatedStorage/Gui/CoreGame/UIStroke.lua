@@ -3,13 +3,15 @@
 -- By Wa1er_God --
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage");
-local RunService = game:GetService("RunService");
+
+local Packages = ReplicatedStorage.Packages;
+local React = require(Packages.React);
+local e = React.createElement;
 
 local Modules = ReplicatedStorage.Modules;
-local ReactLua = Modules.ReactLua;
-local React = require(ReactLua.React);
+local HelperFunctions = require(Modules.HelperFunctions);
+local Join = HelperFunctions.joinDicts;
 
-local Join = require(Modules.JoinDicts);
 local CoreGame = ReplicatedStorage.Gui.CoreGame;
 local Hooks = require(CoreGame.Hooks);
 
@@ -46,7 +48,7 @@ function Funcs.UIStrokeBasic(Properties: PropertiesBasic)
 		SetSize(Properties.Stroke);
 	end, {});
 	
-	return React.createElement("UIStroke",
+	return e("UIStroke",
 		Join({
 			Thickness = Size;
 			Color = Properties.Color;
@@ -58,7 +60,7 @@ function Funcs.UIStrokeBasic(Properties: PropertiesBasic)
 end
 
 function Funcs.UIStroke(Properties: PropertiesNormal)
-	return React.createElement(Funcs.UIStrokeBasic, Join(Properties, {
+	return e(Funcs.UIStrokeBasic, Join(Properties, {
 		native = Join(
 			{
 				Color = Color3.new(1, 1, 1);
@@ -66,7 +68,7 @@ function Funcs.UIStroke(Properties: PropertiesNormal)
 			Properties.native
 		);
 		children = {
-			UIGradient = React.createElement(CreateUIGrad, {
+			UIGradient = e(CreateUIGrad, {
 				Color = Properties.GradColor;
 			})
 		}

@@ -1,4 +1,4 @@
-local REQUIRED_MODULE = require(script.Parent.Parent["jsdotlua_react@17.2.1"]["react"])
+local REQUIRED_MODULE = require(script.Parent._Index["jsdotlua_react@17.2.1"]["react"])
 export type Object = REQUIRED_MODULE.Object 
 export type Binding<T> = REQUIRED_MODULE.Binding<T>
 export type BindingUpdater<T> = REQUIRED_MODULE.BindingUpdater<T>

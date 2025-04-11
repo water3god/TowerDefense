@@ -4,10 +4,13 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage");
 
-local Modules = ReplicatedStorage.Modules;
-local ReactLua = Modules.ReactLua;
-local React = require(ReactLua.React);
+local Packages = ReplicatedStorage.Packages
+local React = require(Packages.React);
 local e = React.createElement;
+
+local Modules = ReplicatedStorage.Modules;
+local HelperFunctions = require(Modules.HelperFunctions);
+local JoinDicts = HelperFunctions.joinDicts;
 
 local Gui = ReplicatedStorage.Gui;
 local CoreGame = Gui.CoreGame;

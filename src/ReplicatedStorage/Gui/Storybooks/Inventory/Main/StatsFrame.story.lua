@@ -8,9 +8,10 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage");
 
 -- Libraries --
 
-local ReactLua = ReplicatedStorage.Modules.ReactLua;
-local React = require(ReactLua.React);
-local ReactRoblox = require(ReactLua.ReactRoblox);
+local Packages = ReplicatedStorage.Packages;
+local React = require(Packages.React);
+local ReactRoblox = require(Packages.ReactRoblox);
+local e = React.createElement;
 
 -- Reference UI --
 
@@ -31,7 +32,7 @@ local Story = {
 	reactRoblox = ReactRoblox,
 	controls = controls,
 	story = function(Properties)
-		local Frame = React.createElement(StatsFrame, {
+		local Frame = e(StatsFrame, {
 
 		});
 		return Frame;

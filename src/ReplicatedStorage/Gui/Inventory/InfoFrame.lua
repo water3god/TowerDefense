@@ -6,12 +6,12 @@ local DefaultFont = Font.new("rbxasset://fonts/families/FredokaOne.json", Enum.F
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage");
 
+local Packages = ReplicatedStorage.Packages;
+local React = require(Packages.React);
+local e = React.createElement;
+
 local Modules = ReplicatedStorage.Modules;
 local HelperFunctions = require(Modules.HelperFunctions);
-
-local ReactLua = Modules.ReactLua;
-local React = require(ReactLua.React);
-local e = React.createElement;
 
 local Gui = ReplicatedStorage.Gui;
 local CoreGame = Gui.CoreGame;
