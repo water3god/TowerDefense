@@ -61,19 +61,6 @@ local function CreateBaseFrame(Properties: Properties)
 					Text = "";
 				};
 				children = {
-					--[[InvisButton = e(Main.TextButton, {
-						native = {
-							Position = UDim2.fromScale(0.5, 0.5);
-							Size = UDim2.fromScale(1, 1);
-							Text = "";
-							ZIndex = -1;
-							[React.Event.MouseButton1Click] = Properties.OnClick and function()
-								for _, Func in ipairs(Properties.OnClick) do
-									Func();
-								end
-							end,
-						};
-					});]]
 					BackgroundImage = e(Main.ImageLabel, {
 						native = {
 							Position = UDim2.fromScale(0.5, 0.5);
@@ -156,7 +143,7 @@ local function CreateBaseFrame(Properties: Properties)
 				};
 			});
 		};
-	}))
+	}) :: any)
 end
 
 return CreateBaseFrame;

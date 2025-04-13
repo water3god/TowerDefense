@@ -179,7 +179,7 @@ do
 		local Scale, API = ReactSpring.useSpring(function()
 			return {
 				to = {Scale = 1};
-				config = {mass = 1, tension = 1000, friction = 75};
+				config = {mass = 1, tension = 2000, friction = 100};
 		};
 		end);
 	
@@ -192,7 +192,7 @@ do
 			elseif Instance.GuiState == Enum.GuiState.Press then
 				API.stop();
 				API.start({
-					Scale = 0.9;
+					Scale = 1;
 				});
 			elseif Instance.GuiState == Enum.GuiState.Idle then
 				API.stop();

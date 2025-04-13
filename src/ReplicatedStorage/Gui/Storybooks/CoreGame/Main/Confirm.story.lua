@@ -13,6 +13,11 @@ local React = require(Packages.React);
 local ReactRoblox = require(Packages.ReactRoblox);
 local e = React.createElement;
 
+-- Modules --
+
+local Modules = ReplicatedStorage.Modules;
+local HelperFunctions = require(Modules.HelperFunctions);
+
 -- Reference UI --
 
 local Gui = ReplicatedStorage.Gui;
@@ -32,14 +37,17 @@ local Story = {
 	reactRoblox = ReactRoblox,
 	controls = controls,
 	story = function(Properties)
-		local Frame = e(Confirm, {
-            Title = Properties.controls.Title;
+		return e(Confirm, {
+			Title = Properties.controls.Title;
 			Description = Properties.controls.Description;
-            Handler = function(input: boolean?)
-                print(input);
-            end
-		})
-		return Frame;
+			Handler = function()
+				
+			end,
+			Enabled = true;
+			native = {
+				Position = UDim2.fromScale(0.2, 0.2);
+			};
+		});
 	end
 }
 

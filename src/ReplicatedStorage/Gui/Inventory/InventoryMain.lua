@@ -2,13 +2,15 @@
 
 -- By Wa1er_God --
 
-local DefaultFont = Font.new("rbxasset://fonts/families/FredokaOne.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-
 local ReplicatedStorage = game:GetService("ReplicatedStorage");
+local Players = game:GetService("Players");
 
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React);
+local ReactRoblox = require(Packages.ReactRoblox);
 local e = React.createElement;
+
+local Player = Players.LocalPlayer;
 
 local Modules = ReplicatedStorage.Modules;
 local HelperFunctions = require(Modules.HelperFunctions);
@@ -25,8 +27,8 @@ local InventoryService = require(GlobalClient.InventoryService);
 
 local CoreGame = Gui.CoreGame;
 local CloseButton = require(CoreGame.CloseButton);
-local DefaultScrolling = require(CoreGame.DefaultScrolling);
 local Main = require(CoreGame.Main);
+local Confirm = require(CoreGame.Confirm);
 
 local Shared = ReplicatedStorage.Shared;
 local UnitInfo = require(Shared.UnitInfo);
@@ -127,7 +129,17 @@ local function CreateInventory(Properties: Properties)
 		end
 	end, {})
 	
-	local IndividualSell = React.useCallback(function()
+	local IndividualSell = React.useCallback(function(Input: boolean?)
+		if not InSell or not HoveredId then
+			return;
+		end
+
+		if Input == true then
+			Sell(SellingUnits);
+		elseif Input == false then
+			SetSellingUnits({});
+			ToggleSell(false);
+		end
 		
 	end, {});
 	
@@ -163,6 +175,12 @@ local function CreateInventory(Properties: Properties)
 		Image = "rbxassetid://103903141717286";
 		[React.Tag] = "AnimateFrameVisibility";
 	}, {
+		Confirm = e(Confirm, {
+			Title = "Hello";
+			Description = "Bye";
+			Enabled = false;
+			Handler = IndividualSell;
+		});
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 2;	
 		});
