@@ -48,6 +48,7 @@ end
 local function CreateBaseButton(Properties: {
 		Position: UDim2;
 		Text: string;
+		OnClick: () -> ();
 	})
 	return React.createElement(Main.Animateables.ImageButton, {
 		native = {
@@ -71,22 +72,34 @@ local function CreateInventory(Properties: Properties)
 	local HoveredId, SetHovered = React.useState(nil :: string?);
 	
 	local InSell, ToggleSell = React.useState(false);
+
+	local ClickedUnitData, SetClickedUnitData = React.useState(nil :: {
+		CurrentUnit: Types.VisualUnitData?;
+		Rarity: string;
+		RarityData: typeof(RarityInfo["Common" :: RarityInfo.Rarity])
+	}?)
 	
-	local OpenFrame: string = "Unit";
-	local CurrentUnit: Types.VisualUnitData? = nil;
-	local Rarity: string? = nil;
-	local RarityData: typeof(RarityInfo["Common" :: RarityInfo.Rarity])? =  nil;
+	local OpenFrame: string, SetOpenFrame = React.useState("Unit");
+
+	local BulkEnabled, SetBulkEnabled = React.useState(false);
+	local IndEnabled, SetIndEnabled = React.useState(false);
+
+	React.useEffect(function()
+		SetBulkEnabled(false);
+		SetIndEnabled(false);
+	end, {InSell, HoveredId :: any, Units :: any})
 	
 	local HandleUnit = React.useCallback(function(Data: Types.VisualUnitData)
 		local UnitData = UnitInfo.UnitInfo[Data.Unit];
 		local RarityData = RarityInfo[UnitData.Rarity];
 
 		local function OnClick()
-			if HoveredId ~= Data.UniqueId then
-				OpenFrame = "Unit";
-				CurrentUnit = Data;
-				Rarity = UnitData.Rarity;
-				RarityData = RarityData;
+			if HoveredId ~= Data.UniqueId and not InSell then
+				SetClickedUnitData({
+					CurrentUnit = Data;
+					Rarity = UnitData.Rarity;
+					RarityData = RarityData;
+				})
 				SetHovered(Data.UniqueId);
 			end
 		end
@@ -117,7 +130,7 @@ local function CreateInventory(Properties: Properties)
 		
 		local Merged = JoinDicts(Units, {[Data.Unit] = Value});
 		SetUnits(Merged);
-	end, {})
+	end, {Units, HoveredId :: any})
 	
 	local OnEquip = React.useCallback(function()
 		if HoveredId then
@@ -127,10 +140,33 @@ local function CreateInventory(Properties: Properties)
 				InventoryService.EquipUnit(HoveredId, true)
 			end
 		end
-	end, {})
+	end, {HoveredId})
+
+	local IndSellClick = React.useCallback(function()
+		SetIndEnabled(true);
+	end, {IndEnabled})
 	
 	local IndividualSell = React.useCallback(function(Input: boolean?)
-		if not InSell or not HoveredId then
+		if HoveredId then
+			if Input == true then
+				Sell({HoveredId});
+				SetHovered(nil :: any);
+			end
+		end
+	end, {HoveredId});
+	
+	local OnSellPressed = React.useCallback(function()
+		SetHovered(nil :: any);
+		SetSellingUnits({});
+		ToggleSell(not InSell);
+	end, {InSell, HoveredId :: any, SellingUnits :: any});
+
+	local OnCheckPressed = React.useCallback(function()
+		SetBulkEnabled(true);
+	end, {BulkEnabled})
+	
+	local BulkSell = React.useCallback(function(Input: boolean?)
+		if not InSell then
 			return;
 		end
 
@@ -140,29 +176,35 @@ local function CreateInventory(Properties: Properties)
 			SetSellingUnits({});
 			ToggleSell(false);
 		end
-		
-	end, {});
+	end, {SellingUnits, InSell :: any})
+
 	
-	local StartSelling = React.useCallback(function()
-		SetHovered(nil :: any);
-		ToggleSell(not InSell);
-		SetSellingUnits({});
-	end, {});
-	
-	local BulkSell = React.useCallback(function()
-		if InSell then
-			
-		end
-	end, {})
-	
+
 	React.useEffect(function()
 		for _, Data in pairs(Properties.Inventory.Units) do
 			HandleUnit(Data);
 		end
-		InventoryService.UnitAdded:Connect(function(Unit: Types.VisualUnitData)
+	end, {Properties.Inventory.Units});
+	
+	React.useEffect(function()
+		local Connection1 = InventoryService.UnitAdded:Connect(function(Unit: Types.VisualUnitData)
 			HandleUnit(Unit);
 		end)
-	end, {});
+		local Connection2 = InventoryService.UnitRemoved:Connect(function(UniqueId: string)
+			local UnitsOther = table.clone(Units);
+			UnitsOther[UniqueId] = nil;
+			SetUnits(UnitsOther);
+		end)
+
+		return function()
+			if Connection1 then
+				Connection1:Disconnect();
+			end
+			if Connection2 then
+				Connection2:Disconnect();
+			end
+		end
+	end, {Units});
 	
 	local MainFrame = React.useRef(nil) :: any;
 	
@@ -175,11 +217,17 @@ local function CreateInventory(Properties: Properties)
 		Image = "rbxassetid://103903141717286";
 		[React.Tag] = "AnimateFrameVisibility";
 	}, {
-		Confirm = e(Confirm, {
+		IndConfirm = e(Confirm, {
 			Title = "Hello";
 			Description = "Bye";
-			Enabled = false;
+			Enabled = IndEnabled;
 			Handler = IndividualSell;
+		});
+		BulkConfirm = e(Confirm, {
+			Title = "Hello";
+			Description = "Bye";
+			Enabled = BulkEnabled;
+			Handler = BulkSell;
 		});
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 2;	
@@ -218,7 +266,7 @@ local function CreateInventory(Properties: Properties)
 				Size = UDim2.fromScale(0.05, 0.1);
 				Image = "rbxassetid://78742556758797";
 				ImageColor3 = Color3.fromRGB(34, 255, 0);
-				[React.Event.MouseButton1Click] = BulkSell,
+				[React.Event.MouseButton1Click] = OnCheckPressed,
 			};
 		});
 		CloseButton = e(CloseButton, {
@@ -234,27 +282,34 @@ local function CreateInventory(Properties: Properties)
 				Size = UDim2.fromScale(0.05, 0.1);
 				Image = "rbxassetid://135893657768702";
 				ImageColor3 = Color3.fromRGB(255, 0, 4);
-				[React.Event.MouseButton1Click] = StartSelling,
+				[React.Event.MouseButton1Click] = OnSellPressed,
 			};
 		});
 		
 		InfoFrame = e(InfoFrame, {
-			Visible = if CurrentUnit then true else false;
+			Visible = if ClickedUnitData then true else false;
 			
 			Type = OpenFrame;
-			Rarity = Rarity;
-			RarityData = RarityData;
+			Rarity = ClickedUnitData and ClickedUnitData.Rarity :: any;
+			RarityData = ClickedUnitData and ClickedUnitData.RarityData :: any;
 
 			OnEquipClick = OnEquip;
-			OnSellClick = IndividualSell;
+			OnSellClick = IndSellClick;
 		});
 		UnitsButton = e(CreateBaseButton, {
 			Position = UDim2.fromScale(0.14, 0.175);
 			Text = "Units";
+			OnClick = function()
+
+			end
+			
 		});
 		GamepassesButton = e(CreateBaseButton, {
 			Position = UDim2.fromScale(0.33, 0.175);
 			Text = "Gamepasses";
+			OnClick = function()
+
+			end
 		});
 		Title = e(Main.ImageLabel, {
 			native = {

@@ -13,11 +13,6 @@ local React = require(Packages.React);
 local ReactRoblox = require(Packages.ReactRoblox);
 local e = React.createElement;
 
--- Modules --
-
-local Modules = ReplicatedStorage.Modules;
-local HelperFunctions = require(Modules.HelperFunctions);
-
 -- Reference UI --
 
 local Gui = ReplicatedStorage.Gui;
@@ -28,6 +23,7 @@ local Confirm = require(Gui.CoreGame.Confirm);
 local controls = {
 	Title = "Title";
     Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempus gravida tellus, sit amet iaculis tellus blandit ut. Nullam auctor risus quis libero mattis convallis.";
+	Enabled = true;
 };
 
 -- Story --
@@ -43,9 +39,10 @@ local Story = {
 			Handler = function()
 				
 			end,
-			Enabled = true;
+			Enabled = Properties.controls.Enabled;
 			native = {
-				Position = UDim2.fromScale(0.2, 0.2);
+				Position = UDim2.fromScale(0.5, 0.5);
+				Size = UDim2.fromScale(0.8, 0.8);
 			};
 		});
 	end
