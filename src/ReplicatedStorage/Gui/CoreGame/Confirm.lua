@@ -2,188 +2,200 @@
 
 -- By Wa1er_God --
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage");
-local RunService = game:GetService("RunService");
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 
-local Packages = ReplicatedStorage.Packages;
-local React = require(Packages.React);
-local ReactRoblox = require(Packages.ReactRoblox);
-local ReactSpring = require(Packages.ReactSpring);
-local e = React.createElement;
+local Packages = ReplicatedStorage.Packages
+local React = require(Packages.React)
+local ReactRoblox = require(Packages.ReactRoblox)
+local ReactSpring = require(Packages.ReactSpring)
+local e = React.createElement
 
-local Modules = ReplicatedStorage.Modules;
-local HelperFunctions = require(Modules.HelperFunctions);
-local Join = HelperFunctions.joinDicts;
+local Modules = ReplicatedStorage.Modules
+local HelperFunctions = require(Modules.HelperFunctions)
+local Join = HelperFunctions.joinDicts
 
-local Gui = ReplicatedStorage.Gui;
-local CoreGame = Gui.CoreGame;
-local CloseButton = require(CoreGame.CloseButton);
-local UIStroke = require(CoreGame.UIStroke);
-local Main = require(CoreGame.Main);
+local Gui = ReplicatedStorage.Gui
+local CoreGame = Gui.CoreGame
+local CloseButton = require(CoreGame.CloseButton)
+local UIStroke = require(CoreGame.UIStroke)
+local Main = require(CoreGame.Main)
 
-local function CreateBasicButton(Props: {OnClick: () -> ()?; native: {[any]: any}?, children: {}?, LabelText: string, Color: Color3})
+local function CreateBasicButton(Props: {
+	OnClick: () -> ()?,
+	native: { [any]: any }?,
+	children: {}?,
+	LabelText: string,
+	Color: Color3,
+})
 	return e(Main.Animateables.ImageButton, {
 		native = Join({
-			BackgroundTransparency = 1;
-			AnchorPoint = Vector2.new(0.5, 0.5);
-			Size = UDim2.fromScale(0.4, 0.3);
-			Image = "rbxassetid://110715473491790";
-			ImageColor3 = Props.Color;
-			[React.Event.MouseButton1Click] = Props.OnClick;
-		}, Props.native);
+			BackgroundTransparency = 1,
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			Size = UDim2.fromScale(0.4, 0.3),
+			Image = "rbxassetid://110715473491790",
+			ImageColor3 = Props.Color,
+			[React.Event.MouseButton1Click] = Props.OnClick,
+		}, Props.native),
 		children = Join({
 			TextLabel = e(Main.TextLabel, {
 				native = {
-					Position = UDim2.fromScale(0.5, 0.5);
-					Size = UDim2.fromScale(0.5, 0.5);
-					Text = Props.LabelText;
-				};
+					Position = UDim2.fromScale(0.5, 0.5),
+					Size = UDim2.fromScale(0.5, 0.5),
+					Text = Props.LabelText,
+				},
 				children = {
 					UICorner = e("UICorner", {
-						CornerRadius = UDim.new(0.1, 0);
-					});
+						CornerRadius = UDim.new(0.1, 0),
+					}),
 					UIStroke = e(UIStroke.UIStrokeBasic, {
-						Stroke = 0.002;
-					});
-				}
-			});
+						Stroke = 0.002,
+					}),
+				},
+			}),
 			BackFrame = e(Main.Frame, {
 				native = {
-					Position = UDim2.fromScale(0.5, 0.5);
-					Size = UDim2.fromScale(0.95, 0.85);
-					BackgroundTransparency = 0;
-					BackgroundColor3 = Props.Color;
-				};
-			});
-		}, Props.children);
-	});
+					Position = UDim2.fromScale(0.5, 0.5),
+					Size = UDim2.fromScale(0.95, 0.85),
+					BackgroundTransparency = 0,
+					BackgroundColor3 = Props.Color,
+				},
+			}),
+		}, Props.children),
+	})
 end
 
 type props = {
-    Title: string;
-	Description: string;
-	YesText: string?;
-	NoText: string?;
-    Enabled: boolean;
-	Handler: (End: boolean?) -> ();
+	Title: string,
+	Description: string,
+	YesText: string?,
+	NoText: string?,
+	Enabled: boolean,
+	Handler: (End: boolean?) -> (),
 
-    native: {[any]: any}?;
-};
+	native: { [any]: any }?,
+}
 
-local IsRunning = RunService:IsRunning();
+local IsRunning = RunService:IsRunning()
 
-local ConfirmGui = Instance.new("ScreenGui");
-ConfirmGui.Name = "ConfirmGui";
+local ConfirmGui = Instance.new("ScreenGui")
+ConfirmGui.Name = "ConfirmGui"
 
 if IsRunning then
-	ConfirmGui.Parent = game:GetService("Players").LocalPlayer.PlayerGui;
+	ConfirmGui.Parent = game:GetService("Players").LocalPlayer.PlayerGui
 end
 
 local function CreateConfirm(props: props)
-	local Enabled, SetEnabled = React.useState(props.Enabled);
-    local IntEnabled, SetIntEnabled = React.useState(Enabled);
-	local InAnim, SetInAnim = React.useState(false);
+	local Enabled, SetEnabled = React.useState(props.Enabled)
+	local IntEnabled, SetIntEnabled = React.useState(Enabled)
+	local InAnim, SetInAnim = React.useState(false)
 
-    local Styles, api = ReactSpring.useSpring(function()
-        return {
-			Scale = 0.9;
-			config = { mass = 1, tension = 400, friction = 30 };
-		};
-    end)
+	local Styles, api = ReactSpring.useSpring(function()
+		return {
+			Scale = 0.9,
+			config = { mass = 1, tension = 400, friction = 30 },
+		}
+	end)
+
+	React.useEffect(function()
+		if Enabled == true then
+			SetIntEnabled(true)
+		end
+	end, { Enabled })
 
 	React.useEffect(function()
 		if IntEnabled and not InAnim then
 			if not IntEnabled then
-				SetInAnim(true);
+				SetInAnim(true)
 			end
-			api.stop();
-            api.start({
-                Scale = if Enabled then 1 else 0.9;
-             }):andThen(function()
-                 if not Enabled then
-                     SetIntEnabled(false);
-                 end
-             end)
-        end
-	end, {Enabled, InAnim, IntEnabled})
-    
-    React.useEffect(function()
-		SetEnabled(props.Enabled);
-	end, {props.Enabled});
+			api.stop()
+			api.start({
+				Scale = if Enabled then 1 else 0.9,
+			}):andThen(function()
+				if not Enabled then
+					SetIntEnabled(false)
+				end
+			end)
+		end
+	end, { Enabled, InAnim, IntEnabled })
 
-    local OnYes = React.useCallback(function()
-        props.Handler(true);
-		SetEnabled(false);
-    end, {Enabled})
+	React.useEffect(function()
+		SetEnabled(props.Enabled)
+	end, { props.Enabled })
 
-    local OnNo = React.useCallback(function()
-        props.Handler(false);
-		SetEnabled(false);
-    end, {Enabled})
+	local OnYes = React.useCallback(function()
+		props.Handler(true)
+		SetEnabled(false)
+	end, { Enabled })
 
-    local OnClose = React.useCallback(function()
-        props.Handler(nil);
-		SetEnabled(false);
-    end, {Enabled})
+	local OnNo = React.useCallback(function()
+		props.Handler(false)
+		SetEnabled(false)
+	end, { Enabled })
+
+	local OnClose = React.useCallback(function()
+		props.Handler(nil)
+		SetEnabled(false)
+	end, { Enabled })
 
 	local function Render()
 		return e(Main.ImageLabel, {
 			native = Join({
-				Position = UDim2.fromScale(0.5, 0.5);
-				Size = UDim2.fromScale(0.25, 0.25);
-				Image = "rbxassetid://100546338175267";
-			}, props.native);
+				Position = UDim2.fromScale(0.5, 0.5),
+				Size = UDim2.fromScale(0.25, 0.25),
+				Image = "rbxassetid://100546338175267",
+			}, props.native),
 			children = {
 				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-					AspectRatio = 1.813;
-				});
+					AspectRatio = 1.813,
+				}),
 				TitleLabel = e(Main.TextLabel, {
 					native = {
-						Text = props.Title;
-						Position = UDim2.fromScale(0.5, 0.2);
-						Size = UDim2.fromScale(0.5, 0.2);
-					};
-				});
+						Text = props.Title,
+						Position = UDim2.fromScale(0.5, 0.2),
+						Size = UDim2.fromScale(0.5, 0.2),
+					},
+				}),
 				DescriptionLabel = e(Main.TextLabel, {
 					native = {
-						Text = props.Description;
-						Position = UDim2.fromScale(0.5, 0.425);
-						Size = UDim2.fromScale(0.9, 0.25);
-					};
-				});
+						Text = props.Description,
+						Position = UDim2.fromScale(0.5, 0.425),
+						Size = UDim2.fromScale(0.9, 0.25),
+					},
+				}),
 				NoButton = e(CreateBasicButton, {
-					OnClick = OnNo;
-					LabelText = props.NoText or "No";
-					Color = Color3.fromRGB(255, 0, 0);
+					OnClick = OnNo,
+					LabelText = props.NoText or "No",
+					Color = Color3.fromRGB(255, 0, 0),
 					native = {
-						Position = UDim2.fromScale(0.75, 0.75);	
-					};
-				});
+						Position = UDim2.fromScale(0.75, 0.75),
+					},
+				}),
 				YesButton = e(CreateBasicButton, {
-					OnClick = OnYes;
-					LabelText = props.YesText or "Yes";
-					Color = Color3.fromRGB(0, 255, 0);
+					OnClick = OnYes,
+					LabelText = props.YesText or "Yes",
+					Color = Color3.fromRGB(0, 255, 0),
 					native = {
-						Position = UDim2.fromScale(0.25, 0.75);
-					};
-				});
+						Position = UDim2.fromScale(0.25, 0.75),
+					},
+				}),
 				CloseButton = e(CloseButton, {
-					Position = UDim2.fromScale(1, 0);
-					Size = UDim2.fromScale(0.2, 0.3);
-					OnClick = OnClose;
-				});
+					Position = UDim2.fromScale(1, 0),
+					Size = UDim2.fromScale(0.2, 0.3),
+					OnClick = OnClose,
+				}),
 				UIScale = e("UIScale", {
-					Scale = Styles.Scale;
-				})
-			};
+					Scale = Styles.Scale,
+				}),
+			},
 		})
 	end
 
 	if IsRunning then
-		return IntEnabled and ReactRoblox.createPortal(Render(), ConfirmGui);
+		return IntEnabled and ReactRoblox.createPortal(Render(), ConfirmGui)
 	else
-		return IntEnabled and Render();
+		return IntEnabled and Render()
 	end
 end
 
-return CreateConfirm;
+return CreateConfirm
