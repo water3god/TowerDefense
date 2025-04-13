@@ -147,10 +147,10 @@ end
 function DefaultGui.ScrollingFrame(Properties: Properties & {BarSize: number})
 	return e(DefaultScrolling,
 		{
+			BarSize = Properties.BarSize;
 			native = JoinDicts(
 			DefaultProps,
 			{
-				BarSize = Properties.BarSize;
 				ScrollBarImageColor3 = Color3.new(0.444053, 0.448447, 0.448447);
 				CanvasSize = UDim2.fromScale(0, 0);
 			},
