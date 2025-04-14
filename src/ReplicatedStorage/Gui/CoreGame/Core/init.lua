@@ -28,17 +28,14 @@ local InventoryService = require(Client.GlobalClient.InventoryService)
 local Shared = ReplicatedStorage.Shared
 local Types = require(Shared.Types)
 
+local Constants = require(script.Constants)
+local OriginalPositions = require(script.OriginalPositions)
+
 export type Properties = {
 	Inventory: {
 		Units: { [string]: Types.VisualUnitData },
 	},
 	Visible: boolean,
-}
-
-local OriginalPositions: {
-	[string]: UDim2,
-} = {
-	InventoryFrame = UDim2.fromScale(0.5, 0.5),
 }
 
 local GlobalNotVisiblePosition = UDim2.fromScale(0.5, 2)
@@ -72,45 +69,26 @@ local function AnimateWrapper(Props: { Visible: boolean })
 		})
 	end, { Props.Visible })
 
-	--[[React.useEffect(function()
-		local Connection = RunService.PostSimulation:Connect(function()
-			print(Styles.alpha:getValue())
-		end)
-
-		return function()
-			Connection:Disconnect()
+	return Styles.alpha:map(function(alpha)
+		if OriginalPosition and NotVisiblePosition then
+			return OriginalPosition:Lerp(NotVisiblePosition, alpha)
+		else
+			return GlobalNotVisiblePosition
 		end
-	end)]]
-
-	return Styles, OriginalPosition, NotVisiblePosition, FrameRef
+	end),
+		FrameRef
 end
 
 local function RenderInventory(Props: Properties)
-	local Styles, Original, NotVisible, FrameRef = AnimateWrapper({
+	local Styles, FrameRef = AnimateWrapper({
 		Visible = Props.Visible,
 	})
-
-	--[[React.useEffect(function()
-		local Connection = RunService.PostSimulation:Connect(function()
-			print(Styles.alpha:getValue())
-		end)
-
-		return function()
-			Connection:Disconnect()
-		end
-	end)]]
 
 	return e(InventoryMain, {
 		Inventory = Props.Inventory,
 		native = {
 			ref = FrameRef,
-			Position = Styles.alpha:map(function(alpha)
-				if Original and NotVisible then
-					return Original:Lerp(NotVisible, alpha)
-				else
-					return GlobalNotVisiblePosition
-				end
-			end),
+			Position = Styles,
 		},
 	})
 end
@@ -124,13 +102,19 @@ local function Render()
 		}
 	end)
 
-	local Callback = React.useCallback(function(Name: string)
+	local OnMainButtonClick = React.useCallback(function(Name: string)
 		if VisibleFrame == Name then
 			SetVisibleFrame(nil)
 		else
 			SetVisibleFrame(Name)
 		end
 	end, { VisibleFrame })
+
+	local OnCloseClick = React.useCallback(function(Name: string)
+		if VisibleFrame == Name then
+			SetVisibleFrame(nil)
+		end
+	end)
 
 	React.useEffect(function()
 		API.stop()
@@ -147,12 +131,19 @@ local function Render()
 				}),
 				Lighting
 			),
-			Main = e("Folder", {}, {
-				InventoryFrame = e(RenderInventory, {
-					Visible = if VisibleFrame == "InventoryFrame" then true else false,
-					Inventory = InventoryService:GetInventory(),
-				}),
-			}),
+			Main = e(
+				"Folder",
+				{},
+				{
+					[Constants.INVENTORY_FRAME] = e(RenderInventory, {
+						Visible = if VisibleFrame == Constants.INVENTORY_FRAME then true else false,
+						Inventory = InventoryService:GetInventory(),
+						CloseClick = function()
+							OnCloseClick(Constants.INVENTORY_FRAME)
+						end,
+					}),
+				} :: any
+			),
 			Buttons = e(Main.Frame, {
 				native = {
 					Position = UDim2.fromScale(0.1, 0.5),
@@ -173,7 +164,7 @@ local function Render()
 						Name = "Inventory",
 						Icon = "",
 						OnClick = function()
-							Callback("InventoryFrame")
+							OnMainButtonClick("InventoryFrame")
 						end,
 					}),
 					PlayButton = e(MainButtonFrame, {
@@ -182,7 +173,7 @@ local function Render()
 						Name = "Play",
 						Icon = "",
 						OnClick = function()
-							Callback("InventoryFrame")
+							OnMainButtonClick("InventoryFrame")
 						end,
 					}),
 					StoreButton = e(MainButtonFrame, {
@@ -191,7 +182,7 @@ local function Render()
 						Name = "Store",
 						Icon = "",
 						OnClick = function()
-							Callback("InventoryFrame")
+							OnMainButtonClick("InventoryFrame")
 						end,
 					}),
 					TradeButton = e(MainButtonFrame, {
@@ -200,7 +191,7 @@ local function Render()
 						Name = "Trade",
 						Icon = "",
 						OnClick = function()
-							Callback("InventoryFrame")
+							OnMainButtonClick("InventoryFrame")
 						end,
 					}),
 				},

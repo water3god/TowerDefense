@@ -39,6 +39,7 @@ export type Properties = {
 	Inventory: {
 		Units: { [string]: Types.VisualUnitData },
 	},
+	CloseClick: () -> ()?,
 	native: { [any]: any }?,
 }
 
@@ -254,12 +255,9 @@ local function CreateInventory(Properties: Properties)
 		end
 	end, { Units, SellingUnits :: any, DeletedUnits :: any })
 
-	local MainFrame = React.useRef(nil) :: any
-
 	return e(
 		"ImageLabel",
 		JoinDicts({
-			ref = MainFrame,
 			BackgroundTransparency = 1,
 			AnchorPoint = Vector2.new(0.5, 0.5),
 			Position = UDim2.fromScale(0.5, 0.5),
@@ -324,9 +322,7 @@ local function CreateInventory(Properties: Properties)
 			CloseButton = e(CloseButton, {
 				Position = UDim2.fromScale(1, 0),
 				Size = UDim2.fromScale(0.1, 0.2),
-				OnClick = function()
-					MainFrame.current:SetAttribute("AnimateVisible", false)
-				end,
+				OnClick = Properties.CloseClick,
 			}),
 			SellButton = e(Main.Animateables.ImageButton, {
 				native = {
