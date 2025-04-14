@@ -71,6 +71,7 @@ end
 local function CreateInventory(Properties: Properties)
 	local Units, SetUnits = React.useState({} :: { [string]: any })
 	local SellingUnits, SetSellingUnits = React.useState({} :: { string })
+	local DeletedUnits, SetDeletedUnits = React.useState({} :: { string })
 	local HoveredId, SetHovered = React.useState(nil :: string?)
 
 	local InSell, ToggleSell = React.useState(false)
@@ -87,53 +88,74 @@ local function CreateInventory(Properties: Properties)
 	local IndEnabled, SetIndEnabled = React.useState(false)
 
 	React.useEffect(function()
-		SetBulkEnabled(false)
-		SetIndEnabled(false)
+		if InSell == false then
+			SetBulkEnabled(false)
+		end
+		if not HoveredId then
+			SetIndEnabled(false)
+		end
 	end, { InSell, HoveredId :: any, Units :: any })
+
+	local SmallFrameClick = React.useCallback(function(Data: { Data: any, UniqueId: string })
+		if (HoveredId ~= Data.UniqueId) and not InSell then
+			SetClickedUnitData(Data.Data)
+			SetHovered(Data.UniqueId)
+		end
+		if InSell then
+			local Index = table.find(SellingUnits, Data.UniqueId)
+			local NewTable = table.clone(SellingUnits)
+			if Index then
+				table.remove(NewTable, Index)
+			else
+				table.insert(NewTable, Data.UniqueId)
+			end
+			SetSellingUnits(NewTable)
+		end
+	end, { InSell :: any, HoveredId :: any, ClickedUnitData :: any, SellingUnits :: any })
 
 	local HandleUnit = React.useCallback(function(Data: Types.VisualUnitData)
 		local UnitData = UnitInfo.UnitInfo[Data.Unit]
 		local RarityData = RarityInfo[UnitData.Rarity]
 
-		local function OnClick()
-			print("Click")
-			if HoveredId ~= Data.UniqueId and not InSell then
-				SetClickedUnitData({
-					CurrentUnit = Data,
-					Rarity = UnitData.Rarity,
-					RarityData = RarityData,
-				})
-				SetHovered(Data.UniqueId)
-			end
-		end
+		local Value = not table.find(DeletedUnits, Data.UniqueId)
+			and e(UnitFrame, {
+				UnitName = Data.Unit,
+				Level = Data.Level,
+				Cost = UnitData.PlacementCost,
 
-		local Value = e(UnitFrame, {
-			UnitName = Data.Unit,
-			Level = Data.Level,
-			Cost = UnitData.PlacementCost,
+				Color = RarityData.Color,
+				StrokeColor = RarityData.StrokeColor,
+				BackgroundColor = RarityData.BackgroundColor,
 
-			Color = RarityData.Color,
-			StrokeColor = RarityData.StrokeColor,
-			BackgroundColor = RarityData.BackgroundColor,
+				OnClick = function()
+					SmallFrameClick({
+						Data = {
+							CurrentUnit = Data,
+							Rarity = UnitData.Rarity,
+							RarityData = RarityData,
+						},
+						UniqueId = Data.UniqueId,
+					})
+				end,
 
-			OnClick = OnClick,
+				Hovered = if HoveredId and HoveredId == Data.UniqueId then true else false,
 
-			Hovered = if HoveredId and HoveredId == Data.UniqueId then true else false,
+				children = {
+					BeingSoldFrame = e(Main.ImageLabel, {
+						native = {
+							Visible = if table.find(SellingUnits, Data.UniqueId) then true else false,
+							Size = UDim2.fromScale(0.9, 0.9),
+							Image = "rbxassetid://84303396250595",
+							ImageColor3 = Color3.fromRGB(255, 6, 0),
+							ZIndex = 3,
+						},
+					}),
+				},
+			})
 
-			children = {
-				BeingSoldFrame = e("ImageLabel", {
-					Visible = table.find(SellingUnits, Data.UniqueId),
-					BackgroundTransparency = 1,
-					AnchorPoint = Vector2.new(0.5, 0.5),
-					Position = UDim2.fromScale(0.5, 0.5),
-					Size = UDim2.fromScale(0.9, 0.9),
-				}),
-			},
-		})
-
-		local Merged = JoinDicts(Units, { [Data.Unit] = Value })
+		local Merged = JoinDicts(Units, { [Data.UniqueId] = Value })
 		SetUnits(Merged)
-	end, { Units, HoveredId :: any, ClickedUnitData :: any })
+	end, { HoveredId, Units :: any, SellingUnits :: any, DeletedUnits :: any })
 
 	local OnEquip = React.useCallback(function()
 		if HoveredId then
@@ -147,21 +169,20 @@ local function CreateInventory(Properties: Properties)
 
 	local IndSellClick = React.useCallback(function()
 		SetIndEnabled(true)
-	end, { IndEnabled })
+	end, { IndEnabled, DeletedUnits :: any })
 
 	local IndividualSell = React.useCallback(function(Input: boolean?)
 		if HoveredId then
 			if Input == true then
 				Sell({ HoveredId })
-				if Units[HoveredId] ~= nil then
-					local UnitsOther = table.clone(Units)
-					UnitsOther[HoveredId] = nil
-					SetUnits(UnitsOther)
+				if not table.find(DeletedUnits, HoveredId) then
+					local NewTable = table.clone(DeletedUnits)
+					table.insert(NewTable, HoveredId)
+					SetDeletedUnits(NewTable)
 				end
-				SetHovered(nil :: any)
 			end
 		end
-	end, { HoveredId })
+	end, { HoveredId, DeletedUnits :: any })
 
 	local OnSellPressed = React.useCallback(function()
 		SetHovered(nil :: any)
@@ -170,8 +191,10 @@ local function CreateInventory(Properties: Properties)
 	end, { InSell, HoveredId :: any, SellingUnits :: any })
 
 	local OnCheckPressed = React.useCallback(function()
-		SetBulkEnabled(true)
-	end, { BulkEnabled })
+		if InSell and #SellingUnits > 0 then
+			SetBulkEnabled(true)
+		end
+	end, { BulkEnabled, SellingUnits :: any })
 
 	local BulkSell = React.useCallback(function(Input: boolean?)
 		if not InSell then
@@ -181,12 +204,18 @@ local function CreateInventory(Properties: Properties)
 		if Input == true then
 			if #SellingUnits > 0 then
 				Sell(SellingUnits)
-
-				local UnitsOther = table.clone(Units)
-				for _, UniqueId in ipairs(SellingUnits) do
-					UnitsOther[UniqueId] = nil
+				local DeletedOther = table.clone(DeletedUnits)
+				local Changed = false
+				for _, DeletedUnit in ipairs(SellingUnits) do
+					if not table.find(DeletedOther, DeletedUnit) then
+						Changed = true
+						table.insert(DeletedOther, DeletedUnit)
+					end
 				end
-				SetUnits(UnitsOther)
+
+				if Changed then
+					SetDeletedUnits(DeletedOther)
+				end
 			end
 
 			ToggleSell(false)
@@ -194,23 +223,23 @@ local function CreateInventory(Properties: Properties)
 			SetSellingUnits({})
 			ToggleSell(false)
 		end
-	end, { SellingUnits, InSell :: any })
+	end, { SellingUnits, InSell :: any, DeletedUnits :: any })
 
 	React.useEffect(function()
 		for _, Data in pairs(Properties.Inventory.Units) do
 			HandleUnit(Data)
 		end
-	end, {})
+	end, { InSell, SellingUnits :: any, HoveredId :: any, DeletedUnits :: any })
 
 	React.useEffect(function()
 		local Connection1 = InventoryService.UnitAdded:Connect(function(Unit: Types.VisualUnitData)
 			HandleUnit(Unit)
 		end)
 		local Connection2 = InventoryService.UnitRemoved:Connect(function(UniqueId: string)
-			if Units[UniqueId] ~= nil then
-				local UnitsOther = table.clone(Units)
-				UnitsOther[UniqueId] = nil
-				SetUnits(UnitsOther)
+			if not table.find(DeletedUnits, UniqueId) then
+				local UnitsOther = table.clone(DeletedUnits)
+				table.insert(UnitsOther, UniqueId)
+				SetDeletedUnits(UnitsOther)
 			end
 		end)
 
@@ -222,7 +251,7 @@ local function CreateInventory(Properties: Properties)
 				Connection2:Disconnect()
 			end
 		end
-	end, { Units })
+	end, { Units, SellingUnits :: any, DeletedUnits :: any })
 
 	local MainFrame = React.useRef(nil) :: any
 
@@ -306,7 +335,7 @@ local function CreateInventory(Properties: Properties)
 		}),
 
 		InfoFrame = e(InfoFrame, {
-			Visible = if ClickedUnitData then true else false,
+			Visible = if HoveredId and ClickedUnitData then true else false,
 
 			Type = OpenFrame,
 			Rarity = ClickedUnitData and ClickedUnitData.Rarity :: any,

@@ -52,7 +52,7 @@ local function CreateBaseFrame(Properties: Properties)
 				Position = Properties.Position or UDim2.fromScale(0.5, 0.5),
 				Size = Properties.Size or UDim2.fromScale(1, 1),
 			}, Properties.native),
-			children = {
+			children = Join({
 				UIAspectRatioConstraint = React.createElement("UIAspectRatioConstraint", {
 					AspectRatio = 1,
 				}),
@@ -149,7 +149,7 @@ local function CreateBaseFrame(Properties: Properties)
 						}),
 					},
 				}),
-			},
+			}, Properties.children),
 		}) :: any
 	)
 end

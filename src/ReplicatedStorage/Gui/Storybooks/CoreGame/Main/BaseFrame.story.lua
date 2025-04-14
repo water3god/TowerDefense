@@ -4,32 +4,32 @@
 
 -- Services --
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage");
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- Libraries --
 
-local Packages = ReplicatedStorage.Packages;
-local React = require(Packages.React);
-local ReactRoblox = require(Packages.ReactRoblox);
-local e = React.createElement;
+local Packages = ReplicatedStorage.Packages
+local React = require(Packages.React)
+local ReactRoblox = require(Packages.ReactRoblox)
+local e = React.createElement
 
 -- Reference UI --
 
-local Gui = ReplicatedStorage.Gui;
-local BaseFrame =require(Gui.CoreGame.BaseFrame);
+local Gui = ReplicatedStorage.Gui
+local BaseFrame = require(Gui.CoreGame.BaseFrame)
 
 -- Controls --
 
 local controls = {
-	Name = "Goku";
-	LeftText = "1";
-	RightText = "$200";
-	
-	BackgroundColor = ColorSequence.new(Color3.new(0.736767, 0.275364, 1));
-	NameColor = ColorSequence.new(Color3.new(1, 1, 1));
-	LeftColor = ColorSequence.new(Color3.new(1, 1, 1));
-	RightColor = ColorSequence.new(Color3.new(1, 1, 1));
-};
+	Name = "Goku",
+	LeftText = "1",
+	RightText = "$200",
+
+	BackgroundColor = ColorSequence.new(Color3.new(0.736767, 0.275364, 1)),
+	NameColor = ColorSequence.new(Color3.new(1, 1, 1)),
+	LeftColor = ColorSequence.new(Color3.new(1, 1, 1)),
+	RightColor = ColorSequence.new(Color3.new(1, 1, 1)),
+}
 
 -- Story --
 
@@ -39,17 +39,18 @@ local Story = {
 	controls = controls,
 	story = function(Properties)
 		local Frame = e(BaseFrame, {
-			Name = Properties.controls.Name;
-			LeftText = Properties.controls.LeftText;
-			RightText = Properties.controls.RightText;
-			
-			BackgroundColor = Properties.controls.BackgroundColor;
-			NameColor = Properties.controls.NameColor;
-			LeftColor = Properties.controls.LeftColor;
-			RightColor = Properties.controls.RightColor;
+			Name = Properties.controls.Name,
+			LeftText = Properties.controls.LeftText,
+			RightText = Properties.controls.RightText,
+
+			BackgroundColor = Properties.controls.BackgroundColor,
+			NameColor = Properties.controls.NameColor,
+			LeftColor = Properties.controls.LeftColor,
+			RightColor = Properties.controls.RightColor,
+			OnClick = function() end,
 		})
-		return Frame;
-	end
+		return Frame
+	end,
 }
 
-return Story;
+return Story
