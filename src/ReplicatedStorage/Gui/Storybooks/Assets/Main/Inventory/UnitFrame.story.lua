@@ -16,14 +16,15 @@ local e = React.createElement
 -- Reference UI --
 
 local Gui = ReplicatedStorage.Gui
-local BaseFrame = require(Gui.CoreGame.BaseFrame)
+local Inventory = Gui.Inventory
+local UnitFrame = require(Inventory.UnitFrame)
 
 -- Controls --
 
 local controls = {
-	Name = "Goku",
-	LeftText = "1",
-	RightText = "$200",
+	UnitName = "Goku",
+	Level = 5,
+	Cost = 500,
 }
 
 -- Story --
@@ -33,16 +34,12 @@ local Story = {
 	reactRoblox = ReactRoblox,
 	controls = controls,
 	story = function(Properties)
-		local Frame = e(BaseFrame, {
-			Name = Properties.controls.Name,
-			LeftText = Properties.controls.LeftText,
-			RightText = Properties.controls.RightText,
+		local Frame = e(UnitFrame, {
+			UnitName = Properties.controls.UnitName,
+			Level = Properties.controls.Level,
+			Cost = Properties.controls.Cost,
 
-			BackgroundColor = Properties.controls.BackgroundColor,
-			NameColor = Properties.controls.NameColor,
-			LeftColor = Properties.controls.LeftColor,
-			RightColor = Properties.controls.RightColor,
-			OnClick = function() end,
+			BackgroundColor = ColorSequence.new(Color3.new(1, 0.588647, 0.288457)),
 		})
 		return Frame
 	end,

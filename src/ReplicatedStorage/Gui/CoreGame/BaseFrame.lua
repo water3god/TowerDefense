@@ -38,7 +38,7 @@ export type Properties = {
 	RightColor: ColorSequence?,
 	RightStrokeColor: ColorSequence?,
 
-	OnClick: (...any) -> ...any?,
+	OnClick: ((...any) -> ...any)?,
 
 	native: { [any]: any }?,
 	children: { [any]: any }?,

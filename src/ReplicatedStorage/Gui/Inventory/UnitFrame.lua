@@ -20,13 +20,13 @@ export type Properties = {
 	UnitName: string,
 	Level: number,
 	Cost: number,
-	Hovered: boolean,
+	Hovered: boolean?,
 
-	Color: ColorSequence,
-	StrokeColor: ColorSequence,
-	BackgroundColor: ColorSequence,
+	Color: ColorSequence?,
+	StrokeColor: ColorSequence?,
+	BackgroundColor: ColorSequence?,
 
-	OnClick: (...any) -> ...any?,
+	OnClick: ((...any) -> ...any)?,
 
 	native: { [any]: any }?,
 	children: { [any]: any }?,
