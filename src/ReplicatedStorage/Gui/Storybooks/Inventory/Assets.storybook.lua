@@ -2,10 +2,10 @@
 
 -- By Wa1er_God --
 
-local Folder = script.Parent.Main
+local Folder = script.Parent.Main:GetChildren()
 
 local storybook = {
-	storyRoots = { Folder },
+	storyRoots = Folder,
 	groupRoots = true,
 }
 

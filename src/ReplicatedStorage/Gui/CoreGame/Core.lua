@@ -35,14 +35,20 @@ export type Properties = {
 	Visible: boolean,
 }
 
-local GlobalNotVisiblePosition = UDim2.fromScale(0.5, 1)
+local OriginalPositions: {
+	[string]: UDim2,
+} = {
+	InventoryFrame = UDim2.fromScale(0.5, 0.5),
+}
+
+local GlobalNotVisiblePosition = UDim2.fromScale(0.5, 2)
 
 local function AnimateWrapper(Props: { Visible: boolean })
 	local Styles, API = ReactSpring.useSpring(function()
 		return {
 			alpha = 0,
 		}
-	end, {})
+	end)
 
 	local FrameRef = React.useRef(nil :: GuiObject?)
 	local OriginalPosition, SetPosition = React.useState(nil :: UDim2?)
@@ -50,38 +56,61 @@ local function AnimateWrapper(Props: { Visible: boolean })
 
 	React.useEffect(function()
 		if FrameRef.current then
-			SetPosition(FrameRef.current.Position)
+			SetPosition(OriginalPositions[FrameRef.current.Name])
 		end
 	end, {})
 
 	React.useEffect(function()
 		if OriginalPosition then
-			SetNotVisiblePosition(UDim2.fromScale(OriginalPosition.X.Scale, 1))
+			SetNotVisiblePosition(UDim2.fromScale(OriginalPosition.X.Scale, 2))
 		end
 	end, { OriginalPosition })
 
 	React.useEffect(function()
-		API.stop()
 		API.start({
 			alpha = if Props.Visible then 0 else 1,
 		})
 	end, { Props.Visible })
 
-	return Styles.alpha:map(function(alpha)
-		return OriginalPosition:Lerp(NotVisiblePosition, alpha)
-	end), FrameRef
+	--[[React.useEffect(function()
+		local Connection = RunService.PostSimulation:Connect(function()
+			print(Styles.alpha:getValue())
+		end)
+
+		return function()
+			Connection:Disconnect()
+		end
+	end)]]
+
+	return Styles, OriginalPosition, NotVisiblePosition, FrameRef
 end
 
 local function RenderInventory(Props: Properties)
-	local Position, FrameRef = AnimateWrapper({
+	local Styles, Original, NotVisible, FrameRef = AnimateWrapper({
 		Visible = Props.Visible,
 	})
+
+	--[[React.useEffect(function()
+		local Connection = RunService.PostSimulation:Connect(function()
+			print(Styles.alpha:getValue())
+		end)
+
+		return function()
+			Connection:Disconnect()
+		end
+	end)]]
 
 	return e(InventoryMain, {
 		Inventory = Props.Inventory,
 		native = {
 			ref = FrameRef,
-			Position = Position,
+			Position = Styles.alpha:map(function(alpha)
+				if Original and NotVisible then
+					return Original:Lerp(NotVisible, alpha)
+				else
+					return GlobalNotVisiblePosition
+				end
+			end),
 		},
 	})
 end
@@ -96,7 +125,11 @@ local function Render()
 	end)
 
 	local Callback = React.useCallback(function(Name: string)
-		SetVisibleFrame(Name)
+		if VisibleFrame == Name then
+			SetVisibleFrame(nil)
+		else
+			SetVisibleFrame(Name)
+		end
 	end, { VisibleFrame })
 
 	React.useEffect(function()
@@ -120,15 +153,57 @@ local function Render()
 					Inventory = InventoryService:GetInventory(),
 				}),
 			}),
-			Buttons = e("Folder", {}, {
-				InventoryButton = e(MainButtonFrame, {
-
-					Name = "Inventory",
-					Icon = "",
-					OnClick = function()
-						Callback("InventoryFrame")
-					end,
-				}),
+			Buttons = e(Main.Frame, {
+				native = {
+					Position = UDim2.fromScale(0.1, 0.5),
+					Size = UDim2.fromScale(0.15, 0.4),
+				},
+				children = {
+					UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+						AspectRatio = 0.62,
+					}),
+					UIGridLayout = e("UIGridLayout", {
+						CellPadding = UDim2.fromScale(0, 0),
+						CellSize = UDim2.fromScale(0.5, 0.3),
+						FillDirection = Enum.FillDirection.Horizontal,
+					}),
+					InventoryButton = e(MainButtonFrame, {
+						Position = UDim2.fromScale(0.1, 0.5),
+						Size = UDim2.fromScale(0.1, 0.15),
+						Name = "Inventory",
+						Icon = "",
+						OnClick = function()
+							Callback("InventoryFrame")
+						end,
+					}),
+					PlayButton = e(MainButtonFrame, {
+						Position = UDim2.fromScale(0.1, 0.5),
+						Size = UDim2.fromScale(0.1, 0.15),
+						Name = "Play",
+						Icon = "",
+						OnClick = function()
+							Callback("InventoryFrame")
+						end,
+					}),
+					StoreButton = e(MainButtonFrame, {
+						Position = UDim2.fromScale(0.1, 0.5),
+						Size = UDim2.fromScale(0.1, 0.15),
+						Name = "Store",
+						Icon = "",
+						OnClick = function()
+							Callback("InventoryFrame")
+						end,
+					}),
+					TradeButton = e(MainButtonFrame, {
+						Position = UDim2.fromScale(0.1, 0.5),
+						Size = UDim2.fromScale(0.1, 0.15),
+						Name = "Trade",
+						Icon = "",
+						OnClick = function()
+							Callback("InventoryFrame")
+						end,
+					}),
+				},
 			}),
 		})
 	end

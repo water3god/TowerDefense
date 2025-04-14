@@ -18,16 +18,11 @@ local e = React.createElement
 local Gui = ReplicatedStorage.Gui
 local Core = require(Gui.CoreGame.Core)
 
--- Controls --
-
-local controls = {}
-
 -- Story --
 
 local Story = {
 	react = React,
 	reactRoblox = ReactRoblox,
-	controls = controls,
 	story = function(Properties)
 		return e(Core)
 	end,
