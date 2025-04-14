@@ -32,7 +32,15 @@ local Story = {
 	story = function(Properties)
 		local Frame = e(InventoryMain, {
 			Inventory = {
-				Units = {},
+				Units = {
+					["Hello"] = {
+						Level = 1,
+						UniqueId = "Hello",
+						NeededXP = 10,
+						XP = 5,
+						Unit = "Minigunner",
+					},
+				},
 			},
 		})
 		return Frame

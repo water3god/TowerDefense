@@ -40,7 +40,7 @@ local function CreateButtonFrame(Properties: Properties)
 			Color3.new(0.258824, 0.043137, 0.384314),
 			Color3.new(0.564706, 0.113725, 0.827451)
 		),
-		OnClick = { Properties.OnClick },
+		OnClick = Properties.OnClick,
 
 		Position = Properties.Position,
 		Size = Properties.Size,

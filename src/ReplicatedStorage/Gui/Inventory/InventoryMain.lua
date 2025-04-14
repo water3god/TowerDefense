@@ -96,6 +96,7 @@ local function CreateInventory(Properties: Properties)
 		local RarityData = RarityInfo[UnitData.Rarity]
 
 		local function OnClick()
+			print("Click")
 			if HoveredId ~= Data.UniqueId and not InSell then
 				SetClickedUnitData({
 					CurrentUnit = Data,
@@ -115,7 +116,7 @@ local function CreateInventory(Properties: Properties)
 			StrokeColor = RarityData.StrokeColor,
 			BackgroundColor = RarityData.BackgroundColor,
 
-			OnClick = { OnClick },
+			OnClick = OnClick,
 
 			Hovered = if HoveredId and HoveredId == Data.UniqueId then true else false,
 
@@ -132,7 +133,7 @@ local function CreateInventory(Properties: Properties)
 
 		local Merged = JoinDicts(Units, { [Data.Unit] = Value })
 		SetUnits(Merged)
-	end, { Units, HoveredId :: any })
+	end, { Units, HoveredId :: any, ClickedUnitData :: any })
 
 	local OnEquip = React.useCallback(function()
 		if HoveredId then
