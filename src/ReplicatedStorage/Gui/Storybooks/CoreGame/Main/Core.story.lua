@@ -16,8 +16,7 @@ local e = React.createElement
 -- Reference UI --
 
 local Gui = ReplicatedStorage.Gui
-local Inventory = Gui.Inventory
-local InventoryMain = require(Inventory.InventoryMain)
+local Core = require(Gui.CoreGame.Core)
 
 -- Controls --
 
@@ -30,12 +29,7 @@ local Story = {
 	reactRoblox = ReactRoblox,
 	controls = controls,
 	story = function(Properties)
-		local Frame = e(InventoryMain, {
-			Inventory = {
-				Units = {},
-			},
-		})
-		return Frame
+		return e(Core)
 	end,
 }
 

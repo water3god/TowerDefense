@@ -3,12 +3,8 @@
 -- By Wa1er_God --
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Players = game:GetService("Players")
 local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
-
-local Player = Players.LocalPlayer
-local PlayerGui = Player.PlayerGui
 
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
@@ -19,26 +15,29 @@ local e = React.createElement
 local Gui = ReplicatedStorage.Gui
 local Inventory = Gui.Inventory
 local InventoryMain = require(Inventory.InventoryMain)
-local StatsFrame = require(Inventory.StatsFrame)
-local UnitFrame = require(Inventory.UnitFrame)
 
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
 local MainButtonFrame = require(CoreGame.MainButtonFrame)
 
-local GlobalGui = Instance.new("ScreenGui")
-GlobalGui.Name = "GlobalGui"
-GlobalGui.Parent = PlayerGui
-
 local IsRunning = RunService:IsRunning()
 
+local Client = ReplicatedStorage.Client
+local InventoryService = require(Client.GlobalClient.InventoryService)
+
+local Shared = ReplicatedStorage.Shared
+local Types = require(Shared.Types)
+
 export type Properties = {
+	Inventory: {
+		Units: { [string]: Types.VisualUnitData },
+	},
 	Visible: boolean,
 }
 
 local GlobalNotVisiblePosition = UDim2.fromScale(0.5, 1)
 
-local function AnimateWrapper(Props: Properties)
+local function AnimateWrapper(Props: { Visible: boolean })
 	local Styles, API = ReactSpring.useSpring(function()
 		return {
 			alpha = 0,
@@ -62,7 +61,7 @@ local function AnimateWrapper(Props: Properties)
 	end, { OriginalPosition })
 
 	React.useEffect(function()
-		API:stop()
+		API.stop()
 		API.start({
 			alpha = if Props.Visible then 0 else 1,
 		})
@@ -79,6 +78,7 @@ local function RenderInventory(Props: Properties)
 	})
 
 	return e(InventoryMain, {
+		Inventory = Props.Inventory,
 		native = {
 			ref = FrameRef,
 			Position = Position,
@@ -107,7 +107,7 @@ local function Render()
 	end, { VisibleFrame })
 
 	local function Return()
-		return e(React.Fragment, {
+		return e(React.Fragment, nil, {
 			GuiBlur = IsRunning and ReactRoblox.createPortal(
 				e("BlurEffect", {
 					Size = Styles.Size,
@@ -117,10 +117,12 @@ local function Render()
 			Main = e("Folder", {}, {
 				InventoryFrame = e(RenderInventory, {
 					Visible = if VisibleFrame == "InventoryFrame" then true else false,
+					Inventory = InventoryService:GetInventory(),
 				}),
 			}),
 			Buttons = e("Folder", {}, {
 				InventoryButton = e(MainButtonFrame, {
+
 					Name = "Inventory",
 					Icon = "",
 					OnClick = function()
@@ -139,11 +141,10 @@ local function Render()
 	else
 		return e(Main.Frame, {
 			children = {
-				Frag = Return(),
+				Name = Return(),
 			},
 		}) :: any
 	end
 end
 
-local GlobalRoot = ReactRoblox.createRoot(GlobalGui)
-GlobalRoot:render(e(InventoryMain))
+return Render

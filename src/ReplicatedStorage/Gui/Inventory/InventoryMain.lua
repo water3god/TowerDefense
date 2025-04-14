@@ -35,9 +35,15 @@ local UnitInfo = require(Shared.UnitInfo)
 local RarityInfo = require(Shared.RarityInfo)
 local Types = require(Shared.Types)
 
-export type Properties = {}
+export type Properties = {
+	Inventory: {
+		Units: { [string]: Types.VisualUnitData },
+	},
+}
 
-local function Sell(UniqueIds: { string }) end
+local function Sell(UniqueIds: { string })
+	InventoryService.SellUnits(UniqueIds)
+end
 
 local function CreateBaseButton(Properties: {
 	Position: UDim2,
@@ -146,6 +152,11 @@ local function CreateInventory(Properties: Properties)
 		if HoveredId then
 			if Input == true then
 				Sell({ HoveredId })
+				if Units[HoveredId] ~= nil then
+					local UnitsOther = table.clone(Units)
+					UnitsOther[HoveredId] = nil
+					SetUnits(UnitsOther)
+				end
 				SetHovered(nil :: any)
 			end
 		end
@@ -167,7 +178,17 @@ local function CreateInventory(Properties: Properties)
 		end
 
 		if Input == true then
-			Sell(SellingUnits)
+			if #SellingUnits > 0 then
+				Sell(SellingUnits)
+
+				local UnitsOther = table.clone(Units)
+				for _, UniqueId in ipairs(SellingUnits) do
+					UnitsOther[UniqueId] = nil
+				end
+				SetUnits(UnitsOther)
+			end
+
+			ToggleSell(false)
 		elseif Input == false then
 			SetSellingUnits({})
 			ToggleSell(false)
@@ -175,7 +196,7 @@ local function CreateInventory(Properties: Properties)
 	end, { SellingUnits, InSell :: any })
 
 	React.useEffect(function()
-		for _, Data in pairs(InventoryService:GetInventory().Units) do
+		for _, Data in pairs(Properties.Inventory.Units) do
 			HandleUnit(Data)
 		end
 	end, {})
@@ -185,9 +206,11 @@ local function CreateInventory(Properties: Properties)
 			HandleUnit(Unit)
 		end)
 		local Connection2 = InventoryService.UnitRemoved:Connect(function(UniqueId: string)
-			local UnitsOther = table.clone(Units)
-			UnitsOther[UniqueId] = nil
-			SetUnits(UnitsOther)
+			if Units[UniqueId] ~= nil then
+				local UnitsOther = table.clone(Units)
+				UnitsOther[UniqueId] = nil
+				SetUnits(UnitsOther)
+			end
 		end)
 
 		return function()
@@ -294,7 +317,9 @@ local function CreateInventory(Properties: Properties)
 		UnitsButton = e(CreateBaseButton, {
 			Position = UDim2.fromScale(0.14, 0.175),
 			Text = "Units",
-			OnClick = function() end,
+			OnClick = function()
+				SetOpenFrame("Units")
+			end,
 		}),
 		GamepassesButton = e(CreateBaseButton, {
 			Position = UDim2.fromScale(0.33, 0.175),
