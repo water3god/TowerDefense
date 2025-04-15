@@ -5,6 +5,7 @@
 local Constants = {
 	INVENTORY_FRAME = "InventoryFrame",
 	TRADE_FRAME = "TradeFrame",
+	TRADE_MENU = "TradeMenu",
 }
 
 return Constants

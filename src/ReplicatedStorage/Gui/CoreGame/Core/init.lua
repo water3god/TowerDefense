@@ -16,9 +16,17 @@ local Gui = ReplicatedStorage.Gui
 local Inventory = Gui.Inventory
 local InventoryMain = require(Inventory.InventoryMain)
 
+local Trade = Gui.Trade
+local TradeFrame = require(Trade.TradeFrame)
+local TradeMenu = require(Trade.TradeMenu)
+
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
 local MainButtonFrame = require(CoreGame.MainButtonFrame)
+
+-- Contexts --
+local InventoryContext = require(Inventory.InventoryContext)
+local TradeMenuContext = require(Trade.TradeContext)
 
 local IsRunning = RunService:IsRunning()
 
@@ -31,19 +39,30 @@ local Types = require(Shared.Types)
 local Constants = require(script.Constants)
 local OriginalPositions = require(script.OriginalPositions)
 
-export type Properties = {
+export type InventoryProps = {
 	Inventory: {
 		Units: { [string]: Types.VisualUnitData },
 	},
+	CloseClick: () -> (),
+	Visible: boolean,
+}
+
+export type TradeMenuProps = {
+	CloseClick: () -> (),
+	Visible: boolean,
+}
+
+export type TradeFrameProps = {
+	Toggle: (Visible: boolean) -> (),
 	Visible: boolean,
 }
 
 local GlobalNotVisiblePosition = UDim2.fromScale(0.5, 2)
 
-local function AnimateWrapper(Props: { Visible: boolean })
+local function AnimateWrapper(Props: { Visible: boolean, Name: string })
 	local Styles, API = ReactSpring.useSpring(function()
 		return {
-			alpha = 0,
+			alpha = 1,
 		}
 	end)
 
@@ -52,9 +71,7 @@ local function AnimateWrapper(Props: { Visible: boolean })
 	local NotVisiblePosition, SetNotVisiblePosition = React.useState(GlobalNotVisiblePosition)
 
 	React.useEffect(function()
-		if FrameRef.current then
-			SetPosition(OriginalPositions[FrameRef.current.Name])
-		end
+		SetPosition(OriginalPositions[Props.Name])
 	end, {})
 
 	React.useEffect(function()
@@ -79,16 +96,51 @@ local function AnimateWrapper(Props: { Visible: boolean })
 		FrameRef
 end
 
-local function RenderInventory(Props: Properties)
-	local Styles, FrameRef = AnimateWrapper({
+local function RenderInventory(Props: InventoryProps)
+	local Position, FrameRef = AnimateWrapper({
 		Visible = Props.Visible,
+		Name = Constants.INVENTORY_FRAME,
 	})
 
-	return e(InventoryMain, {
-		Inventory = Props.Inventory,
+	return e(InventoryContext.Provider, {}, {
+		InventoryMain = e(InventoryMain, {
+			CloseClick = Props.CloseClick,
+			native = {
+				ref = FrameRef,
+				Position = Position,
+			},
+		}),
+	})
+end
+
+local function RenderTradeMenu(Props: TradeMenuProps)
+	local Position, FrameRef = AnimateWrapper({
+		Visible = Props.Visible,
+		Name = Constants.TRADE_MENU,
+	})
+
+	return e(TradeMenuContext.Provider, {}, {
+		TradeMenu = e(TradeMenu, {
+			CloseClick = Props.CloseClick,
+			native = {
+				ref = FrameRef,
+				Position = Position,
+			},
+		}),
+	})
+end
+
+local function RenderTradeFrame(Props: TradeFrameProps)
+	local Position, FrameRef = AnimateWrapper({
+		Visible = Props.Visible,
+		Name = Constants.TRADE_FRAME,
+	})
+
+	return e(TradeFrame, {
+		Toggle = Props.Toggle,
 		native = {
 			ref = FrameRef,
-			Position = Styles,
+			Position = Position,
 		},
 	})
 end
@@ -116,6 +168,16 @@ local function Render()
 		end
 	end)
 
+	local SetVisibleInternal = React.useCallback(function(Name: string, Visible: boolean)
+		if Visible then
+			SetVisibleFrame(Name)
+		else
+			if VisibleFrame == Name then
+				SetVisibleFrame(nil)
+			end
+		end
+	end, { VisibleFrame })
+
 	React.useEffect(function()
 		API.stop()
 		API.start({
@@ -142,7 +204,23 @@ local function Render()
 							OnCloseClick(Constants.INVENTORY_FRAME)
 						end,
 					}),
-				} :: any
+				} :: any,
+				{
+					[Constants.TRADE_FRAME] = e(RenderTradeFrame, {
+						Visible = if VisibleFrame == Constants.TRADE_FRAME then true else false,
+						Toggle = function(Visible)
+							SetVisibleInternal(Constants.TRADE_FRAME, Visible)
+						end,
+					}),
+				} :: any,
+				{
+					[Constants.TRADE_MENU] = e(RenderTradeMenu, {
+						Visible = if VisibleFrame == Constants.TRADE_MENU then true else false,
+						CloseClick = function()
+							OnCloseClick(Constants.TRADE_MENU)
+						end,
+					}) :: any,
+				}
 			),
 			Buttons = e(Main.Frame, {
 				native = {
@@ -164,7 +242,7 @@ local function Render()
 						Name = "Inventory",
 						Icon = "",
 						OnClick = function()
-							OnMainButtonClick("InventoryFrame")
+							OnMainButtonClick(Constants.INVENTORY_FRAME)
 						end,
 					}),
 					PlayButton = e(MainButtonFrame, {
@@ -173,7 +251,7 @@ local function Render()
 						Name = "Play",
 						Icon = "",
 						OnClick = function()
-							OnMainButtonClick("InventoryFrame")
+							--OnMainButtonClick("InventoryFrame")
 						end,
 					}),
 					StoreButton = e(MainButtonFrame, {
@@ -182,7 +260,7 @@ local function Render()
 						Name = "Store",
 						Icon = "",
 						OnClick = function()
-							OnMainButtonClick("InventoryFrame")
+							--OnMainButtonClick("InventoryFrame")
 						end,
 					}),
 					TradeButton = e(MainButtonFrame, {
@@ -191,7 +269,7 @@ local function Render()
 						Name = "Trade",
 						Icon = "",
 						OnClick = function()
-							OnMainButtonClick("InventoryFrame")
+							OnMainButtonClick(Constants.TRADE_MENU)
 						end,
 					}),
 				},

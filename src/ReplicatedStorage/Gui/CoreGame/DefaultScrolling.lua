@@ -44,7 +44,7 @@ local function CreateDefaultScrolling(Properties: Properties)
 			ref = selfRef,
 
 			ScrollBarThickness = Bar,
-			[React.Change.Size] = function()
+			[React.Change.AbsoluteSize] = function()
 				SetBar(GetScrollingSize(BarSize, selfRef))
 			end,
 		}, Properties.native),

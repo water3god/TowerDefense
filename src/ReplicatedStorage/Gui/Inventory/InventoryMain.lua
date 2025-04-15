@@ -3,14 +3,10 @@
 -- By Wa1er_God --
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Players = game:GetService("Players")
 
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
-local ReactRoblox = require(Packages.ReactRoblox)
 local e = React.createElement
-
-local Player = Players.LocalPlayer
 
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
@@ -20,6 +16,7 @@ local Gui = ReplicatedStorage.Gui
 local InventoryGUI = Gui.Inventory
 local UnitFrame = require(InventoryGUI.UnitFrame)
 local InfoFrame = require(InventoryGUI.InfoFrame)
+local InventoryContext = require(InventoryGUI.InventoryContext)
 
 local Client = ReplicatedStorage.Client
 local GlobalClient = Client.GlobalClient
@@ -29,6 +26,7 @@ local CoreGame = Gui.CoreGame
 local CloseButton = require(CoreGame.CloseButton)
 local Main = require(CoreGame.Main)
 local Confirm = require(CoreGame.Confirm)
+local Title = require(CoreGame.Title)
 
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
@@ -36,9 +34,6 @@ local RarityInfo = require(Shared.RarityInfo)
 local Types = require(Shared.Types)
 
 export type Properties = {
-	Inventory: {
-		Units: { [string]: Types.VisualUnitData },
-	},
 	CloseClick: () -> ()?,
 	native: { [any]: any }?,
 }
@@ -71,11 +66,10 @@ local function CreateBaseButton(Properties: {
 end
 
 local function CreateInventory(Properties: Properties)
+	local InventoryContext = React.useContext(InventoryContext.Context)
 	local Units, SetUnits = React.useState({} :: { [string]: any })
 	local SellingUnits, SetSellingUnits = React.useState({} :: { string })
-	local DeletedUnits, SetDeletedUnits = React.useState({} :: { string })
-	local HoveredId, SetHovered = React.useState(nil :: string?)
-
+	local HoveredId: string?, SetHovered = React.useState(nil :: string?)
 	local InSell, ToggleSell = React.useState(false)
 
 	local ClickedUnitData, SetClickedUnitData = React.useState(nil :: {
@@ -112,52 +106,59 @@ local function CreateInventory(Properties: Properties)
 				table.insert(NewTable, Data.UniqueId)
 			end
 			SetSellingUnits(NewTable)
+		else
+			if HoveredId == Data.UniqueId then
+				SetClickedUnitData(nil)
+				SetHovered(nil)
+			else
+				SetClickedUnitData(Data.Data)
+				SetHovered(Data.UniqueId)
+			end
 		end
 	end, { InSell :: any, HoveredId :: any, ClickedUnitData :: any, SellingUnits :: any })
 
-	local HandleUnit = React.useCallback(function(Data: Types.VisualUnitData)
+	local function HandleUnit(Data: Types.VisualUnitData)
 		local UnitData = UnitInfo.UnitInfo[Data.Unit]
 		local RarityData = RarityInfo[UnitData.Rarity]
 
-		local Value = not table.find(DeletedUnits, Data.UniqueId)
-			and e(UnitFrame, {
-				UnitName = Data.Unit,
-				Level = Data.Level,
-				Cost = UnitData.PlacementCost,
+		local Value = e(UnitFrame, {
+			UnitName = Data.Unit,
+			Level = Data.Level,
+			Cost = UnitData.PlacementCost,
 
-				Color = RarityData.Color,
-				StrokeColor = RarityData.StrokeColor,
-				BackgroundColor = RarityData.BackgroundColor,
+			Color = RarityData.Color,
+			StrokeColor = RarityData.StrokeColor,
+			BackgroundColor = RarityData.BackgroundColor,
 
-				OnClick = function()
-					SmallFrameClick({
-						Data = {
-							CurrentUnit = Data,
-							Rarity = UnitData.Rarity,
-							RarityData = RarityData,
-						},
-						UniqueId = Data.UniqueId,
-					})
-				end,
+			OnClick = function()
+				SmallFrameClick({
+					Data = {
+						CurrentUnit = Data,
+						Rarity = UnitData.Rarity,
+						RarityData = RarityData,
+					},
+					UniqueId = Data.UniqueId,
+				})
+			end,
 
-				Hovered = if HoveredId and HoveredId == Data.UniqueId then true else false,
+			Hovered = if HoveredId and HoveredId == Data.UniqueId then true else false,
 
-				children = {
-					BeingSoldFrame = e(Main.ImageLabel, {
-						native = {
-							Visible = if table.find(SellingUnits, Data.UniqueId) then true else false,
-							Size = UDim2.fromScale(0.9, 0.9),
-							Image = "rbxassetid://84303396250595",
-							ImageColor3 = Color3.fromRGB(255, 6, 0),
-							ZIndex = 3,
-						},
-					}),
-				},
-			})
+			children = {
+				BeingSoldFrame = e(Main.ImageLabel, {
+					native = {
+						Visible = if table.find(SellingUnits, Data.UniqueId) then true else false,
+						Size = UDim2.fromScale(0.9, 0.9),
+						Image = "rbxassetid://84303396250595",
+						ImageColor3 = Color3.fromRGB(255, 6, 0),
+						ZIndex = 3,
+					},
+				}),
+			},
+		})
 
 		local Merged = JoinDicts(Units, { [Data.UniqueId] = Value })
 		SetUnits(Merged)
-	end, { HoveredId, Units :: any, SellingUnits :: any, DeletedUnits :: any })
+	end
 
 	local OnEquip = React.useCallback(function()
 		if HoveredId then
@@ -171,20 +172,15 @@ local function CreateInventory(Properties: Properties)
 
 	local IndSellClick = React.useCallback(function()
 		SetIndEnabled(true)
-	end, { IndEnabled, DeletedUnits :: any })
+	end, { IndEnabled })
 
 	local IndividualSell = React.useCallback(function(Input: boolean?)
 		if HoveredId then
 			if Input == true then
 				Sell({ HoveredId })
-				if not table.find(DeletedUnits, HoveredId) then
-					local NewTable = table.clone(DeletedUnits)
-					table.insert(NewTable, HoveredId)
-					SetDeletedUnits(NewTable)
-				end
 			end
 		end
-	end, { HoveredId, DeletedUnits :: any })
+	end, { HoveredId })
 
 	local OnSellPressed = React.useCallback(function()
 		SetHovered(nil :: any)
@@ -206,18 +202,6 @@ local function CreateInventory(Properties: Properties)
 		if Input == true then
 			if #SellingUnits > 0 then
 				Sell(SellingUnits)
-				local DeletedOther = table.clone(DeletedUnits)
-				local Changed = false
-				for _, DeletedUnit in ipairs(SellingUnits) do
-					if not table.find(DeletedOther, DeletedUnit) then
-						Changed = true
-						table.insert(DeletedOther, DeletedUnit)
-					end
-				end
-
-				if Changed then
-					SetDeletedUnits(DeletedOther)
-				end
 			end
 
 			ToggleSell(false)
@@ -225,35 +209,13 @@ local function CreateInventory(Properties: Properties)
 			SetSellingUnits({})
 			ToggleSell(false)
 		end
-	end, { SellingUnits, InSell :: any, DeletedUnits :: any })
+	end, { SellingUnits, InSell :: any })
 
 	React.useEffect(function()
-		for _, Data in pairs(Properties.Inventory.Units) do
+		for _, Data in pairs(InventoryContext.Units) do
 			HandleUnit(Data)
 		end
-	end, { InSell, SellingUnits :: any, HoveredId :: any, DeletedUnits :: any })
-
-	React.useEffect(function()
-		local Connection1 = InventoryService.UnitAdded:Connect(function(Unit: Types.VisualUnitData)
-			HandleUnit(Unit)
-		end)
-		local Connection2 = InventoryService.UnitRemoved:Connect(function(UniqueId: string)
-			if not table.find(DeletedUnits, UniqueId) then
-				local UnitsOther = table.clone(DeletedUnits)
-				table.insert(UnitsOther, UniqueId)
-				SetDeletedUnits(UnitsOther)
-			end
-		end)
-
-		return function()
-			if Connection1 then
-				Connection1:Disconnect()
-			end
-			if Connection2 then
-				Connection2:Disconnect()
-			end
-		end
-	end, { Units, SellingUnits :: any, DeletedUnits :: any })
+	end, { InSell, SellingUnits :: any, HoveredId :: any, InventoryContext :: any })
 
 	return e(
 		"ImageLabel",
@@ -356,34 +318,10 @@ local function CreateInventory(Properties: Properties)
 				Text = "Gamepasses",
 				OnClick = function() end,
 			}),
-			Title = e(Main.ImageLabel, {
-				native = {
-					Position = UDim2.fromScale(0.15, -0.03),
-					Size = UDim2.fromScale(0.5, 0.5),
-					Image = "rbxassetid://82588529589997",
-				},
-			}, {
-				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-					AspectRatio = 4.625,
-				}),
-				TextLabel = e(Main.TextLabel, {
-					native = {
-						Position = UDim2.fromScale(0.5, 0.55),
-						Size = UDim2.fromScale(0.7, 0.5),
-						TextXAlignment = Enum.TextXAlignment.Left,
-						Text = "INVENTORY",
-					},
-					children = {
-						UIGradient = e("UIGradient", {
-							Color = ColorSequence.new({
-								ColorSequenceKeypoint.new(0, Color3.new(0.768627, 0.380392, 1)),
-								ColorSequenceKeypoint.new(0.623, Color3.new(1, 1, 1)),
-								ColorSequenceKeypoint.new(1, Color3.new(1, 1, 1)),
-							}),
-							Rotation = -90,
-						}),
-					},
-				}),
+			Title = e(Title, {
+				Title = "INVENTORY",
+				Position = UDim2.fromScale(0.15, -0.03),
+				Size = UDim2.fromScale(0.5, 0.5),
 			}),
 		}
 	)

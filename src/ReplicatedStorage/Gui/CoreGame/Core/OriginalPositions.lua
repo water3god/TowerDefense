@@ -9,6 +9,7 @@ local OriginalPositions: {
 } = {
 	[Constants.INVENTORY_FRAME] = UDim2.fromScale(0.5, 0.5),
 	[Constants.TRADE_FRAME] = UDim2.fromScale(0.5, 0.5),
+	[Constants.TRADE_MENU] = UDim2.fromScale(0.5, 0.5),
 }
 
 return OriginalPositions

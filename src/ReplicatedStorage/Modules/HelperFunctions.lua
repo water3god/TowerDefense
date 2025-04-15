@@ -2,54 +2,70 @@
 
 -- By Wa1er_God --
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage");
-local RunService = game:GetService("RunService");
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 
-local Modules = ReplicatedStorage.Modules;
-local Trove = require(Modules.Trove);
+local Modules = ReplicatedStorage.Modules
+local Trove = require(Modules.Trove)
 
-local Random = Random.new();
+local Random = Random.new()
 
-local Funcs = {};
+local Funcs = {}
 
 local function CreateDefaultPart()
-	local Part = Instance.new("Part");
-	Part.Anchored = true;
-	Part.CanCollide = false;
-	Part.CanQuery = false;
-	Part.CanTouch = false;
-	
+	local Part = Instance.new("Part")
+	Part.Anchored = true
+	Part.CanCollide = false
+	Part.CanQuery = false
+	Part.CanTouch = false
+
 	task.delay(10, function()
-		Part:Destroy();
+		Part:Destroy()
 	end)
 
-	return Part;
+	return Part
 end
 
 -- General Functions --
 
 function Funcs.DeepFreeze<T>(Table: {} & T): T
-	local NewTable: any = Table;
+	local NewTable: any = Table
 
 	for k, v in pairs(NewTable) do
 		if typeof(v) == "table" then
-			Funcs.DeepFreeze(v);
+			Funcs.DeepFreeze(v)
 		end
 	end
-	
-	table.freeze(NewTable);
-	
-	return NewTable;
+
+	table.freeze(NewTable)
+
+	return NewTable
 end
 
 function Funcs.DeepClone<T>(Table: {} & T): T
-	local NewTable = {};
+	local NewTable = {}
 
 	for k, v in pairs(Table) do
-		NewTable[k] = if typeof(v) == "table" then Funcs.DeepClone(v) else v;
-	end 
+		NewTable[k] = if typeof(v) == "table" then Funcs.DeepClone(v) else v
+	end
 
-	return NewTable :: any;
+	return NewTable :: any
+end
+
+function Funcs.IsSameTable(...: { [any]: any })
+	local List = table.pack(...)
+
+	for _, Table in ipairs(List) do
+		for Index, Value in pairs(Table) do
+			for _, Table in ipairs(List) do
+				if Table[Index] ~= Value then
+					return false
+				end
+			end
+		end
+	end
+
+	return true
 end
 
 local EMPTY = {}
@@ -86,59 +102,58 @@ function Funcs.joinDicts<K, V>(...: { [K]: V }?): { [K]: V }
 	return final or EMPTY
 end
 
-function Funcs.DisconnectAll(Table: {[any]: RBXScriptConnection})
+function Funcs.DisconnectAll(Table: { [any]: RBXScriptConnection })
 	for _, Connection in pairs(Table) do
-		Connection:Disconnect();
+		Connection:Disconnect()
 	end
-	table.clear(Table);
+	table.clear(Table)
 end
 
 function Funcs.Round(Number: number, Place: number)
-	return math.round(Number * math.pow(10, Place)) / math.pow(10, Place);
+	return math.round(Number * math.pow(10, Place)) / math.pow(10, Place)
 end
 
 function Funcs.Lerp(Start: number, Goal: number, Alpha: number)
-	return Start + (Goal - Start) * Alpha;
+	return Start + (Goal - Start) * Alpha
 end
 
-local BigNumber = {};
-function BigNumber:Convert(InputNumber: number) : number
-	return InputNumber ~= 0 and math.floor(math.log(InputNumber) / math.log(1.0000001)) or 0;
+local BigNumber = {}
+function BigNumber:Convert(InputNumber: number): number
+	return InputNumber ~= 0 and math.floor(math.log(InputNumber) / math.log(1.0000001)) or 0
 end
 
-function BigNumber:Deconvert(InputNumber: number) : number
-	return InputNumber ~= 0 and (1.0000001^InputNumber) or 0;
+function BigNumber:Deconvert(InputNumber: number): number
+	return InputNumber ~= 0 and (1.0000001 ^ InputNumber) or 0
 end
 
-Funcs.BigNumber = BigNumber;
+Funcs.BigNumber = BigNumber
 
 function Funcs.FormatTime(Time: number)
-	local TimeVar: number = Time;
+	local TimeVar: number = Time
 
-	local Hours = math.floor(TimeVar / 3600);
-	TimeVar -= Hours * 3600;
-	local Minutes = math.floor(TimeVar / 60);
-	TimeVar -= Minutes * 60;
-	local Seconds = math.floor(TimeVar);
+	local Hours = math.floor(TimeVar / 3600)
+	TimeVar -= Hours * 3600
+	local Minutes = math.floor(TimeVar / 60)
+	TimeVar -= Minutes * 60
+	local Seconds = math.floor(TimeVar)
 
 	if Hours == 0 then
-		return string.format("%u:%s", Minutes, string.format("%0.2i", Seconds));
+		return string.format("%u:%s", Minutes, string.format("%0.2i", Seconds))
 	end
 
-	return string.format("%u:%s:%s", Hours, string.format("%0.2i", Minutes), string.format("%0.2i", Seconds));
+	return string.format("%u:%s:%s", Hours, string.format("%0.2i", Minutes), string.format("%0.2i", Seconds))
 end
-
 
 function Funcs.IsClick(Input: InputObject)
 	if Input.UserInputType == Enum.UserInputType.MouseButton1 then
-		return true;
+		return true
 	elseif Input.UserInputType == Enum.UserInputType.Gamepad1 then
 		if Input.KeyCode == Enum.KeyCode.ButtonL3 then
-			return true;
+			return true
 		end
 	end
 
-	return false;
+	return false
 end
 
 function Funcs.MouseButton1Click(Frame: GuiObject, Func: () -> (), Trove: Trove.Trove?)
@@ -147,271 +162,262 @@ function Funcs.MouseButton1Click(Frame: GuiObject, Func: () -> (), Trove: Trove.
 			Func()
 		end
 	end)
-	local Connection2 = Frame.TouchTap:Connect(Func);
-	
+	local Connection2 = Frame.TouchTap:Connect(Func)
+
 	if Trove then
-		Trove:Add(Connection1);
-		Trove:Add(Connection2);
+		Trove:Add(Connection1)
+		Trove:Add(Connection2)
 	end
-	
-	return {Connection1, Connection2};
+
+	return { Connection1, Connection2 }
 end
 
-function Funcs.Len(Table: {[any]: any})
-	local Count = 0;
+function Funcs.Len(Table: { [any]: any })
+	local Count = 0
 	for _, _ in pairs(Table) do
-		Count += 1;
+		Count += 1
 	end
-	return Count;
+	return Count
 end
 
-function Funcs.ClearThreads(Data: {thread})
+function Funcs.ClearThreads(Data: { thread })
 	for _, thread in ipairs(Data) do
 		if coroutine.status(thread) ~= "running" then
-			task.cancel(thread);
+			task.cancel(thread)
 		end
 	end
-	table.clear(Data);
+	table.clear(Data)
 end
 
 function Funcs.ConvertToVec2(Vec: Vector3)
-	return Vector2.new(Vec.X, Vec.Z);
+	return Vector2.new(Vec.X, Vec.Z)
 end
 
 function Funcs.TpModelTo(Model: Model, NewCFrame: CFrame)
-	local Pos, Size = Model:GetBoundingBox();
-	local Root = Model.PrimaryPart :: BasePart;
+	local Pos, Size = Model:GetBoundingBox()
+	local Root = Model.PrimaryPart :: BasePart
 
-	local HeightDifference = (Root.Position - Pos.Position).Y;
+	local HeightDifference = (Root.Position - Pos.Position).Y
 
-	local AlteredCFrame = NewCFrame + Vector3.new(
-		0,
-		Size.Y/2 + HeightDifference,
-		0
-	);
+	local AlteredCFrame = NewCFrame + Vector3.new(0, Size.Y / 2 + HeightDifference, 0)
 
-	return AlteredCFrame;
+	return AlteredCFrame
 end
 
 function Funcs.GetModelVectorOffset(Model: Model)
-	local Pos, Size = Model:GetBoundingBox();
-	local Root = Model.PrimaryPart :: BasePart;
+	local Pos, Size = Model:GetBoundingBox()
+	local Root = Model.PrimaryPart :: BasePart
 
-	local HeightDifference = (Root.Position - Pos.Position).Y;
+	local HeightDifference = (Root.Position - Pos.Position).Y
 
-	return Vector3.new(0, Size.Y/2 + HeightDifference, 0);
+	return Vector3.new(0, Size.Y / 2 + HeightDifference, 0)
 end
 
 function Funcs.IsNan(Input: any)
 	if typeof(Input) == "CFrame" then
 		for _, Comp in pairs(table.pack(Input:GetComponents())) do
 			if Comp ~= Comp then
-				return true;
+				return true
 			end
 		end
 	elseif typeof(Input) == "Vector3" then
 		if Input.X ~= Input.X or Input.Y ~= Input.Y or Input.Z ~= Input.Z then
-			return true;
+			return true
 		end
 	elseif typeof(Input) == "number" then
-		return Input ~= Input;
+		return Input ~= Input
 	end
 
-	return false;
+	return false
 end
 
 function Funcs.IsInteger(Number: number)
-	return Number % 1 == 0;
+	return Number % 1 == 0
 end
 
-function Funcs.FireClients(Event: RemoteEvent, Clients: {Player}?, ...)
+function Funcs.FireClients(Event: RemoteEvent, Clients: { Player }?, ...)
 	if Clients then
 		for _, Player in ipairs(Clients) do
-			Event:FireClient(Player, ...);
+			Event:FireClient(Player, ...)
 		end
 	else
-		Event:FireAllClients(...);
+		Event:FireAllClients(...)
 	end
 end
 
 function Funcs.SafeTeleport(func: () -> TeleportAsyncResult, MaxCount: number): TeleportAsyncResult?
-	local Success, Returned = pcall(func);
-	local Count = 1;
+	local Success, Returned = pcall(func)
+	local Count = 1
 
 	if not Returned then
-		repeat task.wait(1)
-			Success, Returned = pcall(func);
-			Count += 1;
-		until Success or Count >= MaxCount;
+		repeat
+			task.wait(1)
+			Success, Returned = pcall(func)
+			Count += 1
+		until Success or Count >= MaxCount
 	end
-	
-	return Returned;
+
+	return Returned
 end
 
 function Funcs.CalcTime(Time: number, StartTime: number, CurrentTime: number)
-	return Time - (CurrentTime - StartTime);
+	return Time - (CurrentTime - StartTime)
 end
 
 function Funcs.ConnectTime(StartTime: number, EndTime: number, Func: (Time: number) -> (), TimeTrove: Trove.Trove?)
-	local Connection = nil;
+	local Connection = nil
 	if TimeTrove then
 		Connection = TimeTrove:Connect(RunService.PostSimulation, function()
-			local NewTime = -(workspace:GetServerTimeNow() - EndTime);
-			
+			local NewTime = -(workspace:GetServerTimeNow() - EndTime)
+
 			if NewTime >= 0 then
-				Func(NewTime);
+				Func(NewTime)
 			else
-				TimeTrove:Remove(Connection);
+				TimeTrove:Remove(Connection)
 			end
 		end)
 	else
 		Connection = RunService.PostSimulation:Connect(function()
-			local NewTime = -(workspace:GetServerTimeNow() - EndTime);
+			local NewTime = -(workspace:GetServerTimeNow() - EndTime)
 			if NewTime >= 0 then
-				Func(NewTime);
+				Func(NewTime)
 			else
-				Connection:Disconnect();
+				Connection:Disconnect()
 			end
 		end)
 	end
 end
 
 function Funcs.PlaySound(Sound: Sound, Origin: CFrame)
-	local Part = CreateDefaultPart();
-	Part.Transparency = 1;
-	Part.Size = Vector3.one;
-	Part.CFrame = Origin;
-	Part.Parent = workspace;
+	local Part = CreateDefaultPart()
+	Part.Transparency = 1
+	Part.Size = Vector3.one
+	Part.CFrame = Origin
+	Part.Parent = workspace
 
-	local PlayedSound = Sound:Clone();
+	local PlayedSound = Sound:Clone()
 
-	PlayedSound.PlaybackSpeed = PlayedSound.PlaybackSpeed + Random:NextNumber(
-		-PlayedSound.PlaybackSpeed * 0.05, PlayedSound.PlaybackSpeed * 0.05
-	);
-	PlayedSound.Volume = PlayedSound.Volume + Random:NextNumber(
-		-0.05, PlayedSound.Volume * 0.05
-	);
+	PlayedSound.PlaybackSpeed = PlayedSound.PlaybackSpeed
+		+ Random:NextNumber(-PlayedSound.PlaybackSpeed * 0.05, PlayedSound.PlaybackSpeed * 0.05)
+	PlayedSound.Volume = PlayedSound.Volume + Random:NextNumber(-0.05, PlayedSound.Volume * 0.05)
 
-	PlayedSound.Parent = Part;
+	PlayedSound.Parent = Part
 
-	PlayedSound:Play();
+	PlayedSound:Play()
 
 	PlayedSound.Ended:Once(function()
-		Part:Destroy();
+		Part:Destroy()
 	end)
 end
 
-local Players = game:GetService("Players");
-local Thumbnails: {[Player]: string} = {};
+local Players = game:GetService("Players")
+local Thumbnails: { [Player]: string } = {}
 
 function Funcs.GetThumbnailAsync(Player: Player)
 	if Thumbnails[Player] then
-		return Thumbnails[Player], true;
+		return Thumbnails[Player], true
 	else
-		local Thumbnail, Available = Players:GetUserThumbnailAsync(
-			Player.UserId,
-			Enum.ThumbnailType.HeadShot,
-			Enum.ThumbnailSize.Size180x180
-		);
+		local Thumbnail, Available =
+			Players:GetUserThumbnailAsync(Player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size180x180)
 
-		Thumbnails[Player] = Thumbnail;
+		Thumbnails[Player] = Thumbnail
 
-		return Thumbnail, Available;
+		return Thumbnail, Available
 	end
 end
 
-function Funcs.GetSmallestNumber(Data: {[number]: any}, Target: number)
-	local LargestNumber: number = 0;
+function Funcs.GetSmallestNumber(Data: { [number]: any }, Target: number)
+	local LargestNumber: number = 0
 	for Number, _ in pairs(Data) do
 		if Number >= LargestNumber and Number <= Target then
-			LargestNumber = Number;
+			LargestNumber = Number
 		end
 	end
 
-	return LargestNumber;
+	return LargestNumber
 end
 
-function Funcs.InstanceAdd(Table: {[any]: any}, Index: any, Instance: Instance)
-	Table[Index] = Instance;
-	
+function Funcs.InstanceAdd(Table: { [any]: any }, Index: any, Instance: Instance)
+	Table[Index] = Instance
+
 	Instance.Destroying:Once(function()
-		Table[Index] = nil;
+		Table[Index] = nil
 	end)
 end
 
-function Funcs.InstanceAddi(Table: {[number]: any}, Instance: Instance)
-	table.insert(Table, Instance);
-	
+function Funcs.InstanceAddi(Table: { [number]: any }, Instance: Instance)
+	table.insert(Table, Instance)
+
 	Instance.Destroying:Once(function()
-		local Index = table.find(Table, Instance);
-		
+		local Index = table.find(Table, Instance)
+
 		if Index then
-			table.remove(Table, Index);
+			table.remove(Table, Index)
 		end
 	end)
 end
 
-function Funcs.InstanceAddkey(Table: {[any]: any}, Index: Instance, Value: any)
-	Table[Index] = Value;
+function Funcs.InstanceAddkey(Table: { [any]: any }, Index: Instance, Value: any)
+	Table[Index] = Value
 
 	Index.Destroying:Once(function()
-		Table[Index] = nil;
+		Table[Index] = nil
 	end)
 end
 
 function Funcs.DisableHumanoid(Humanoid: Humanoid)
-	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, false);
-	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Freefall, false);
-	Humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false);
-	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Dead, false);
-	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Swimming, false);
-	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Climbing, false);
-	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Landed, false);
-	Humanoid:SetStateEnabled(Enum.HumanoidStateType.PlatformStanding, false);
-	Humanoid:SetStateEnabled(Enum.HumanoidStateType.RunningNoPhysics, false);
-	Humanoid:SetStateEnabled(Enum.HumanoidStateType.StrafingNoPhysics, false);
-	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false);
-	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Flying, false);
-	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false);
+	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, false)
+	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Freefall, false)
+	Humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Dead, false)
+	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Swimming, false)
+	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Climbing, false)
+	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Landed, false)
+	Humanoid:SetStateEnabled(Enum.HumanoidStateType.PlatformStanding, false)
+	Humanoid:SetStateEnabled(Enum.HumanoidStateType.RunningNoPhysics, false)
+	Humanoid:SetStateEnabled(Enum.HumanoidStateType.StrafingNoPhysics, false)
+	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
+	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Flying, false)
+	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
 end
 
 -- Debug Functions --
 
-Funcs.Debug = {};
+Funcs.Debug = {}
 
 function Funcs.Debug.VisualizeRaycast(Origin: Vector3, Direction: Vector3)
-	local Raycast = CreateDefaultPart();
-	Raycast.CFrame = CFrame.new(Origin + Direction / 2, Origin + Direction);
-	Raycast.Name = "Raycast";
-	Raycast.Size = Vector3.new(1, 1, Direction.Magnitude);
-	Raycast.Parent = workspace;
+	local Raycast = CreateDefaultPart()
+	Raycast.CFrame = CFrame.new(Origin + Direction / 2, Origin + Direction)
+	Raycast.Name = "Raycast"
+	Raycast.Size = Vector3.new(1, 1, Direction.Magnitude)
+	Raycast.Parent = workspace
 end
 
 function Funcs.Debug.VisualizePosition(Position: Vector3)
-	local Part = CreateDefaultPart();
-	Part.Position = Position;
-	Part.Parent = workspace;
+	local Part = CreateDefaultPart()
+	Part.Position = Position
+	Part.Parent = workspace
 end
 
 function Funcs.Debug.VisualizeCFrame(CFrame: CFrame)
-	local Part = CreateDefaultPart();
-	Part.CFrame = CFrame;
-	Part.Parent = workspace;
+	local Part = CreateDefaultPart()
+	Part.CFrame = CFrame
+	Part.Parent = workspace
 end
 
 function Funcs.Debug.VisualizeDirection(Origin: Vector3, Direction: Vector3)
-	local Part = CreateDefaultPart();
-	Part.CFrame = CFrame.lookAlong(Origin, Direction);
-	Part.Parent = workspace;
+	local Part = CreateDefaultPart()
+	Part.CFrame = CFrame.lookAlong(Origin, Direction)
+	Part.Parent = workspace
 end
 
 function Funcs.Debug.VisualizePartSpatialQuery(QueryPart: BasePart)
-	local Part = CreateDefaultPart();
-	Part.Size = QueryPart.Size;
-	Part.CFrame = QueryPart.CFrame;
-	Part.Parent = workspace;
+	local Part = CreateDefaultPart()
+	Part.Size = QueryPart.Size
+	Part.CFrame = QueryPart.CFrame
+	Part.Parent = workspace
 end
 
 --ps: try using Line Handler Adornement for further visualization --
 
-return Funcs;
+return Funcs

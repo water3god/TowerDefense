@@ -60,6 +60,7 @@ local XPChanged = Signal.new()
 local IsSynced = false
 
 ItemChanged.OnClientEvent:Connect(function(Type: string, UniqueId: string, Data: any)
+	CurrentInventory[Type][UniqueId] = Data
 	if Type == "Units" then
 		if Data == nil then
 			UnitRemoved:Fire(UniqueId)
@@ -77,7 +78,6 @@ ItemChanged.OnClientEvent:Connect(function(Type: string, UniqueId: string, Data:
 			GamepassChanged:Fire(Data)
 		end
 	end
-	CurrentInventory[Type][UniqueId] = Data
 end)
 
 local Data = {}
@@ -144,9 +144,9 @@ function Data.UnitIsEquipped(UniqueId: string): number?
 	return
 end
 
-local Frames = {}
+--local Frames = {}
 
-function Data.ApplyDataUnitRaw(InputData: Types.RawUnitData, Frame: typeof(UnitFrame)?)
+--[[function Data.ApplyDataUnitRaw(InputData: Types.RawUnitData, Frame: typeof(UnitFrame)?)
 	local Frame = Frame or UnitFrame:Clone()
 
 	local UnitData = UnitInfo.UnitInfo[InputData.Unit]
@@ -246,7 +246,7 @@ function Data.ApplyDataRewardRaw(InputData: Types.RewardData, Frame: typeof(Rewa
 	return Frame, Update
 end
 
-function Data.ApplyDataOnRewardFrame() end
+function Data.ApplyDataOnRewardFrame() end]]
 
 function Data.EquipUnit(Id: string, Equip: boolean)
 	EquipUnit:FireServer({ UniqueId = Id, Equip = Equip })
