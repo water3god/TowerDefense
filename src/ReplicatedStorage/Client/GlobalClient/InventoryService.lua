@@ -32,7 +32,11 @@ local GUI = GlobalClient.GUI
 local UnitFrame = GUI.UnitFrame
 local RewardFrame = GUI.Reward
 
-local CurrentInventory = {
+local CurrentInventory: {
+	Units: {
+		[string]: Types.VisualUnitData,
+	},
+} = {
 	Units = {},
 	--Gamepasses = {};
 }
@@ -103,10 +107,10 @@ Data.IsSynced = IsSynced
 
 Data.UnitFrame = UnitFrame
 
-Data.EquippedUnits = {}
+Data.EquippedUnits = {} :: { string }
 
 UnitEquipped.OnClientEvent:Connect(function(SentData: { UniqueId: string, Index: number, Equip: boolean })
-	Data.EquippedUnits[SentData.Index] = if SentData.Equip then SentData.UniqueId else nil
+	Data.EquippedUnits[SentData.Index] = if SentData.Equip then SentData.UniqueId else nil :: any
 	UnitEquipChanged:Fire(SentData)
 end)
 

@@ -19,8 +19,6 @@ local e = React.createElement
 local Gui = ReplicatedStorage.Gui
 local Inventory = Gui.Inventory
 local InventoryMain = require(Inventory.InventoryMain)
-local StatsFrame = require(Inventory.StatsFrame)
-local UnitFrame = require(Inventory.UnitFrame)
 
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)

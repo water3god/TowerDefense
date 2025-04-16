@@ -121,14 +121,10 @@ local function CreateInventory(Properties: Properties)
 		local UnitData = UnitInfo.UnitInfo[Data.Unit]
 		local RarityData = RarityInfo[UnitData.Rarity]
 
-		local Value = e(UnitFrame, {
+		local Value = e(UnitFrame.CreateUnitFrame, {
 			UnitName = Data.Unit,
 			Level = Data.Level,
 			Cost = UnitData.PlacementCost,
-
-			Color = RarityData.Color,
-			StrokeColor = RarityData.StrokeColor,
-			BackgroundColor = RarityData.BackgroundColor,
 
 			OnClick = function()
 				SmallFrameClick({

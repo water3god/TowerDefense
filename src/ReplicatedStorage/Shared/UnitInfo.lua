@@ -2,57 +2,62 @@
 
 -- By Wa1er_God --
 
-export type Rarity = "Common" | "Rare" | "Epic" | "Legendary" | "Mythic";
+local RarityInfo = require(script.Parent.RarityInfo)
 
 export type UnitInfo = {
-	Rarity: Rarity;
-	Description: string;
-	PlacementCost: number;
-};
+	Rarity: RarityInfo.Rarity,
+	Description: string,
+	PlacementCost: number,
+}
 
-local Data = {};
+local Data = {}
 
-local UnitInfo: {[string]: UnitInfo} = {
+local UnitInfo: { [string]: UnitInfo } = {
+	["BLANK"] = {
+		Rarity = "BLANK",
+		Description = "NIL",
+		PlacementCost = 0,
+	},
 	["Scout"] = {
-		Rarity = "Common";
-		Description = "A Scout";
-		PlacementCost = 10;
-	};
+		Rarity = "Common",
+		Description = "A Scout",
+		PlacementCost = 10,
+	},
 	["Shocker"] = {
-		Rarity = "Common";
-		Description = "A Shocker";
-		PlacementCost = 10;
-	};
+		Rarity = "Common",
+		Description = "A Shocker",
+		PlacementCost = 10,
+	},
 	["Sniper"] = {
-		Rarity = "Rare";
-		Description = "A Damage dealer Sniper";
-		PlacementCost = 10;
-	};
+		Rarity = "Rare",
+		Description = "A Damage dealer Sniper",
+		PlacementCost = 10,
+	},
 	["Shotgunner"] = {
-		Rarity = "Epic";
-		Description = "A DamageDealer";
-		PlacementCost = 10;
-	};
+		Rarity = "Epic",
+		Description = "A DamageDealer",
+		PlacementCost = 10,
+	},
 	["Minigunner"] = {
-		Rarity = "Legendary";
-		Description = "A Minigunner from the depths";
-		PlacementCost = 10;
-	};
-};
+		Rarity = "Legendary",
+		Description = "A Minigunner from the depths",
+		PlacementCost = 10,
+	},
+}
 
 export type LevelInfo = {
-	MainColor: ColorSequence;
-	StrokeColor: ColorSequence;
-};
+	MainColor: ColorSequence,
+	StrokeColor: ColorSequence,
+}
 
-local LevelInfo: {[number]: LevelInfo} = {
+local LevelInfo: { [number]: LevelInfo } = {
 	[1] = {
-		MainColor = ColorSequence.new(Color3.new(1, 1, 1));
-		StrokeColor = ColorSequence.new(Color3.new());
-	};
-};
+		MainColor = ColorSequence.new(Color3.new(1, 1, 1)),
+		StrokeColor = ColorSequence.new(Color3.new()),
+	},
+}
 
-Data.UnitInfo = UnitInfo;
-Data.LevelInfo = LevelInfo;
+Data.UnitInfo = UnitInfo
+Data.LevelInfo = LevelInfo
 
-return Data;
+return Data

@@ -286,6 +286,8 @@ function Funcs.ConnectTime(StartTime: number, EndTime: number, Func: (Time: numb
 			end
 		end)
 	end
+
+	return Connection
 end
 
 function Funcs.PlaySound(Sound: Sound, Origin: CFrame)

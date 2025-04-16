@@ -29,6 +29,7 @@ export type Properties = {
 	RightText: string,
 	UnitImage: string?,
 	Hovered: boolean?,
+	Disabled: boolean?,
 
 	BackgroundColor: ColorSequence?,
 	NameColor: ColorSequence?,
@@ -42,6 +43,7 @@ export type Properties = {
 
 	native: { [any]: any }?,
 	children: { [any]: any }?,
+	containerChildren: { [any]: any }?,
 }
 
 local function CreateBaseFrame(Properties: Properties)
@@ -63,7 +65,7 @@ local function CreateBaseFrame(Properties: Properties)
 						Text = "",
 						[React.Event.MouseButton1Click] = Properties.OnClick,
 					},
-					children = {
+					children = Join({
 						BackgroundImage = e(Main.ImageLabel, {
 							native = {
 								Position = UDim2.fromScale(0.5, 0.5),
@@ -81,6 +83,7 @@ local function CreateBaseFrame(Properties: Properties)
 						}),
 						MainImage = e(Main.ImageLabel, {
 							native = {
+								Visible = not Properties.Disabled,
 								Position = UDim2.fromScale(0.5, 0.5),
 								Size = UDim2.fromScale(1, 1),
 								Image = Properties.UnitImage or "",
@@ -88,6 +91,7 @@ local function CreateBaseFrame(Properties: Properties)
 						}),
 						BaseName = e(Main.TextLabel, {
 							native = {
+								Visible = not Properties.Disabled,
 								Position = UDim2.fromScale(0.5, 0.8),
 								Size = UDim2.fromScale(0.7, 0.18),
 								Text = Properties.Name,
@@ -109,6 +113,7 @@ local function CreateBaseFrame(Properties: Properties)
 						}),
 						TopLeftLabel = e(Main.TextLabel, {
 							native = {
+								Visible = not Properties.Disabled,
 								Position = UDim2.fromScale(0.55, 0.2),
 								Size = UDim2.fromScale(0.8, 0.15),
 								TextXAlignment = Enum.TextXAlignment.Left,
@@ -129,6 +134,7 @@ local function CreateBaseFrame(Properties: Properties)
 						}),
 						TopRightLabel = e(Main.TextLabel, {
 							native = {
+								Visible = not Properties.Disabled,
 								Position = UDim2.fromScale(0.45, 0.2),
 								Size = UDim2.fromScale(0.8, 0.15),
 								TextXAlignment = Enum.TextXAlignment.Right,
@@ -147,7 +153,7 @@ local function CreateBaseFrame(Properties: Properties)
 								}),
 							},
 						}),
-					},
+					}, Properties.containerChildren),
 				}),
 			}, Properties.children),
 		}) :: any

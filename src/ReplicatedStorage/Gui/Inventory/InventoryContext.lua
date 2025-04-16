@@ -31,7 +31,7 @@ local function ContextProvider(props)
 
 	React.useEffect(function()
 		task.spawn(function()
-			if InventoryService.IsSynced then
+			if not InventoryService.IsSynced then
 				InventoryService.Synced:Wait()
 			end
 			SetInventory(InventoryService:GetInventory())
