@@ -21,7 +21,7 @@ local EquippedContext = require(GameFrames.EquippedUnitsContext)
 local controls = {}
 
 local Value = {
-	Value = {
+	Units = {
 		[1] = {
 			UniqueId = "Hello",
 			Unit = "Minigunner",
@@ -29,6 +29,8 @@ local Value = {
 		},
 	},
 	GlobalLevel = 5,
+	XP = 15,
+	NeededXP = 20,
 }
 
 -- Story --

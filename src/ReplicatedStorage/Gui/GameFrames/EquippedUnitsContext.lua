@@ -13,14 +13,26 @@ local e = React.createElement
 local InventoryService = require(ReplicatedStorage.Client.GlobalClient.InventoryService)
 
 export type Value = {
-	Value: { [number]: { UniqueId: string, Unit: string, Level: number } },
+	Units: { [number]: { UniqueId: string, Unit: string, Level: number } },
 	GlobalLevel: number,
+	XP: number,
+	NeededXP: number,
 }
 
-local Context = React.createContext({} :: Value)
+local Context = React.createContext({
+	Units = {},
+	GlobalLevel = 1,
+	XP = 10,
+	NeededXP = 10,
+} :: Value)
 
 local function Provider(props)
-	local Equipped, SetEquipped = React.useState({} :: Value)
+	local Equipped, SetEquipped = React.useState({
+		Units = {},
+		GlobalLevel = 1,
+		XP = 10,
+		NeededXP = 10,
+	} :: Value)
 	local Inventory = InventoryService:GetInventory()
 
 	React.useEffect(function()
@@ -38,19 +50,28 @@ local function Provider(props)
 			return NewTable
 		end
 
+		local function Update()
+			SetEquipped({
+				Units = Convert(InventoryService.EquippedUnits),
+				GlobalLevel = InventoryService.Level,
+				XP = InventoryService.XP,
+				NeededXP = InventoryService.NeededXP,
+			})
+		end
+
 		task.spawn(function()
 			if not InventoryService.IsSynced then
 				InventoryService.Synced:Wait()
 			end
-			SetEquipped({ Value = Convert(InventoryService.EquippedUnits), GlobalLevel = InventoryService.Level })
+			Update()
 		end)
 
 		local Connection = InventoryService.UnitEquipChanged:Connect(function()
-			SetEquipped({ Value = Convert(InventoryService.EquippedUnits), GlobalLevel = InventoryService.Level })
+			Update()
 		end)
 
 		local Connection1 = InventoryService.LevelChanged:Connect(function()
-			SetEquipped({ Value = Convert(InventoryService.EquippedUnits), GlobalLevel = InventoryService.Level })
+			Update()
 		end)
 
 		return function()

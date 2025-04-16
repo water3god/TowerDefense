@@ -24,9 +24,15 @@ local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
 local MainButtonFrame = require(CoreGame.MainButtonFrame)
 
+local GameFrames = Gui.GameFrames
+local Bottom = require(GameFrames.Bottom)
+local Top = require(GameFrames.Top)
+
 -- Contexts --
 local InventoryContext = require(Inventory.InventoryContext)
 local TradeMenuContext = require(Trade.TradeContext)
+local EquippedUnitsContext = require(GameFrames.EquippedUnitsContext)
+local WaveContext = require(GameFrames.WaveContext)
 
 local IsRunning = RunService:IsRunning()
 
@@ -35,6 +41,7 @@ local InventoryService = require(Client.GlobalClient.InventoryService)
 
 local Shared = ReplicatedStorage.Shared
 local Types = require(Shared.Types)
+local IsLobby = require(Shared.IsLobby)
 
 local Constants = require(script.Constants)
 local OriginalPositions = require(script.OriginalPositions)
@@ -222,6 +229,14 @@ local function Render()
 					}) :: any,
 				}
 			),
+			OtherGui = e("Folder", {}, {
+				TopFrame = not IsLobby and e(WaveContext.Provider, {}, {
+					TopFrame = e(Top),
+				}),
+				BottomFrame = e(EquippedUnitsContext.Provider, {}, {
+					BottomFrame = e(Bottom),
+				}),
+			}),
 			Buttons = e(Main.Frame, {
 				native = {
 					Position = UDim2.fromScale(0.1, 0.5),

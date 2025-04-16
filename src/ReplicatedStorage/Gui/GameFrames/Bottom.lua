@@ -81,7 +81,7 @@ local Size = UDim2.fromScale(0.15, 0.6)
 
 local function CreateBottomFrame(Properties: Properties)
 	local Context = React.useContext(EquippedUnitsContext.Context)
-	local Units = Context.Value
+	local Units = Context.Units
 	return e(Main.CanvasGroup, {
 		native = Join({
 			Size = UDim2.fromScale(0.4, 0.2),
@@ -139,6 +139,46 @@ local function CreateBottomFrame(Properties: Properties)
 				native = {
 					Position = UDim2.fromScale(0.85, 0.35),
 					Size = Size,
+				},
+			}),
+			LevelBar = e(Main.ImageLabel, {
+				native = {
+					Position = UDim2.fromScale(0.5, 0.8),
+					Size = UDim2.fromScale(1, 0.2),
+					Image = "rbxassetid://110783523635885",
+				},
+				children = {
+					Container = e(Main.Frame, {
+						native = {
+							Size = UDim2.fromScale(0.995, 0.92),
+						},
+						children = {
+							UICorner = e("UICorner", {
+								CornerRadius = UDim.new(0.5, 0),
+							}),
+							ProgressBar = e(Main.Frame, {
+								native = {
+									BackgroundTransparency = 0,
+									BackgroundColor3 = Color3.fromRGB(104, 36, 132),
+									AnchorPoint = Vector2.new(0, 0.5),
+									Position = UDim2.fromScale(0, 0.5),
+									Size = UDim2.fromScale(math.clamp(Context.XP / Context.NeededXP, 0, 1), 1),
+								},
+								children = {
+									UICorner = e("UICorner", {
+										CornerRadius = UDim.new(0.5, 0),
+									}),
+								},
+							}),
+						},
+					}),
+					LevelLabel = e(Main.TextLabel, {
+						native = {
+							Size = UDim2.fromScale(0.3, 0.8),
+							Text = string.format("Level %u (%u/%u)", Context.GlobalLevel, Context.XP, Context.NeededXP),
+							ZIndex = 2,
+						},
+					}),
 				},
 			}),
 		}, Properties.children),
