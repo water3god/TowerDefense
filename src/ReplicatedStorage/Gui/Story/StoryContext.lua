@@ -21,45 +21,68 @@ local Client = ReplicatedStorage.Client
 local LobbyClient = Client.LobbyClient
 local StoryService = require(LobbyClient.StoryService)
 
+type Context = {
+	Enabled: boolean,
+	CompletedMaps: {},
+	Data: StoryService.BoothData?,
+}
+
 local Context = React.createContext({
 	Enabled = false,
-} :: {
-	Enabled: boolean,
-	Data: StoryService.BoothData?,
-})
+	CompletedMaps = {},
+} :: Context)
 
 local function Provider(props)
 	local Value, SetValue = React.useState({
 		Enabled = false,
 		Data = nil,
-	})
+		CompletedMaps = {},
+	} :: Context)
 
 	React.useEffect(function()
 		local Connection = StoryService.BoothChoosing:Connect(function()
-			SetValue({
-				Enabled = true,
-			})
+			local NewTable = table.clone(Value)
+			NewTable.Enabled = true
+			NewTable.Data = nil
+			SetValue(NewTable)
 		end)
 
 		local Connection1 = StoryService.BoothRestarted:Connect(function()
-			SetValue({
-				Enabled = false,
-			})
+			local NewTable = table.clone(Value)
+			NewTable.Enabled = false
+			NewTable.Data = nil
+			SetValue(NewTable)
 		end)
 
 		local Connection2 = StoryService.BoothWaiting:Connect(function(Data: StoryService.BoothData)
-			SetValue({
-				Enabled = true,
-				Data = Data :: any,
-			})
+			local NewTable = table.clone(Value)
+			NewTable.Enabled = true
+			NewTable.Data = Data
+			SetValue(NewTable)
 		end)
 
-		local connection3 = StoryService
+		local Connection3 = StoryService.PlayerChanged:Connect(
+			function(PlayerId: number, Added: boolean, Changed: boolean)
+				if Changed and Value.Data and StoryService.Data then
+					local NewTable = table.clone(Value)
+					NewTable.Data = table.clone(StoryService.Data) :: any
+					SetValue(NewTable)
+				end
+			end
+		)
+
+		local Connection4 = StoryService.MapDataChanged:Connect(function(Data)
+			local NewTable = table.clone(Value)
+			NewTable.CompletedMaps = Data
+			SetValue(NewTable)
+		end)
 
 		return function()
 			Connection:Disconnect()
 			Connection1:Disconnect()
 			Connection2:Disconnect()
+			Connection3:Disconnect()
+			Connection4:Disconnect()
 		end
 	end, {})
 

@@ -26,6 +26,9 @@ local BoothWaiting: RemoteEvent = ServerFires.BoothWaiting
 local PlayerChanged: RemoteEvent = ServerFires.PlayerChanged
 --local TPGuiSet = ServerFires.TPGuiSet
 
+local DataEvents = BoothEvents.DataEvents
+local DataSync: RemoteEvent = DataEvents.DataSync
+
 export type TimeData = {
 	StartTime: number,
 	EndTime: number,
@@ -45,7 +48,13 @@ export type MapCrossData = {
 	Difficulty: string,
 }
 
+export type MapData = {
+	[string]: { number },
+}
+
 local Module: {
+	MapData: MapData,
+	MapDataChanged: Signal.Signal<MapData>,
 	Data: BoothData?,
 	-- Owner has been initated and he is chooing the map (No one else can join)
 	BoothChoosing: Signal.Signal<TimeData>,
@@ -63,6 +72,8 @@ local Module: {
 	OwnerStart: () -> (),
 } =
 	{
+		MapData = {},
+		MapDataChanged = Signal.new(),
 		BoothChoosing = Signal.new(),
 		BoothMapLoading = Signal.new(),
 		BoothRestarted = Signal.new(),
@@ -118,6 +129,11 @@ PlayerChanged.OnClientEvent:Connect(function(PlayerId: number, Added: boolean)
 		end
 	end
 	Module.PlayerChanged:Fire(PlayerId, Added, Changed)
+end)
+
+DataSync.OnClientEvent:Connect(function(Data: MapData)
+	Module.MapData = Data
+	Module.MapDataChanged:Fire(Data)
 end)
 
 return Module
