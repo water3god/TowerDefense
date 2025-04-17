@@ -2,18 +2,18 @@
 
 -- By Wa1er_God --
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage");
-local RunService = game:GetService("RunService");
-local TweenService = game:GetService("TweenService");
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 
-local Packages = ReplicatedStorage.Packages;
-local React = require(Packages.React);
-local e = React.createElement;
+local Packages = ReplicatedStorage.Packages
+local React = require(Packages.React)
+local e = React.createElement
 
-local Modules = ReplicatedStorage.Modules;
-local Join = require(Modules.JoinDicts);
+local Modules = ReplicatedStorage.Modules
+local Join = require(Modules.JoinDicts)
 
-local Hooks = {};
+local Hooks = {}
 
 function Hooks.useClock()
 	local clockBinding, setClockBinding = React.useBinding(0)
@@ -31,33 +31,33 @@ function Hooks.useClock()
 	return clockBinding
 end
 
---[[function Hooks.ReactLerp(TotalTime: number, EndValue: number, Binding: React.Binding<number>, SetBinding: React.BindingUpdater<number>)
-	React.useEffect(function()
-		local StartTime = workspace:GetServerTimeNow();
-		local Connection: RBXScriptConnection? = nil;
-		local StartValue = Binding:getValue();
-		Connection = RunService.PostSimulation:Connect(function(Delta: number)
-			local Time = (workspace:GetServerTimeNow() - StartTime) + TotalTime;
-			local alpha = (math.clamp(Time / TotalTime, 0, 1));
-			local newalpha = TweenService:GetValue(alpha, LERPSTYLE, Enum.EasingDirection.Out);
-			SetBinding(math.lerp(StartValue, EndValue, newalpha));
+function Hooks.UseTime(TotalTime: number, StartTime: number)
+	local Time, SetTime =
+		React.useBinding(math.clamp(StartTime - workspace:GetServerTimeNow() + TotalTime, 0, TotalTime))
 
-			if alpha == 1 then
+	React.useEffect(function()
+		local Connection: RBXScriptConnection? = nil
+		Connection = RunService.PostSimulation:Connect(function()
+			local NewTime = math.clamp(StartTime - workspace:GetServerTimeNow() + TotalTime, 0, TotalTime)
+			if NewTime == 0 then
 				if Connection then
-					Connection:Disconnect();
+					Connection:Disconnect()
+					Connection = nil
 				end
 			end
+			SetTime(NewTime)
 		end)
 
 		return function()
 			if Connection then
-				Connection:Disconnect();
+				Connection:Disconnect()
+				Connection = nil
 			end
 		end
-	end, {})
+	end)
 
-	return Binding, SetBinding;
-end]]
+	return Time
+end
 
 function Hooks.useEventConnection<T...>(
 	event: RBXScriptSignal<T...>, -- Can also include | Signal.Signal<T...> if you're using a custom signal type
@@ -77,4 +77,4 @@ function Hooks.useEventConnection<T...>(
 	end, { event, cachedCallback } :: { unknown })
 end
 
-return Hooks;
+return Hooks

@@ -28,6 +28,9 @@ local GameFrames = Gui.GameFrames
 local Bottom = require(GameFrames.Bottom)
 local Top = require(GameFrames.Top)
 
+local Story = Gui.Story
+local MainStory = require(Story.MainStory)
+
 -- Contexts --
 local InventoryContext = require(Inventory.InventoryContext)
 local TradeMenuContext = require(Trade.TradeContext)
@@ -64,6 +67,10 @@ export type TradeFrameProps = {
 	Visible: boolean,
 }
 
+export type StoryFrameProps = {
+	Visible: boolean,
+}
+
 local GlobalNotVisiblePosition = UDim2.fromScale(0.5, 2)
 
 local function AnimateWrapper(Props: { Visible: boolean, Name: string })
@@ -73,7 +80,6 @@ local function AnimateWrapper(Props: { Visible: boolean, Name: string })
 		}
 	end)
 
-	local FrameRef = React.useRef(nil :: GuiObject?)
 	local OriginalPosition, SetPosition = React.useState(nil :: UDim2?)
 	local NotVisiblePosition, SetNotVisiblePosition = React.useState(GlobalNotVisiblePosition)
 
@@ -99,12 +105,11 @@ local function AnimateWrapper(Props: { Visible: boolean, Name: string })
 		else
 			return GlobalNotVisiblePosition
 		end
-	end),
-		FrameRef
+	end)
 end
 
-local function RenderInventory(Props: InventoryProps)
-	local Position, FrameRef = AnimateWrapper({
+local RenderInventory = React.forwardRef(function(Props: InventoryProps, ref)
+	local Position = AnimateWrapper({
 		Visible = Props.Visible,
 		Name = Constants.INVENTORY_FRAME,
 	})
@@ -113,15 +118,15 @@ local function RenderInventory(Props: InventoryProps)
 		InventoryMain = e(InventoryMain, {
 			CloseClick = Props.CloseClick,
 			native = {
-				ref = FrameRef,
+				ref = ref,
 				Position = Position,
 			},
 		}),
 	})
-end
+end)
 
 local function RenderTradeMenu(Props: TradeMenuProps)
-	local Position, FrameRef = AnimateWrapper({
+	local Position = AnimateWrapper({
 		Visible = Props.Visible,
 		Name = Constants.TRADE_MENU,
 	})
@@ -130,7 +135,6 @@ local function RenderTradeMenu(Props: TradeMenuProps)
 		TradeMenu = e(TradeMenu, {
 			CloseClick = Props.CloseClick,
 			native = {
-				ref = FrameRef,
 				Position = Position,
 			},
 		}),
@@ -138,7 +142,7 @@ local function RenderTradeMenu(Props: TradeMenuProps)
 end
 
 local function RenderTradeFrame(Props: TradeFrameProps)
-	local Position, FrameRef = AnimateWrapper({
+	local Position = AnimateWrapper({
 		Visible = Props.Visible,
 		Name = Constants.TRADE_FRAME,
 	})
@@ -146,7 +150,19 @@ local function RenderTradeFrame(Props: TradeFrameProps)
 	return e(TradeFrame, {
 		Toggle = Props.Toggle,
 		native = {
-			ref = FrameRef,
+			Position = Position,
+		},
+	})
+end
+
+local function RenderStoryFrame(Props: any)
+	local Position = AnimateWrapper({
+		Visible = Props.Visible,
+		Name = Constants.STORY_FRAME,
+	})
+
+	return e(MainStory, {
+		native = {
 			Position = Position,
 		},
 	})
@@ -159,6 +175,22 @@ local function Render()
 		return {
 			Size = 0,
 		}
+	end)
+
+	local InventoryRef = React.useRef(nil)
+
+	local SetHovered = React.useCallback(function(HoveredId: string?)
+		if InventoryRef.current then
+			InventoryRef.current.Hover(HoveredId)
+		end
+	end, {})
+
+	local GetHovered = React.useCallback(function(): string?
+		if InventoryRef.current then
+			return InventoryRef.current.GetHovered()
+		end
+
+		return nil
 	end)
 
 	local OnMainButtonClick = React.useCallback(function(Name: string)
@@ -207,6 +239,7 @@ local function Render()
 					[Constants.INVENTORY_FRAME] = e(RenderInventory, {
 						Visible = if VisibleFrame == Constants.INVENTORY_FRAME then true else false,
 						Inventory = InventoryService:GetInventory(),
+						ref = InventoryRef,
 						CloseClick = function()
 							OnCloseClick(Constants.INVENTORY_FRAME)
 						end,
@@ -227,6 +260,12 @@ local function Render()
 							OnCloseClick(Constants.TRADE_MENU)
 						end,
 					}) :: any,
+					[Constants.STORY_FRAME] = e(RenderStoryFrame, {
+						Visible = if VisibleFrame == Constants.STORY_FRAME then true else false,
+						CloseClick = function()
+							OnCloseClick(Constants.STORY_FRAME)
+						end,
+					}) :: any,
 				}
 			),
 			OtherGui = e("Folder", {}, {
@@ -234,7 +273,13 @@ local function Render()
 					TopFrame = e(Top),
 				}),
 				BottomFrame = e(EquippedUnitsContext.Provider, {}, {
-					BottomFrame = e(Bottom),
+					BottomFrame = e(Bottom, {
+						SetHovered = SetHovered,
+						GetHovered = GetHovered,
+						SetVisible = function(Visible: boolean)
+							SetVisibleInternal(Constants.INVENTORY_FRAME, Visible)
+						end,
+					}),
 				}),
 			}),
 			Buttons = e(Main.Frame, {

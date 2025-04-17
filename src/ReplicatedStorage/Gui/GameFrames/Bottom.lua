@@ -27,15 +27,24 @@ local Shared = ReplicatedStorage.Shared
 local LevelRequirements = require(Shared.LevelRequirements)
 
 export type Properties = {
+	SetHovered: (HoveredId: string?) -> ()?,
+	SetVisible: ((Visible: boolean) -> ())?,
+	GetHovered: (() -> string?)?,
+
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
 
 export type OtherProps = {
+	UniqueId: string?,
 	UnitName: string?,
 	GlobalLevel: number,
 	Level: number?,
 	LevelReq: number,
+
+	SetHovered: ((HoveredId: string?) -> ())?,
+	SetVisible: ((Visible: boolean) -> ())?,
+	GetHovered: (() -> string?)?,
 
 	native: { [any]: any }?,
 	children: { [any]: any }?,
@@ -50,6 +59,18 @@ local function CreateBaseFrame(Properties: OtherProps)
 		Level = Properties.Level or 1,
 		native = Properties.native,
 		children = Properties.children,
+		OnClick = function()
+			if Properties.UniqueId and Properties.SetHovered and Properties.GetHovered then
+				if Properties.GetHovered() == Properties.UniqueId then
+					Properties.SetHovered(nil)
+				else
+					Properties.SetHovered(Properties.UniqueId)
+				end
+			end
+			if Properties.SetVisible then
+				Properties.SetVisible(true)
+			end
+		end,
 		containerChildren = {
 			Lock = e(Main.ImageLabel, {
 				native = {
@@ -92,50 +113,70 @@ local function CreateBottomFrame(Properties: Properties)
 				AspectRatio = 3.555,
 			}),
 			Frame1 = e(CreateBaseFrame, {
+				UniqueId = Units[1] and Units[1].UniqueId,
 				LevelReq = LevelRequirements.EquippedFrames[1],
 				UnitName = Units[1] and Units[1].Unit,
 				Level = Units[1] and Units[1].Level,
 				GlobalLevel = Context.GlobalLevel,
+				SetHovered = Properties.SetHovered,
+				GetHovered = Properties.GetHovered,
+				SetVisible = Properties.SetVisible,
 				native = {
 					Position = UDim2.fromScale(0.15, 0.35),
 					Size = Size,
 				},
 			}),
 			Frame2 = e(CreateBaseFrame, {
+				UniqueId = Units[2] and Units[2].UniqueId,
 				LevelReq = LevelRequirements.EquippedFrames[2],
 				UnitName = Units[2] and Units[2].Unit,
 				Level = Units[2] and Units[2].Level,
 				GlobalLevel = Context.GlobalLevel,
+				SetHovered = Properties.SetHovered,
+				GetHovered = Properties.GetHovered,
+				SetVisible = Properties.SetVisible,
 				native = {
 					Position = UDim2.fromScale(0.325, 0.35),
 					Size = Size,
 				},
 			}),
 			Frame3 = e(CreateBaseFrame, {
+				UniqueId = Units[3] and Units[3].UniqueId,
 				LevelReq = LevelRequirements.EquippedFrames[3],
 				UnitName = Units[3] and Units[3].Unit,
 				Level = Units[3] and Units[3].Level,
 				GlobalLevel = Context.GlobalLevel,
+				SetHovered = Properties.SetHovered,
+				GetHovered = Properties.GetHovered,
+				SetVisible = Properties.SetVisible,
 				native = {
 					Position = UDim2.fromScale(0.5, 0.35),
 					Size = Size,
 				},
 			}),
 			Frame4 = e(CreateBaseFrame, {
+				UniqueId = Units[4] and Units[4].UniqueId,
 				LevelReq = LevelRequirements.EquippedFrames[4],
 				UnitName = Units[4] and Units[4].Unit,
 				Level = Units[4] and Units[4].Level,
 				GlobalLevel = Context.GlobalLevel,
+				SetHovered = Properties.SetHovered,
+				GetHovered = Properties.GetHovered,
+				SetVisible = Properties.SetVisible,
 				native = {
 					Position = UDim2.fromScale(0.675, 0.35),
 					Size = Size,
 				},
 			}),
 			Frame5 = e(CreateBaseFrame, {
+				UniqueId = Units[5] and Units[5].UniqueId,
 				LevelReq = LevelRequirements.EquippedFrames[5],
 				UnitName = Units[5] and Units[5].Unit,
 				Level = Units[5] and Units[5].Level,
 				GlobalLevel = Context.GlobalLevel,
+				SetHovered = Properties.SetHovered,
+				GetHovered = Properties.GetHovered,
+				SetVisible = Properties.SetVisible,
 				native = {
 					Position = UDim2.fromScale(0.85, 0.35),
 					Size = Size,
