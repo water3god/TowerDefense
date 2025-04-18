@@ -1,0 +1,166 @@
+--!strict
+
+-- By Wa1er_God --
+
+-- Services --
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+
+-- Libraries --
+local Packages = ReplicatedStorage.Packages
+local React = require(Packages.React)
+local ReactRoblox = require(Packages.ReactRoblox)
+local e = React.createElement
+
+local Modules = ReplicatedStorage.Modules
+local HelperFunctions = require(Modules.HelperFunctions)
+local Join = HelperFunctions.joinDicts
+
+-- Reference UI --
+local Gui = ReplicatedStorage.Gui
+local CoreGame = Gui.CoreGame
+local Main = require(CoreGame.Main)
+local CloseButton = require(CoreGame.CloseButton)
+local UIStroke = require(CoreGame.UIStroke)
+local Hooks = require(CoreGame.Hooks)
+
+local Story = Gui.Story
+local StoryContext = require(Story.StoryContext)
+
+local Shared = ReplicatedStorage.Shared
+local GameInfo = require(Shared.GameInfo)
+
+local StoryService = require(ReplicatedStorage.Client.LobbyClient.StoryService)
+
+local Player = Players.LocalPlayer
+
+export type Properties = {
+	native: { [any]: any }?,
+	children: { [any]: any }?,
+}
+
+local function CreateWaitingFrame(Props: Properties)
+	local StoryData = React.useContext(StoryContext.Context)
+
+	local Time, TotalTime, SetTimeData = Hooks.UseTime()
+	local GameData, SetGameData = React.useState(nil :: { MapData: GameInfo.MapInfo, StageData: GameInfo.LevelInfo }?)
+
+	React.useEffect(function()
+		if StoryData.Data then
+			SetTimeData(StoryData.Data.EndTime - StoryData.Data.StartTime, StoryData.Data.StartTime)
+		end
+	end, { StoryData })
+
+	React.useEffect(function()
+		if StoryData.Data then
+			local Data = StoryData.Data
+			local MapData, StageData = GameInfo.GetDataFromInfo(Data.MapId, Data.LevelId)
+			if MapData and StageData then
+				SetGameData({
+					MapData = MapData,
+					StageData = StageData,
+				})
+			end
+		end
+	end, { StoryData })
+
+	local StartClick = React.useCallback(function()
+		StoryService.OwnerStart()
+	end, {})
+
+	return e(Main.ImageLabel, {
+		native = Join({
+			Position = UDim2.fromScale(0.5, 0.65),
+			Size = UDim2.fromScale(0.4, 0.25),
+			Image = "rbxassetid://100546338175267",
+		}, Props.native),
+		children = Join({
+			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+				AspectRatio = 2,
+			}),
+			CloseButton = e(CloseButton, {
+				Position = UDim2.fromScale(1, 0),
+				Size = UDim2.fromScale(0.3, 0.3),
+				OnClick = function() end,
+			}),
+			StartButton = e(Main.Animateables.ImageButton, {
+				native = {
+					Position = UDim2.fromScale(0.35, 0.625),
+					Size = UDim2.fromScale(0.4, 0.2),
+					Image = "rbxassetid://121336998793729",
+					Visible = StoryData.Data and Player.UserId == StoryData.Data.OwnerId,
+					[React.Event.MouseButton1Click] = StartClick,
+				},
+				children = {
+					Label = e(Main.TextLabel, {
+						native = {
+							Size = UDim2.fromScale(0.7, 0.7),
+							Text = "Start",
+						},
+					}),
+				},
+			}),
+			MapImage = e(Main.ImageLabel, {
+				native = {
+					Position = UDim2.fromScale(0.8, 0.4),
+					Size = UDim2.fromScale(0.4, 0.55),
+					Image = GameData and GameData.MapData.Image,
+				},
+				children = {
+					UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+						AspectRatio = 1,
+					}),
+				},
+			}),
+			DifficultyLabel = e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.35, 0.4),
+					Size = UDim2.fromScale(0.5, 0.1),
+					Text = StoryData.Data and GameInfo.GetDifficultyString(StoryData.Data.Difficulty)
+						or "Difficulty: N/A",
+				},
+			}),
+			TitleLabel = e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.35, 0.2),
+					Size = UDim2.fromScale(0.55, 0.2),
+					Text = GameData and GameInfo.GetFullName(
+						GameData.MapData.Name,
+						GameData.StageData.Index,
+						GameData.StageData.Name
+					) or "N/A",
+				},
+			}),
+			TimeBar = e(Main.CanvasGroup, {
+				native = {
+					Position = UDim2.fromScale(0.5, 0.85),
+					Size = UDim2.fromScale(0.8, 0.15),
+				},
+				children = {
+					UICorner = e("UICorner", {
+						CornerRadius = UDim.new(0.3, 0),
+					}),
+					UIStroke = e(UIStroke.UIStrokeBasic, {
+						Stroke = 0.003,
+					}),
+					Bar = e(Main.Frame, {
+						BackgroundTransparency = 0,
+						BackgroundColor3 = Color3.fromRGB(109, 255, 56),
+						AnchorPoint = Vector2.new(0, 0.5),
+						Size = Time:map(function(Time: number)
+							return UDim2.fromScale(Time / TotalTime:getValue(), 1)
+						end),
+					}),
+					TimeLabel = e(Main.TextLabel, {
+						Size = UDim2.fromScale(1, 0.7),
+						Text = Time:map(function(Time: number)
+							return string.format("Time Left: %u", math.floor(Time))
+						end),
+					}),
+				},
+			}),
+		}, Props.children),
+	})
+end
+
+return CreateWaitingFrame

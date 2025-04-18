@@ -74,6 +74,15 @@ function Hooks.UseTime()
 		end
 end
 
+function Hooks.LayoutOrder(): () -> number
+	local layoutOrder = 0
+
+	return function()
+		layoutOrder += 1
+		return layoutOrder
+	end
+end
+
 function Hooks.useEventConnection<T...>(
 	event: RBXScriptSignal<T...>, -- Can also include | Signal.Signal<T...> if you're using a custom signal type
 	callback: (T...) -> (),

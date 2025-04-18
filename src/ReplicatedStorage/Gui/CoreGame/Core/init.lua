@@ -36,6 +36,7 @@ local InventoryContext = require(Inventory.InventoryContext)
 local TradeMenuContext = require(Trade.TradeContext)
 local EquippedUnitsContext = require(GameFrames.EquippedUnitsContext)
 local WaveContext = require(GameFrames.WaveContext)
+local StoryContext = require(Story.StoryContext)
 
 local IsRunning = RunService:IsRunning()
 
@@ -161,10 +162,14 @@ local function RenderStoryFrame(Props: any)
 		Name = Constants.STORY_FRAME,
 	})
 
-	return e(MainStory, {
-		native = {
-			Position = Position,
-		},
+	return e(StoryContext.Provider, {}, {
+		MainStory = e(MainStory, {
+			Toggle = Props.Toggle,
+			Visible = Props.Visible,
+			native = {
+				Position = Position,
+			},
+		}),
 	})
 end
 
@@ -262,6 +267,9 @@ local function Render()
 					}) :: any,
 					[Constants.STORY_FRAME] = e(RenderStoryFrame, {
 						Visible = if VisibleFrame == Constants.STORY_FRAME then true else false,
+						Toggle = function(Visible)
+							SetVisibleInternal(Constants.TRADE_FRAME, Visible)
+						end,
 						CloseClick = function()
 							OnCloseClick(Constants.STORY_FRAME)
 						end,

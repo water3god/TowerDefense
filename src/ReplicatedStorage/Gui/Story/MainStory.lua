@@ -24,6 +24,7 @@ local Title = require(CoreGame.Title)
 local CloseButton = require(CoreGame.CloseButton)
 local UIStroke = require(CoreGame.UIStroke)
 local Hooks = require(CoreGame.Hooks)
+local LayoutOrder = Hooks.LayoutOrder
 
 local Inventory = Gui.Inventory
 local UnitFrame = require(Inventory.UnitFrame)
@@ -37,19 +38,12 @@ local GameInfo = require(Shared.GameInfo)
 local StoryService = require(ReplicatedStorage.Client.LobbyClient.StoryService)
 
 export type Properties = {
+	Toggle: (Visible: boolean) -> ()?,
+	Visible: boolean,
 	CloseClick: () -> ()?,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
-
-local function LayoutOrder(): () -> number
-	local layoutOrder = 0
-
-	return function()
-		layoutOrder += 1
-		return layoutOrder
-	end
-end
 
 local function CreateStage(Props: { Hovered: boolean, Number: number, OnClick: () -> () })
 	return e(Main.Animateables.TextButton, {
@@ -239,6 +233,22 @@ local function CreateMainStory(Properties: Properties)
 			Difficulty = Difficulty,
 		})
 	end, { CurrentMap :: any, Stage :: any, Difficulty :: any })
+
+	React.useEffect(function()
+		if Properties.Toggle then
+			if StoryData.Enabled and StoryData.BoothTimeData then
+				Properties.Toggle(true)
+			else
+				Properties.Toggle(false)
+			end
+		end
+	end, { StoryData })
+
+	React.useEffect(function()
+		if not Properties.Visible then
+			StoryService.LeaveBooth()
+		end
+	end, { Properties.Visible })
 
 	return e(Main.ImageLabel, {
 		native = Join({

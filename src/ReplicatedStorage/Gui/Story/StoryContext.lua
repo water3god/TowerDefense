@@ -60,6 +60,7 @@ local function Provider(props)
 			local NewTable = table.clone(Value)
 			NewTable.Enabled = true
 			NewTable.Data = Data
+			NewTable.BoothTimeData = nil
 			SetValue(NewTable)
 		end)
 
