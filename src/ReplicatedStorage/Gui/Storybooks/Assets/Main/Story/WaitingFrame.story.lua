@@ -40,7 +40,12 @@ local Story = {
 				},
 			},
 		}, {
-			WaitingFrame = e(WaitingFrame),
+			WaitingFrame = e(WaitingFrame, {
+				native = {
+					Size = UDim2.fromScale(0.6, 0.8),
+					Position = UDim2.fromScale(0.5, 0.5),
+				},
+			}),
 		})
 		return Frame
 	end,

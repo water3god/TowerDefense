@@ -97,12 +97,17 @@ local function CreateWaitingFrame(Props: Properties)
 							Size = UDim2.fromScale(0.7, 0.7),
 							Text = "Start",
 						},
+						children = {
+							UIStroke = e(UIStroke.UIStrokeBasic, {
+								Stroke = 0.003,
+							}),
+						},
 					}),
 				},
 			}),
 			MapImage = e(Main.ImageLabel, {
 				native = {
-					Position = UDim2.fromScale(0.8, 0.4),
+					Position = UDim2.fromScale(0.8, 0.6),
 					Size = UDim2.fromScale(0.4, 0.55),
 					Image = GameData and GameData.MapData.Image,
 				},
@@ -114,16 +119,23 @@ local function CreateWaitingFrame(Props: Properties)
 			}),
 			DifficultyLabel = e(Main.TextLabel, {
 				native = {
-					Position = UDim2.fromScale(0.35, 0.4),
+					Position = UDim2.fromScale(0.35, 0.575),
 					Size = UDim2.fromScale(0.5, 0.1),
 					Text = StoryData.Data and GameInfo.GetDifficultyString(StoryData.Data.Difficulty)
 						or "Difficulty: N/A",
 				},
 			}),
+			PlayersLabel = e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.35, 0.4),
+					Size = UDim2.fromScale(0.5, 0.1),
+					Text = StoryData.Data and string.format("Players: %u/%u", #StoryData.Data.Players, 4) or "0/4",
+				},
+			}),
 			TitleLabel = e(Main.TextLabel, {
 				native = {
-					Position = UDim2.fromScale(0.35, 0.2),
-					Size = UDim2.fromScale(0.55, 0.2),
+					Position = UDim2.fromScale(0.5, 0.2),
+					Size = UDim2.fromScale(0.9, 0.2),
 					Text = GameData and GameInfo.GetFullName(
 						GameData.MapData.Name,
 						GameData.StageData.Index,
@@ -133,6 +145,8 @@ local function CreateWaitingFrame(Props: Properties)
 			}),
 			TimeBar = e(Main.CanvasGroup, {
 				native = {
+					BackgroundTransparency = 0,
+					BackgroundColor3 = Color3.new(),
 					Position = UDim2.fromScale(0.5, 1.2),
 					Size = UDim2.fromScale(0.8, 0.15),
 				},
@@ -141,7 +155,7 @@ local function CreateWaitingFrame(Props: Properties)
 						CornerRadius = UDim.new(0.3, 0),
 					}),
 					UIStroke = e(UIStroke.UIStrokeBasic, {
-						Stroke = 0.003,
+						Stroke = 0.005,
 						native = {
 							LineJoinMode = Enum.LineJoinMode.Round,
 						},
@@ -167,7 +181,7 @@ local function CreateWaitingFrame(Props: Properties)
 						},
 						children = {
 							UIStroke = e(UIStroke.UIStrokeBasic, {
-								Stroke = 0.002,
+								Stroke = 0.003,
 							}),
 						},
 					}),
