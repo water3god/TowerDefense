@@ -11,7 +11,7 @@ local Modules = ReplicatedStorage.Modules
 local Signal = require(Modules.Signal)
 
 local Remotes = ReplicatedStorage.Remotes
-local BoothEvents = Remotes.BoothEvents
+local BoothEvents = Remotes.Booth
 
 local ClientFires = BoothEvents.ClientFires
 local ChooseMap: RemoteEvent = ClientFires.ChooseMap
@@ -48,9 +48,13 @@ export type MapCrossData = {
 	Difficulty: string,
 }
 
-export type MapData = {
-	[string]: { number },
+export type StageData = {
+	FastestTime: number,
+	FinishedCount: number,
 }
+
+-- First is MapId, then is Stage number, then Difficulty
+export type MapData = { [string]: { [number]: { [string]: StageData } } }
 
 local Module: {
 	MapData: MapData,

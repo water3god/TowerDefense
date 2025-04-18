@@ -24,3 +24,9 @@ local function HandleData(Data: PlayerData.PlayerData)
 
 	Data.StageChanged:Connect(SendData)
 end
+
+for _, Data in pairs(PlayerData.GetDatas()) do
+	HandleData(Data)
+end
+
+PlayerData.DataAdded:Connect(HandleData)

@@ -13,19 +13,32 @@ local e = React.createElement
 
 -- Reference UI --
 local Gui = ReplicatedStorage.Gui
-local MainStory = require(Gui.Story.MainStory)
+local StoryFolder = Gui.Story
+local MainStory = require(StoryFolder.MainStory)
+local StoryContext = require(StoryFolder.StoryContext)
 
 -- Story --
 local Story = {
 	react = React,
 	reactRoblox = ReactRoblox,
 	story = function(Properties)
-		local Frame = e(MainStory, {
-			native = {
-				Size = UDim2.fromScale(0.65, 0.9),
+		return e(StoryContext.Context.Provider, {
+			value = {
+				Enabled = true,
+				CompletedMaps = {},
+				Data = nil,
+				BoothTimeData = {
+					StartTime = workspace:GetServerTimeNow(),
+					EndTime = workspace:GetServerTimeNow() + 10,
+				},
 			},
+		}, {
+			MainStory = e(MainStory, {
+				native = {
+					Size = UDim2.fromScale(0.65, 0.9),
+				},
+			}),
 		})
-		return Frame
 	end,
 }
 

@@ -13,6 +13,7 @@ local e = React.createElement
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
+local Len = HelperFunctions.Len
 
 -- Reference UI --
 local Gui = ReplicatedStorage.Gui
@@ -22,11 +23,15 @@ local BaseFrame = require(Gui.CoreGame.BaseFrame)
 local Title = require(CoreGame.Title)
 local CloseButton = require(CoreGame.CloseButton)
 local UIStroke = require(CoreGame.UIStroke)
+local Hooks = require(CoreGame.Hooks)
 
 local Story = Gui.Story
+local StoryContext = require(Story.StoryContext)
 
 local Shared = ReplicatedStorage.Shared
-local LevelRequirements = require(Shared.LevelRequirements)
+local GameInfo = require(Shared.GameInfo)
+
+local StoryService = require(ReplicatedStorage.Client.LobbyClient.StoryService)
 
 export type Properties = {
 	CloseClick: () -> ()?,
@@ -74,10 +79,112 @@ local HoveredColor = Color3.fromRGB(183, 42, 255)
 local DefaultColor = Color3.new(0.227451, 0.082353, 0.290196)
 
 local function CreateMainStory(Properties: Properties)
+	local StoryData = React.useContext(StoryContext.Context)
+
+	local Time, TotalTime, SetTime = Hooks.UseTime()
+
+	React.useEffect(function()
+		local Data = StoryData.BoothTimeData
+		if Data then
+			SetTime(Data.EndTime - Data.StartTime, Data.StartTime)
+		end
+	end, { StoryData })
+
+	local MapData, SetMapData = React.useState({})
+
+	local CurrentMap, SetMap = React.useState(GameInfo.GameInfo[1].MapId)
+	local Stage, SetStage = React.useState(1)
+	local Difficulty, SetDifficulty = React.useState("Normal")
+
+	React.useEffect(function()
+		local Data = {}
+		for Index, MapData in ipairs(GameInfo.GameInfo) do
+			Data[MapData.MapId] = e(Main.Frame, {
+				native = {
+					Size = UDim2.fromScale(0.9, 0.25),
+					ZIndex = Index,
+				},
+				children = {
+					Main = e(Main.Frame, {
+						native = {
+							Size = UDim2.fromScale(1, 0.7),
+						},
+						children = {
+							MapImage = e(Main.ImageLabel, {
+								native = {
+									Image = MapData.Image,
+								},
+								children = {
+									UICorner = e("UICorner", {
+										CornerRadius = UDim.new(0.2, 0),
+									}),
+									FrameGrad = e(Main.Frame, {
+										native = {
+											BackgroundTransparency = 0,
+										},
+										children = {
+											UICorner = e("UICorner", {
+												CornerRadius = UDim.new(0.2, 0),
+											}),
+											UIGradient = e("UIGradient", {
+												Color = ColorSequence.new(Color3.new()),
+												Rotation = 90,
+												Transparency = NumberSequence.new({
+													NumberSequenceKeypoint.new(0, 1),
+													NumberSequenceKeypoint.new(1, 0.4),
+												}),
+											}),
+										},
+									}),
+								},
+							}),
+							MapName = e(Main.TextLabel, {
+								native = {
+									Position = UDim2.fromScale(0.5, 0),
+									Size = UDim2.fromScale(0.9, 0.4),
+									Text = MapData.Name,
+								},
+							}),
+							MapsCleared = e(Main.TextLabel, {
+								native = {
+									Position = UDim2.fromScale(0.5, 0.1),
+									Size = UDim2.fromScale(0.9, 0.4),
+									Text = StoryData.CompletedMaps[MapData.MapId] and string.format(
+										"%u/%u",
+										Len(StoryData.CompletedMaps[MapData.MapId]),
+										#MapData.LevelInfo
+									) or string.format("0/%u", #MapData.LevelInfo),
+								},
+							}),
+						},
+					}),
+				},
+			})
+		end
+		SetMapData(Data)
+	end, { StoryData })
+
+	React.useEffect(function()
+		SetStage(1)
+	end, { CurrentMap })
+
+	React.useEffect(function()
+		SetDifficulty("Normal")
+	end, { Stage })
+
 	local DifficultyLayoutOrder = LayoutOrder()
 
-	local Difficulty, SetDifficulty = React.useState("Normal")
-	local Stage, SetStage = React.useState(1)
+	local CancelCallback = React.useCallback(function()
+		StoryService.LeaveBooth()
+	end, {})
+
+	local ConfirmCallback = React.useCallback(function()
+		StoryService.ChooseMap({
+			MapId = CurrentMap,
+			LevelId = (GameInfo.GetMapFromId(CurrentMap) :: GameInfo.MapInfo).LevelInfo[Stage].GameId,
+			Difficulty = Difficulty,
+		})
+	end, { CurrentMap :: any, Stage :: any, Difficulty :: any })
 
 	return e(Main.ImageLabel, {
 		native = Join({
@@ -113,7 +220,9 @@ local function CreateMainStory(Properties: Properties)
 							BackgroundTransparency = 0,
 							BackgroundColor3 = Color3.fromRGB(127, 32, 165),
 							Position = UDim2.fromScale(0, 0.5),
-							Size = UDim2.fromScale(0.8, 1),
+							Size = Time:map(function(Time: number)
+								return math.clamp(Time / TotalTime:getValue(), 0, 1)
+							end),
 						},
 						children = {
 							UICorner = e("UICorner", {
@@ -124,7 +233,9 @@ local function CreateMainStory(Properties: Properties)
 					TimeLabel = e(Main.TextLabel, {
 						native = {
 							Size = UDim2.fromScale(0.8, 0.8),
-							Text = "Time Left:",
+							Text = Time:map(function(Time: number)
+								return string.format("Time Left: %u", math.floor(Time))
+							end),
 							ZIndex = 3,
 						},
 					}),
@@ -254,6 +365,7 @@ local function CreateMainStory(Properties: Properties)
 							Stage1 = e(CreateStage, {
 								Number = 1,
 								Hovered = Stage == 1,
+								Visible = #(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo >= 1,
 								OnClick = function()
 									SetStage(1)
 								end,
@@ -261,6 +373,7 @@ local function CreateMainStory(Properties: Properties)
 							Stage2 = e(CreateStage, {
 								Number = 2,
 								Hovered = Stage == 2,
+								Visible = #(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo >= 2,
 								OnClick = function()
 									SetStage(2)
 								end,
@@ -268,6 +381,7 @@ local function CreateMainStory(Properties: Properties)
 							Stage3 = e(CreateStage, {
 								Number = 3,
 								Hovered = Stage == 3,
+								Visible = #(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo >= 3,
 								OnClick = function()
 									SetStage(3)
 								end,
@@ -275,6 +389,7 @@ local function CreateMainStory(Properties: Properties)
 							Stage4 = e(CreateStage, {
 								Number = 4,
 								Hovered = Stage == 4,
+								Visible = #(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo >= 4,
 								OnClick = function()
 									SetStage(4)
 								end,
@@ -282,6 +397,7 @@ local function CreateMainStory(Properties: Properties)
 							Stage5 = e(CreateStage, {
 								Number = 5,
 								Hovered = Stage == 5,
+								Visible = #(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo >= 5,
 								OnClick = function()
 									SetStage(5)
 								end,
@@ -348,7 +464,11 @@ local function CreateMainStory(Properties: Properties)
 						native = {
 							Position = UDim2.fromScale(0.75, 0.5),
 							Size = UDim2.fromScale(0.3, 0.2),
-							Text = "N/A",
+							Text = StoryData.CompletedMaps[CurrentMap]
+									and StoryData.CompletedMaps[CurrentMap][Stage]
+									and StoryData.CompletedMaps[CurrentMap][Stage][Difficulty]
+									and StoryData.CompletedMaps[CurrentMap][Stage][Difficulty].FinishedCount
+								or "N/A",
 							TextXAlignment = Enum.TextXAlignment.Right,
 						},
 					}),
@@ -364,7 +484,11 @@ local function CreateMainStory(Properties: Properties)
 						native = {
 							Position = UDim2.fromScale(0.75, 0.8),
 							Size = UDim2.fromScale(0.3, 0.2),
-							Text = "N/A",
+							Text = StoryData.CompletedMaps[CurrentMap]
+									and StoryData.CompletedMaps[CurrentMap][Stage]
+									and StoryData.CompletedMaps[CurrentMap][Stage][Difficulty]
+									and StoryData.CompletedMaps[CurrentMap][Stage][Difficulty].FastestTime
+								or "N/A",
 							TextXAlignment = Enum.TextXAlignment.Right,
 						},
 					}),
@@ -382,6 +506,7 @@ local function CreateMainStory(Properties: Properties)
 					Image = "rbxassetid://120986367718593",
 					Size = UDim2.fromScale(0.175, 0.175),
 					Position = UDim2.fromScale(0.6, 0.89),
+					[React.Event.MouseButton1Click] = CancelCallback,
 				},
 				children = {
 					UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
@@ -405,6 +530,7 @@ local function CreateMainStory(Properties: Properties)
 					Image = "rbxassetid://76295055563521",
 					Size = UDim2.fromScale(0.175, 0.175),
 					Position = UDim2.fromScale(0.35, 0.89),
+					[React.Event.MouseButton1Click] = ConfirmCallback,
 				},
 				children = {
 					UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
@@ -427,6 +553,7 @@ local function CreateMainStory(Properties: Properties)
 				native = {
 					Position = UDim2.fromScale(0.65, 0.525),
 					Size = UDim2.fromScale(0.6, 0.55),
+					Image = (GameInfo.GetMapFromId(CurrentMap) :: any).Image,
 				},
 				children = {
 					UICorner = e("UICorner", {
@@ -452,12 +579,12 @@ local function CreateMainStory(Properties: Properties)
 						native = {
 							AutomaticCanvasSize = Enum.AutomaticSize.Y,
 						},
-						children = {
+						children = Join({
 							UIListLayout = e("UIListLayout", {
 								SortOrder = Enum.SortOrder.LayoutOrder,
 								Padding = UDim.new(0, 0),
 							}),
-						},
+						}, MapData),
 					}),
 				},
 			}),

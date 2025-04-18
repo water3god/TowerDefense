@@ -31,14 +31,20 @@ function Hooks.useClock()
 	return clockBinding
 end
 
-function Hooks.UseTime(TotalTime: number, StartTime: number)
-	local Time, SetTime =
-		React.useBinding(math.clamp(StartTime - workspace:GetServerTimeNow() + TotalTime, 0, TotalTime))
+function Hooks.UseTime()
+	local Time, SetTime = React.useBinding(0)
+	local TotalTime, SetTotalTime = React.useBinding(0)
+	local TimeData, SetTimeData = React.useState({ TotalTime = 0, StartTime = 0 })
 
 	React.useEffect(function()
+		SetTotalTime(TimeData.TotalTime)
 		local Connection: RBXScriptConnection? = nil
 		Connection = RunService.PostSimulation:Connect(function()
-			local NewTime = math.clamp(StartTime - workspace:GetServerTimeNow() + TotalTime, 0, TotalTime)
+			local NewTime = math.clamp(
+				TimeData.StartTime - workspace:GetServerTimeNow() + TimeData.TotalTime,
+				0,
+				TimeData.TotalTime
+			)
 			if NewTime == 0 then
 				if Connection then
 					Connection:Disconnect()
@@ -54,9 +60,18 @@ function Hooks.UseTime(TotalTime: number, StartTime: number)
 				Connection = nil
 			end
 		end
-	end)
+	end, { TimeData })
 
-	return Time
+	return Time,
+		TotalTime,
+		function(TotalTime: number, StartTime: number)
+			if TimeData.TotalTime ~= TotalTime or TimeData.StartTime ~= StartTime then
+				SetTimeData({
+					TotalTime = TotalTime,
+					StartTime = StartTime,
+				})
+			end
+		end
 end
 
 function Hooks.useEventConnection<T...>(

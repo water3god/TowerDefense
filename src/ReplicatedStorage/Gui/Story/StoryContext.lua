@@ -23,8 +23,9 @@ local StoryService = require(LobbyClient.StoryService)
 
 type Context = {
 	Enabled: boolean,
-	CompletedMaps: {},
+	CompletedMaps: StoryService.MapData,
 	Data: StoryService.BoothData?,
+	BoothTimeData: StoryService.TimeData?,
 }
 
 local Context = React.createContext({
@@ -40,10 +41,10 @@ local function Provider(props)
 	} :: Context)
 
 	React.useEffect(function()
-		local Connection = StoryService.BoothChoosing:Connect(function()
+		local Connection = StoryService.BoothChoosing:Connect(function(Data)
 			local NewTable = table.clone(Value)
 			NewTable.Enabled = true
-			NewTable.Data = nil
+			NewTable.BoothTimeData = Data
 			SetValue(NewTable)
 		end)
 
@@ -51,6 +52,7 @@ local function Provider(props)
 			local NewTable = table.clone(Value)
 			NewTable.Enabled = false
 			NewTable.Data = nil
+			NewTable.BoothTimeData = nil
 			SetValue(NewTable)
 		end)
 

@@ -22,6 +22,18 @@ local Template = require(ServerStorage.Data.DefaultData)
 
 local SettingData = require(ReplicatedStorage.Shared.Settings)
 
+export type GetStageData = {
+	Map: string,
+	Stage: number,
+}
+
+export type StageParamData = {
+	Map: string,
+	Stage: number,
+	Difficulty: string,
+	TimeFinished: number,
+}
+
 type PlayerDataData<T> = {
 	_Trove: Trove.Trove,
 
@@ -41,7 +53,7 @@ type PlayerDataData<T> = {
 	UnitChanged: Signal.Signal<Template.UnitData>,
 	UnitRemoved: Signal.Signal<Template.UnitData>,
 
-	StageChanged: Signal.Signal<string, number>,
+	StageChanged: Signal.Signal<StageParamData>,
 
 	Rolled: Signal.Signal<any>,
 
@@ -75,8 +87,8 @@ type PlayerDataImpl = {
 	AddCoins: (self: PlayerData, Coins: number) -> (),
 	SubtractCoins: (self: PlayerData, Coins: number) -> (),
 
-	OwnsStage: (self: PlayerData, Map: string, Index: number) -> boolean,
-	AddStage: (self: PlayerData, Map: string, Index: number) -> (),
+	OwnsStage: (self: PlayerData, Data: GetStageData) -> boolean,
+	AddStage: (self: PlayerData, Data: StageParamData) -> (),
 
 	GetSetting: (self: PlayerData, Setting: string) -> any,
 	ChangeSetting: (self: PlayerData, Setting: string, Value: any) -> (),
@@ -395,11 +407,11 @@ function PlayerData:SubtractCoins(Coins: number)
 	self:SetCoins(CurrentCoins - Coins)
 end
 
-function PlayerData:OwnsStage(Map: string, Stage: number)
+function PlayerData:OwnsStage(ParamData: GetStageData)
 	local Data = self.Profile.Data
 
-	if Data.CompletedMaps[Map] then
-		if table.find(Data.CompletedMaps[Map], Stage) then
+	if Data.CompletedMaps[ParamData.Map] then
+		if Data.CompletedMaps[ParamData.Map][ParamData.Stage] then
 			return true
 		end
 	end
@@ -407,19 +419,41 @@ function PlayerData:OwnsStage(Map: string, Stage: number)
 	return false
 end
 
-function PlayerData:AddStage(Map: string, Stage: number)
-	local Data = self.Profile.Data
-
-	if typeof(Map) == "string" and typeof(Stage) == "number" then
-		if not Data.CompletedMaps[Map] then
-			Data.CompletedMaps[Map] = {}
-		end
-
-		if not table.find(Data.CompletedMaps[Map], Stage) then
-			table.insert(Data.CompletedMaps[Map], Stage)
-			self.StageChanged:Fire(Map, Stage)
-		end
+function PlayerData:AddStage(StageParamData: StageParamData)
+	if
+		typeof(StageParamData) ~= "table"
+		or typeof(StageParamData.Map) ~= "string"
+		or typeof(StageParamData.Stage) ~= "number"
+		or typeof(StageParamData.Difficulty) ~= "string"
+		or typeof(StageParamData.TimeFinished) ~= "number"
+	then
+		warn("PlayerData:AddStage (Invalid Parameters)")
 	end
+
+	local function AddToData(StageData) end
+
+	local Data = self.Profile.Data
+	if not Data.CompletedMaps[StageParamData.Map] then
+		Data.CompletedMaps[StageParamData.Map] = {}
+	end
+	local MapData = Data.CompletedMaps[StageParamData.Map]
+	if not MapData[StageParamData.Stage] then
+		MapData[StageParamData.Stage] = {}
+	end
+	local StageData = MapData[StageParamData.Stage]
+	if not StageData[StageParamData.Difficulty] then
+		StageData[StageParamData.Difficulty] = {
+			FastestTime = StageParamData.TimeFinished,
+			FinishedCount = 1,
+		}
+	end
+
+	local DifficultyData = StageData[StageParamData.Difficulty]
+	if StageParamData.TimeFinished < DifficultyData.FastestTime then
+		DifficultyData.FastestTime = StageParamData.TimeFinished
+	end
+	DifficultyData.FinishedCount += 1
+	self.StageChanged:Fire(StageParamData)
 end
 
 function PlayerData:GetSetting(Setting: string)
