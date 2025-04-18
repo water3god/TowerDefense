@@ -85,7 +85,7 @@ local function CreateWaitingFrame(Props: Properties)
 			}),
 			StartButton = e(Main.Animateables.ImageButton, {
 				native = {
-					Position = UDim2.fromScale(0.35, 0.625),
+					Position = UDim2.fromScale(0.35, 0.8),
 					Size = UDim2.fromScale(0.4, 0.2),
 					Image = "rbxassetid://121336998793729",
 					Visible = StoryData.Data and Player.UserId == StoryData.Data.OwnerId,
@@ -133,7 +133,7 @@ local function CreateWaitingFrame(Props: Properties)
 			}),
 			TimeBar = e(Main.CanvasGroup, {
 				native = {
-					Position = UDim2.fromScale(0.5, 0.85),
+					Position = UDim2.fromScale(0.5, 1.2),
 					Size = UDim2.fromScale(0.8, 0.15),
 				},
 				children = {
@@ -142,20 +142,34 @@ local function CreateWaitingFrame(Props: Properties)
 					}),
 					UIStroke = e(UIStroke.UIStrokeBasic, {
 						Stroke = 0.003,
+						native = {
+							LineJoinMode = Enum.LineJoinMode.Round,
+						},
 					}),
 					Bar = e(Main.Frame, {
-						BackgroundTransparency = 0,
-						BackgroundColor3 = Color3.fromRGB(109, 255, 56),
-						AnchorPoint = Vector2.new(0, 0.5),
-						Size = Time:map(function(Time: number)
-							return UDim2.fromScale(Time / TotalTime:getValue(), 1)
-						end),
+						native = {
+							BackgroundTransparency = 0,
+							AnchorPoint = Vector2.new(0, 0.5),
+							BackgroundColor3 = Color3.fromRGB(109, 255, 56),
+							Position = UDim2.fromScale(0, 0.5),
+							Size = Time:map(function(Time: number)
+								return UDim2.fromScale(Time / TotalTime:getValue(), 1)
+							end),
+						},
 					}),
 					TimeLabel = e(Main.TextLabel, {
-						Size = UDim2.fromScale(1, 0.7),
-						Text = Time:map(function(Time: number)
-							return string.format("Time Left: %u", math.floor(Time))
-						end),
+						native = {
+							Size = UDim2.fromScale(1, 0.7),
+							Text = Time:map(function(Time: number)
+								return string.format("Time Left: %u", math.floor(Time))
+							end),
+							ZIndex = 2,
+						},
+						children = {
+							UIStroke = e(UIStroke.UIStrokeBasic, {
+								Stroke = 0.002,
+							}),
+						},
 					}),
 				},
 			}),

@@ -35,8 +35,12 @@ local Story = {
 					LevelId = "Hastingsv1",
 					Difficulty = "Normal",
 					Players = {},
+					StartTime = workspace:GetServerTimeNow(),
+					EndTime = workspace:GetServerTimeNow() + 10,
 				},
 			},
+		}, {
+			WaitingFrame = e(WaitingFrame),
 		})
 		return Frame
 	end,
