@@ -12,161 +12,230 @@ are some boosts that grant certain units a higher chance of obtaining it. Infini
 
 ]]
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage");
-local Shared = ReplicatedStorage.Shared;
-local Types = require(Shared.Types);
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Shared = ReplicatedStorage.Shared
+local Types = require(Shared.Types)
 
-export type Difficulty = "Easy" | "Normal" | "Hard";
-local Difficulty = {"Easy", "Normal", "Hard"};
+export type Difficulty = "Normal" | "Hard" | "Insane"
+local Difficulty = { "Normal", "Hard", "Hard" }
 
 export type LevelInfo = {
-	Name: string;
-	GameId: string;
-	Index: number; --7 is infinite
-	Prerequisite: {Map: string, Index: number}?;
-	RewardInfo: {Types.RewardData};
-	UnitInfo: {Types.RawUnitData};
-};
+	Name: string,
+	GameId: string,
+	Index: number, --7 is infinite
+	Prerequisite: { Map: string, Index: number }?,
+	RewardInfo: { [Difficulty | string]: { Types.RewardData } },
+	UnitInfo: { Types.RawUnitData },
+}
 
 export type MapInfo = {
-	Name: string;
-	MapId: string;
-	LevelInfo: {LevelInfo};
-	Image: string;
-	Prerequisite: string?;
-};
+	Name: string,
+	MapId: string,
+	LevelInfo: { LevelInfo },
+	Image: string,
+	Prerequisite: string?,
+}
 
-local Data = {};
+local Data = {}
 
-local GameInfo: {MapInfo} = {
+local GameInfo: { MapInfo } = {
 	{
-		Name = "Battle of Hastings";
-		MapId = "BattleOfHastings";
+		Name = "Battle of Hastings",
+		MapId = "BattleOfHastings",
 		LevelInfo = {
 			{
-				Name = "Hastings1";
-				GameId = "Hastingsv1";
-				Index = 1;
+				Name = "Hastings1",
+				GameId = "Hastingsv1",
+				Index = 1,
 				RewardInfo = {
-					{
-						Reward = "Coins";
-						Count = 100;
-					}
-				};
-				UnitInfo = {};
-			};
+					Normal = {
+						{
+							Reward = "Coins",
+							Count = 100,
+						},
+					},
+					Hard = {
+						{
+							Reward = "Coins",
+							Count = 100,
+						},
+					},
+					Insane = {
+						{
+							Reward = "Coins",
+							Count = 100,
+						},
+					},
+				},
+				UnitInfo = {},
+			},
 			{
-				Name = "Hastings2";
-				GameId = "Hastingsv2";
-				Index = 2;
+				Name = "Hastings2",
+				GameId = "Hastingsv2",
+				Index = 2,
 				RewardInfo = {
-					{
-						Reward = "Coins";
-						Count = 100;
-					}
-				};
-				UnitInfo = {};
-			};
+					Normal = {
+						{
+							Reward = "Coins",
+							Count = 100,
+						},
+					},
+					Hard = {
+						{
+							Reward = "Coins",
+							Count = 100,
+						},
+					},
+					Insane = {
+						{
+							Reward = "Coins",
+							Count = 100,
+						},
+					},
+				},
+				UnitInfo = {},
+			},
 			{
-				Name = "Hastings3";
-				GameId = "Hastingsv3";
-				Index = 3;
+				Name = "Hastings3",
+				GameId = "Hastingsv3",
+				Index = 3,
 				RewardInfo = {
-					{
-						Reward = "Coins";
-						Count = 10;
-					}
-				};
-				UnitInfo = {};
-			};
+					Normal = {
+						{
+							Reward = "Coins",
+							Count = 100,
+						},
+					},
+					Hard = {
+						{
+							Reward = "Coins",
+							Count = 100,
+						},
+					},
+					Insane = {
+						{
+							Reward = "Coins",
+							Count = 100,
+						},
+					},
+				},
+				UnitInfo = {},
+			},
 			{
-				Name = "Hastings4";
-				GameId = "Hastingsv4";
-				Index = 4;
+				Name = "Hastings4",
+				GameId = "Hastingsv4",
+				Index = 4,
 				RewardInfo = {
-					{
-						Reward = "Coins";
-						Count = 5;
-					}
-				};
-				UnitInfo = {};
-			};
+					Normal = {
+						{
+							Reward = "Coins",
+							Count = 100,
+						},
+					},
+					Hard = {
+						{
+							Reward = "Coins",
+							Count = 100,
+						},
+					},
+					Insane = {
+						{
+							Reward = "Coins",
+							Count = 100,
+						},
+					},
+				},
+				UnitInfo = {},
+			},
 			{
-				Name = "Hastings5";
-				GameId = "Hastingsv5";
-				Index = 5;
+				Name = "Hastings5",
+				GameId = "Hastingsv5",
+				Index = 5,
 				RewardInfo = {
-					{
-						Reward = "Coins";
-						Count = 5;
-					}
-				};
-				UnitInfo = {};
-			};
-		};
-		Image = "";
-		Prerequisite = nil;
-	};
-};
+					Normal = {
+						{
+							Reward = "Coins",
+							Count = 100,
+						},
+					},
+					Hard = {
+						{
+							Reward = "Coins",
+							Count = 100,
+						},
+					},
+					Insane = {
+						{
+							Reward = "Coins",
+							Count = 100,
+						},
+					},
+				},
+				UnitInfo = {},
+			},
+		},
+		Image = "",
+		Prerequisite = nil,
+	},
+}
 
 export type RewardData = {
-	RewardColor: ColorSequence; --
-	StrokeColor: ColorSequence; -- color of the stroke (global);
-	BackgroundColor: ColorSequence; -- color of the background frame (small);
-};
+	Image: string,
+	RewardColor: ColorSequence, --
+	StrokeColor: ColorSequence, -- color of the stroke (global);
+	BackgroundColor: ColorSequence, -- color of the background frame (small);
+}
 
-local RewardInfo: {[string]: RewardData} = {
+local RewardInfo: { [string]: RewardData } = {
 	["Coins"] = {
-		RewardColor = ColorSequence.new(Color3.new(1, 0.885954, 0.202899));
-		StrokeColor = ColorSequence.new(Color3.new(1, 1, 1));
-		BackgroundColor = ColorSequence.new(Color3.new(1, 0.720638, 0.311101));
-	};
-};
+		Image = "",
+		RewardColor = ColorSequence.new(Color3.new(1, 0.885954, 0.202899)),
+		StrokeColor = ColorSequence.new(Color3.new(1, 1, 1)),
+		BackgroundColor = ColorSequence.new(Color3.new(1, 0.720638, 0.311101)),
+	},
+}
 
-local Colors: {[string]: Color3} = {
-	Normal = Color3.fromRGB(88, 226, 65);
-	Hard = Color3.fromRGB(224, 47, 57);
-	Insane = Color3.fromRGB(187, 85, 211);
-};
+local Colors: { [string]: Color3 } = {
+	Normal = Color3.fromRGB(88, 226, 65),
+	Hard = Color3.fromRGB(224, 47, 57),
+	Insane = Color3.fromRGB(187, 85, 211),
+}
 
-Data.Difficulty = Difficulty;
-Data.GameInfo = GameInfo;
-Data.RewardInfo = RewardInfo;
+Data.Difficulty = Difficulty
+Data.GameInfo = GameInfo
+Data.RewardInfo = RewardInfo
 
 function Data.GetMapFromId(MapId: string): MapInfo?
 	for _, Item in ipairs(GameInfo) do
 		if Item.MapId == MapId then
-			return Item;
+			return Item
 		end
 	end
-	
-	return;
+
+	return
 end
 
 function Data.GetDataFromInfo(MapId: string, LevelId: string): (MapInfo?, LevelInfo?)
-	local MapInfo = Data.GetMapFromId(MapId);
-	
+	local MapInfo = Data.GetMapFromId(MapId)
+
 	if MapInfo then
 		for _, Info in ipairs(MapInfo.LevelInfo) do
 			if Info.GameId == LevelId then
-				return MapInfo, Info;
+				return MapInfo, Info
 			end
 		end
 	end
-	
-	return;
+
+	return
 end
 
 function Data.GetFullName(MapName: string, Index: number, LevelName: string)
-	return string.format("%s: %u - %s", MapName, Index, LevelName);
+	return string.format("%s: %u - %s", MapName, Index, LevelName)
 end
 
 function Data.GetDifficultyString(Difficulty: string)
-	local Color = Colors[Difficulty];
-	return string.format(
-		'Difficulty: <font color = "#%s">%s</font>',
-		Color:ToHex(),
-		Difficulty);
+	local Color = Colors[Difficulty]
+	return string.format('Difficulty: <font color = "#%s">%s</font>', Color:ToHex(), Difficulty)
 end
 
-return Data;
+return Data

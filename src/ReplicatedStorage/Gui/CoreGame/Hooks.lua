@@ -32,8 +32,8 @@ function Hooks.useClock()
 end
 
 function Hooks.UseTime()
-	local Time, SetTime = React.useBinding(0)
-	local TotalTime, SetTotalTime = React.useBinding(0)
+	local Time, SetTime = React.useBinding(1)
+	local TotalTime, SetTotalTime = React.useBinding(1)
 	local TimeData, SetTimeData = React.useState({ TotalTime = 0, StartTime = 0 })
 
 	React.useEffect(function()

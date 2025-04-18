@@ -25,6 +25,9 @@ local CloseButton = require(CoreGame.CloseButton)
 local UIStroke = require(CoreGame.UIStroke)
 local Hooks = require(CoreGame.Hooks)
 
+local Inventory = Gui.Inventory
+local UnitFrame = require(Inventory.UnitFrame)
+
 local Story = Gui.Story
 local StoryContext = require(Story.StoryContext)
 
@@ -96,13 +99,64 @@ local function CreateMainStory(Properties: Properties)
 	local Stage, SetStage = React.useState(1)
 	local Difficulty, SetDifficulty = React.useState("Normal")
 
+	local ResourceFrames, SetResourceFrames = React.useState({})
+
+	local MapClicked = React.useCallback(function(MapId)
+		if CurrentMap ~= MapId then
+			SetMap(MapId)
+		end
+	end, { CurrentMap })
+
+	React.useEffect(function()
+		local ResourceOrder = LayoutOrder()
+
+		local RewardInfo = (GameInfo.GetMapFromId(CurrentMap) :: GameInfo.MapInfo).LevelInfo[Stage]
+		local Data = RewardInfo.RewardInfo[Difficulty]
+
+		local FrameTable: { [string]: React.ReactNode } = {}
+
+		local UnitData = RewardInfo.UnitInfo
+
+		for _, Unit in ipairs(UnitData) do
+			FrameTable["Unit" .. Unit.Unit] = e(UnitFrame.CreateUnitFrame, {
+				UnitName = Unit.Unit,
+				Level = Unit.Level,
+				native = {
+					ZIndex = ResourceOrder(),
+				},
+			})
+		end
+
+		for Index, Reward in ipairs(Data) do
+			local RewardData = GameInfo.RewardInfo[Reward.Reward]
+			FrameTable["Reward" .. Reward.Reward] = e(BaseFrame, {
+				LeftText = "",
+				RightText = string.format("%ux", Reward.Count),
+				Name = Reward.Reward,
+				UnitImage = RewardData.Image,
+
+				BackgroundColor = RewardData.BackgroundColor,
+				NameColor = RewardData.RewardColor,
+
+				native = {
+					ZIndex = ResourceOrder(),
+				},
+			})
+		end
+		SetResourceFrames(FrameTable)
+	end, { Difficulty })
+
 	React.useEffect(function()
 		local Data = {}
 		for Index, MapData in ipairs(GameInfo.GameInfo) do
-			Data[MapData.MapId] = e(Main.Frame, {
+			Data[MapData.MapId] = e(Main.Animateables.TextButton, {
 				native = {
+					Text = "",
 					Size = UDim2.fromScale(0.9, 0.25),
 					ZIndex = Index,
+					[React.Event.MouseButton1Click] = function()
+						MapClicked(MapData.MapId)
+					end,
 				},
 				children = {
 					Main = e(Main.Frame, {
@@ -147,7 +201,7 @@ local function CreateMainStory(Properties: Properties)
 							}),
 							MapsCleared = e(Main.TextLabel, {
 								native = {
-									Position = UDim2.fromScale(0.5, 0.1),
+									Position = UDim2.fromScale(0.5, 1),
 									Size = UDim2.fromScale(0.9, 0.4),
 									Text = StoryData.CompletedMaps[MapData.MapId] and string.format(
 										"%u/%u",
@@ -198,9 +252,13 @@ local function CreateMainStory(Properties: Properties)
 			}),
 			MapName = e(Main.TextLabel, {
 				native = {
-					Position = UDim2.fromScale(0.5, 0.17),
+					Position = UDim2.fromScale(0.45, 0.17),
 					Size = UDim2.fromScale(0.7, 0.1),
-					Text = "Colussem: 1 - Survival",
+					Text = GameInfo.GetFullName(
+						(GameInfo.GetMapFromId(CurrentMap) :: any).Name,
+						Stage,
+						(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo[Stage].Name
+					), --"Colussem: 1 - Survival",
 				},
 			}),
 			Bar = e(Main.CanvasGroup, {
@@ -221,7 +279,7 @@ local function CreateMainStory(Properties: Properties)
 							BackgroundColor3 = Color3.fromRGB(127, 32, 165),
 							Position = UDim2.fromScale(0, 0.5),
 							Size = Time:map(function(Time: number)
-								return math.clamp(Time / TotalTime:getValue(), 0, 1)
+								return UDim2.fromScale(math.clamp(Time / TotalTime:getValue(), 0, 1), 1)
 							end),
 						},
 						children = {
@@ -428,16 +486,16 @@ local function CreateMainStory(Properties: Properties)
 						BarSize = 0.002,
 						native = {
 							AutomaticCanvasSize = Enum.AutomaticSize.X,
-							Position = UDim2.fromScale(0.5, 0.6),
-							Size = UDim2.fromScale(0.95, 0.7),
+							Position = UDim2.fromScale(0.5, 0.65),
+							Size = UDim2.fromScale(0.95, 0.65),
 						},
-						children = {
+						children = Join({
 							UIListLayout = e("UIListLayout", {
 								HorizontalAlignment = Enum.HorizontalAlignment.Left,
 								FillDirection = Enum.FillDirection.Horizontal,
 								SortOrder = Enum.SortOrder.LayoutOrder,
 							}),
-						},
+						}, ResourceFrames),
 					}),
 				},
 			}),
@@ -582,6 +640,7 @@ local function CreateMainStory(Properties: Properties)
 						children = Join({
 							UIListLayout = e("UIListLayout", {
 								SortOrder = Enum.SortOrder.LayoutOrder,
+								HorizontalAlignment = Enum.HorizontalAlignment.Center,
 								Padding = UDim.new(0, 0),
 							}),
 						}, MapData),
