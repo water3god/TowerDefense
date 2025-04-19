@@ -9,7 +9,6 @@ local Players = game:GetService("Players")
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
-local ReactRoblox = require(Packages.ReactRoblox)
 local e = React.createElement
 
 local Modules = ReplicatedStorage.Modules
@@ -68,11 +67,16 @@ local function CreateWaitingFrame(Props: Properties)
 		StoryService.OwnerStart()
 	end, {})
 
+	local OnLeave = React.useCallback(function()
+		StoryService.LeaveBooth()
+	end, {})
+
 	return e(Main.ImageLabel, {
 		native = Join({
 			Position = UDim2.fromScale(0.5, 0.65),
 			Size = UDim2.fromScale(0.4, 0.25),
 			Image = "rbxassetid://100546338175267",
+			Visible = if StoryData.Data and StoryData.Enabled then true else false,
 		}, Props.native),
 		children = Join({
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
@@ -81,7 +85,7 @@ local function CreateWaitingFrame(Props: Properties)
 			CloseButton = e(CloseButton, {
 				Position = UDim2.fromScale(1, 0),
 				Size = UDim2.fromScale(0.3, 0.3),
-				OnClick = function() end,
+				OnClick = OnLeave,
 			}),
 			StartButton = e(Main.Animateables.ImageButton, {
 				native = {

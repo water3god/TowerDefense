@@ -174,7 +174,7 @@ local GameInfo: { MapInfo } = {
 				UnitInfo = {},
 			},
 		},
-		Image = "",
+		Image = "rbxassetid://136581013754707",
 		Prerequisite = nil,
 	},
 }

@@ -30,6 +30,7 @@ local Top = require(GameFrames.Top)
 
 local Story = Gui.Story
 local MainStory = require(Story.MainStory)
+local WaitingFrame = require(Story.WaitingFrame)
 
 -- Contexts --
 local InventoryContext = require(Inventory.InventoryContext)
@@ -288,6 +289,9 @@ local function Render()
 							SetVisibleInternal(Constants.INVENTORY_FRAME, Visible)
 						end,
 					}),
+				}),
+				WaitingFrame = e(StoryContext.Provider, {}, {
+					WaitingFrame = e(WaitingFrame, {}, {}),
 				}),
 			}),
 			Buttons = e(Main.Frame, {
