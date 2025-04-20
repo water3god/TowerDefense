@@ -160,6 +160,7 @@ local function CreateMainStory(Properties: Properties)
 							MapImage = e(Main.ImageLabel, {
 								native = {
 									Image = MapData.Image,
+									ScaleType = Enum.ScaleType.Crop,
 								},
 								children = {
 									UICorner = e("UICorner", {
@@ -621,6 +622,7 @@ local function CreateMainStory(Properties: Properties)
 					Position = UDim2.fromScale(0.65, 0.525),
 					Size = UDim2.fromScale(0.6, 0.55),
 					Image = (GameInfo.GetMapFromId(CurrentMap) :: any).Image,
+					ScaleType = Enum.ScaleType.Crop,
 				},
 				children = {
 					UICorner = e("UICorner", {

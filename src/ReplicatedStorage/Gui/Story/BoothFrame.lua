@@ -66,6 +66,7 @@ local function CreateBoothFrame(Props: Properties)
 						native = {
 							Size = UDim2.fromScale(0.8, 0.8),
 							Image = GameData and GameData.MapData.Image or "",
+							ScaleType = Enum.ScaleType.Crop,
 						},
 						children = {
 							UIGradient = e("UIGradient", {

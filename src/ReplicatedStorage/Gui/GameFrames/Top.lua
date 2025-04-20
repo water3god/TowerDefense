@@ -19,6 +19,7 @@ local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
 local UIStroke = require(CoreGame.UIStroke)
+local Hooks = require(CoreGame.Hooks)
 
 local WaveContext = require(Gui.GameFrames.WaveContext)
 
@@ -32,27 +33,17 @@ local IsRunning = game:GetService("RunService"):IsRunning()
 local function CreateTopFrame(Props: Properties)
 	local WaveData = React.useContext(WaveContext.Context)
 
-	local Time, SetTime = React.useState(0)
-	local Wave, SetWave = React.useState(1)
-	local Health, SetHealth = React.useState(1)
-	local MaxHealth, SetMaxHealth = React.useState(1)
+	local Time, _, SetTime = Hooks.UseTime()
+
+	local Wave, SetWave = React.useBinding(1)
+	local Health, SetHealth = React.useBinding(1)
+	local MaxHealth, SetMaxHealth = React.useBinding(1)
 
 	React.useEffect(function()
-		if WaveData.BaseHealth then
-			SetWave(WaveData.Wave)
-			SetHealth(WaveData.BaseHealth)
-			SetMaxHealth(WaveData.MaxHealth)
-			local Connection = HelperFunctions.ConnectTime(WaveData.Time, WaveData.StartTime, function(time)
-				SetTime(time)
-			end)
-
-			return function()
-				if Connection then
-					Connection:Disconnect()
-				end
-			end
-		end
-		return function() end
+		SetWave(WaveData.Wave)
+		SetHealth(WaveData.BaseHealth)
+		SetMaxHealth(WaveData.MaxHealth)
+		SetTime(WaveData.Time, WaveData.StartTime)
 	end, { WaveData })
 
 	return WaveData.BaseHealth
@@ -75,7 +66,9 @@ local function CreateTopFrame(Props: Properties)
 							native = {
 								Position = UDim2.fromScale(0.5, 0.7),
 								Size = UDim2.fromScale(1, 0.4),
-								Text = if IsRunning then HelperFunctions.FormatTime(Time) else WaveData.Time,
+								Text = Time:map(function(Time)
+									return HelperFunctions.FormatTime(Time)
+								end),
 							},
 							children = {
 								UIStroke = e(UIStroke.UIStrokeBasic, {
@@ -107,7 +100,9 @@ local function CreateTopFrame(Props: Properties)
 							native = {
 								Position = UDim2.fromScale(0.5, 0.7),
 								Size = UDim2.fromScale(1, 0.4),
-								Text = tostring(Wave),
+								Text = Wave:map(function(Wave)
+									return tostring(Wave)
+								end),
 							},
 							children = {
 								UIStroke = e(UIStroke.UIStrokeBasic, {
@@ -148,7 +143,9 @@ local function CreateTopFrame(Props: Properties)
 								BackgroundTransparency = 0,
 								BackgroundColor3 = Color3.fromRGB(37, 222, 0),
 								Position = UDim2.fromScale(0, 0.5),
-								Size = UDim2.fromScale(math.clamp(Health / MaxHealth, 0, 1), 1),
+								Size = React.joinBindings({ Health, MaxHealth }):map(function(Info: { number })
+									return UDim2.fromScale(math.clamp(Info[1] / Info[2], 0, 1), 1)
+								end),
 								AnchorPoint = Vector2.new(0, 0.5),
 							},
 							children = {
@@ -160,7 +157,9 @@ local function CreateTopFrame(Props: Properties)
 						HealthLabel = e(Main.TextLabel, {
 							native = {
 								Size = UDim2.fromScale(0.8, 0.9),
-								Text = string.format("%u/%u", Health, MaxHealth),
+								Text = React.joinBindings({ Health, MaxHealth }):map(function(Info: { number })
+									return string.format("%u/%u", Info[1], Info[2])
+								end),
 								ZIndex = 2,
 							},
 							children = {
