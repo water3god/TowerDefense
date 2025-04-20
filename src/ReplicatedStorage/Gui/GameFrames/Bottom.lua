@@ -61,9 +61,7 @@ local function CreateBaseFrame(Properties: OtherProps)
 		children = Properties.children,
 		OnClick = function()
 			if Properties.UniqueId and Properties.SetHovered and Properties.GetHovered then
-				if Properties.GetHovered() == Properties.UniqueId then
-					Properties.SetHovered(nil)
-				else
+				if Properties.GetHovered() ~= Properties.UniqueId then
 					Properties.SetHovered(Properties.UniqueId)
 				end
 			end

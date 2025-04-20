@@ -116,8 +116,8 @@ local RenderInventory = React.forwardRef(function(Props: InventoryProps, ref)
 	return e(InventoryContext.Provider, {}, {
 		InventoryMain = e(InventoryMain, {
 			CloseClick = Props.CloseClick,
+			ref = ref,
 			native = {
-				ref = ref,
 				Position = Position,
 			},
 		}),
