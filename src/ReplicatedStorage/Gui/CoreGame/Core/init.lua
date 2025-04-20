@@ -52,9 +52,6 @@ local Constants = require(script.Constants)
 local OriginalPositions = require(script.OriginalPositions)
 
 export type InventoryProps = {
-	Inventory: {
-		Units: { [string]: Types.VisualUnitData },
-	},
 	CloseClick: () -> (),
 	Visible: boolean,
 }
@@ -107,7 +104,7 @@ local function AnimateWrapper(Props: { Visible: boolean, Name: string })
 		else
 			return GlobalNotVisiblePosition
 		end
-	end)
+	end) :: React.Binding<UDim2>
 end
 
 local RenderInventory = React.forwardRef(function(Props: InventoryProps, ref)
@@ -211,7 +208,7 @@ local function Render()
 		if VisibleFrame == Name then
 			SetVisibleFrame(nil)
 		end
-	end)
+	end, { VisibleFrame })
 
 	local SetVisibleInternal = React.useCallback(function(Name: string, Visible: boolean)
 		if Visible then
@@ -230,137 +227,121 @@ local function Render()
 		})
 	end, { VisibleFrame })
 
-	local function Return()
-		return e(React.Fragment, nil, {
-			GuiBlur = IsRunning and ReactRoblox.createPortal(
-				e("BlurEffect", {
-					Size = Styles.Size,
+	return e(React.Fragment, nil, {
+		GuiBlur = IsRunning and ReactRoblox.createPortal(
+			e("BlurEffect", {
+				Size = Styles.Size,
+			}),
+			Lighting
+		),
+		Main = e(
+			"Folder",
+			{},
+			{
+				[Constants.INVENTORY_FRAME] = e(RenderInventory, {
+					Visible = if VisibleFrame == Constants.INVENTORY_FRAME then true else false,
+					ref = InventoryRef,
+					CloseClick = function()
+						OnCloseClick(Constants.INVENTORY_FRAME)
+					end,
 				}),
-				Lighting
-			),
-			Main = e(
-				"Folder",
-				{},
-				{
-					[Constants.INVENTORY_FRAME] = e(RenderInventory, {
-						Visible = if VisibleFrame == Constants.INVENTORY_FRAME then true else false,
-						Inventory = InventoryService:GetInventory(),
-						ref = InventoryRef,
-						CloseClick = function()
-							OnCloseClick(Constants.INVENTORY_FRAME)
-						end,
-					}),
-				} :: any,
-				{
-					[Constants.TRADE_FRAME] = e(RenderTradeFrame, {
-						Visible = if VisibleFrame == Constants.TRADE_FRAME then true else false,
-						Toggle = function(Visible)
-							SetVisibleInternal(Constants.TRADE_FRAME, Visible)
-						end,
-					}),
-				} :: any,
-				{
-					[Constants.TRADE_MENU] = e(RenderTradeMenu, {
-						Visible = if VisibleFrame == Constants.TRADE_MENU then true else false,
-						CloseClick = function()
-							OnCloseClick(Constants.TRADE_MENU)
-						end,
-					}) :: any,
-					[Constants.STORY_FRAME] = e(RenderStoryFrame, {
-						Visible = if VisibleFrame == Constants.STORY_FRAME then true else false,
-						Toggle = function(Visible)
-							SetVisibleInternal(Constants.TRADE_FRAME, Visible)
-						end,
-						CloseClick = function()
-							OnCloseClick(Constants.STORY_FRAME)
-						end,
-					}) :: any,
-				}
-			),
-			OtherGui = e("Folder", {}, {
-				TopFrame = not IsLobby and e(WaveContext.Provider, {}, {
-					TopFrame = e(Top),
+			} :: any,
+			{
+				[Constants.TRADE_FRAME] = e(RenderTradeFrame, {
+					Visible = if VisibleFrame == Constants.TRADE_FRAME then true else false,
+					Toggle = function(Visible)
+						SetVisibleInternal(Constants.TRADE_FRAME, Visible)
+					end,
 				}),
-				BottomFrame = e(EquippedUnitsContext.Provider, {}, {
-					BottomFrame = e(Bottom, {
-						SetHovered = SetHovered,
-						GetHovered = GetHovered,
-						SetVisible = function(Visible: boolean)
-							SetVisibleInternal(Constants.INVENTORY_FRAME, Visible)
-						end,
-					}),
-				}),
-				WaitingFrame = e(StoryContext.Provider, {}, {
-					WaitingFrame = e(WaitingFrame, {}, {}),
+			} :: any,
+			{
+				[Constants.TRADE_MENU] = e(RenderTradeMenu, {
+					Visible = if VisibleFrame == Constants.TRADE_MENU then true else false,
+					CloseClick = function()
+						OnCloseClick(Constants.TRADE_MENU)
+					end,
+				}) :: any,
+				[Constants.STORY_FRAME] = e(RenderStoryFrame, {
+					Visible = if VisibleFrame == Constants.STORY_FRAME then true else false,
+					Toggle = function(Visible)
+						SetVisibleInternal(Constants.TRADE_FRAME, Visible)
+					end,
+					CloseClick = function()
+						OnCloseClick(Constants.STORY_FRAME)
+					end,
+				}) :: any,
+			}
+		),
+		OtherGui = e("Folder", {}, {
+			TopFrame = not IsLobby and e(WaveContext.Provider, {}, {
+				TopFrame = e(Top),
+			}),
+			BottomFrame = e(EquippedUnitsContext.Provider, {}, {
+				BottomFrame = e(Bottom, {
+					SetHovered = SetHovered,
+					GetHovered = GetHovered,
+					SetVisible = function(Visible: boolean)
+						SetVisibleInternal(Constants.INVENTORY_FRAME, Visible)
+					end,
 				}),
 			}),
-			Buttons = e(Main.Frame, {
-				native = {
-					Position = UDim2.fromScale(0.1, 0.5),
-					Size = UDim2.fromScale(0.15, 0.4),
-				},
-				children = {
-					UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-						AspectRatio = 0.62,
-					}),
-					UIGridLayout = e("UIGridLayout", {
-						CellPadding = UDim2.fromScale(0, 0),
-						CellSize = UDim2.fromScale(0.5, 0.3),
-						FillDirection = Enum.FillDirection.Horizontal,
-					}),
-					InventoryButton = e(MainButtonFrame, {
-						Position = UDim2.fromScale(0.1, 0.5),
-						Size = UDim2.fromScale(0.1, 0.15),
-						Name = "Inventory",
-						Icon = "",
-						OnClick = function()
-							OnMainButtonClick(Constants.INVENTORY_FRAME)
-						end,
-					}),
-					PlayButton = e(MainButtonFrame, {
-						Position = UDim2.fromScale(0.1, 0.5),
-						Size = UDim2.fromScale(0.1, 0.15),
-						Name = "Play",
-						Icon = "",
-						OnClick = function()
-							--OnMainButtonClick("InventoryFrame")
-						end,
-					}),
-					StoreButton = e(MainButtonFrame, {
-						Position = UDim2.fromScale(0.1, 0.5),
-						Size = UDim2.fromScale(0.1, 0.15),
-						Name = "Store",
-						Icon = "",
-						OnClick = function()
-							--OnMainButtonClick("InventoryFrame")
-						end,
-					}),
-					TradeButton = e(MainButtonFrame, {
-						Position = UDim2.fromScale(0.1, 0.5),
-						Size = UDim2.fromScale(0.1, 0.15),
-						Name = "Trade",
-						Icon = "",
-						OnClick = function()
-							OnMainButtonClick(Constants.TRADE_MENU)
-						end,
-					}),
-				},
+			WaitingFrame = e(StoryContext.Provider, {}, {
+				WaitingFrame = e(WaitingFrame, {}, {}),
 			}),
-		})
-	end
-	if IsRunning then
-		return e("ScreenGui", {
-			ResetOnSpawn = false,
-		}, {
-			Frag = Return(),
-		}) :: any
-	else
-		return e(Main.Frame, {
-			children = {
-				Name = Return(),
+		}),
+		Buttons = e(Main.Frame, {
+			native = {
+				Position = UDim2.fromScale(0.1, 0.5),
+				Size = UDim2.fromScale(0.15, 0.4),
 			},
-		}) :: any
-	end
+			children = {
+				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+					AspectRatio = 0.62,
+				}),
+				UIGridLayout = e("UIGridLayout", {
+					CellPadding = UDim2.fromScale(0, 0),
+					CellSize = UDim2.fromScale(0.5, 0.3),
+					FillDirection = Enum.FillDirection.Horizontal,
+				}),
+				InventoryButton = e(MainButtonFrame, {
+					Position = UDim2.fromScale(0.1, 0.5),
+					Size = UDim2.fromScale(0.1, 0.15),
+					Name = "Inventory",
+					Icon = "",
+					OnClick = function()
+						OnMainButtonClick(Constants.INVENTORY_FRAME)
+					end,
+				}),
+				PlayButton = e(MainButtonFrame, {
+					Position = UDim2.fromScale(0.1, 0.5),
+					Size = UDim2.fromScale(0.1, 0.15),
+					Name = "Play",
+					Icon = "",
+					OnClick = function()
+						--OnMainButtonClick("InventoryFrame")
+					end,
+				}),
+				StoreButton = e(MainButtonFrame, {
+					Position = UDim2.fromScale(0.1, 0.5),
+					Size = UDim2.fromScale(0.1, 0.15),
+					Name = "Store",
+					Icon = "",
+					OnClick = function()
+						--OnMainButtonClick("InventoryFrame")
+					end,
+				}),
+				TradeButton = e(MainButtonFrame, {
+					Position = UDim2.fromScale(0.1, 0.5),
+					Size = UDim2.fromScale(0.1, 0.15),
+					Name = "Trade",
+					Icon = "",
+					OnClick = function()
+						OnMainButtonClick(Constants.TRADE_MENU)
+					end,
+				}),
+			},
+		}),
+	})
 end
 
 return Render

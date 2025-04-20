@@ -212,6 +212,7 @@ function PlayerData.new(Player: Player)
 	self.LeveledUp = self._Trove:Construct(Signal)
 
 	self.CoinsChanged = self._Trove:Construct(Signal)
+	self.StageChanged = self._Trove:Construct(Signal)
 
 	self.Destroying = self._Trove:Construct(Signal)
 
@@ -268,6 +269,8 @@ function PlayerData.new(Player: Player)
 	self.NeededXP = CalculatePlayerXP(self.Profile.Data.Level)
 
 	self.DataAdded:Fire(self)
+
+	print(self.Profile.Data)
 
 	return self
 end

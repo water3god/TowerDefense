@@ -26,20 +26,21 @@ local Context = React.createContext({
 	NeededXP = 10,
 } :: Value)
 
+local InventoryCache = {
+	Units = {},
+	GlobalLevel = 1,
+	XP = 10,
+	NeededXP = 10,
+}
+
 local function Provider(props)
-	local Equipped, SetEquipped = React.useState({
-		Units = {},
-		GlobalLevel = 1,
-		XP = 10,
-		NeededXP = 10,
-	} :: Value)
-	local Inventory = InventoryService:GetInventory()
+	local Equipped, SetEquipped = React.useState(InventoryCache :: Value)
 
 	React.useEffect(function()
 		local function Convert(EquippedUnits: { string })
 			local NewTable = {}
 			for Index, Id in pairs(EquippedUnits) do
-				local Data = Inventory.Units[Id]
+				local Data = InventoryService:GetInventory().Units[Id]
 				NewTable[Index] = {
 					UniqueId = Id,
 					Unit = Data.Unit,
@@ -51,12 +52,15 @@ local function Provider(props)
 		end
 
 		local function Update()
-			SetEquipped({
+			local Table = {
 				Units = Convert(InventoryService.EquippedUnits),
 				GlobalLevel = InventoryService.Level,
 				XP = InventoryService.XP,
 				NeededXP = InventoryService.NeededXP,
-			})
+			}
+
+			SetEquipped(Table)
+			InventoryCache = Table
 		end
 
 		task.spawn(function()

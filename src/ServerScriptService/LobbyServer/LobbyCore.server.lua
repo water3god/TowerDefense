@@ -7,18 +7,22 @@ local START_POINT_TAG = "StartPoint"
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local ServerStorage = game:GetService("ServerStorage")
-local Players = game:GetService("Players")
-local CollectionService = game:GetService("CollectionService")
 local TeleportService = game:GetService("TeleportService")
-local MessagingService = game:GetService("MessagingService")
 local MemoryStoreService = game:GetService("MemoryStoreService")
+
+local Packages = ReplicatedStorage.Packages
+local React = require(Packages.React)
+local ReactRoblox = require(Packages.ReactRoblox)
+local e = React.createElement
+
+local Gui = ReplicatedStorage.Gui
+local Story = Gui.Story
+local BoothContext = require(Story.BoothContext)
+local BoothFrame = require(Story.BoothFrame)
 
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local ObserveTag = require(Modules.ObserveTag)
-local Trove = require(Modules.Trove)
-local DelayHandler = require(Modules.DelayHandler)
-local SyncTween = require(Modules.SyncTween)
 
 local BoothEvents = ReplicatedStorage.Remotes.Booth
 
@@ -69,19 +73,6 @@ local function SendWaitingData(Players: { Player }, Booth: Booth.Booth)
 	end
 end
 
-local function SafeTeleport(func: () -> TeleportAsyncResult)
-	local Success, Returned = pcall(func)
-	local Count = 1
-
-	if not Returned then
-		repeat
-			task.wait(1)
-			Success = pcall(func)
-			Count += 1
-		until Success or Count >= 3
-	end
-end
-
 local function TpToMap(Data: Types.SentData)
 	local MapId = MapData[Data.MapId]
 
@@ -98,7 +89,7 @@ local function TpToMap(Data: Types.SentData)
 
 	local AccessCode, ServerId = TeleportService:ReserveServer(MapId)
 
-	local Success, Error = pcall(function()
+	local Success = pcall(function()
 		MapStore:SetAsync(tostring(ServerId), NewData, 60)
 	end)
 
@@ -125,36 +116,6 @@ local function TpToMap(Data: Types.SentData)
 	end)
 end
 
-local MainFrameReference = BoothsInstance.Booth1.TouchPart.BoothGui.MainFrame
-
-local function TweenBar(Group: typeof(MainFrameReference.Main.Group), Players: number)
-	local Bar = Group.Bar
-	local PlayersLabel = Group.PlayersLabel
-
-	local Tween = SyncTween.new(Bar, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.In), {
-		Size = UDim2.fromScale(Players / 4, 1),
-	})
-	Tween:Play()
-	PlayersLabel.Text = string.format("Players: %u/%u", Players, 4)
-end
-
-local function TweenTime(TimeBar: typeof(MainFrameReference.TimeBar), Booth: Booth.Booth)
-	TimeBar.Bar.Size = UDim2.fromScale(1, 1)
-	local Tween =
-		SyncTween.new(TimeBar.Bar, TweenInfo.new(Booth.TimeLeft, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-			Size = UDim2.fromScale(0, 1),
-		})
-	Booth.StatusTrove:Add(function()
-		Tween:Cancel()
-	end)
-	Tween:Play()
-
-	local TimeLabel = TimeBar.TimeLabel
-	HelperFunctions.ConnectTime(Booth.StartTime, Booth.StartTime + Booth.TimeLeft, function(Time: number)
-		TimeLabel.Text = string.format("Time Left: %u", Time)
-	end, Booth.StatusTrove)
-end
-
 local function InitLoadingBooth(Model: typeof(BoothsInstance.Booth1))
 	local Booth = Booth.new({
 		Folder = Model,
@@ -164,77 +125,44 @@ local function InitLoadingBooth(Model: typeof(BoothsInstance.Booth1))
 	})
 
 	local GUI = Model.TouchPart.BoothGui
-	local MainFrame = GUI.MainFrame
 
-	local Main = MainFrame.Main
-	local MapImage = Main.MapImage
-	local DifficultyLabel = Main.DifficultyLabel
-	local TitleLabel = Main.TitleLabel
-	local Group = Main.Group
-	local Bar = Group.Bar
-	local PlayersLabel = Group.PlayersLabel
-	local TimeBar = Main.TimeBar
-	local Bar = TimeBar.Bar
-	local TimeLabel = TimeBar.TimeLabel
-
-	local MiscLabel = MainFrame.MiscLabel
+	local Root = ReactRoblox.createRoot(GUI)
+	Root:render(e(BoothContext.Provider, {
+		BoothId = Booth.UniqueId,
+	}, {
+		BoothFrame = e(BoothFrame, {}),
+	}))
 
 	Booth.PlayerAdded:Connect(function(Player: Player)
 		HelperFunctions.FireClients(PlayerChanged, Booth.Players, Player.UserId, true)
 		if Booth.Status == "LoadingPlayers" then
 			SendWaitingData({ Player }, Booth)
-			TweenBar(Group, #Booth.Players)
 		end
 	end)
 
 	Booth.PlayerRemoving:Connect(function(Player: Player)
 		HelperFunctions.FireClients(PlayerChanged, Booth.Players, Player.UserId, false)
-		if Booth.Status == "LoadingPlayers" then
-			TweenBar(Group, #Booth.Players)
-		end
 	end)
 
 	Booth.StartedChoosing:Connect(function(Player: Player)
 		local Data = {}
 		AddTimeData(Data, Booth)
 		BoothChoosing:FireClient(Player, Data)
-		MiscLabel.Text = "Choosing Map..."
 	end)
 
 	Booth.StartedWaiting:Connect(function()
 		SendWaitingData(Booth.Players, Booth)
-
-		local Data = Booth.Data :: Types.SentData
-		local MapInfo, LevelInfo = GameInfo.GetDataFromInfo(Data.MapId, Data.LevelId)
-
-		if MapInfo and LevelInfo then
-			TitleLabel.Text = GameInfo.GetFullName(MapInfo.Name, LevelInfo.Index, LevelInfo.Name)
-			DifficultyLabel.Text = GameInfo.GetDifficultyString(Data.Difficulty)
-			TweenBar(Group, #Booth.Players)
-			TweenTime(TimeBar, Booth)
-
-			MiscLabel.Visible = false
-			Main.Visible = true
-		end
 	end)
 
 	Booth.MapLoading:Connect(function()
 		HelperFunctions.FireClients(BoothMapLoading, Booth.Players)
-		MiscLabel.Text = "Map Loading..."
-
-		MiscLabel.Visible = true
-		Main.Visible = false
 		if Booth.Data then
 			TpToMap(Booth.Data)
 		end
 	end)
 
 	Booth.BoothEnded:Connect(function()
-		MiscLabel.Text = "Empty"
 		HelperFunctions.FireClients(BoothRestarted, Booth.Players)
-
-		MiscLabel.Visible = true
-		Main.Visible = false
 	end)
 end
 

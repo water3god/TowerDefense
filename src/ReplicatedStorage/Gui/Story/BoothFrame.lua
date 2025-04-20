@@ -59,7 +59,7 @@ local function CreateBoothFrame(Props: Properties)
 		children = Join({
 			Main = e(Main.Frame, {
 				native = {
-					Visible = BoothData.Enabled,
+					Visible = BoothData.Status == "LoadingPlayers",
 				},
 				children = {
 					MapImage = e(Main.ImageLabel, {
@@ -200,9 +200,9 @@ local function CreateBoothFrame(Props: Properties)
 			}),
 			MiscLabel = e(Main.TextLabel, {
 				native = {
-					Visible = not BoothData.Enabled,
+					Visible = BoothData.Status == "ChoosingMap" or BoothData.Status == "Idle",
 					Size = UDim2.fromScale(0.7, 0.3),
-					Text = "Empty",
+					Text = if BoothData.Status == "ChoosingMap" then "Choosing Map..." else "Empty",
 				},
 			}),
 		}, Props.children),

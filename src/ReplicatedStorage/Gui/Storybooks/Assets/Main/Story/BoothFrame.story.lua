@@ -35,7 +35,7 @@ local Story = {
 				MaxPlayerCount = 4,
 				StartTime = workspace:GetServerTimeNow(),
 				EndTime = workspace:GetServerTimeNow() + 10,
-				Enabled = true,
+				Status = "LoadingPlayers",
 			},
 		}, {
 			BoothFrame = e(BoothFrame, {

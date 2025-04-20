@@ -87,6 +87,7 @@ local function CreateBaseFrame(Properties: Properties)
 								Position = UDim2.fromScale(0.5, 0.5),
 								Size = UDim2.fromScale(1, 1),
 								Image = Properties.UnitImage or "",
+								ZIndex = 1,
 							},
 						}),
 						BaseName = e(Main.TextLabel, {
@@ -95,6 +96,7 @@ local function CreateBaseFrame(Properties: Properties)
 								Position = UDim2.fromScale(0.5, 0.8),
 								Size = UDim2.fromScale(0.7, 0.18),
 								Text = Properties.Name,
+								ZIndex = 2,
 							},
 							children = {
 								UIStroke = e(UIStroke.UIStroke, {
@@ -118,6 +120,7 @@ local function CreateBaseFrame(Properties: Properties)
 								Size = UDim2.fromScale(0.8, 0.15),
 								TextXAlignment = Enum.TextXAlignment.Left,
 								Text = Properties.LeftText,
+								ZIndex = 2,
 							},
 							children = {
 								UIStroke = e(UIStroke.UIStroke, {
@@ -139,6 +142,7 @@ local function CreateBaseFrame(Properties: Properties)
 								Size = UDim2.fromScale(0.8, 0.15),
 								TextXAlignment = Enum.TextXAlignment.Right,
 								Text = Properties.RightText,
+								ZIndex = 2,
 							},
 							children = {
 								UIStroke = e(UIStroke.UIStroke, {

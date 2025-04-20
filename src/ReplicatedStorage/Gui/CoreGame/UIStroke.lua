@@ -49,11 +49,23 @@ end
 local Funcs = {}
 
 function Funcs.UIStrokeBasic(Properties: PropertiesBasic)
-	local Size, SetSize = React.useState(CalculateRatio(Properties.Stroke))
+	local Size, SetSize = React.useState(1)
 
-	Hooks.useEventConnection(Camera:GetPropertyChangedSignal("ViewportSize"), function()
-		SetSize(Properties.Stroke)
+	React.useEffect(function()
+		SetSize(CalculateRatio(Properties.Stroke))
+
+		local Connection = Camera:GetPropertyChangedSignal("ViewportSize"):Connect(function()
+			SetSize(CalculateRatio(Properties.Stroke))
+		end)
+
+		return function()
+			Connection:Disconnect()
+		end
 	end, {})
+
+	--[[Hooks.useEventConnection(Camera:GetPropertyChangedSignal("ViewportSize"), function()
+		SetSize(CalculateRatio(Properties.Stroke))
+	end, {})]]
 
 	return e(
 		"UIStroke",

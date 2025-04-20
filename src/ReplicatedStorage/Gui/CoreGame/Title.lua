@@ -45,6 +45,7 @@ return function(Properties: Properties)
 					Size = UDim2.fromScale(0.7, 0.5),
 					Text = Properties.Title,
 					TextXAlignment = Enum.TextXAlignment.Left,
+					ZIndex = 2,
 				},
 				children = {
 					UIGradient = e("UIGradient", {

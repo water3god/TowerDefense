@@ -130,45 +130,6 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		end
 	end, { InSell :: any, HoveredId :: any, ClickedUnitData :: any, SellingUnits :: any })
 
-	local function HandleUnit(Data: Types.VisualUnitData)
-		local UnitData = UnitInfo.UnitInfo[Data.Unit]
-		local RarityData = RarityInfo[UnitData.Rarity]
-
-		local Value = e(UnitFrame.CreateUnitFrame, {
-			UnitName = Data.Unit,
-			Level = Data.Level,
-			Cost = UnitData.PlacementCost,
-
-			OnClick = function()
-				SmallFrameClick({
-					Data = {
-						CurrentUnit = Data,
-						Rarity = UnitData.Rarity,
-						RarityData = RarityData,
-					},
-					UniqueId = Data.UniqueId,
-				})
-			end,
-
-			Hovered = if HoveredId and HoveredId == Data.UniqueId then true else false,
-
-			children = {
-				BeingSoldFrame = e(Main.ImageLabel, {
-					native = {
-						Visible = if table.find(SellingUnits, Data.UniqueId) then true else false,
-						Size = UDim2.fromScale(0.9, 0.9),
-						Image = "rbxassetid://84303396250595",
-						ImageColor3 = Color3.fromRGB(255, 6, 0),
-						ZIndex = 3,
-					},
-				}),
-			},
-		})
-
-		local Merged = JoinDicts(Units, { [Data.UniqueId] = Value })
-		SetUnits(Merged)
-	end
-
 	local OnEquip = React.useCallback(function()
 		if HoveredId then
 			if InventoryService.UnitIsEquipped(HoveredId) then
@@ -221,10 +182,49 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 	end, { SellingUnits, InSell :: any })
 
 	React.useEffect(function()
-		for _, Data in pairs(InventoryContext.Units) do
-			HandleUnit(Data)
+		local function HandleUnit(Data: Types.VisualUnitData)
+			local UnitData = UnitInfo.UnitInfo[Data.Unit]
+			local RarityData = RarityInfo[UnitData.Rarity]
+
+			return e(UnitFrame.CreateUnitFrame, {
+				UnitName = Data.Unit,
+				Level = Data.Level,
+				Cost = UnitData.PlacementCost,
+
+				OnClick = function()
+					SmallFrameClick({
+						Data = {
+							CurrentUnit = Data,
+							Rarity = UnitData.Rarity,
+							RarityData = RarityData,
+						},
+						UniqueId = Data.UniqueId,
+					})
+				end,
+
+				Hovered = if HoveredId and HoveredId == Data.UniqueId then true else false,
+
+				children = {
+					BeingSoldFrame = e(Main.ImageLabel, {
+						native = {
+							Visible = if table.find(SellingUnits, Data.UniqueId) then true else false,
+							Size = UDim2.fromScale(0.9, 0.9),
+							Image = "rbxassetid://84303396250595",
+							ImageColor3 = Color3.fromRGB(255, 6, 0),
+							ZIndex = 3,
+						},
+					}),
+				},
+			})
 		end
-	end, { InSell, SellingUnits :: any, HoveredId :: any, InventoryContext :: any })
+
+		local Table = {}
+		for _, Data in pairs(InventoryContext.Units) do
+			local Unit = HandleUnit(Data)
+			Table[Data.UniqueId] = Unit
+		end
+		SetUnits(Table)
+	end, { InSell :: any, SellingUnits :: any, HoveredId :: any, InventoryContext :: any })
 
 	return e(
 		"ImageLabel",

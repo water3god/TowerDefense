@@ -9,22 +9,22 @@
  * @flow
 ]]
 
-local ReactRobloxHostTypes = require(script.Parent:WaitForChild('ReactRobloxHostTypes.roblox'))
+local ReactRobloxHostTypes = require(script.Parent:WaitForChild("ReactRobloxHostTypes.roblox"))
 type Container = ReactRobloxHostTypes.Container
 type RootType = ReactRobloxHostTypes.RootType
 type RootOptions = ReactRobloxHostTypes.RootOptions
 
-local ReconcilerTypes = require(script.Parent.Parent.Parent:WaitForChild('react-reconciler'))
+local ReconcilerTypes = require(script.Parent.Parent.Parent:WaitForChild("react-reconciler"))
 type RootTag = ReconcilerTypes.RootTag
-local ReactTypes = require(script.Parent.Parent.Parent:WaitForChild('shared'))
+local ReactTypes = require(script.Parent.Parent.Parent:WaitForChild("shared"))
 type MutableSource<T> = ReactTypes.MutableSource<T>
 type ReactNodeList = ReactTypes.ReactNodeList
-local ReactInternalTypes = require(script.Parent.Parent.Parent:WaitForChild('react-reconciler'))
+local ReactInternalTypes = require(script.Parent.Parent.Parent:WaitForChild("react-reconciler"))
 type FiberRoot = ReactInternalTypes.FiberRoot
 
 type Array<T> = { [number]: T }
 
-local ReactRobloxComponentTree = require(script.Parent:WaitForChild('ReactRobloxComponentTree'))-- local isContainerMarkedAsRoot = ReactRobloxComponentTree.isContainerMarkedAsRoot
+local ReactRobloxComponentTree = require(script.Parent:WaitForChild("ReactRobloxComponentTree")) -- local isContainerMarkedAsRoot = ReactRobloxComponentTree.isContainerMarkedAsRoot
 
 local markContainerAsRoot = ReactRobloxComponentTree.markContainerAsRoot
 local unmarkContainerAsRoot = ReactRobloxComponentTree.unmarkContainerAsRoot
@@ -38,14 +38,14 @@ local unmarkContainerAsRoot = ReactRobloxComponentTree.unmarkContainerAsRoot
 -- local ensureListeningTo = require("@pkg/ReactDOMComponent").ensureListeningTo
 
 -- ROBLOX deviation: Use the config-injecting entry point for the reconciler
-local ReactFiberReconciler = require(script.Parent.Parent:WaitForChild('ReactReconciler.roblox'))
+local ReactFiberReconciler = require(script.Parent.Parent:WaitForChild("ReactReconciler.roblox"))
 local createContainer = ReactFiberReconciler.createContainer
 local updateContainer = ReactFiberReconciler.updateContainer
 -- local findHostInstanceWithNoPortals = ReactFiberReconciler.findHostInstanceWithNoPortals
 -- local registerMutableSourceForHydration = ReactFiberReconciler.registerMutableSourceForHydration
-local invariant = require(script.Parent.Parent.Parent:WaitForChild('shared')).invariant
+local invariant = require(script.Parent.Parent.Parent:WaitForChild("shared")).invariant
 local enableEagerRootListeners =
-	require(script.Parent.Parent.Parent:WaitForChild('shared')).ReactFeatureFlags.enableEagerRootListeners
+	require(script.Parent.Parent.Parent:WaitForChild("shared")).ReactFeatureFlags.enableEagerRootListeners
 
 -- ROBLOX deviation: Used to fix unmount not being synchronous
 local flushSync = ReactFiberReconciler.flushSync
@@ -67,11 +67,7 @@ function ReactRobloxRoot.new(container: Container, options: RootOptions?): RootT
 	return root
 end
 
-local function createBlockingRoot(
-	container: Container,
-	tag: RootTag,
-	options: RootOptions?
-): RootType
+local function createBlockingRoot(container: Container, tag: RootTag, options: RootOptions?): RootType
 	-- deviation: We can just share the logic here via metatables
 	local root: RootType = (setmetatable({}, ReactRobloxRoot) :: any) :: RootType
 	root._internalRoot = createRootImpl(container, tag, options)
@@ -210,16 +206,15 @@ exports.createRoot = function(container: Container, options: RootOptions?): Root
 	return ReactRobloxRoot.new(container, options)
 end
 
-exports.createBlockingRoot =
-	function(container: Container, options: RootOptions?): RootType
-		invariant(
-			isValidContainer(container),
-			-- ROBLOX deviation: Use roblox engine terminology
-			"createRoot(...): Target container is not a Roblox Instance."
-		)
-		warnIfReactDOMContainerInDEV(container)
-		return createBlockingRoot(container, BlockingRoot, options)
-	end
+exports.createBlockingRoot = function(container: Container, options: RootOptions?): RootType
+	invariant(
+		isValidContainer(container),
+		-- ROBLOX deviation: Use roblox engine terminology
+		"createRoot(...): Target container is not a Roblox Instance."
+	)
+	warnIfReactDOMContainerInDEV(container)
+	return createBlockingRoot(container, BlockingRoot, options)
+end
 
 exports.createLegacyRoot = function(container: Container, options: RootOptions?): RootType
 	return createBlockingRoot(container, LegacyRoot, options)
