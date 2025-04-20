@@ -264,7 +264,7 @@ local function Render()
 				[Constants.STORY_FRAME] = e(RenderStoryFrame, {
 					Visible = if VisibleFrame == Constants.STORY_FRAME then true else false,
 					Toggle = function(Visible)
-						SetVisibleInternal(Constants.TRADE_FRAME, Visible)
+						SetVisibleInternal(Constants.STORY_FRAME, Visible)
 					end,
 					CloseClick = function()
 						OnCloseClick(Constants.STORY_FRAME)

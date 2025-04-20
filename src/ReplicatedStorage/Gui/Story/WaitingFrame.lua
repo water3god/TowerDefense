@@ -170,8 +170,8 @@ local function CreateWaitingFrame(Props: Properties)
 							AnchorPoint = Vector2.new(0, 0.5),
 							BackgroundColor3 = Color3.fromRGB(109, 255, 56),
 							Position = UDim2.fromScale(0, 0.5),
-							Size = Time:map(function(Time: number)
-								return UDim2.fromScale(Time / TotalTime:getValue(), 1)
+							Size = React.joinBindings({ Time, TotalTime }):map(function(Times: { number })
+								return UDim2.fromScale(Times[1] / Times[2], 1)
 							end),
 						},
 					}),

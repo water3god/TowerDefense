@@ -49,7 +49,7 @@ end
 local Funcs = {}
 
 function Funcs.UIStrokeBasic(Properties: PropertiesBasic)
-	local Size, SetSize = React.useState(1)
+	local Size, SetSize = React.useBinding(1)
 
 	React.useEffect(function()
 		SetSize(CalculateRatio(Properties.Stroke))

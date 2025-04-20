@@ -288,8 +288,8 @@ local function CreateMainStory(Properties: Properties)
 							BackgroundTransparency = 0,
 							BackgroundColor3 = Color3.fromRGB(127, 32, 165),
 							Position = UDim2.fromScale(0, 0.5),
-							Size = Time:map(function(Time: number)
-								return UDim2.fromScale(math.clamp(Time / TotalTime:getValue(), 0, 1), 1)
+							Size = React.joinBindings({ Time, TotalTime }):map(function(Times: { number })
+								return UDim2.fromScale(math.clamp(Times[1] / Times[2], 0, 1), 1)
 							end),
 						},
 						children = {
