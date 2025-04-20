@@ -40,7 +40,6 @@ local StoryService = require(ReplicatedStorage.Client.LobbyClient.StoryService)
 export type Properties = {
 	Toggle: (Visible: boolean) -> ()?,
 	Visible: boolean,
-	CloseClick: () -> ()?,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
@@ -312,7 +311,7 @@ local function CreateMainStory(Properties: Properties)
 			CloseButton = e(CloseButton, {
 				Size = UDim2.fromScale(0.14, 0.2),
 				Position = UDim2.fromScale(1, 0),
-				OnClick = Properties.CloseClick,
+				OnClick = CancelCallback,
 			}),
 			DifficultyFrame = e(Main.Frame, {
 				native = {
