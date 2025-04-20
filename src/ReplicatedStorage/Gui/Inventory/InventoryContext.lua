@@ -10,9 +10,6 @@ local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
 local e = React.createElement
 
-local Modules = ReplicatedStorage.Modules
-local Join = require(Modules.JoinDicts)
-
 local InventoryService = require(ReplicatedStorage.Client.GlobalClient.InventoryService)
 local Types = require(ReplicatedStorage.Shared.Types)
 

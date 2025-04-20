@@ -64,9 +64,9 @@ local function CreateBaseFrame(Properties: OtherProps)
 				if Properties.GetHovered() ~= Properties.UniqueId then
 					Properties.SetHovered(Properties.UniqueId)
 				end
-			end
-			if Properties.SetVisible then
-				Properties.SetVisible(true)
+				if Properties.SetVisible then
+					Properties.SetVisible(true)
+				end
 			end
 		end,
 		containerChildren = {

@@ -42,11 +42,7 @@ local StoryContext = require(Story.StoryContext)
 
 local IsRunning = RunService:IsRunning()
 
-local Client = ReplicatedStorage.Client
-local InventoryService = require(Client.GlobalClient.InventoryService)
-
 local Shared = ReplicatedStorage.Shared
-local Types = require(Shared.Types)
 local IsLobby = require(Shared.IsLobby)
 
 local Constants = require(script.Constants)
@@ -247,7 +243,7 @@ local function Render()
 			}),
 			Lighting
 		),
-		Main = e(
+		Main = IsLobby and e(
 			"Folder",
 			{},
 			{
@@ -298,11 +294,11 @@ local function Render()
 					end,
 				}),
 			}),
-			WaitingFrame = e(StoryContext.Provider, {}, {
+			WaitingFrame = IsLobby and e(StoryContext.Provider, {}, {
 				WaitingFrame = e(WaitingFrame, {}, {}),
 			}),
 		}),
-		Buttons = e(Main.Frame, {
+		Buttons = IsLobby and e(Main.Frame, {
 			native = {
 				Position = UDim2.fromScale(0.1, 0.5),
 				Size = UDim2.fromScale(0.15, 0.4),
