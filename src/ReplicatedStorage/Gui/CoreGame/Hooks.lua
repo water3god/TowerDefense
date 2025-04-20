@@ -31,6 +31,24 @@ function Hooks.useClock()
 	return clockBinding
 end
 
+function Hooks.ContextStack(props: {
+	providers: {
+		React.ComponentType<{
+			children: React.ReactNode,
+		}>
+	},
+
+	children: React.ReactNode,
+})
+	local mostRecent = e(props.providers[#props.providers], {}, props.children)
+
+	for providerIndex = #props.providers - 1, 1, -1 do
+		mostRecent = e(props.providers[providerIndex], {}, mostRecent)
+	end
+
+	return mostRecent
+end
+
 function Hooks.UseTime()
 	local Time, SetTime = React.useBinding(1)
 	local TotalTime, SetTotalTime = React.useBinding(1)

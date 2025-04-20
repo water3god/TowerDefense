@@ -59,6 +59,8 @@ local function Provider(props)
 				NeededXP = InventoryService.NeededXP,
 			}
 
+			print("Updated")
+
 			SetEquipped(Table)
 			InventoryCache = Table
 		end

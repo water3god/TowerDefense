@@ -41,6 +41,7 @@ export type Properties = {
 	Type: InfoType | string,
 	Name: string?,
 	Rarity: string?,
+	IsEquipped: boolean,
 
 	Data: Data?,
 	RarityInfo: RarityInfo.RarityInfo?,
@@ -117,7 +118,7 @@ local function CreateInfoFrame(Properties: Properties)
 						native = {
 							Position = UDim2.fromScale(0.5, 0.5),
 							Size = UDim2.fromScale(0.6, 0.6),
-							Text = "Equip",
+							Text = Properties.IsEquipped and "Unequip" or "Equip",
 							TextColor3 = Color3.new(1, 1, 1),
 						},
 					}),

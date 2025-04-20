@@ -39,7 +39,7 @@ local StoryService = require(ReplicatedStorage.Client.LobbyClient.StoryService)
 
 export type Properties = {
 	Toggle: (Visible: boolean) -> ()?,
-	Visible: boolean,
+	IsVisible: boolean,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
@@ -244,10 +244,10 @@ local function CreateMainStory(Properties: Properties)
 	end, { StoryData })
 
 	React.useEffect(function()
-		if not Properties.Visible and not StoryData.Data then
+		if not Properties.IsVisible and not StoryData.Data then
 			StoryService.LeaveBooth()
 		end
-	end, { Properties.Visible })
+	end, { Properties.IsVisible })
 
 	return e(Main.ImageLabel, {
 		native = Join({

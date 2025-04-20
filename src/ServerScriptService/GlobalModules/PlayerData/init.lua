@@ -12,6 +12,9 @@ local GenerateId = require(Modules.GenerateId)
 local Signal = require(Modules.Signal)
 local Trove = require(Modules.Trove)
 
+local Shared = ReplicatedStorage.Shared
+local LevelRequirements = require(Shared.LevelRequirements)
+
 local Utility = ServerScriptService.Utility
 local ProfileStore = require(Utility.ProfileStore)
 
@@ -135,24 +138,18 @@ local function CalculatePlayerXP(Level: number)
 	return math.round(BaseXP * math.pow(Multiplier, Level))
 end
 
-local LevelData: { [number]: number } = {
-	[1] = 3,
-	[10] = 4,
-	[20] = 5,
-}
+local LevelData = LevelRequirements
 
 local function GetMaxUnits(Level: number)
-	local CurrentIndex: number = 1
-	local MaxUnits: number = LevelData[CurrentIndex]
+	local UnitsAvailable = 0
 
-	for LowestLevel, UnitNum in pairs(LevelData) do
-		if LowestLevel <= Level and LowestLevel > CurrentIndex then
-			CurrentIndex = LowestLevel
-			MaxUnits = UnitNum
+	for Frame, LevelReq in ipairs(LevelData.EquippedFrames) do
+		if Level >= LevelReq then
+			UnitsAvailable += 1
 		end
 	end
 
-	return MaxUnits
+	return UnitsAvailable
 end
 
 local function Reconcile(Data: { [any]: any }, Type: string)
@@ -269,8 +266,6 @@ function PlayerData.new(Player: Player)
 	self.NeededXP = CalculatePlayerXP(self.Profile.Data.Level)
 
 	self.DataAdded:Fire(self)
-
-	print(self.Profile.Data)
 
 	return self
 end

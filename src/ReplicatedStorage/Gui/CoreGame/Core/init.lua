@@ -23,6 +23,7 @@ local TradeMenu = require(Trade.TradeMenu)
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
 local MainButtonFrame = require(CoreGame.MainButtonFrame)
+local Hooks = require(CoreGame.Hooks)
 
 local GameFrames = Gui.GameFrames
 local Bottom = require(GameFrames.Bottom)
@@ -104,28 +105,37 @@ local function AnimateWrapper(Props: { Visible: boolean, Name: string })
 		else
 			return GlobalNotVisiblePosition
 		end
-	end) :: React.Binding<UDim2>
+	end) :: React.Binding<UDim2>,
+		Styles.alpha:map(function(alpha)
+			return alpha ~= 1
+		end) :: React.Binding<boolean>
 end
 
 local RenderInventory = React.forwardRef(function(Props: InventoryProps, ref)
-	local Position = AnimateWrapper({
+	local Position, Visiblity = AnimateWrapper({
 		Visible = Props.Visible,
 		Name = Constants.INVENTORY_FRAME,
 	})
 
-	return e(InventoryContext.Provider, {}, {
+	return e(Hooks.ContextStack, {
+		providers = {
+			InventoryContext.Provider,
+			EquippedUnitsContext.Provider,
+		},
+	}, {
 		InventoryMain = e(InventoryMain, {
 			CloseClick = Props.CloseClick,
 			ref = ref,
 			native = {
 				Position = Position,
+				Visible = Visiblity,
 			},
 		}),
 	})
 end)
 
 local function RenderTradeMenu(Props: TradeMenuProps)
-	local Position = AnimateWrapper({
+	local Position, Visiblity = AnimateWrapper({
 		Visible = Props.Visible,
 		Name = Constants.TRADE_MENU,
 	})
@@ -135,13 +145,14 @@ local function RenderTradeMenu(Props: TradeMenuProps)
 			CloseClick = Props.CloseClick,
 			native = {
 				Position = Position,
+				Visible = Visiblity,
 			},
 		}),
 	})
 end
 
 local function RenderTradeFrame(Props: TradeFrameProps)
-	local Position = AnimateWrapper({
+	local Position, Visiblity = AnimateWrapper({
 		Visible = Props.Visible,
 		Name = Constants.TRADE_FRAME,
 	})
@@ -150,12 +161,13 @@ local function RenderTradeFrame(Props: TradeFrameProps)
 		Toggle = Props.Toggle,
 		native = {
 			Position = Position,
+			Visible = Visiblity,
 		},
 	})
 end
 
 local function RenderStoryFrame(Props: any)
-	local Position = AnimateWrapper({
+	local Position, Visiblity = AnimateWrapper({
 		Visible = Props.Visible,
 		Name = Constants.STORY_FRAME,
 	})
@@ -163,9 +175,10 @@ local function RenderStoryFrame(Props: any)
 	return e(StoryContext.Provider, {}, {
 		MainStory = e(MainStory, {
 			Toggle = Props.Toggle,
-			Visible = Props.Visible,
+			IsVisible = Props.Visible,
 			native = {
 				Position = Position,
+				Visible = Visiblity,
 			},
 		}),
 	})

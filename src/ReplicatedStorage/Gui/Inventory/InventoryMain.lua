@@ -18,6 +18,9 @@ local UnitFrame = require(InventoryGUI.UnitFrame)
 local InfoFrame = require(InventoryGUI.InfoFrame)
 local InventoryContext = require(InventoryGUI.InventoryContext)
 
+local GameFrames = Gui.GameFrames
+local EquippedUnitsContext = require(GameFrames.EquippedUnitsContext)
+
 local Client = ReplicatedStorage.Client
 local GlobalClient = Client.GlobalClient
 local InventoryService = require(GlobalClient.InventoryService)
@@ -66,7 +69,9 @@ local function CreateBaseButton(Properties: {
 end
 
 local CreateInventory = React.forwardRef(function(Properties, ref)
-	local InventoryContext = React.useContext(InventoryContext.Context)
+	local InventoryData = React.useContext(InventoryContext.Context)
+	local EquippedUnits = React.useContext(EquippedUnitsContext.Context)
+
 	local Units, SetUnits = React.useState({} :: { [string]: any })
 	local SellingUnits, SetSellingUnits = React.useState({} :: { string })
 	local HoveredId: string?, SetHovered = React.useState(nil :: string?)
@@ -120,7 +125,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 	React.useImperativeHandle(ref, function()
 		return {
 			Hover = function(Id: string)
-				local Info = InventoryContext.Units[Id]
+				local Info = InventoryData.Units[Id]
 				if Info then
 					local UnitData = UnitInfo.UnitInfo[Info.Unit]
 					local RarityData = RarityInfo[UnitData.Rarity]
@@ -138,7 +143,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 				return HoveredId
 			end,
 		}
-	end, { HoveredId, InventoryContext :: any })
+	end, { HoveredId, InventoryData :: any })
 
 	local OnEquip = React.useCallback(function()
 		if HoveredId then
@@ -229,12 +234,22 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		end
 
 		local Table = {}
-		for _, Data in pairs(InventoryContext.Units) do
+		for _, Data in pairs(InventoryData.Units) do
 			local Unit = HandleUnit(Data)
 			Table[Data.UniqueId] = Unit
 		end
 		SetUnits(Table)
-	end, { InSell :: any, SellingUnits :: any, HoveredId :: any, InventoryContext :: any })
+	end, { InSell :: any, SellingUnits :: any, HoveredId :: any, InventoryData :: any })
+
+	local function IsEquipped(Id: string)
+		for _, Data in ipairs(EquippedUnits.Units) do
+			if Data.UniqueId == Id then
+				return true
+			end
+		end
+
+		return false
+	end
 
 	return e(
 		"ImageLabel",
@@ -324,6 +339,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 				Rarity = ClickedUnitData and ClickedUnitData.Rarity :: any,
 				RarityInfo = ClickedUnitData and ClickedUnitData.RarityData :: any,
 
+				IsEquipped = HoveredId and IsEquipped(HoveredId) or false,
 				OnEquipClick = OnEquip,
 				OnSellClick = IndSellClick,
 			}),
