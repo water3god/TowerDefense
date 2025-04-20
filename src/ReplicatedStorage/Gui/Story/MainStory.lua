@@ -244,7 +244,7 @@ local function CreateMainStory(Properties: Properties)
 	end, { StoryData })
 
 	React.useEffect(function()
-		if not Properties.Visible then
+		if not Properties.Visible and not StoryData.Data then
 			StoryService.LeaveBooth()
 		end
 	end, { Properties.Visible })
