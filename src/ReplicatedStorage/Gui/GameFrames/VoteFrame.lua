@@ -4,18 +4,19 @@
 
 -- Services --
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Players = game:GetService("Players")
 
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
-local ReactRoblox = require(Packages.ReactRoblox)
 local ReactSpring = require(Packages.ReactSpring)
 local e = React.createElement
 
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
+
+local Client = ReplicatedStorage.Client
+local WaveService = require(Client.GlobalClient.WaveService)
 
 -- Reference UI --
 local Gui = ReplicatedStorage.Gui
@@ -25,44 +26,86 @@ local UIStroke = require(CoreGame.UIStroke)
 local Hooks = require(CoreGame.Hooks)
 
 export type Props = {
-	VoteStartCount: number,
-	StartTime: number,
-	EndTime: number,
-	YesClick: (() -> ())?,
-	NoClick: (() -> ())?,
-
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
 
 local function CreateVoteFrame(Props: Props)
+	local IsVisible, SetVisible = React.useState(false)
+	local Styles, API = ReactSpring.useSpring(function()
+		return {
+			Scale = 0.9,
+			config = {
+				mass = 1,
+				tension = 500,
+				friction = 30,
+			},
+		}
+	end)
 	local Time, _, SetTime = Hooks.UseTime()
 	local PlayerData, SetData = React.useBinding({
 		Votes = 1,
-		Total = #Players:GetPlayers(),
+		Total = 3,
 	})
 
 	React.useEffect(function()
-		SetTime(Props.EndTime - Props.StartTime, Props.StartTime)
-	end, { Props.StartTime, Props.EndTime })
-
-	Hooks.useEventConnection(Players.PlayerAdded, function(Player: Player)
-		SetData(Join(PlayerData:getValue(), {
-			Total = #Players:GetPlayers(),
-		}) :: any)
+		local Data = WaveService.GetVoteData()
+		if Data then
+			SetData({
+				Votes = Data.CurrentCount,
+				Total = Data.NeededCount,
+			})
+			SetTime(Data.Time, Data.StartTime)
+			SetVisible(true)
+		end
 	end, {})
 
-	Hooks.useEventConnection(Players.PlayerRemoving, function(Player: Player)
-		SetData(Join(PlayerData:getValue(), {
-			Total = #Players:GetPlayers(),
-		}) :: any)
+	Hooks.useEventConnection(WaveService.VoteData.VoteStarted, function(Data)
+		SetData({
+			Votes = Data.CurrentCount,
+			Total = Data.NeededCount,
+		})
+		SetTime(Data.Time, Data.StartTime)
+		SetVisible(true)
 	end, {})
+
+	Hooks.useEventConnection(WaveService.VoteData.VoteChanged, function(CurrentCount, NeededCount)
+		SetData({
+			Votes = CurrentCount,
+			Total = NeededCount,
+		})
+	end, {})
+
+	Hooks.useEventConnection(WaveService.VoteData.VoteEnded, function()
+		SetVisible(false)
+	end, {})
+
+	local Visiblity, SetVisibility = React.useBinding(false)
 
 	React.useEffect(function()
-		SetData(Join(PlayerData:getValue(), {
-			Votes = Props.VoteStartCount,
-		}) :: any)
-	end, { Props.VoteStartCount })
+		if IsVisible then
+			SetVisibility(true)
+
+			API.start({
+				Scale = 1,
+			})
+		else
+			API.start({
+				Scale = 0.9,
+			}):andThen(function()
+				SetVisibility(false)
+			end)
+		end
+	end, { IsVisible })
+
+	local YesClick = React.useCallback(function()
+		WaveService.Vote()
+		SetVisible(false)
+	end, {})
+
+	local NoClick = React.useCallback(function()
+		SetVisible(false)
+	end, {})
 
 	return e(Main.Frame, {
 		native = Join({
@@ -70,6 +113,7 @@ local function CreateVoteFrame(Props: Props)
 			BackgroundColor3 = Color3.new(),
 			Position = UDim2.fromScale(0.5, 0.225),
 			Size = UDim2.fromScale(0.175, 0.2),
+			Visible = Visiblity,
 		}, Props.native),
 	}, {
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
@@ -92,7 +136,7 @@ local function CreateVoteFrame(Props: Props)
 				Position = UDim2.fromScale(0.75, 0.75),
 				Size = UDim2.fromScale(0.4, 0.25),
 				Text = "",
-				[React.Event.MouseButton1Click] = Props.NoClick,
+				[React.Event.MouseButton1Click] = NoClick,
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStrokeBasic, {
@@ -122,7 +166,7 @@ local function CreateVoteFrame(Props: Props)
 				Position = UDim2.fromScale(0.25, 0.75),
 				Size = UDim2.fromScale(0.4, 0.25),
 				Text = "",
-				[React.Event.MouseButton1Click] = Props.YesClick,
+				[React.Event.MouseButton1Click] = YesClick,
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStrokeBasic, {
@@ -173,6 +217,9 @@ local function CreateVoteFrame(Props: Props)
 				Size = UDim2.fromScale(0.7, 0.225),
 				Text = "Vote Start",
 			},
+		}),
+		Scale = e("UIScale", {
+			Scale = Styles.Scale,
 		}),
 	}, Props.children)
 end

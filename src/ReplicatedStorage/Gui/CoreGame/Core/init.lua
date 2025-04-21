@@ -28,6 +28,7 @@ local Hooks = require(CoreGame.Hooks)
 local GameFrames = Gui.GameFrames
 local Bottom = require(GameFrames.Bottom)
 local Top = require(GameFrames.Top)
+local VoteFrame = require(GameFrames.VoteFrame)
 
 local Story = Gui.Story
 local MainStory = require(Story.MainStory)
@@ -282,8 +283,11 @@ local function Render()
 			}
 		),
 		OtherGui = e("Folder", {}, {
-			TopFrame = not IsLobby and e(WaveContext.Provider, {}, {
-				TopFrame = e(Top),
+			GameOnly = not IsLobby and e("Folder", {}, {
+				TopFrame = e(WaveContext.Provider, {}, {
+					TopFrame = e(Top),
+				}),
+				VoteFrame = e(VoteFrame),
 			}),
 			BottomFrame = e(EquippedUnitsContext.Provider, {}, {
 				BottomFrame = e(Bottom, {
@@ -303,52 +307,51 @@ local function Render()
 				Position = UDim2.fromScale(0.1, 0.5),
 				Size = UDim2.fromScale(0.15, 0.4),
 			},
-			children = {
-				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-					AspectRatio = 0.62,
-				}),
-				UIGridLayout = e("UIGridLayout", {
-					CellPadding = UDim2.fromScale(0, 0),
-					CellSize = UDim2.fromScale(0.5, 0.3),
-					FillDirection = Enum.FillDirection.Horizontal,
-				}),
-				InventoryButton = e(MainButtonFrame, {
-					Position = UDim2.fromScale(0.1, 0.5),
-					Size = UDim2.fromScale(0.1, 0.15),
-					Name = "Inventory",
-					Icon = "",
-					OnClick = function()
-						OnMainButtonClick(Constants.INVENTORY_FRAME)
-					end,
-				}),
-				PlayButton = e(MainButtonFrame, {
-					Position = UDim2.fromScale(0.1, 0.5),
-					Size = UDim2.fromScale(0.1, 0.15),
-					Name = "Play",
-					Icon = "",
-					OnClick = function()
-						--OnMainButtonClick("InventoryFrame")
-					end,
-				}),
-				StoreButton = e(MainButtonFrame, {
-					Position = UDim2.fromScale(0.1, 0.5),
-					Size = UDim2.fromScale(0.1, 0.15),
-					Name = "Store",
-					Icon = "",
-					OnClick = function()
-						--OnMainButtonClick("InventoryFrame")
-					end,
-				}),
-				TradeButton = e(MainButtonFrame, {
-					Position = UDim2.fromScale(0.1, 0.5),
-					Size = UDim2.fromScale(0.1, 0.15),
-					Name = "Trade",
-					Icon = "",
-					OnClick = function()
-						OnMainButtonClick(Constants.TRADE_MENU)
-					end,
-				}),
-			},
+		}, {
+			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+				AspectRatio = 0.62,
+			}),
+			UIGridLayout = e("UIGridLayout", {
+				CellPadding = UDim2.fromScale(0, 0),
+				CellSize = UDim2.fromScale(0.5, 0.3),
+				FillDirection = Enum.FillDirection.Horizontal,
+			}),
+			InventoryButton = e(MainButtonFrame, {
+				Position = UDim2.fromScale(0.1, 0.5),
+				Size = UDim2.fromScale(0.1, 0.15),
+				Name = "Inventory",
+				Icon = "",
+				OnClick = function()
+					OnMainButtonClick(Constants.INVENTORY_FRAME)
+				end,
+			}),
+			PlayButton = e(MainButtonFrame, {
+				Position = UDim2.fromScale(0.1, 0.5),
+				Size = UDim2.fromScale(0.1, 0.15),
+				Name = "Play",
+				Icon = "",
+				OnClick = function()
+					--OnMainButtonClick("InventoryFrame")
+				end,
+			}),
+			StoreButton = e(MainButtonFrame, {
+				Position = UDim2.fromScale(0.1, 0.5),
+				Size = UDim2.fromScale(0.1, 0.15),
+				Name = "Store",
+				Icon = "",
+				OnClick = function()
+					--OnMainButtonClick("InventoryFrame")
+				end,
+			}),
+			TradeButton = e(MainButtonFrame, {
+				Position = UDim2.fromScale(0.1, 0.5),
+				Size = UDim2.fromScale(0.1, 0.15),
+				Name = "Trade",
+				Icon = "",
+				OnClick = function()
+					OnMainButtonClick(Constants.TRADE_MENU)
+				end,
+			}),
 		}),
 	})
 end

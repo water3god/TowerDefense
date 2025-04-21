@@ -16,14 +16,10 @@ local Gui = ReplicatedStorage.Gui
 local GameFrames = Gui.GameFrames
 local VoteFrame = require(GameFrames.VoteFrame)
 
--- Controls --
-local controls = {}
-
 -- Story --
 local Story = {
 	react = React,
 	reactRoblox = ReactRoblox,
-	--controls = controls,
 	story = function(Properties)
 		local Frame = e(VoteFrame, {
 			VoteStartCount = 0,

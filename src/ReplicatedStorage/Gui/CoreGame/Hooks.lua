@@ -12,6 +12,7 @@ local e = React.createElement
 
 local Modules = ReplicatedStorage.Modules
 local Join = require(Modules.JoinDicts)
+local Signal = require(Modules.Signal)
 
 local Hooks = {}
 
@@ -102,7 +103,7 @@ function Hooks.LayoutOrder(): () -> number
 end
 
 function Hooks.useEventConnection<T...>(
-	event: RBXScriptSignal<T...>, -- Can also include | Signal.Signal<T...> if you're using a custom signal type
+	event: RBXScriptSignal<T...> | Signal.Signal<T...>, -- Can also include | Signal.Signal<T...> if you're using a custom signal type
 	callback: (T...) -> (),
 	dependencies: { any }
 )
@@ -111,7 +112,7 @@ function Hooks.useEventConnection<T...>(
 	end, dependencies)
 
 	React.useEffect(function()
-		local connection = event:Connect(cachedCallback)
+		local connection = (event :: any):Connect(cachedCallback)
 
 		return function()
 			connection:Disconnect()
