@@ -256,415 +256,405 @@ local function CreateMainStory(Properties: Properties)
 			Size = UDim2.fromScale(0.5, 0.6),
 			Image = "rbxassetid://100546338175267",
 		}, Properties.native),
-		children = Join({
-			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 1.787,
+	}, {
+		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+			AspectRatio = 1.787,
+		}),
+		MapName = e(Main.TextLabel, {
+			native = {
+				Position = UDim2.fromScale(0.45, 0.17),
+				Size = UDim2.fromScale(0.7, 0.1),
+				Text = GameInfo.GetFullName(
+					(GameInfo.GetMapFromId(CurrentMap) :: any).Name,
+					Stage,
+					(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo[Stage].Name
+				), --"Colussem: 1 - Survival",
+			},
+		}),
+		Bar = e(Main.CanvasGroup, {
+			native = {
+				BackgroundTransparency = 0,
+				BackgroundColor3 = Color3.fromRGB(93, 11, 141),
+				Position = UDim2.fromScale(0.7, 1.07),
+				Size = UDim2.fromScale(0.9, 0.08),
+			},
+		}, {
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.4, 0),
 			}),
-			MapName = e(Main.TextLabel, {
+			InnerBar = e(Main.Frame, {
 				native = {
-					Position = UDim2.fromScale(0.45, 0.17),
-					Size = UDim2.fromScale(0.7, 0.1),
-					Text = GameInfo.GetFullName(
-						(GameInfo.GetMapFromId(CurrentMap) :: any).Name,
-						Stage,
-						(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo[Stage].Name
-					), --"Colussem: 1 - Survival",
-				},
-			}),
-			Bar = e(Main.CanvasGroup, {
-				native = {
+					AnchorPoint = Vector2.new(0, 0.5),
 					BackgroundTransparency = 0,
-					BackgroundColor3 = Color3.fromRGB(93, 11, 141),
-					Position = UDim2.fromScale(0.7, 1.07),
-					Size = UDim2.fromScale(0.9, 0.08),
+					BackgroundColor3 = Color3.fromRGB(127, 32, 165),
+					Position = UDim2.fromScale(0, 0.5),
+					Size = React.joinBindings({ Time, TotalTime }):map(function(Times: { number })
+						return UDim2.fromScale(math.clamp(Times[1] / Times[2], 0, 1), 1)
+					end),
 				},
 				children = {
 					UICorner = e("UICorner", {
 						CornerRadius = UDim.new(0.4, 0),
 					}),
-					InnerBar = e(Main.Frame, {
-						native = {
-							AnchorPoint = Vector2.new(0, 0.5),
-							BackgroundTransparency = 0,
-							BackgroundColor3 = Color3.fromRGB(127, 32, 165),
-							Position = UDim2.fromScale(0, 0.5),
-							Size = React.joinBindings({ Time, TotalTime }):map(function(Times: { number })
-								return UDim2.fromScale(math.clamp(Times[1] / Times[2], 0, 1), 1)
-							end),
-						},
-						children = {
-							UICorner = e("UICorner", {
-								CornerRadius = UDim.new(0.4, 0),
-							}),
-						},
-					}),
-					TimeLabel = e(Main.TextLabel, {
-						native = {
-							Size = UDim2.fromScale(0.8, 0.8),
-							Text = Time:map(function(Time: number)
-								return string.format("Time Left: %u", math.floor(Time))
-							end),
-							ZIndex = 3,
-						},
-					}),
 				},
 			}),
-			CloseButton = e(CloseButton, {
-				Size = UDim2.fromScale(0.14, 0.2),
-				Position = UDim2.fromScale(1, 0),
-				OnClick = CancelCallback,
-			}),
-			DifficultyFrame = e(Main.Frame, {
+			TimeLabel = e(Main.TextLabel, {
 				native = {
-					Position = UDim2.fromScale(0.65, 0.7),
-					Size = UDim2.fromScale(0.3, 0.18),
+					Size = UDim2.fromScale(0.8, 0.8),
+					Text = Time:map(function(Time: number)
+						return string.format("Time Left: %u", math.floor(Time))
+					end),
 					ZIndex = 3,
 				},
-				children = {
-					UIListLayout = e("UIListLayout", {
-						FillDirection = Enum.FillDirection.Horizontal,
-						SortOrder = Enum.SortOrder.LayoutOrder,
-					}),
-					Normal = e(Main.Animateables.ImageButton, {
-						native = {
-							Size = UDim2.fromScale(1, 1),
-							Image = "rbxassetid://107455378505876",
-							ImageColor3 = if Difficulty == "Normal" then HoveredColor else DefaultColor,
-							LayoutOrder = DifficultyLayoutOrder(),
-							[React.Event.MouseButton1Click] = function()
-								SetDifficulty("Normal")
-							end,
-						},
-						children = {
-							UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-								AspectRatio = 1,
-							}),
-							TextLabel = e(Main.TextLabel, {
-								native = {
-									Text = "Normal",
-									TextColor3 = Color3.fromRGB(88, 226, 65),
-									Position = UDim2.fromScale(0.5, 0.75),
-									Size = UDim2.fromScale(0.7, 0.3),
-								},
-							}),
-						},
-					}),
-					Hard = e(Main.Animateables.ImageButton, {
-						native = {
-							Size = UDim2.fromScale(1, 1),
-							Image = "rbxassetid://107455378505876",
-							ImageColor3 = if Difficulty == "Hard" then HoveredColor else DefaultColor,
-							LayoutOrder = DifficultyLayoutOrder(),
-							[React.Event.MouseButton1Click] = function()
-								SetDifficulty("Hard")
-							end,
-						},
-						children = {
-							UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-								AspectRatio = 1,
-							}),
-							TextLabel = e(Main.TextLabel, {
-								native = {
-									Text = "Hard",
-									TextColor3 = Color3.fromRGB(224, 47, 57),
-									Position = UDim2.fromScale(0.5, 0.75),
-									Size = UDim2.fromScale(0.7, 0.3),
-								},
-							}),
-						},
-					}),
-					Insane = e(Main.Animateables.ImageButton, {
-						native = {
-							Size = UDim2.fromScale(1, 1),
-							Image = "rbxassetid://107455378505876",
-							ImageColor3 = if Difficulty == "Insane" then HoveredColor else DefaultColor,
-							LayoutOrder = DifficultyLayoutOrder(),
-							[React.Event.MouseButton1Click] = function()
-								SetDifficulty("Insane")
-							end,
-						},
-						children = {
-							UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-								AspectRatio = 1,
-							}),
-							TextLabel = e(Main.TextLabel, {
-								native = {
-									Text = "Insane",
-									TextColor3 = Color3.fromRGB(187, 85, 211),
-									Position = UDim2.fromScale(0.5, 0.75),
-									Size = UDim2.fromScale(0.7, 0.3),
-								},
-							}),
-						},
-					}),
-				},
 			}),
-			LevelFrame = e(Main.Frame, {
-				native = {
-					BackgroundTransparency = 0,
-					BackgroundColor3 = Color3.new(1, 1, 1),
-					Position = UDim2.fromScale(0.9, 0.5),
-					Size = UDim2.fromScale(0.1, 0.8),
-				},
-				children = {
-					UICorner = e("UICorner", {
-						CornerRadius = UDim.new(0.2, 0),
-					}),
-					UIGradient = e("UIGradient", {
-						Color = ColorSequence.new({
-							ColorSequenceKeypoint.new(0, Color3.new(0.254902, 0.0745098, 0.368627)),
-							ColorSequenceKeypoint.new(1, Color3.new(0.25098, 0.14902, 0.3647067)),
-						}),
-					}),
-					MainFrame = e(Main.ScrollingFrame, {
-						BarSize = 0.002,
-						native = {
-							AutomaticCanvasSize = Enum.AutomaticSize.Y,
-						},
-						children = {
-							UIListLayout = e("UIListLayout", {
-								SortOrder = Enum.SortOrder.LayoutOrder,
-								HorizontalAlignment = Enum.HorizontalAlignment.Center,
-								Padding = UDim.new(0.02, 0),
-							}),
-							UIPadding = e("UIPadding", {
-								PaddingTop = UDim.new(0.02, 0),
-							}),
-							Stage1 = e(CreateStage, {
-								Number = 1,
-								Hovered = Stage == 1,
-								Visible = #(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo >= 1,
-								OnClick = function()
-									SetStage(1)
-								end,
-							}),
-							Stage2 = e(CreateStage, {
-								Number = 2,
-								Hovered = Stage == 2,
-								Visible = #(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo >= 2,
-								OnClick = function()
-									SetStage(2)
-								end,
-							}),
-							Stage3 = e(CreateStage, {
-								Number = 3,
-								Hovered = Stage == 3,
-								Visible = #(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo >= 3,
-								OnClick = function()
-									SetStage(3)
-								end,
-							}),
-							Stage4 = e(CreateStage, {
-								Number = 4,
-								Hovered = Stage == 4,
-								Visible = #(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo >= 4,
-								OnClick = function()
-									SetStage(4)
-								end,
-							}),
-							Stage5 = e(CreateStage, {
-								Number = 5,
-								Hovered = Stage == 5,
-								Visible = #(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo >= 5,
-								OnClick = function()
-									SetStage(5)
-								end,
-							}),
-						},
-					}),
-				},
+		}),
+		CloseButton = e(CloseButton, {
+			Size = UDim2.fromScale(0.14, 0.2),
+			Position = UDim2.fromScale(1, 0),
+			OnClick = CancelCallback,
+		}),
+		DifficultyFrame = e(Main.Frame, {
+			native = {
+				Position = UDim2.fromScale(0.65, 0.7),
+				Size = UDim2.fromScale(0.3, 0.18),
+				ZIndex = 3,
+			},
+		}, {
+			UIListLayout = e("UIListLayout", {
+				FillDirection = Enum.FillDirection.Horizontal,
+				SortOrder = Enum.SortOrder.LayoutOrder,
 			}),
-			ResourcesFrame = e(Main.Frame, {
+			Normal = e(Main.Animateables.ImageButton, {
 				native = {
-					BackgroundTransparency = 0,
-					BackgroundColor3 = Color3.fromRGB(65, 19, 94),
-					Position = UDim2.fromScale(0.275, 0.675),
-					Size = UDim2.fromScale(0.35, 0.25),
+					Size = UDim2.fromScale(1, 1),
+					Image = "rbxassetid://107455378505876",
+					ImageColor3 = if Difficulty == "Normal" then HoveredColor else DefaultColor,
+					LayoutOrder = DifficultyLayoutOrder(),
+					[React.Event.MouseButton1Click] = function()
+						SetDifficulty("Normal")
+					end,
 				},
 				children = {
-					UICorner = e("UICorner", {
-						CornerRadius = UDim.new(0.1, 0),
-					}),
-					ResourcesTitle = e(Main.TextLabel, {
-						native = {
-							Position = UDim2.fromScale(0.5, 0.2),
-							Size = UDim2.fromScale(0.6, 0.25),
-							Text = "Resources",
-						},
-					}),
-					MainFrame = e(Main.ScrollingFrame, {
-						BarSize = 0.002,
-						native = {
-							AutomaticCanvasSize = Enum.AutomaticSize.X,
-							Position = UDim2.fromScale(0.5, 0.65),
-							Size = UDim2.fromScale(0.95, 0.65),
-						},
-						children = Join({
-							UIListLayout = e("UIListLayout", {
-								HorizontalAlignment = Enum.HorizontalAlignment.Left,
-								FillDirection = Enum.FillDirection.Horizontal,
-								SortOrder = Enum.SortOrder.LayoutOrder,
-							}),
-						}, ResourceFrames),
-					}),
-				},
-			}),
-			StatsFrame = e(Main.Frame, {
-				native = {
-					BackgroundTransparency = 0,
-					BackgroundColor3 = Color3.fromRGB(65, 19, 94),
-					Position = UDim2.fromScale(0.275, 0.375),
-					Size = UDim2.fromScale(0.35, 0.25),
-				},
-				children = {
-					UICorner = e("UICorner", {
-						CornerRadius = UDim.new(0.1, 0),
-					}),
-					StatOne = e(Main.TextLabel, {
-						native = {
-							Position = UDim2.fromScale(0.35, 0.5),
-							Size = UDim2.fromScale(0.6, 0.2),
-							Text = "Total Cleared",
-							TextXAlignment = Enum.TextXAlignment.Left,
-						},
-					}),
-					OneValue = e(Main.TextLabel, {
-						native = {
-							Position = UDim2.fromScale(0.75, 0.5),
-							Size = UDim2.fromScale(0.3, 0.2),
-							Text = StoryData.CompletedMaps[CurrentMap]
-									and StoryData.CompletedMaps[CurrentMap][Stage]
-									and StoryData.CompletedMaps[CurrentMap][Stage][Difficulty]
-									and StoryData.CompletedMaps[CurrentMap][Stage][Difficulty].FinishedCount
-								or "N/A",
-							TextXAlignment = Enum.TextXAlignment.Right,
-						},
-					}),
-					StatsTwo = e(Main.TextLabel, {
-						native = {
-							Position = UDim2.fromScale(0.35, 0.8),
-							Size = UDim2.fromScale(0.6, 0.2),
-							Text = "Best Time",
-							TextXAlignment = Enum.TextXAlignment.Left,
-						},
-					}),
-					TwoValue = e(Main.TextLabel, {
-						native = {
-							Position = UDim2.fromScale(0.75, 0.8),
-							Size = UDim2.fromScale(0.3, 0.2),
-							Text = StoryData.CompletedMaps[CurrentMap]
-									and StoryData.CompletedMaps[CurrentMap][Stage]
-									and StoryData.CompletedMaps[CurrentMap][Stage][Difficulty]
-									and StoryData.CompletedMaps[CurrentMap][Stage][Difficulty].FastestTime
-								or "N/A",
-							TextXAlignment = Enum.TextXAlignment.Right,
-						},
-					}),
-					StatsLabel = e(Main.TextLabel, {
-						native = {
-							Position = UDim2.fromScale(0.5, 0.2),
-							Size = UDim2.fromScale(0.5, 0.25),
-							Text = "Stats",
-						},
-					}),
-				},
-			}),
-			CancelButton = e(Main.Animateables.ImageButton, {
-				native = {
-					Image = "rbxassetid://120986367718593",
-					Size = UDim2.fromScale(0.175, 0.175),
-					Position = UDim2.fromScale(0.6, 0.89),
-					[React.Event.MouseButton1Click] = CancelCallback,
-				},
-				children = {
-					UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-						AspectRatio = 3.16,
-					}),
-					Label = e(Main.TextLabel, {
-						native = {
-							Size = UDim2.fromScale(0.7, 0.7),
-							Text = "Cancel",
-						},
-						children = {
-							UIStroke = e(UIStroke.UIStrokeBasic, {
-								Stroke = 0.004,
-							}),
-						},
-					}),
-				},
-			}),
-			ConfirmButton = e(Main.Animateables.ImageButton, {
-				native = {
-					Image = "rbxassetid://76295055563521",
-					Size = UDim2.fromScale(0.175, 0.175),
-					Position = UDim2.fromScale(0.35, 0.89),
-					[React.Event.MouseButton1Click] = ConfirmCallback,
-				},
-				children = {
-					UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-						AspectRatio = 3.16,
-					}),
-					Label = e(Main.TextLabel, {
-						native = {
-							Size = UDim2.fromScale(0.7, 0.7),
-							Text = "Confirm",
-						},
-						children = {
-							UIStroke = e(UIStroke.UIStrokeBasic, {
-								Stroke = 0.004,
-							}),
-						},
-					}),
-				},
-			}),
-			MapImage = e(Main.ImageLabel, {
-				native = {
-					Position = UDim2.fromScale(0.65, 0.525),
-					Size = UDim2.fromScale(0.6, 0.55),
-					Image = (GameInfo.GetMapFromId(CurrentMap) :: any).Image,
-					ScaleType = Enum.ScaleType.Crop,
-				},
-				children = {
-					UICorner = e("UICorner", {
-						CornerRadius = UDim.new(0.05, 0),
-					}),
 					UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 						AspectRatio = 1,
 					}),
+					TextLabel = e(Main.TextLabel, {
+						native = {
+							Text = "Normal",
+							TextColor3 = Color3.fromRGB(88, 226, 65),
+							Position = UDim2.fromScale(0.5, 0.75),
+							Size = UDim2.fromScale(0.7, 0.3),
+						},
+					}),
 				},
 			}),
-			StageFrame = e(Main.ImageLabel, {
+			Hard = e(Main.Animateables.ImageButton, {
 				native = {
-					Image = "rbxassetid://94302946042531",
-					Position = UDim2.fromScale(1.2, 0.525),
-					Size = UDim2.fromScale(0.4, 0.95),
+					Size = UDim2.fromScale(1, 1),
+					Image = "rbxassetid://107455378505876",
+					ImageColor3 = if Difficulty == "Hard" then HoveredColor else DefaultColor,
+					LayoutOrder = DifficultyLayoutOrder(),
+					[React.Event.MouseButton1Click] = function()
+						SetDifficulty("Hard")
+					end,
 				},
 				children = {
 					UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-						AspectRatio = 0.6,
+						AspectRatio = 1,
 					}),
-					MainStageFrame = e(Main.ScrollingFrame, {
-						BarSize = 0.002,
+					TextLabel = e(Main.TextLabel, {
 						native = {
-							AutomaticCanvasSize = Enum.AutomaticSize.Y,
+							Text = "Hard",
+							TextColor3 = Color3.fromRGB(224, 47, 57),
+							Position = UDim2.fromScale(0.5, 0.75),
+							Size = UDim2.fromScale(0.7, 0.3),
 						},
-						children = Join({
-							UIListLayout = e("UIListLayout", {
-								SortOrder = Enum.SortOrder.LayoutOrder,
-								HorizontalAlignment = Enum.HorizontalAlignment.Center,
-								Padding = UDim.new(0, 0),
-							}),
-						}, MapData),
 					}),
 				},
 			}),
-			Title = e(Title, {
-				Title = "STORY",
-				Position = UDim2.fromScale(0.25, -0.04),
-				Size = UDim2.fromScale(0.7, 0.3),
+			Insane = e(Main.Animateables.ImageButton, {
+				native = {
+					Size = UDim2.fromScale(1, 1),
+					Image = "rbxassetid://107455378505876",
+					ImageColor3 = if Difficulty == "Insane" then HoveredColor else DefaultColor,
+					LayoutOrder = DifficultyLayoutOrder(),
+					[React.Event.MouseButton1Click] = function()
+						SetDifficulty("Insane")
+					end,
+				},
+				children = {
+					UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+						AspectRatio = 1,
+					}),
+					TextLabel = e(Main.TextLabel, {
+						native = {
+							Text = "Insane",
+							TextColor3 = Color3.fromRGB(187, 85, 211),
+							Position = UDim2.fromScale(0.5, 0.75),
+							Size = UDim2.fromScale(0.7, 0.3),
+						},
+					}),
+				},
 			}),
-		}, Properties.children),
-	})
+		}),
+		LevelFrame = e(Main.Frame, {
+			native = {
+				BackgroundTransparency = 0,
+				BackgroundColor3 = Color3.new(1, 1, 1),
+				Position = UDim2.fromScale(0.9, 0.5),
+				Size = UDim2.fromScale(0.1, 0.8),
+			},
+		}, {
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.2, 0),
+			}),
+			UIGradient = e("UIGradient", {
+				Color = ColorSequence.new({
+					ColorSequenceKeypoint.new(0, Color3.new(0.254902, 0.0745098, 0.368627)),
+					ColorSequenceKeypoint.new(1, Color3.new(0.25098, 0.14902, 0.3647067)),
+				}),
+			}),
+			MainFrame = e(Main.ScrollingFrame, {
+				BarSize = 0.002,
+				native = {
+					AutomaticCanvasSize = Enum.AutomaticSize.Y,
+				},
+				children = {
+					UIListLayout = e("UIListLayout", {
+						SortOrder = Enum.SortOrder.LayoutOrder,
+						HorizontalAlignment = Enum.HorizontalAlignment.Center,
+						Padding = UDim.new(0.02, 0),
+					}),
+					UIPadding = e("UIPadding", {
+						PaddingTop = UDim.new(0.02, 0),
+					}),
+					Stage1 = e(CreateStage, {
+						Number = 1,
+						Hovered = Stage == 1,
+						Visible = #(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo >= 1,
+						OnClick = function()
+							SetStage(1)
+						end,
+					}),
+					Stage2 = e(CreateStage, {
+						Number = 2,
+						Hovered = Stage == 2,
+						Visible = #(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo >= 2,
+						OnClick = function()
+							SetStage(2)
+						end,
+					}),
+					Stage3 = e(CreateStage, {
+						Number = 3,
+						Hovered = Stage == 3,
+						Visible = #(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo >= 3,
+						OnClick = function()
+							SetStage(3)
+						end,
+					}),
+					Stage4 = e(CreateStage, {
+						Number = 4,
+						Hovered = Stage == 4,
+						Visible = #(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo >= 4,
+						OnClick = function()
+							SetStage(4)
+						end,
+					}),
+					Stage5 = e(CreateStage, {
+						Number = 5,
+						Hovered = Stage == 5,
+						Visible = #(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo >= 5,
+						OnClick = function()
+							SetStage(5)
+						end,
+					}),
+				},
+			}),
+		}),
+		ResourcesFrame = e(Main.Frame, {
+			native = {
+				BackgroundTransparency = 0,
+				BackgroundColor3 = Color3.fromRGB(65, 19, 94),
+				Position = UDim2.fromScale(0.275, 0.675),
+				Size = UDim2.fromScale(0.35, 0.25),
+			},
+		}, {
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.1, 0),
+			}),
+			ResourcesTitle = e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.5, 0.2),
+					Size = UDim2.fromScale(0.6, 0.25),
+					Text = "Resources",
+				},
+			}),
+			MainFrame = e(Main.ScrollingFrame, {
+				BarSize = 0.002,
+				native = {
+					AutomaticCanvasSize = Enum.AutomaticSize.X,
+					Position = UDim2.fromScale(0.5, 0.65),
+					Size = UDim2.fromScale(0.95, 0.65),
+				},
+				children = Join({
+					UIListLayout = e("UIListLayout", {
+						HorizontalAlignment = Enum.HorizontalAlignment.Left,
+						FillDirection = Enum.FillDirection.Horizontal,
+						SortOrder = Enum.SortOrder.LayoutOrder,
+					}),
+				}, ResourceFrames),
+			}),
+		}),
+		StatsFrame = e(Main.Frame, {
+			native = {
+				BackgroundTransparency = 0,
+				BackgroundColor3 = Color3.fromRGB(65, 19, 94),
+				Position = UDim2.fromScale(0.275, 0.375),
+				Size = UDim2.fromScale(0.35, 0.25),
+			},
+		}, {
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.1, 0),
+			}),
+			StatOne = e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.35, 0.5),
+					Size = UDim2.fromScale(0.6, 0.2),
+					Text = "Total Cleared",
+					TextXAlignment = Enum.TextXAlignment.Left,
+				},
+			}),
+			OneValue = e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.75, 0.5),
+					Size = UDim2.fromScale(0.3, 0.2),
+					Text = StoryData.CompletedMaps[CurrentMap]
+							and StoryData.CompletedMaps[CurrentMap][Stage]
+							and StoryData.CompletedMaps[CurrentMap][Stage][Difficulty]
+							and StoryData.CompletedMaps[CurrentMap][Stage][Difficulty].FinishedCount
+						or "N/A",
+					TextXAlignment = Enum.TextXAlignment.Right,
+				},
+			}),
+			StatsTwo = e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.35, 0.8),
+					Size = UDim2.fromScale(0.6, 0.2),
+					Text = "Best Time",
+					TextXAlignment = Enum.TextXAlignment.Left,
+				},
+			}),
+			TwoValue = e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.75, 0.8),
+					Size = UDim2.fromScale(0.3, 0.2),
+					Text = StoryData.CompletedMaps[CurrentMap]
+							and StoryData.CompletedMaps[CurrentMap][Stage]
+							and StoryData.CompletedMaps[CurrentMap][Stage][Difficulty]
+							and StoryData.CompletedMaps[CurrentMap][Stage][Difficulty].FastestTime
+						or "N/A",
+					TextXAlignment = Enum.TextXAlignment.Right,
+				},
+			}),
+			StatsLabel = e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.5, 0.2),
+					Size = UDim2.fromScale(0.5, 0.25),
+					Text = "Stats",
+				},
+			}),
+		}),
+		CancelButton = e(Main.Animateables.ImageButton, {
+			native = {
+				Image = "rbxassetid://120986367718593",
+				Size = UDim2.fromScale(0.175, 0.175),
+				Position = UDim2.fromScale(0.6, 0.89),
+				[React.Event.MouseButton1Click] = CancelCallback,
+			},
+		}, {
+			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+				AspectRatio = 3.16,
+			}),
+			Label = e(Main.TextLabel, {
+				native = {
+					Size = UDim2.fromScale(0.7, 0.7),
+					Text = "Cancel",
+				},
+				children = {
+					UIStroke = e(UIStroke.UIStrokeBasic, {
+						Stroke = 0.004,
+					}),
+				},
+			}),
+		}),
+		ConfirmButton = e(Main.Animateables.ImageButton, {
+			native = {
+				Image = "rbxassetid://76295055563521",
+				Size = UDim2.fromScale(0.175, 0.175),
+				Position = UDim2.fromScale(0.35, 0.89),
+				[React.Event.MouseButton1Click] = ConfirmCallback,
+			},
+		}, {
+			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+				AspectRatio = 3.16,
+			}),
+			Label = e(Main.TextLabel, {
+				native = {
+					Size = UDim2.fromScale(0.7, 0.7),
+					Text = "Confirm",
+				},
+				children = {
+					UIStroke = e(UIStroke.UIStrokeBasic, {
+						Stroke = 0.004,
+					}),
+				},
+			}),
+		}),
+		MapImage = e(Main.ImageLabel, {
+			native = {
+				Position = UDim2.fromScale(0.65, 0.525),
+				Size = UDim2.fromScale(0.6, 0.55),
+				Image = (GameInfo.GetMapFromId(CurrentMap) :: any).Image,
+				ScaleType = Enum.ScaleType.Crop,
+			},
+		}, {
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.05, 0),
+			}),
+			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+				AspectRatio = 1,
+			}),
+		}),
+		StageFrame = e(Main.ImageLabel, {
+			native = {
+				Image = "rbxassetid://94302946042531",
+				Position = UDim2.fromScale(1.2, 0.525),
+				Size = UDim2.fromScale(0.4, 0.95),
+			},
+		}, {
+			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+				AspectRatio = 0.6,
+			}),
+			MainStageFrame = e(Main.ScrollingFrame, {
+				BarSize = 0.002,
+				native = {
+					AutomaticCanvasSize = Enum.AutomaticSize.Y,
+				},
+				children = Join({
+					UIListLayout = e("UIListLayout", {
+						SortOrder = Enum.SortOrder.LayoutOrder,
+						HorizontalAlignment = Enum.HorizontalAlignment.Center,
+						Padding = UDim.new(0, 0),
+					}),
+				}, MapData),
+			}),
+		}),
+		Title = e(Title, {
+			Title = "STORY",
+			Position = UDim2.fromScale(0.25, -0.04),
+			Size = UDim2.fromScale(0.7, 0.3),
+		}),
+	}, Properties.children)
 end
 
 return CreateMainStory

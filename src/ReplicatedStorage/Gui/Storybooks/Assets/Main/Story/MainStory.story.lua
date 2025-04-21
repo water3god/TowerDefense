@@ -35,6 +35,7 @@ local Story = {
 		}, {
 			MainStory = e(MainStory, {
 				Visible = true,
+				IsVisible = true,
 				native = {
 					Size = UDim2.fromScale(0.65, 0.9),
 				},

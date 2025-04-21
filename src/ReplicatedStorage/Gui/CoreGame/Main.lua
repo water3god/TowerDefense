@@ -150,12 +150,11 @@ do
 			native = JoinDicts(Properties.native, {
 				[React.Change.GuiState] = Callback,
 			}),
-			children = JoinDicts({
-				AnimateScale = e("UIScale", {
-					Scale = Scale.Scale,
-				}),
-			}, Properties.children),
-		})
+		}, {
+			AnimateScale = e("UIScale", {
+				Scale = Scale.Scale,
+			}),
+		}, Properties.children)
 	end
 
 	function Animateables.ImageButton(Properties: Properties)
@@ -165,12 +164,11 @@ do
 			native = JoinDicts(Properties.native, {
 				[React.Change.GuiState] = Callback,
 			}),
-			children = JoinDicts({
-				AnimateScale = e("UIScale", {
-					Scale = Scale.Scale,
-				}),
-			}, Properties.children),
-		})
+		}, {
+			AnimateScale = e("UIScale", {
+				Scale = Scale.Scale,
+			}),
+		}, Properties.children)
 	end
 
 	function Animateables.TextButton(Properties: Properties)
@@ -180,12 +178,11 @@ do
 			native = JoinDicts(Properties.native, {
 				[React.Change.GuiState] = Callback,
 			}),
-			children = JoinDicts({
-				AnimateScale = e("UIScale", {
-					Scale = Scale.Scale,
-				}),
-			}, Properties.children),
-		})
+		}, {
+			AnimateScale = e("UIScale", {
+				Scale = Scale.Scale,
+			}),
+		}, Properties.children)
 	end
 
 	function Animateables.CanvasGroup(Properties: Properties)
@@ -195,12 +192,11 @@ do
 			native = JoinDicts(Properties.native, {
 				[React.Change.GuiState] = Callback,
 			}),
-			children = JoinDicts({
-				AnimateScale = e("UIScale", {
-					Scale = Scale,
-				}),
-			}, Properties.children),
-		})
+		}, {
+			AnimateScale = e("UIScale", {
+				Scale = Scale,
+			}),
+		}, Properties.children)
 	end
 end
 

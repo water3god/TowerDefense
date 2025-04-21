@@ -89,9 +89,8 @@ local function CreateUnitFrame(Properties: PropertiesMain)
 		OnClick = Properties.OnClick,
 
 		native = Properties.native,
-		children = Properties.children,
 		containerChildren = Properties.containerChildren,
-	})
+	}, Properties.children)
 end
 
 return {

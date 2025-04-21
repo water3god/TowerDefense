@@ -89,13 +89,14 @@ function Funcs.UIStroke(Properties: PropertiesNormal)
 				native = Join({
 					Color = Color3.new(1, 1, 1),
 				}, Properties.native),
-				children = {
-					UIGradient = e(CreateUIGrad, {
-						Color = Properties.GradColor,
-					}),
-				},
 			} :: any
-		)
+		),
+		{
+			UIGradient = e(CreateUIGrad, {
+				Color = Properties.GradColor,
+			}),
+		},
+		Properties.children
 	)
 end
 

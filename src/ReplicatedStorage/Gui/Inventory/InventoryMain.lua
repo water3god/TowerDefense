@@ -56,15 +56,14 @@ local function CreateBaseButton(Properties: {
 			Size = UDim2.fromScale(0.175, 0.14),
 			Image = "rbxassetid://90225038866735",
 		},
-		children = {
-			TextLabel = React.createElement(Main.TextLabel, {
-				native = {
-					Text = Properties.Text,
-					Position = UDim2.fromScale(0.5, 0.5),
-					Size = UDim2.fromScale(0.9, 0.6),
-				},
-			}),
-		},
+	}, {
+		TextLabel = React.createElement(Main.TextLabel, {
+			native = {
+				Text = Properties.Text,
+				Position = UDim2.fromScale(0.5, 0.5),
+				Size = UDim2.fromScale(0.9, 0.6),
+			},
+		}),
 	})
 end
 
@@ -218,18 +217,16 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 				end,
 
 				Hovered = if HoveredId and HoveredId == Data.UniqueId then true else false,
-
-				children = {
-					BeingSoldFrame = e(Main.ImageLabel, {
-						native = {
-							Visible = if table.find(SellingUnits, Data.UniqueId) then true else false,
-							Size = UDim2.fromScale(0.9, 0.9),
-							Image = "rbxassetid://84303396250595",
-							ImageColor3 = Color3.fromRGB(255, 6, 0),
-							ZIndex = 3,
-						},
-					}),
-				},
+			}, {
+				BeingSoldFrame = e(Main.ImageLabel, {
+					native = {
+						Visible = if table.find(SellingUnits, Data.UniqueId) then true else false,
+						Size = UDim2.fromScale(0.9, 0.9),
+						Image = "rbxassetid://84303396250595",
+						ImageColor3 = Color3.fromRGB(255, 6, 0),
+						ZIndex = 3,
+					},
+				}),
 			})
 		end
 
@@ -251,117 +248,111 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		return false
 	end
 
-	return e(
-		"ImageLabel",
-		JoinDicts({
-			BackgroundTransparency = 1,
-			AnchorPoint = Vector2.new(0.5, 0.5),
-			Position = UDim2.fromScale(0.5, 0.5),
+	return e(Main.ImageLabel, {
+		native = JoinDicts({
 			Size = UDim2.fromScale(0.55, 0.5),
 			Image = "rbxassetid://103903141717286",
 		}, Properties.native),
-		{
-			IndConfirm = e(Confirm, {
-				Title = "Selling Unit",
-				Description = ClickedUnitData and ClickedUnitData.CurrentUnit and string.format(
-					"Are you sure you want to Sell %s",
-					ClickedUnitData.CurrentUnit.Unit
-				) or "",
-				Enabled = IndEnabled,
-				Handler = IndividualSell,
+	}, {
+		IndConfirm = e(Confirm, {
+			Title = "Selling Unit",
+			Description = ClickedUnitData and ClickedUnitData.CurrentUnit and string.format(
+				"Are you sure you want to Sell %s",
+				ClickedUnitData.CurrentUnit.Unit
+			) or "",
+			Enabled = IndEnabled,
+			Handler = IndividualSell,
+		}),
+		BulkConfirm = e(Confirm, {
+			Title = "Selling Units",
+			Description = string.format("Are yo sure you want to Sell %u Units", #SellingUnits),
+			Enabled = BulkEnabled,
+			Handler = BulkSell,
+		}),
+		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+			AspectRatio = 2,
+		}),
+		MainDataFrame = e(Main.ScrollingFrame, {
+			BarSize = 0.05,
+			native = {
+				AnchorPoint = Vector2.new(0.5, 0.5),
+				BackgroundTransparency = 1,
+				Position = UDim2.fromScale(0.385, 0.6),
+				Size = UDim2.fromScale(0.675, 0.65),
+				CanvasSize = UDim2.fromScale(0, 0),
+				AutomaticCanvasSize = Enum.AutomaticSize.Y,
+				ScrollBarImageColor3 = Color3.fromRGB(68, 11, 93),
+				BorderSizePixel = 0,
+			},
+		}, {
+			UIGridLayout = e("UIGridLayout", {
+				CellPadding = UDim2.fromScale(0, 0),
+				CellSize = UDim2.fromScale(0.2, 0.41),
+				FillDirection = Enum.FillDirection.Horizontal,
+				SortOrder = Enum.SortOrder.LayoutOrder,
+				StartCorner = Enum.StartCorner.TopLeft,
+				HorizontalAlignment = Enum.HorizontalAlignment.Left,
+				VerticalAlignment = Enum.VerticalAlignment.Top,
 			}),
-			BulkConfirm = e(Confirm, {
-				Title = "Selling Units",
-				Description = string.format("Are yo sure you want to Sell %u Units", #SellingUnits),
-				Enabled = BulkEnabled,
-				Handler = BulkSell,
+			UIPadding = e("UIPadding", {
+				PaddingRight = UDim.new(0.03, 0),
 			}),
-			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 2,
-			}),
-			MainDataFrame = e(Main.ScrollingFrame, {
-				BarSize = 0.05,
-				native = {
-					AnchorPoint = Vector2.new(0.5, 0.5),
-					BackgroundTransparency = 1,
-					Position = UDim2.fromScale(0.385, 0.6),
-					Size = UDim2.fromScale(0.675, 0.65),
-					CanvasSize = UDim2.fromScale(0, 0),
-					AutomaticCanvasSize = Enum.AutomaticSize.Y,
-					ScrollBarImageColor3 = Color3.fromRGB(68, 11, 93),
-					BorderSizePixel = 0,
-				},
-				children = JoinDicts({
-					UIGridLayout = e("UIGridLayout", {
-						CellPadding = UDim2.fromScale(0, 0),
-						CellSize = UDim2.fromScale(0.2, 0.41),
-						FillDirection = Enum.FillDirection.Horizontal,
-						SortOrder = Enum.SortOrder.LayoutOrder,
-						StartCorner = Enum.StartCorner.TopLeft,
-						HorizontalAlignment = Enum.HorizontalAlignment.Left,
-						VerticalAlignment = Enum.VerticalAlignment.Top,
-					}),
-					UIPadding = e("UIPadding", {
-						PaddingRight = UDim.new(0.03, 0),
-					}),
-				}, Units),
-			}),
-			CheckButton = e(Main.Animateables.ImageButton, {
-				native = {
-					Visible = if InSell then true else false,
-					Position = UDim2.fromScale(0.64, 0.175),
-					Size = UDim2.fromScale(0.05, 0.1),
-					Image = "rbxassetid://78742556758797",
-					ImageColor3 = Color3.fromRGB(34, 255, 0),
-					[React.Event.MouseButton1Click] = OnCheckPressed,
-				},
-			}),
-			CloseButton = e(CloseButton, {
-				Position = UDim2.fromScale(1, 0),
-				Size = UDim2.fromScale(0.1, 0.2),
-				OnClick = Properties.CloseClick,
-			}),
-			SellButton = e(Main.Animateables.ImageButton, {
-				native = {
-					Position = UDim2.fromScale(0.7, 0.175),
-					Size = UDim2.fromScale(0.05, 0.1),
-					Image = "rbxassetid://135893657768702",
-					ImageColor3 = Color3.fromRGB(255, 0, 4),
-					[React.Event.MouseButton1Click] = OnSellPressed,
-				},
-			}),
+		}, Units),
+		CheckButton = e(Main.Animateables.ImageButton, {
+			native = {
+				Visible = if InSell then true else false,
+				Position = UDim2.fromScale(0.64, 0.175),
+				Size = UDim2.fromScale(0.05, 0.1),
+				Image = "rbxassetid://78742556758797",
+				ImageColor3 = Color3.fromRGB(34, 255, 0),
+				[React.Event.MouseButton1Click] = OnCheckPressed,
+			},
+		}),
+		CloseButton = e(CloseButton, {
+			Position = UDim2.fromScale(1, 0),
+			Size = UDim2.fromScale(0.1, 0.2),
+			OnClick = Properties.CloseClick,
+		}),
+		SellButton = e(Main.Animateables.ImageButton, {
+			native = {
+				Position = UDim2.fromScale(0.7, 0.175),
+				Size = UDim2.fromScale(0.05, 0.1),
+				Image = "rbxassetid://135893657768702",
+				ImageColor3 = Color3.fromRGB(255, 0, 4),
+				[React.Event.MouseButton1Click] = OnSellPressed,
+			},
+		}),
 
-			InfoFrame = e(InfoFrame, {
-				Visible = if HoveredId and ClickedUnitData then true else false,
+		InfoFrame = e(InfoFrame, {
+			Visible = if HoveredId and ClickedUnitData then true else false,
 
-				Type = OpenFrame,
-				Name = ClickedUnitData and ClickedUnitData.CurrentUnit.Unit,
-				Rarity = ClickedUnitData and ClickedUnitData.Rarity :: any,
-				RarityInfo = ClickedUnitData and ClickedUnitData.RarityData :: any,
+			Type = OpenFrame,
+			Name = ClickedUnitData and ClickedUnitData.CurrentUnit.Unit,
+			Rarity = ClickedUnitData and ClickedUnitData.Rarity :: any,
+			RarityInfo = ClickedUnitData and ClickedUnitData.RarityData :: any,
 
-				IsEquipped = HoveredId and IsEquipped(HoveredId) or false,
-				OnEquipClick = OnEquip,
-				OnSellClick = IndSellClick,
-			}),
-			UnitsButton = e(CreateBaseButton, {
-				Position = UDim2.fromScale(0.14, 0.175),
-				Text = "Units",
-				OnClick = function()
-					SetOpenFrame("Units")
-				end,
-			}),
-			GamepassesButton = e(CreateBaseButton, {
-				Position = UDim2.fromScale(0.33, 0.175),
-				Text = "Gamepasses",
-				OnClick = function() end,
-			}),
-			Title = e(Title, {
-				Title = "INVENTORY",
-				Position = UDim2.fromScale(0.15, -0.03),
-				Size = UDim2.fromScale(0.5, 0.5),
-			}),
-		}
-	)
+			IsEquipped = HoveredId and IsEquipped(HoveredId) or false,
+			OnEquipClick = OnEquip,
+			OnSellClick = IndSellClick,
+		}),
+		UnitsButton = e(CreateBaseButton, {
+			Position = UDim2.fromScale(0.14, 0.175),
+			Text = "Units",
+			OnClick = function()
+				SetOpenFrame("Units")
+			end,
+		}),
+		GamepassesButton = e(CreateBaseButton, {
+			Position = UDim2.fromScale(0.33, 0.175),
+			Text = "Gamepasses",
+			OnClick = function() end,
+		}),
+		Title = e(Title, {
+			Title = "INVENTORY",
+			Position = UDim2.fromScale(0.15, -0.03),
+			Size = UDim2.fromScale(0.5, 0.5),
+		}),
+	})
 end)
 
 return CreateInventory

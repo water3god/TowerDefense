@@ -78,121 +78,115 @@ local function CreateWaitingFrame(Props: Properties)
 			Image = "rbxassetid://100546338175267",
 			Visible = if StoryData.Data and StoryData.Enabled then true else false,
 		}, Props.native),
-		children = Join({
+	}, {
+		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+			AspectRatio = 2,
+		}),
+		CloseButton = e(CloseButton, {
+			Position = UDim2.fromScale(1, 0),
+			Size = UDim2.fromScale(0.3, 0.3),
+			OnClick = OnLeave,
+		}),
+		StartButton = e(Main.Animateables.ImageButton, {
+			native = {
+				Position = UDim2.fromScale(0.35, 0.8),
+				Size = UDim2.fromScale(0.4, 0.2),
+				Image = "rbxassetid://121336998793729",
+				Visible = StoryData.Data and Player.UserId == StoryData.Data.OwnerId,
+				[React.Event.MouseButton1Click] = StartClick,
+			},
+		}, {
+			Label = e(Main.TextLabel, {
+				native = {
+					Size = UDim2.fromScale(0.7, 0.7),
+					Text = "Start",
+				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeBasic, {
+					Stroke = 0.003,
+				}),
+			}),
+		}),
+		MapImage = e(Main.ImageLabel, {
+			native = {
+				Position = UDim2.fromScale(0.8, 0.6),
+				Size = UDim2.fromScale(0.4, 0.55),
+				Image = GameData and GameData.MapData.Image,
+			},
+		}, {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 2,
+				AspectRatio = 1,
 			}),
-			CloseButton = e(CloseButton, {
-				Position = UDim2.fromScale(1, 0),
-				Size = UDim2.fromScale(0.3, 0.3),
-				OnClick = OnLeave,
-			}),
-			StartButton = e(Main.Animateables.ImageButton, {
-				native = {
-					Position = UDim2.fromScale(0.35, 0.8),
-					Size = UDim2.fromScale(0.4, 0.2),
-					Image = "rbxassetid://121336998793729",
-					Visible = StoryData.Data and Player.UserId == StoryData.Data.OwnerId,
-					[React.Event.MouseButton1Click] = StartClick,
-				},
-				children = {
-					Label = e(Main.TextLabel, {
-						native = {
-							Size = UDim2.fromScale(0.7, 0.7),
-							Text = "Start",
-						},
-						children = {
-							UIStroke = e(UIStroke.UIStrokeBasic, {
-								Stroke = 0.003,
-							}),
-						},
-					}),
-				},
-			}),
-			MapImage = e(Main.ImageLabel, {
-				native = {
-					Position = UDim2.fromScale(0.8, 0.6),
-					Size = UDim2.fromScale(0.4, 0.55),
-					Image = GameData and GameData.MapData.Image,
-				},
-				children = {
-					UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-						AspectRatio = 1,
-					}),
-				},
-			}),
-			DifficultyLabel = e(Main.TextLabel, {
-				native = {
-					Position = UDim2.fromScale(0.35, 0.575),
-					Size = UDim2.fromScale(0.5, 0.1),
-					Text = StoryData.Data and GameInfo.GetDifficultyString(StoryData.Data.Difficulty)
-						or "Difficulty: N/A",
-				},
-			}),
-			PlayersLabel = e(Main.TextLabel, {
-				native = {
-					Position = UDim2.fromScale(0.35, 0.4),
-					Size = UDim2.fromScale(0.5, 0.1),
-					Text = StoryData.Data and string.format("Players: %u/%u", #StoryData.Data.Players, 4) or "0/4",
-				},
-			}),
-			TitleLabel = e(Main.TextLabel, {
-				native = {
-					Position = UDim2.fromScale(0.5, 0.2),
-					Size = UDim2.fromScale(0.9, 0.2),
-					Text = GameData and GameInfo.GetFullName(
-						GameData.MapData.Name,
-						GameData.StageData.Index,
-						GameData.StageData.Name
-					) or "N/A",
-				},
-			}),
-			TimeBar = e(Main.CanvasGroup, {
-				native = {
-					BackgroundTransparency = 0,
-					BackgroundColor3 = Color3.new(),
-					Position = UDim2.fromScale(0.5, 1.2),
-					Size = UDim2.fromScale(0.8, 0.15),
-				},
-				children = {
-					UICorner = e("UICorner", {
-						CornerRadius = UDim.new(0.3, 0),
-					}),
+		}),
+		DifficultyLabel = e(Main.TextLabel, {
+			native = {
+				Position = UDim2.fromScale(0.35, 0.575),
+				Size = UDim2.fromScale(0.5, 0.1),
+				Text = StoryData.Data and GameInfo.GetDifficultyString(StoryData.Data.Difficulty) or "Difficulty: N/A",
+			},
+		}),
+		PlayersLabel = e(Main.TextLabel, {
+			native = {
+				Position = UDim2.fromScale(0.35, 0.4),
+				Size = UDim2.fromScale(0.5, 0.1),
+				Text = StoryData.Data and string.format("Players: %u/%u", #StoryData.Data.Players, 4) or "0/4",
+			},
+		}),
+		TitleLabel = e(Main.TextLabel, {
+			native = {
+				Position = UDim2.fromScale(0.5, 0.2),
+				Size = UDim2.fromScale(0.9, 0.2),
+				Text = GameData and GameInfo.GetFullName(
+					GameData.MapData.Name,
+					GameData.StageData.Index,
+					GameData.StageData.Name
+				) or "N/A",
+			},
+		}),
+		TimeBar = e(Main.CanvasGroup, {
+			native = {
+				BackgroundTransparency = 0,
+				BackgroundColor3 = Color3.new(),
+				Position = UDim2.fromScale(0.5, 1.2),
+				Size = UDim2.fromScale(0.8, 0.15),
+			},
+			children = {
+				UICorner = e("UICorner", {
+					CornerRadius = UDim.new(0.3, 0),
+				}),
+				UIStroke = e(UIStroke.UIStrokeBasic, {
+					Stroke = 0.005,
+					native = {
+						LineJoinMode = Enum.LineJoinMode.Round,
+					},
+				}),
+				Bar = e(Main.Frame, {
+					native = {
+						BackgroundTransparency = 0,
+						AnchorPoint = Vector2.new(0, 0.5),
+						BackgroundColor3 = Color3.fromRGB(109, 255, 56),
+						Position = UDim2.fromScale(0, 0.5),
+						Size = React.joinBindings({ Time, TotalTime }):map(function(Times: { number })
+							return UDim2.fromScale(Times[1] / Times[2], 1)
+						end),
+					},
+				}),
+				TimeLabel = e(Main.TextLabel, {
+					native = {
+						Size = UDim2.fromScale(1, 0.7),
+						Text = Time:map(function(Time: number)
+							return string.format("Time Left: %u", math.floor(Time))
+						end),
+						ZIndex = 2,
+					},
+				}, {
 					UIStroke = e(UIStroke.UIStrokeBasic, {
-						Stroke = 0.005,
-						native = {
-							LineJoinMode = Enum.LineJoinMode.Round,
-						},
+						Stroke = 0.003,
 					}),
-					Bar = e(Main.Frame, {
-						native = {
-							BackgroundTransparency = 0,
-							AnchorPoint = Vector2.new(0, 0.5),
-							BackgroundColor3 = Color3.fromRGB(109, 255, 56),
-							Position = UDim2.fromScale(0, 0.5),
-							Size = React.joinBindings({ Time, TotalTime }):map(function(Times: { number })
-								return UDim2.fromScale(Times[1] / Times[2], 1)
-							end),
-						},
-					}),
-					TimeLabel = e(Main.TextLabel, {
-						native = {
-							Size = UDim2.fromScale(1, 0.7),
-							Text = Time:map(function(Time: number)
-								return string.format("Time Left: %u", math.floor(Time))
-							end),
-							ZIndex = 2,
-						},
-						children = {
-							UIStroke = e(UIStroke.UIStrokeBasic, {
-								Stroke = 0.003,
-							}),
-						},
-					}),
-				},
-			}),
-		}, Props.children),
-	})
+				}),
+			},
+		}),
+	}, Props.children)
 end
 
 return CreateWaitingFrame

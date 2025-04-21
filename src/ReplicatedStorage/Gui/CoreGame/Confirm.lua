@@ -37,32 +37,31 @@ local function CreateBasicButton(Props: {
 			ImageColor3 = Props.Color,
 			[React.Event.MouseButton1Click] = Props.OnClick,
 		}, Props.native),
-		children = Join({
-			TextLabel = e(Main.TextLabel, {
-				native = {
-					Position = UDim2.fromScale(0.5, 0.5),
-					Size = UDim2.fromScale(0.5, 0.5),
-					Text = Props.LabelText,
-				},
-				children = {
-					UICorner = e("UICorner", {
-						CornerRadius = UDim.new(0.1, 0),
-					}),
-					UIStroke = e(UIStroke.UIStrokeBasic, {
-						Stroke = 0.002,
-					}),
-				},
-			}),
-			BackFrame = e(Main.Frame, {
-				native = {
-					Position = UDim2.fromScale(0.5, 0.5),
-					Size = UDim2.fromScale(0.95, 0.85),
-					BackgroundTransparency = 0,
-					BackgroundColor3 = Props.Color,
-				},
-			}),
-		}, Props.children),
-	})
+	}, {
+		TextLabel = e(Main.TextLabel, {
+			native = {
+				Position = UDim2.fromScale(0.5, 0.5),
+				Size = UDim2.fromScale(0.5, 0.5),
+				Text = Props.LabelText,
+			},
+			children = {
+				UICorner = e("UICorner", {
+					CornerRadius = UDim.new(0.1, 0),
+				}),
+				UIStroke = e(UIStroke.UIStrokeBasic, {
+					Stroke = 0.002,
+				}),
+			},
+		}),
+		BackFrame = e(Main.Frame, {
+			native = {
+				Position = UDim2.fromScale(0.5, 0.5),
+				Size = UDim2.fromScale(0.95, 0.85),
+				BackgroundTransparency = 0,
+				BackgroundColor3 = Props.Color,
+			},
+		}),
+	}, Props.children)
 end
 
 type props = {
@@ -145,49 +144,48 @@ local function CreateConfirm(props: props)
 				Size = UDim2.fromScale(0.25, 0.25),
 				Image = "rbxassetid://100546338175267",
 			}, props.native),
-			children = {
-				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-					AspectRatio = 1.813,
-				}),
-				TitleLabel = e(Main.TextLabel, {
-					native = {
-						Text = props.Title,
-						Position = UDim2.fromScale(0.5, 0.2),
-						Size = UDim2.fromScale(0.5, 0.2),
-					},
-				}),
-				DescriptionLabel = e(Main.TextLabel, {
-					native = {
-						Text = props.Description,
-						Position = UDim2.fromScale(0.5, 0.425),
-						Size = UDim2.fromScale(0.9, 0.25),
-					},
-				}),
-				NoButton = e(CreateBasicButton, {
-					OnClick = OnNo,
-					LabelText = props.NoText or "No",
-					Color = Color3.fromRGB(255, 0, 0),
-					native = {
-						Position = UDim2.fromScale(0.75, 0.75),
-					},
-				}),
-				YesButton = e(CreateBasicButton, {
-					OnClick = OnYes,
-					LabelText = props.YesText or "Yes",
-					Color = Color3.fromRGB(0, 255, 0),
-					native = {
-						Position = UDim2.fromScale(0.25, 0.75),
-					},
-				}),
-				CloseButton = e(CloseButton, {
-					Position = UDim2.fromScale(1, 0),
-					Size = UDim2.fromScale(0.2, 0.3),
-					OnClick = OnClose,
-				}),
-				UIScale = e("UIScale", {
-					Scale = Styles.Scale,
-				}),
-			},
+		}, {
+			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+				AspectRatio = 1.813,
+			}),
+			TitleLabel = e(Main.TextLabel, {
+				native = {
+					Text = props.Title,
+					Position = UDim2.fromScale(0.5, 0.2),
+					Size = UDim2.fromScale(0.5, 0.2),
+				},
+			}),
+			DescriptionLabel = e(Main.TextLabel, {
+				native = {
+					Text = props.Description,
+					Position = UDim2.fromScale(0.5, 0.425),
+					Size = UDim2.fromScale(0.9, 0.25),
+				},
+			}),
+			NoButton = e(CreateBasicButton, {
+				OnClick = OnNo,
+				LabelText = props.NoText or "No",
+				Color = Color3.fromRGB(255, 0, 0),
+				native = {
+					Position = UDim2.fromScale(0.75, 0.75),
+				},
+			}),
+			YesButton = e(CreateBasicButton, {
+				OnClick = OnYes,
+				LabelText = props.YesText or "Yes",
+				Color = Color3.fromRGB(0, 255, 0),
+				native = {
+					Position = UDim2.fromScale(0.25, 0.75),
+				},
+			}),
+			CloseButton = e(CloseButton, {
+				Position = UDim2.fromScale(1, 0),
+				Size = UDim2.fromScale(0.2, 0.3),
+				OnClick = OnClose,
+			}),
+			UIScale = e("UIScale", {
+				Scale = Styles.Scale,
+			}),
 		})
 	end
 

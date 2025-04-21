@@ -46,8 +46,7 @@ local function CreateButtonFrame(Properties: Properties)
 		Size = Properties.Size,
 
 		native = Properties.native,
-		children = Properties.children,
-	})
+	}, Properties.children)
 end
 
 return CreateButtonFrame

@@ -47,16 +47,15 @@ return function(Properties: Properties)
 					TextXAlignment = Enum.TextXAlignment.Left,
 					ZIndex = 2,
 				},
-				children = {
-					UIGradient = e("UIGradient", {
-						Color = ColorSequence.new({
-							ColorSequenceKeypoint.new(0, Color3.new(0.768627, 0.380392, 1)),
-							ColorSequenceKeypoint.new(0.623, Color3.new(1, 1, 1)),
-							ColorSequenceKeypoint.new(1, Color3.new(1, 1, 1)),
-						}),
-						Rotation = -90,
+			}, {
+				UIGradient = e("UIGradient", {
+					Color = ColorSequence.new({
+						ColorSequenceKeypoint.new(0, Color3.new(0.768627, 0.380392, 1)),
+						ColorSequenceKeypoint.new(0.623, Color3.new(1, 1, 1)),
+						ColorSequenceKeypoint.new(1, Color3.new(1, 1, 1)),
 					}),
-				},
+					Rotation = -90,
+				}),
 			}),
 		},
 	})

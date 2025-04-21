@@ -8,10 +8,6 @@ local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
 local e = React.createElement
 
-local Modules = ReplicatedStorage.Modules;
-local HelperFunctions = require(Modules.HelperFunctions);
-local Join = HelperFunctions.joinDicts;
-
 local Main = require(ReplicatedStorage.Gui.CoreGame.Main)
 
 export type Properties = {
@@ -31,10 +27,9 @@ return function(Properties: Properties)
 			Image = "rbxassetid://101118925074854",
 			[React.Event.MouseButton1Click] = Properties.OnClick,
 		},
-		children = Join({
-			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 1,
-			}),
-		}, Properties.children),
-	})
+	}, {
+		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+			AspectRatio = 1,
+		}),
+	}, Properties.children)
 end

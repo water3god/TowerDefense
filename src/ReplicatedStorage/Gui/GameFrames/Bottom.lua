@@ -78,11 +78,10 @@ local function CreateBaseFrame(Properties: OtherProps)
 					Image = "rbxassetid://106849723034867",
 					ZIndex = 2,
 				},
-				children = {
-					UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-						AspectRatio = 0.83,
-					}),
-				},
+			}, {
+				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+					AspectRatio = 0.83,
+				}),
 			}),
 			LevelLock = e(Main.TextLabel, {
 				native = {
@@ -106,122 +105,118 @@ local function CreateBottomFrame(Properties: Properties)
 			Size = UDim2.fromScale(0.4, 0.2),
 			Position = UDim2.fromScale(0.5, 0.9),
 		}, Properties.native),
-		children = Join({
-			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 3.555,
-			}),
-			Frame1 = e(CreateBaseFrame, {
-				UniqueId = Units[1] and Units[1].UniqueId,
-				LevelReq = LevelRequirements.EquippedFrames[1],
-				UnitName = Units[1] and Units[1].Unit,
-				Level = Units[1] and Units[1].Level,
-				GlobalLevel = Context.GlobalLevel,
-				SetHovered = Properties.SetHovered,
-				GetHovered = Properties.GetHovered,
-				SetVisible = Properties.SetVisible,
+	}, {
+		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+			AspectRatio = 3.555,
+		}),
+		Frame1 = e(CreateBaseFrame, {
+			UniqueId = Units[1] and Units[1].UniqueId,
+			LevelReq = LevelRequirements.EquippedFrames[1],
+			UnitName = Units[1] and Units[1].Unit,
+			Level = Units[1] and Units[1].Level,
+			GlobalLevel = Context.GlobalLevel,
+			SetHovered = Properties.SetHovered,
+			GetHovered = Properties.GetHovered,
+			SetVisible = Properties.SetVisible,
+			native = {
+				Position = UDim2.fromScale(0.15, 0.35),
+				Size = Size,
+			},
+		}),
+		Frame2 = e(CreateBaseFrame, {
+			UniqueId = Units[2] and Units[2].UniqueId,
+			LevelReq = LevelRequirements.EquippedFrames[2],
+			UnitName = Units[2] and Units[2].Unit,
+			Level = Units[2] and Units[2].Level,
+			GlobalLevel = Context.GlobalLevel,
+			SetHovered = Properties.SetHovered,
+			GetHovered = Properties.GetHovered,
+			SetVisible = Properties.SetVisible,
+			native = {
+				Position = UDim2.fromScale(0.325, 0.35),
+				Size = Size,
+			},
+		}),
+		Frame3 = e(CreateBaseFrame, {
+			UniqueId = Units[3] and Units[3].UniqueId,
+			LevelReq = LevelRequirements.EquippedFrames[3],
+			UnitName = Units[3] and Units[3].Unit,
+			Level = Units[3] and Units[3].Level,
+			GlobalLevel = Context.GlobalLevel,
+			SetHovered = Properties.SetHovered,
+			GetHovered = Properties.GetHovered,
+			SetVisible = Properties.SetVisible,
+			native = {
+				Position = UDim2.fromScale(0.5, 0.35),
+				Size = Size,
+			},
+		}),
+		Frame4 = e(CreateBaseFrame, {
+			UniqueId = Units[4] and Units[4].UniqueId,
+			LevelReq = LevelRequirements.EquippedFrames[4],
+			UnitName = Units[4] and Units[4].Unit,
+			Level = Units[4] and Units[4].Level,
+			GlobalLevel = Context.GlobalLevel,
+			SetHovered = Properties.SetHovered,
+			GetHovered = Properties.GetHovered,
+			SetVisible = Properties.SetVisible,
+			native = {
+				Position = UDim2.fromScale(0.675, 0.35),
+				Size = Size,
+			},
+		}),
+		Frame5 = e(CreateBaseFrame, {
+			UniqueId = Units[5] and Units[5].UniqueId,
+			LevelReq = LevelRequirements.EquippedFrames[5],
+			UnitName = Units[5] and Units[5].Unit,
+			Level = Units[5] and Units[5].Level,
+			GlobalLevel = Context.GlobalLevel,
+			SetHovered = Properties.SetHovered,
+			GetHovered = Properties.GetHovered,
+			SetVisible = Properties.SetVisible,
+			native = {
+				Position = UDim2.fromScale(0.85, 0.35),
+				Size = Size,
+			},
+		}),
+		LevelBar = e(Main.ImageLabel, {
+			native = {
+				Position = UDim2.fromScale(0.5, 0.8),
+				Size = UDim2.fromScale(1, 0.2),
+				Image = "rbxassetid://110783523635885",
+			},
+		}, {
+			Container = e(Main.Frame, {
 				native = {
-					Position = UDim2.fromScale(0.15, 0.35),
-					Size = Size,
+					Size = UDim2.fromScale(0.995, 0.92),
 				},
-			}),
-			Frame2 = e(CreateBaseFrame, {
-				UniqueId = Units[2] and Units[2].UniqueId,
-				LevelReq = LevelRequirements.EquippedFrames[2],
-				UnitName = Units[2] and Units[2].Unit,
-				Level = Units[2] and Units[2].Level,
-				GlobalLevel = Context.GlobalLevel,
-				SetHovered = Properties.SetHovered,
-				GetHovered = Properties.GetHovered,
-				SetVisible = Properties.SetVisible,
-				native = {
-					Position = UDim2.fromScale(0.325, 0.35),
-					Size = Size,
-				},
-			}),
-			Frame3 = e(CreateBaseFrame, {
-				UniqueId = Units[3] and Units[3].UniqueId,
-				LevelReq = LevelRequirements.EquippedFrames[3],
-				UnitName = Units[3] and Units[3].Unit,
-				Level = Units[3] and Units[3].Level,
-				GlobalLevel = Context.GlobalLevel,
-				SetHovered = Properties.SetHovered,
-				GetHovered = Properties.GetHovered,
-				SetVisible = Properties.SetVisible,
-				native = {
-					Position = UDim2.fromScale(0.5, 0.35),
-					Size = Size,
-				},
-			}),
-			Frame4 = e(CreateBaseFrame, {
-				UniqueId = Units[4] and Units[4].UniqueId,
-				LevelReq = LevelRequirements.EquippedFrames[4],
-				UnitName = Units[4] and Units[4].Unit,
-				Level = Units[4] and Units[4].Level,
-				GlobalLevel = Context.GlobalLevel,
-				SetHovered = Properties.SetHovered,
-				GetHovered = Properties.GetHovered,
-				SetVisible = Properties.SetVisible,
-				native = {
-					Position = UDim2.fromScale(0.675, 0.35),
-					Size = Size,
-				},
-			}),
-			Frame5 = e(CreateBaseFrame, {
-				UniqueId = Units[5] and Units[5].UniqueId,
-				LevelReq = LevelRequirements.EquippedFrames[5],
-				UnitName = Units[5] and Units[5].Unit,
-				Level = Units[5] and Units[5].Level,
-				GlobalLevel = Context.GlobalLevel,
-				SetHovered = Properties.SetHovered,
-				GetHovered = Properties.GetHovered,
-				SetVisible = Properties.SetVisible,
-				native = {
-					Position = UDim2.fromScale(0.85, 0.35),
-					Size = Size,
-				},
-			}),
-			LevelBar = e(Main.ImageLabel, {
-				native = {
-					Position = UDim2.fromScale(0.5, 0.8),
-					Size = UDim2.fromScale(1, 0.2),
-					Image = "rbxassetid://110783523635885",
-				},
-				children = {
-					Container = e(Main.Frame, {
-						native = {
-							Size = UDim2.fromScale(0.995, 0.92),
-						},
-						children = {
-							UICorner = e("UICorner", {
-								CornerRadius = UDim.new(0.5, 0),
-							}),
-							ProgressBar = e(Main.Frame, {
-								native = {
-									BackgroundTransparency = 0,
-									BackgroundColor3 = Color3.fromRGB(104, 36, 132),
-									AnchorPoint = Vector2.new(0, 0.5),
-									Position = UDim2.fromScale(0, 0.5),
-									Size = UDim2.fromScale(math.clamp(Context.XP / Context.NeededXP, 0, 1), 1),
-								},
-								children = {
-									UICorner = e("UICorner", {
-										CornerRadius = UDim.new(0.5, 0),
-									}),
-								},
-							}),
-						},
+			}, {
+				UICorner = e("UICorner", {
+					CornerRadius = UDim.new(0.5, 0),
+				}),
+				ProgressBar = e(Main.Frame, {
+					native = {
+						BackgroundTransparency = 0,
+						BackgroundColor3 = Color3.fromRGB(104, 36, 132),
+						AnchorPoint = Vector2.new(0, 0.5),
+						Position = UDim2.fromScale(0, 0.5),
+						Size = UDim2.fromScale(math.clamp(Context.XP / Context.NeededXP, 0, 1), 1),
+					},
+				}, {
+					UICorner = e("UICorner", {
+						CornerRadius = UDim.new(0.5, 0),
 					}),
-					LevelLabel = e(Main.TextLabel, {
-						native = {
-							Size = UDim2.fromScale(0.3, 0.8),
-							Text = string.format("Level %u (%u/%u)", Context.GlobalLevel, Context.XP, Context.NeededXP),
-							ZIndex = 2,
-						},
-					}),
+				}),
+			}),
+			LevelLabel = e(Main.TextLabel, {
+				native = {
+					Size = UDim2.fromScale(0.3, 0.8),
+					Text = string.format("Level %u (%u/%u)", Context.GlobalLevel, Context.XP, Context.NeededXP),
+					ZIndex = 2,
 				},
 			}),
-		}, Properties.children),
-	})
+		}),
+	}, Properties.children)
 end
 
 return CreateBottomFrame

@@ -11,14 +11,15 @@ local e = React.createElement
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local CloseButton = require(CoreGame.CloseButton)
+local Main = require(CoreGame.Main)
 
 local function CreateStatsFrame()
-	return e("ImageLabel", {
-		BackgroundTransparency = 1,
-		AnchorPoint = Vector2.new(0.5, 0.5),
-		Position = UDim2.fromScale(0.5, 0.55),
-		Size = UDim2.fromScale(0.25, 0.25),
-		Image = "rbxassetid://100546338175267",
+	return e(Main.ImageLabel, {
+		native = {
+			Position = UDim2.fromScale(0.5, 0.55),
+			Size = UDim2.fromScale(0.25, 0.25),
+			Image = "rbxassetid://100546338175267",
+		},
 	}, {
 		CloseButton = e(CloseButton, {
 			Position = UDim2.fromScale(1, 0),

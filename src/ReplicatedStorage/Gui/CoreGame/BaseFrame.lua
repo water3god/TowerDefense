@@ -47,121 +47,110 @@ export type Properties = {
 }
 
 local function CreateBaseFrame(Properties: Properties)
-	return e(
-		Main.Frame,
-		Join({
-			native = Join({
-				Position = Properties.Position or UDim2.fromScale(0.5, 0.5),
-				Size = Properties.Size or UDim2.fromScale(1, 1),
-			}, Properties.native),
-			children = Join({
-				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-					AspectRatio = 1,
+	return e(Main.Frame, {
+		native = Join({
+			Position = Properties.Position or UDim2.fromScale(0.5, 0.5),
+			Size = Properties.Size or UDim2.fromScale(1, 1),
+		}, Properties.native),
+	}, {
+		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+			AspectRatio = 1,
+		}),
+		Container = e(Main.Animateables.TextButton, {
+			native = {
+				Position = UDim2.fromScale(0.5, 0.5),
+				Size = UDim2.fromScale(1, 1),
+				Text = "",
+				[React.Event.MouseButton1Click] = Properties.OnClick,
+			},
+		}, {
+			BackgroundImage = e(Main.ImageLabel, {
+				native = {
+					Position = UDim2.fromScale(0.5, 0.5),
+					Size = UDim2.fromScale(1, 1),
+					ZIndex = 0,
+					Image = if Properties.Hovered then HighlightedBackgroundImage else DefaultBackgroundImage,
+				},
+			}, {
+				UIGradient = e("UIGradient", {
+					Color = Properties.BackgroundColor or ColorSequence.new(Color3.new(1, 1, 1)),
 				}),
-				Container = e(Main.Animateables.TextButton, {
+			}),
+			MainImage = e(Main.ImageLabel, {
+				native = {
+					Visible = not Properties.Disabled,
+					Position = UDim2.fromScale(0.5, 0.5),
+					Size = UDim2.fromScale(1, 1),
+					Image = Properties.UnitImage or "",
+					ZIndex = 1,
+				},
+			}),
+			BaseName = e(Main.TextLabel, {
+				native = {
+					Visible = not Properties.Disabled,
+					Position = UDim2.fromScale(0.5, 0.8),
+					Size = UDim2.fromScale(0.7, 0.18),
+					Text = Properties.Name,
+					ZIndex = 2,
+				},
+			}, {
+				UIStroke = e(UIStroke.UIStroke, {
+					Stroke = 0.0015,
+					GradColor = if Properties.NameStrokeColor
+						then Properties.NameStrokeColor
+						else ColorSequence.new(Color3.new(1, 1, 1)),
 					native = {
-						Position = UDim2.fromScale(0.5, 0.5),
-						Size = UDim2.fromScale(1, 1),
-						Text = "",
-						[React.Event.MouseButton1Click] = Properties.OnClick,
+						Enabled = if Properties.NameStrokeColor then true else false,
 					},
-					children = Join({
-						BackgroundImage = e(Main.ImageLabel, {
-							native = {
-								Position = UDim2.fromScale(0.5, 0.5),
-								Size = UDim2.fromScale(1, 1),
-								ZIndex = 0,
-								Image = if Properties.Hovered
-									then HighlightedBackgroundImage
-									else DefaultBackgroundImage,
-							},
-							children = {
-								UIGradient = e("UIGradient", {
-									Color = Properties.BackgroundColor or ColorSequence.new(Color3.new(1, 1, 1)),
-								}),
-							},
-						}),
-						MainImage = e(Main.ImageLabel, {
-							native = {
-								Visible = not Properties.Disabled,
-								Position = UDim2.fromScale(0.5, 0.5),
-								Size = UDim2.fromScale(1, 1),
-								Image = Properties.UnitImage or "",
-								ZIndex = 1,
-							},
-						}),
-						BaseName = e(Main.TextLabel, {
-							native = {
-								Visible = not Properties.Disabled,
-								Position = UDim2.fromScale(0.5, 0.8),
-								Size = UDim2.fromScale(0.7, 0.18),
-								Text = Properties.Name,
-								ZIndex = 2,
-							},
-							children = {
-								UIStroke = e(UIStroke.UIStroke, {
-									Stroke = 0.0015,
-									GradColor = if Properties.NameStrokeColor
-										then Properties.NameStrokeColor
-										else ColorSequence.new(Color3.new(1, 1, 1)),
-									native = {
-										Enabled = if Properties.NameStrokeColor then true else false,
-									},
-								}),
-								UIGradient = e("UIGradient", {
-									Color = Properties.NameColor or ColorSequence.new(Color3.new(1, 1, 1)),
-								}),
-							},
-						}),
-						TopLeftLabel = e(Main.TextLabel, {
-							native = {
-								Visible = not Properties.Disabled,
-								Position = UDim2.fromScale(0.55, 0.2),
-								Size = UDim2.fromScale(0.8, 0.15),
-								TextXAlignment = Enum.TextXAlignment.Left,
-								Text = Properties.LeftText,
-								ZIndex = 2,
-							},
-							children = {
-								UIStroke = e(UIStroke.UIStroke, {
-									Stroke = 0.0015,
-									GradColor = Properties.LeftStrokeColor or ColorSequence.new(Color3.new(1, 1, 1)),
-									native = {
-										Enabled = if Properties.LeftStrokeColor then true else false,
-									},
-								}),
-								UIGradient = e("UIGradient", {
-									Color = Properties.LeftColor or ColorSequence.new(Color3.new(1, 1, 1)),
-								}),
-							},
-						}),
-						TopRightLabel = e(Main.TextLabel, {
-							native = {
-								Visible = not Properties.Disabled,
-								Position = UDim2.fromScale(0.45, 0.2),
-								Size = UDim2.fromScale(0.8, 0.15),
-								TextXAlignment = Enum.TextXAlignment.Right,
-								Text = Properties.RightText,
-								ZIndex = 2,
-							},
-							children = {
-								UIStroke = e(UIStroke.UIStroke, {
-									Stroke = 0.0015,
-									GradColor = Properties.RightStrokeColor or ColorSequence.new(Color3.new(1, 1, 1)),
-									native = {
-										Enabled = if Properties.RightStrokeColor then true else false,
-									},
-								}),
-								UIGradient = e("UIGradient", {
-									Color = Properties.RightColor or ColorSequence.new(Color3.new(1, 1, 1)),
-								}),
-							},
-						}),
-					}, Properties.containerChildren),
 				}),
-			}, Properties.children),
-		}) :: any
-	)
+				UIGradient = e("UIGradient", {
+					Color = Properties.NameColor or ColorSequence.new(Color3.new(1, 1, 1)),
+				}),
+			}),
+			TopLeftLabel = e(Main.TextLabel, {
+				native = {
+					Visible = not Properties.Disabled,
+					Position = UDim2.fromScale(0.55, 0.2),
+					Size = UDim2.fromScale(0.8, 0.15),
+					TextXAlignment = Enum.TextXAlignment.Left,
+					Text = Properties.LeftText,
+					ZIndex = 2,
+				},
+			}, {
+				UIStroke = e(UIStroke.UIStroke, {
+					Stroke = 0.0015,
+					GradColor = Properties.LeftStrokeColor or ColorSequence.new(Color3.new(1, 1, 1)),
+					native = {
+						Enabled = if Properties.LeftStrokeColor then true else false,
+					},
+				}),
+				UIGradient = e("UIGradient", {
+					Color = Properties.LeftColor or ColorSequence.new(Color3.new(1, 1, 1)),
+				}),
+			}),
+			TopRightLabel = e(Main.TextLabel, {
+				native = {
+					Visible = not Properties.Disabled,
+					Position = UDim2.fromScale(0.45, 0.2),
+					Size = UDim2.fromScale(0.8, 0.15),
+					TextXAlignment = Enum.TextXAlignment.Right,
+					Text = Properties.RightText,
+					ZIndex = 2,
+				},
+			}, {
+				UIStroke = e(UIStroke.UIStroke, {
+					Stroke = 0.0015,
+					GradColor = Properties.RightStrokeColor or ColorSequence.new(Color3.new(1, 1, 1)),
+					native = {
+						Enabled = if Properties.RightStrokeColor then true else false,
+					},
+				}),
+				UIGradient = e("UIGradient", {
+					Color = Properties.RightColor or ColorSequence.new(Color3.new(1, 1, 1)),
+				}),
+			}),
+		}, Properties.containerChildren),
+	}, Properties.children)
 end
 
 return CreateBaseFrame
