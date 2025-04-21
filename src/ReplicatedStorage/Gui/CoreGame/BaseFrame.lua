@@ -3,7 +3,7 @@
 -- By Wa1er_God --
 
 local DefaultBackgroundImage = "rbxassetid://122297615155487"
-local HighlightedBackgroundImage = "rbxassetid://82394198587561"
+local HighlightedBackgroundImage = "rbxassetid://107455378505876"
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
