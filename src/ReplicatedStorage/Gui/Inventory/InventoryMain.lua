@@ -164,7 +164,9 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 				Sell({ HoveredId })
 			end
 		end
-	end, { HoveredId })
+
+		SetIndEnabled(false)
+	end, { HoveredId, IndEnabled :: any })
 
 	local OnSellPressed = React.useCallback(function()
 		SetHovered(nil :: any)
@@ -193,6 +195,8 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			SetSellingUnits({})
 			ToggleSell(false)
 		end
+
+		SetIndEnabled(false)
 	end, { SellingUnits, InSell :: any })
 
 	React.useEffect(function()
