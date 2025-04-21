@@ -43,15 +43,15 @@ local function CreateBasicButton(Props: {
 				Position = UDim2.fromScale(0.5, 0.5),
 				Size = UDim2.fromScale(0.5, 0.5),
 				Text = Props.LabelText,
+				ZIndex = 2,
 			},
-			children = {
-				UICorner = e("UICorner", {
-					CornerRadius = UDim.new(0.1, 0),
-				}),
-				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.002,
-				}),
-			},
+		}, {
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.1, 0),
+			}),
+			UIStroke = e(UIStroke.UIStrokeBasic, {
+				Stroke = 0.002,
+			}),
 		}),
 		BackFrame = e(Main.Frame, {
 			native = {
@@ -155,6 +155,7 @@ local function CreateConfirm(props: props)
 					Text = props.Title,
 					Position = UDim2.fromScale(0.5, 0.2),
 					Size = UDim2.fromScale(0.5, 0.2),
+					ZIndex = 2,
 				},
 			}),
 			DescriptionLabel = e(Main.TextLabel, {
@@ -162,6 +163,7 @@ local function CreateConfirm(props: props)
 					Text = props.Description,
 					Position = UDim2.fromScale(0.5, 0.425),
 					Size = UDim2.fromScale(0.9, 0.25),
+					ZIndex = 2,
 				},
 			}),
 			NoButton = e(CreateBasicButton, {
