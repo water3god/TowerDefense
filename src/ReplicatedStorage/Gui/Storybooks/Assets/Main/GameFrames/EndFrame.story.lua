@@ -14,7 +14,7 @@ local e = React.createElement
 -- Reference UI --
 local Gui = ReplicatedStorage.Gui
 local GameFrames = Gui.GameFrames
-local VoteFrame = require(GameFrames.VoteFrame)
+local EndFrame = require(GameFrames.EndFrame)
 
 -- Controls --
 local controls = {}
@@ -25,13 +25,11 @@ local Story = {
 	reactRoblox = ReactRoblox,
 	--controls = controls,
 	story = function(Properties)
-		local Frame = e(VoteFrame, {
+		local Frame = e(EndFrame, {
 			VoteStartCount = 0,
-			StartTime = workspace:GetServerTimeNow(),
-			EndTime = workspace:GetServerTimeNow() + 10,
-
+			Success = true,
 			native = {
-				Size = UDim2.fromScale(0.5, 0.5),
+				Size = UDim2.fromScale(0.8, 0.3),
 				Position = UDim2.fromScale(0.5, 0.5),
 			},
 		})

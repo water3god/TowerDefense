@@ -26,25 +26,19 @@ local Hooks = require(CoreGame.Hooks)
 
 export type Props = {
 	VoteStartCount: number,
-	StartTime: number,
-	EndTime: number,
-	YesClick: (() -> ())?,
-	NoClick: (() -> ())?,
+	Success: boolean,
+	RestartClick: (() -> ())?,
+	ReturnClick: (() -> ())?,
 
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
 
 local function CreateVoteFrame(Props: Props)
-	local Time, _, SetTime = Hooks.UseTime()
 	local PlayerData, SetData = React.useBinding({
 		Votes = 1,
 		Total = #Players:GetPlayers(),
 	})
-
-	React.useEffect(function()
-		SetTime(Props.EndTime - Props.StartTime, Props.StartTime)
-	end, { Props.StartTime, Props.EndTime })
 
 	Hooks.useEventConnection(Players.PlayerAdded, function(Player: Player)
 		SetData(Join(PlayerData:getValue(), {
@@ -58,22 +52,15 @@ local function CreateVoteFrame(Props: Props)
 		}) :: any)
 	end, {})
 
-	React.useEffect(function()
-		SetData(Join(PlayerData:getValue(), {
-			Votes = Props.VoteStartCount,
-		}) :: any)
-	end, { Props.VoteStartCount })
-
 	return e(Main.Frame, {
 		native = Join({
 			BackgroundTransparency = 0,
 			BackgroundColor3 = Color3.new(),
-			Position = UDim2.fromScale(0.5, 0.225),
-			Size = UDim2.fromScale(0.175, 0.2),
+			Size = UDim2.fromScale(0.4, 0.3),
 		}, Props.native),
 	}, {
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-			AspectRatio = 2.15,
+			AspectRatio = 2,
 		}),
 		UICorner = e("UICorner", {
 			CornerRadius = UDim.new(0.15, 0),
@@ -85,59 +72,62 @@ local function CreateVoteFrame(Props: Props)
 				LineJoinMode = Enum.LineJoinMode.Round,
 			},
 		}),
-		NoButton = e(Main.Animateables.TextButton, {
+		RestartButton = e(Main.Animateables.TextButton, {
 			native = {
 				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.fromRGB(255, 0, 3),
-				Position = UDim2.fromScale(0.75, 0.75),
-				Size = UDim2.fromScale(0.4, 0.25),
-				Text = "",
-				[React.Event.MouseButton1Click] = Props.NoClick,
-			},
-		}, {
-			UIStroke = e(UIStroke.UIStrokeBasic, {
-				Stroke = 0.002,
-				native = {
-					Color = Color3.fromRGB(128, 36, 20),
-				},
-			}),
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.4, 0),
-			}),
-			Label = e(Main.TextLabel, {
-				native = {
-					Size = UDim2.fromScale(0.9, 0.9),
-					Text = "No",
-				},
-			}, {
-				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.004,
-				}),
-			}),
-		}),
-		YesButton = e(Main.Animateables.TextButton, {
-			native = {
-				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.fromRGB(0, 255, 19),
+				BackgroundColor3 = Color3.fromRGB(117, 119, 115),
 				Position = UDim2.fromScale(0.25, 0.75),
-				Size = UDim2.fromScale(0.4, 0.25),
+				Size = UDim2.fromScale(0.4, 0.2),
 				Text = "",
-				[React.Event.MouseButton1Click] = Props.YesClick,
+				[React.Event.MouseButton1Click] = Props.RestartClick,
 			},
 		}, {
-			UIStroke = e(UIStroke.UIStrokeBasic, {
-				Stroke = 0.002,
-				native = {
-					Color = Color3.fromRGB(40, 93, 28),
-				},
-			}),
 			UICorner = e("UICorner", {
 				CornerRadius = UDim.new(0.4, 0),
 			}),
+			UIStroke = e(UIStroke.UIStrokeBasic, {
+				Stroke = 0.002,
+				native = {
+					Color = Color3.fromRGB(73, 71, 69),
+					LineJoinMode = Enum.LineJoinMode.Round,
+				},
+			}),
 			Label = e(Main.TextLabel, {
 				native = {
-					Size = UDim2.fromScale(0.9, 0.9),
-					Text = "Yes",
+					Size = UDim2.fromScale(0.9, 0.8),
+					Text = "Restart",
+				},
+				children = {
+					UIStroke = e(UIStroke.UIStrokeBasic, {
+						Stroke = 0.004,
+					}),
+				},
+			}),
+		}),
+		ReturnButton = e(Main.Animateables.TextButton, {
+			native = {
+				BackgroundTransparency = 0,
+				BackgroundColor3 = Color3.fromRGB(117, 119, 115),
+				Position = UDim2.fromScale(0.75, 0.75),
+				Size = UDim2.fromScale(0.4, 0.2),
+				Text = "",
+				[React.Event.MouseButton1Click] = Props.ReturnClick,
+			},
+		}, {
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.4, 0),
+			}),
+			UIStroke = e(UIStroke.UIStrokeBasic, {
+				Stroke = 0.002,
+				native = {
+					Color = Color3.fromRGB(73, 71, 69),
+					LineJoinMode = Enum.LineJoinMode.Round,
+				},
+			}),
+			Label = e(Main.TextLabel, {
+				native = {
+					Size = UDim2.fromScale(0.9, 0.8),
+					Text = "Return",
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeBasic, {
@@ -145,33 +135,20 @@ local function CreateVoteFrame(Props: Props)
 				}),
 			}),
 		}),
-		PlayerCount = e(Main.TextLabel, {
+		Players = e(Main.TextLabel, {
 			native = {
+				Size = UDim2.fromScale(0.5, 0.2),
 				Position = UDim2.fromScale(0.5, 0.45),
-				Size = UDim2.fromScale(0.3, 0.2),
 				Text = PlayerData:map(function(Data)
-					return string.format("%u/%u", Data.Votes, Data.Total)
+					return string.format("Play Again: %u/%u", Data.Votes, Data.Total)
 				end),
 			},
-		}),
-		TimeLabel = e(Main.TextLabel, {
-			native = {
-				Position = UDim2.fromScale(0.5, 1.15),
-				Size = UDim2.fromScale(0.6, 0.2),
-				Text = Time:map(function(Time)
-					return string.format("Starts In: %u", math.floor(Time))
-				end),
-			},
-		}, {
-			UIStroke = e(UIStroke.UIStrokeBasic, {
-				Stroke = 0.003,
-			}),
 		}),
 		Title = e(Main.TextLabel, {
 			native = {
+				Size = UDim2.fromScale(0.5, 0.2),
 				Position = UDim2.fromScale(0.5, 0.2),
-				Size = UDim2.fromScale(0.7, 0.225),
-				Text = "Vote Start",
+				Text = if Props.Success then "Game Won" else "Game Lost",
 			},
 		}),
 	}, Props.children)
