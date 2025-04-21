@@ -29,6 +29,7 @@ local GameFrames = Gui.GameFrames
 local Bottom = require(GameFrames.Bottom)
 local Top = require(GameFrames.Top)
 local VoteFrame = require(GameFrames.VoteFrame)
+local EndFrame = require(GameFrames.EndFrame)
 
 local Story = Gui.Story
 local MainStory = require(Story.MainStory)
@@ -288,6 +289,12 @@ local function Render()
 					TopFrame = e(Top),
 				}),
 				VoteFrame = e(VoteFrame),
+				EndFrame = e(EndFrame),
+			}),
+			LobbyOnly = IsLobby and e("Folder", {}, {
+				WaitingFrame = e(StoryContext.Provider, {}, {
+					WaitingFrame = e(WaitingFrame),
+				}),
 			}),
 			BottomFrame = e(EquippedUnitsContext.Provider, {}, {
 				BottomFrame = e(Bottom, {
@@ -297,9 +304,6 @@ local function Render()
 						SetVisibleInternal(Constants.INVENTORY_FRAME, Visible)
 					end,
 				}),
-			}),
-			WaitingFrame = IsLobby and e(StoryContext.Provider, {}, {
-				WaitingFrame = e(WaitingFrame, {}, {}),
 			}),
 		}),
 		Buttons = IsLobby and e(Main.Frame, {
