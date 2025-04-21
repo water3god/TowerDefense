@@ -9,9 +9,9 @@
  * @flow
  *]]
 
-_G.__DEV__ = game:GetService("RunService"):IsStudio()
-
 -- ROBLOX deviation: simulates `index.js` and exports React's public interface
+
+_G.__DEV__ = game:GetService("RunService"):IsStudio()
 local LuauPolyfill = require(script.Parent:WaitForChild("luau-polyfill"))
 export type Object = LuauPolyfill.Object
 
