@@ -78,6 +78,8 @@ type props = {
 local IsRunning = RunService:IsRunning()
 
 local ConfirmGui = Instance.new("ScreenGui")
+ConfirmGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ConfirmGui.DisplayOrder = 5
 ConfirmGui.Name = "ConfirmGui"
 
 if IsRunning then
