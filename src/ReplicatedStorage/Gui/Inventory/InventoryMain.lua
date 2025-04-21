@@ -96,6 +96,12 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		end
 	end, { InSell, HoveredId :: any, Units :: any })
 
+	React.useEffect(function()
+		if not HoveredId then
+			SetClickedUnitData(nil)
+		end
+	end, { HoveredId })
+
 	local SmallFrameClick = React.useCallback(function(Data: { Data: any, UniqueId: string })
 		if (HoveredId ~= Data.UniqueId) and not InSell then
 			SetClickedUnitData(Data.Data)
@@ -233,11 +239,17 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 				}),
 			})
 		end
-
+		local UsedId = false
 		local Table = {}
 		for _, Data in pairs(InventoryData.Units) do
+			if Data.UniqueId == HoveredId then
+				UsedId = true
+			end
 			local Unit = HandleUnit(Data)
 			Table[Data.UniqueId] = Unit
+		end
+		if not UsedId then
+			SetHovered(nil)
 		end
 		SetUnits(Table)
 	end, { InSell :: any, SellingUnits :: any, HoveredId :: any, InventoryData :: any })
