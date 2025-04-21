@@ -28,8 +28,6 @@ export type Properties = {
 	children: { [any]: any }?,
 }
 
-local IsRunning = game:GetService("RunService"):IsRunning()
-
 local function CreateTopFrame(Props: Properties)
 	local WaveData = React.useContext(WaveContext.Context)
 

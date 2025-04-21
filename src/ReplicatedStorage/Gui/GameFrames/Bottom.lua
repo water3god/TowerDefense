@@ -96,7 +96,7 @@ local function CreateBaseFrame(Properties: OtherProps)
 	})
 end
 
-local Size = UDim2.fromScale(0.15, 0.6)
+local Size = UDim2.fromScale(0.25, 0.65)
 
 local function CreateBottomFrame(Properties: Properties)
 	local Context = React.useContext(EquippedUnitsContext.Context)

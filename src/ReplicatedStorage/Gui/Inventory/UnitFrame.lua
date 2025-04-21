@@ -81,7 +81,7 @@ local function CreateUnitFrame(Properties: PropertiesMain)
 		Level = Properties.Level,
 		Cost = UnitData.PlacementCost,
 		Color = RarityData.Color,
-		StrokeColor = RarityData.BackgroundColor,
+		StrokeColor = RarityData.StrokeColor,
 		BackgroundColor = RarityData.BackgroundColor,
 
 		Disabled = Properties.Disabled,

@@ -55,7 +55,7 @@ local function CreateBaseFrame(Properties: Properties)
 				Size = Properties.Size or UDim2.fromScale(1, 1),
 			}, Properties.native),
 			children = Join({
-				UIAspectRatioConstraint = React.createElement("UIAspectRatioConstraint", {
+				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 					AspectRatio = 1,
 				}),
 				Container = e(Main.Animateables.TextButton, {
@@ -100,7 +100,7 @@ local function CreateBaseFrame(Properties: Properties)
 							},
 							children = {
 								UIStroke = e(UIStroke.UIStroke, {
-									Stroke = 0.002,
+									Stroke = 0.0015,
 									GradColor = if Properties.NameStrokeColor
 										then Properties.NameStrokeColor
 										else ColorSequence.new(Color3.new(1, 1, 1)),
@@ -124,7 +124,7 @@ local function CreateBaseFrame(Properties: Properties)
 							},
 							children = {
 								UIStroke = e(UIStroke.UIStroke, {
-									Stroke = 0.002,
+									Stroke = 0.0015,
 									GradColor = Properties.LeftStrokeColor or ColorSequence.new(Color3.new(1, 1, 1)),
 									native = {
 										Enabled = if Properties.LeftStrokeColor then true else false,
@@ -146,7 +146,7 @@ local function CreateBaseFrame(Properties: Properties)
 							},
 							children = {
 								UIStroke = e(UIStroke.UIStroke, {
-									Stroke = 0.002,
+									Stroke = 0.0015,
 									GradColor = Properties.RightStrokeColor or ColorSequence.new(Color3.new(1, 1, 1)),
 									native = {
 										Enabled = if Properties.RightStrokeColor then true else false,
