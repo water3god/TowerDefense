@@ -19,6 +19,7 @@ local Join = HelperFunctions.joinDicts
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
+local CloseButton = require(CoreGame.CloseButton)
 
 local Shared = ReplicatedStorage.Shared
 local IsLobby = require(Shared.IsLobby)
@@ -38,8 +39,48 @@ local function CreateUpgradeFrame(Properties: Properties)
 	return e(Main.ImageLabel, {
 		native = Join({
 			Size = UDim2.fromScale(0.8, 0.8),
+			Image = "rbxassetid://103903141717286",
 		}, Properties.native),
-	}, {}, Properties.children)
+	}, {
+		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+			AspectRatio = 1.8,
+		}),
+		CloseButton = e(CloseButton, {
+			Position = UDim2.fromScale(1, 0),
+			Size = UDim2.fromScale(0.2, 0.25),
+		}),
+		UnitName = e(Main.TextLabel, {
+			native = {
+				Position = UDim2.fromScale(0.5, 0.2),
+				Size = UDim2.fromScale(0.5, 0.15),
+				Text = "Minigunner",
+			},
+		}),
+		CurrentData = e(Main.Frame, {
+			native = {
+				BackgroundTransparency = 0,
+				BackgroundColor3 = Color3.new(0.164706, 0.031373, 0.274510),
+				Position = UDim2.fromScale(0.25, 0.6),
+				Size = UDim2.fromScale(0.4, 0.6),
+			},
+		}, {
+			UnitInfo = e(Main.ScrollingFrame, {
+				BarSize = 0.002,
+			}),
+		}),
+		NextData = e(Main.Frame, {
+			native = {
+				BackgroundTransparency = 0,
+				BackgroundColor3 = Color3.new(0.164706, 0.031373, 0.274510),
+				Position = UDim2.fromScale(0.75, 0.6),
+				Size = UDim2.fromScale(0.4, 0.6),
+			},
+		}, {
+			UnitInfo = e(Main.ScrollingFrame, {
+				BarSize = 0.002,
+			}),
+		}),
+	}, Properties.children)
 end
 
 return CreateUpgradeFrame

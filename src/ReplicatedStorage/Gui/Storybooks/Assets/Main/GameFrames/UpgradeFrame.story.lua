@@ -23,7 +23,7 @@ local controls = {}
 local Story = {
 	react = React,
 	reactRoblox = ReactRoblox,
-	controls = controls,
+	--controls = controls,
 	story = function(Properties)
 		local UpgradeFrame = e(UpgradeFrame, {})
 		return UpgradeFrame
