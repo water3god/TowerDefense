@@ -27,7 +27,7 @@ export type Properties = {
 	Name: string,
 	LeftText: string,
 	RightText: string,
-	UnitImage: string?,
+	MainImage: string?,
 	Hovered: boolean?,
 	Disabled: boolean?,
 
@@ -80,9 +80,10 @@ local function CreateBaseFrame(Properties: Properties)
 				native = {
 					Visible = not Properties.Disabled,
 					Position = UDim2.fromScale(0.5, 0.5),
-					Size = UDim2.fromScale(1, 1),
-					Image = Properties.UnitImage or "",
+					Size = UDim2.fromScale(0.8, 0.8),
+					Image = Properties.MainImage or "",
 					ZIndex = 1,
+					ScaleType = Enum.ScaleType.Fit,
 				},
 			}),
 			BaseName = e(Main.TextLabel, {

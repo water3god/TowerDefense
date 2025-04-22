@@ -8,6 +8,7 @@ export type UnitInfo = {
 	Rarity: RarityInfo.Rarity,
 	Description: string,
 	PlacementCost: number,
+	Image: string?,
 }
 
 local Data = {}

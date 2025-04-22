@@ -13,6 +13,7 @@ local e = React.createElement
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
+local Trove = require(Modules.Trove)
 
 -- Reference UI --
 local Gui = ReplicatedStorage.Gui
@@ -25,6 +26,12 @@ local EquippedUnitsContext = require(GameFrames.EquippedUnitsContext)
 
 local Shared = ReplicatedStorage.Shared
 local LevelRequirements = require(Shared.LevelRequirements)
+local IsLobby = require(Shared.IsLobby)
+
+local Client = ReplicatedStorage.Client
+local GlobalClient = Client.GlobalClient
+local UnitClient = require(GlobalClient.UnitClient)
+local InventoryService = require(GlobalClient.InventoryService)
 
 export type Properties = {
 	SetHovered: (HoveredId: string?) -> ()?,
@@ -42,9 +49,7 @@ export type OtherProps = {
 	Level: number?,
 	LevelReq: number,
 
-	SetHovered: ((HoveredId: string?) -> ())?,
-	SetVisible: ((Visible: boolean) -> ())?,
-	GetHovered: (() -> string?)?,
+	OnClick: (UniqueId: string) -> (),
 
 	native: { [any]: any }?,
 	children: { [any]: any }?,
@@ -53,22 +58,20 @@ export type OtherProps = {
 local function CreateBaseFrame(Properties: OtherProps)
 	local BelowLevel = Properties.GlobalLevel < Properties.LevelReq
 	local IsDisabled = BelowLevel or not Properties.UnitName
+
+	local OnClick = React.useCallback(function()
+		if Properties.UniqueId then
+			Properties.OnClick(Properties.UniqueId)
+		end
+	end, { Properties.UniqueId :: any, Properties.OnClick :: any })
+
 	return e(UnitFrame.CreateUnitFrame, {
 		UnitName = if Properties.UnitName and not IsDisabled then Properties.UnitName else "BLANK",
 		Disabled = IsDisabled,
 		Level = Properties.Level or 1,
 		native = Properties.native,
 		children = Properties.children,
-		OnClick = function()
-			if Properties.UniqueId and Properties.SetHovered and Properties.GetHovered then
-				if Properties.GetHovered() ~= Properties.UniqueId then
-					Properties.SetHovered(Properties.UniqueId)
-				end
-				if Properties.SetVisible then
-					Properties.SetVisible(true)
-				end
-			end
-		end,
+		OnClick = OnClick,
 		containerChildren = {
 			Lock = e(Main.ImageLabel, {
 				native = {
@@ -97,9 +100,49 @@ end
 
 local Size = UDim2.fromScale(0.25, 0.65)
 
+type PlacementData = {
+	Trove: Trove.Trove,
+	UniqueId: string,
+}
+
 local function CreateBottomFrame(Properties: Properties)
 	local Context = React.useContext(EquippedUnitsContext.Context)
 	local Units = Context.Units
+
+	local LobbyClick = React.useCallback(function(UniqueId: string)
+		if Properties.SetHovered and Properties.GetHovered and Properties.SetVisible then
+			if Properties.GetHovered() ~= UniqueId then
+				Properties.SetHovered(UniqueId)
+			end
+			if Properties.SetVisible then
+				Properties.SetVisible(true)
+			end
+		end
+	end, { Properties.SetHovered :: any, Properties.SetVisible :: any, Properties.GetHovered :: any })
+
+	local PlacementData: PlacementData?, SetPlacement = React.useState(nil :: PlacementData?)
+
+	local GameClick = React.useCallback(function(UniqueId: string)
+		local Unit = InventoryService:GetInventory().Units[UniqueId]
+		if PlacementData then
+			PlacementData.Trove:Destroy()
+			if PlacementData.UniqueId == UniqueId then
+				return
+			end
+		end
+		if Unit then
+			local Trove = UnitClient.InitPlacement(Unit.Unit)
+			SetPlacement({
+				Trove = Trove,
+				UniqueId = UniqueId,
+			})
+		else
+			SetPlacement(nil)
+		end
+	end, { PlacementData })
+
+	local Click = IsLobby and LobbyClick or GameClick
+
 	return e(Main.CanvasGroup, {
 		native = Join({
 			Size = UDim2.fromScale(0.4, 0.2),
@@ -115,9 +158,7 @@ local function CreateBottomFrame(Properties: Properties)
 			UnitName = Units[1] and Units[1].Unit,
 			Level = Units[1] and Units[1].Level,
 			GlobalLevel = Context.GlobalLevel,
-			SetHovered = Properties.SetHovered,
-			GetHovered = Properties.GetHovered,
-			SetVisible = Properties.SetVisible,
+			OnClick = Click,
 			native = {
 				Position = UDim2.fromScale(0.15, 0.35),
 				Size = Size,
@@ -129,9 +170,7 @@ local function CreateBottomFrame(Properties: Properties)
 			UnitName = Units[2] and Units[2].Unit,
 			Level = Units[2] and Units[2].Level,
 			GlobalLevel = Context.GlobalLevel,
-			SetHovered = Properties.SetHovered,
-			GetHovered = Properties.GetHovered,
-			SetVisible = Properties.SetVisible,
+			OnClick = Click,
 			native = {
 				Position = UDim2.fromScale(0.325, 0.35),
 				Size = Size,
@@ -143,9 +182,7 @@ local function CreateBottomFrame(Properties: Properties)
 			UnitName = Units[3] and Units[3].Unit,
 			Level = Units[3] and Units[3].Level,
 			GlobalLevel = Context.GlobalLevel,
-			SetHovered = Properties.SetHovered,
-			GetHovered = Properties.GetHovered,
-			SetVisible = Properties.SetVisible,
+			OnClick = Click,
 			native = {
 				Position = UDim2.fromScale(0.5, 0.35),
 				Size = Size,
@@ -157,9 +194,7 @@ local function CreateBottomFrame(Properties: Properties)
 			UnitName = Units[4] and Units[4].Unit,
 			Level = Units[4] and Units[4].Level,
 			GlobalLevel = Context.GlobalLevel,
-			SetHovered = Properties.SetHovered,
-			GetHovered = Properties.GetHovered,
-			SetVisible = Properties.SetVisible,
+			OnClick = Click,
 			native = {
 				Position = UDim2.fromScale(0.675, 0.35),
 				Size = Size,
@@ -171,9 +206,7 @@ local function CreateBottomFrame(Properties: Properties)
 			UnitName = Units[5] and Units[5].Unit,
 			Level = Units[5] and Units[5].Level,
 			GlobalLevel = Context.GlobalLevel,
-			SetHovered = Properties.SetHovered,
-			GetHovered = Properties.GetHovered,
-			SetVisible = Properties.SetVisible,
+			OnClick = Click,
 			native = {
 				Position = UDim2.fromScale(0.85, 0.35),
 				Size = Size,

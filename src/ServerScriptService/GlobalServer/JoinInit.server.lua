@@ -29,7 +29,7 @@ local MapStore = MemoryStoreService:GetHashMap(Constants.INFORMATIONHASHMAP);
 
 local OldValues: Types.RecieveData? = nil;
 
-local function Init(Data: Types.RecieveData?)
+local function Init(DataInput: Types.RecieveData?)
 	if not Map then
 		return;
 	end
@@ -47,7 +47,7 @@ local function Init(Data: Types.RecieveData?)
 		end
 	end
 	
-	local Data = Data or OldValues :: Types.RecieveData;
+	local Data = DataInput or OldValues :: Types.RecieveData;
 	OldValues = Data;
 
 	local FoundData = WaveData[Data.LevelId];
@@ -56,7 +56,7 @@ local function Init(Data: Types.RecieveData?)
 		for _, Unit in pairs(UnitModule.GetUnits()) do
 			Unit:Delete();
 		end
-		local Wave = GlobalWave.new({
+		GlobalWave.new({
 			Data = FoundData;
 			Positions = Positions;
 			Difficulty = Data.Difficulty;

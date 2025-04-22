@@ -2,6 +2,8 @@
 
 -- By Wa1er_God --
 
+local DefaultImage = "rbxassetid://103876432340370"
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Packages = ReplicatedStorage.Packages
@@ -22,6 +24,7 @@ export type Properties = {
 	Cost: number,
 	Hovered: boolean?,
 
+	UnitImage: string,
 	Color: ColorSequence?,
 	StrokeColor: ColorSequence?,
 	BackgroundColor: ColorSequence?,
@@ -46,6 +49,7 @@ local function CreateUnitFrameRaw(Properties: Properties)
 		LeftColor = Properties.Color,
 		LeftStrokeColor = Properties.StrokeColor,
 
+		MainImage = Properties.UnitImage,
 		NameColor = Properties.Color,
 		NameStrokeColor = Properties.StrokeColor,
 
@@ -83,6 +87,7 @@ local function CreateUnitFrame(Properties: PropertiesMain)
 		Color = RarityData.Color,
 		StrokeColor = RarityData.StrokeColor,
 		BackgroundColor = RarityData.BackgroundColor,
+		UnitImage = UnitData.Image or DefaultImage,
 
 		Disabled = Properties.Disabled,
 		Hovered = Properties.Hovered,
