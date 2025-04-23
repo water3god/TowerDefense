@@ -213,7 +213,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			return e(UnitFrame.CreateUnitFrame, {
 				UnitName = Data.Unit,
 				Level = Data.Level,
-				Cost = UnitData.PlacementCost,
+				Cost = UnitData.UnitData[0].Cost,
 
 				OnClick = function()
 					SmallFrameClick({

@@ -14,6 +14,8 @@ local Modules = ReplicatedStorage.Modules
 local Join = require(Modules.JoinDicts)
 local Signal = require(Modules.Signal)
 
+local HelperFunctions = require(Modules.HelperFunctions)
+
 local Hooks = {}
 
 function Hooks.useClock()

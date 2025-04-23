@@ -20,6 +20,10 @@ local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
 local CloseButton = require(CoreGame.CloseButton)
+local UIStroke = require(CoreGame.UIStroke)
+
+local Inventory = Gui.Inventory
+local UnitFrame = require(Inventory.UnitFrame)
 
 local Shared = ReplicatedStorage.Shared
 local IsLobby = require(Shared.IsLobby)
@@ -36,6 +40,16 @@ export type Properties = {
 }
 
 local function CreateUpgradeFrame(Properties: Properties)
+	local Container: { current: WorldModel? } = React.useRef(nil :: WorldModel?)
+	React.useEffect(function()
+		local Data = UnitClient.InitCharacter("Minigunner")
+		Data.UnitModel.Parent = Container.current
+
+		return function()
+			Data.Trove:Destroy()
+		end
+	end, {})
+
 	return e(Main.ImageLabel, {
 		native = Join({
 			Size = UDim2.fromScale(0.8, 0.8),
@@ -43,7 +57,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 		}, Properties.native),
 	}, {
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-			AspectRatio = 1.8,
+			AspectRatio = 1.5,
 		}),
 		CloseButton = e(CloseButton, {
 			Position = UDim2.fromScale(1, 0),
@@ -51,31 +65,51 @@ local function CreateUpgradeFrame(Properties: Properties)
 		}),
 		UnitName = e(Main.TextLabel, {
 			native = {
-				Position = UDim2.fromScale(0.5, 0.2),
-				Size = UDim2.fromScale(0.5, 0.15),
+				Position = UDim2.fromScale(0.5, 0.175),
+				Size = UDim2.fromScale(0.8, 0.12),
 				Text = "Minigunner",
 			},
+		}, {
+			UIListLayout = e("UIListLayout", {
+				FillDirection = Enum.FillDirection.Vertical,
+				SortOrder = Enum.SortOrder.LayoutOrder,
+				Padding = UDim.new(0, 0),
+			}),
+		}),
+		UnitFrame = e(Main.ViewportFrame, {
+			native = {
+				Size = UDim2.fromScale(0.45, 0.5),
+				Position = UDim2.fromScale(0.275, 0.55),
+			},
+		}, {
+			ModelContainer = e("WorldModel", {
+				ref = Container,
+			}),
+			Camera = e("Camera", {
+				CFrame = CFrame.new(),
+			}),
+			UIStroke = e(UIStroke.UIStrokeBasic, {
+				Stroke = 0.001,
+				Color = Color3.new(1, 1, 1),
+				native = {
+					LineJoinMode = Enum.LineJoinMode.Round,
+				},
+			}),
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.1, 0),
+			}),
 		}),
 		CurrentData = e(Main.Frame, {
 			native = {
 				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.new(0.164706, 0.031373, 0.274510),
-				Position = UDim2.fromScale(0.25, 0.6),
-				Size = UDim2.fromScale(0.4, 0.6),
-			},
-		}, {
-			UnitInfo = e(Main.ScrollingFrame, {
-				BarSize = 0.002,
-			}),
-		}),
-		NextData = e(Main.Frame, {
-			native = {
-				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.new(0.164706, 0.031373, 0.274510),
+				BackgroundColor3 = Color3.new(0.207843, 0.031373, 0.274510),
 				Position = UDim2.fromScale(0.75, 0.6),
 				Size = UDim2.fromScale(0.4, 0.6),
 			},
 		}, {
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.1, 0),
+			}),
 			UnitInfo = e(Main.ScrollingFrame, {
 				BarSize = 0.002,
 			}),

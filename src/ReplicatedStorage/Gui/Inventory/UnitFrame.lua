@@ -83,7 +83,7 @@ local function CreateUnitFrame(Properties: PropertiesMain)
 	return e(CreateUnitFrameRaw, {
 		UnitName = Properties.UnitName,
 		Level = Properties.Level,
-		Cost = UnitData.PlacementCost,
+		Cost = UnitData.UnitData[0].Cost,
 		Color = RarityData.Color,
 		StrokeColor = RarityData.StrokeColor,
 		BackgroundColor = RarityData.BackgroundColor,

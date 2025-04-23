@@ -4,11 +4,26 @@
 
 local RarityInfo = require(script.Parent.RarityInfo)
 
+export type TotalUnitData = {
+	[number]: UnitData,
+}
+
+export type UnitData = {
+	Damage: { number },
+	FireRate: number,
+	Range: number,
+	Armor: string?,
+	Cost: number,
+}
+
 export type UnitInfo = {
 	Rarity: RarityInfo.Rarity,
 	Description: string,
-	PlacementCost: number,
+
 	Image: string?,
+	UnitData: TotalUnitData,
+	Vector3Offset: Vector3?,
+	CollisionRadius: number,
 }
 
 local Data = {}
@@ -17,32 +32,97 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["BLANK"] = {
 		Rarity = "BLANK",
 		Description = "NIL",
-		PlacementCost = 0,
+		UnitData = {
+			[0] = {
+				Damage = { 5 },
+				FireRate = 1,
+				Range = 50,
+				Animations = {},
+				Armor = "Armor",
+				Cost = 100,
+			},
+		},
+		CollisionRadius = 3,
 	},
 	["Scout"] = {
 		Rarity = "Common",
 		Description = "A Scout",
-		PlacementCost = 10,
+
+		UnitData = {
+			[0] = {
+				Damage = { 5 },
+				FireRate = 1,
+				Range = 50,
+				Animations = {},
+				Armor = "Armor",
+				Cost = 100,
+			},
+		},
+		CollisionRadius = 3,
 	},
 	["Shocker"] = {
 		Rarity = "Common",
 		Description = "A Shocker",
-		PlacementCost = 10,
+
+		UnitData = {
+			[0] = {
+				Damage = { 5 },
+				FireRate = 1,
+				Range = 50,
+				Animations = {},
+				Armor = "Armor",
+				Cost = 100,
+			},
+		},
+		CollisionRadius = 3,
 	},
 	["Sniper"] = {
 		Rarity = "Rare",
 		Description = "A Damage dealer Sniper",
-		PlacementCost = 10,
+
+		UnitData = {
+			[0] = {
+				Damage = { 5 },
+				FireRate = 1,
+				Range = 50,
+				Animations = {},
+				Armor = "Armor",
+				Cost = 100,
+			},
+		},
+		CollisionRadius = 3,
 	},
 	["Shotgunner"] = {
 		Rarity = "Epic",
 		Description = "A DamageDealer",
-		PlacementCost = 10,
+
+		UnitData = {
+			[0] = {
+				Damage = { 5 },
+				FireRate = 1,
+				Range = 50,
+				Animations = {},
+				Armor = "Armor",
+				Cost = 100,
+			},
+		},
+		CollisionRadius = 3,
 	},
 	["Minigunner"] = {
 		Rarity = "Legendary",
 		Description = "A Minigunner from the depths",
-		PlacementCost = 10,
+
+		UnitData = {
+			[0] = {
+				Damage = { 5 },
+				FireRate = 1,
+				Range = 50,
+				Animations = {},
+				Armor = "Armor",
+				Cost = 100,
+			},
+		},
+		CollisionRadius = 3,
 	},
 }
 
