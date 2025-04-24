@@ -8,7 +8,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
-local ReactRoblox = require(Packages.ReactRoblox)
+local ReactSpring = require(Packages.ReactSpring)
+local Promise = require(Packages.Promise)
 local e = React.createElement
 
 local Modules = ReplicatedStorage.Modules
@@ -21,12 +22,17 @@ local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
 local CloseButton = require(CoreGame.CloseButton)
 local UIStroke = require(CoreGame.UIStroke)
+local Hooks = require(CoreGame.Hooks)
 
 local Inventory = Gui.Inventory
 local UnitFrame = require(Inventory.UnitFrame)
 
+local GameFrames = Gui.GameFrames
+local UpgradeContext = require(GameFrames.UpgradeContext)
+
 local Shared = ReplicatedStorage.Shared
 local IsLobby = require(Shared.IsLobby)
+local UnitInfo = require(Shared.UnitInfo)
 
 local Client = ReplicatedStorage.Client
 local GlobalClient = Client.GlobalClient
@@ -35,25 +41,247 @@ local InventoryService = require(GlobalClient.InventoryService)
 local WaveService = require(GlobalClient.WaveService)
 
 export type Properties = {
+	IsVisible: boolean,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
 
+export type PropertyPropertyProperty = "Damage" | "Range" | "FireRate" | "Specials"
+local PropertyProperties = { "Damage", "Range", "FireRate", "Specials" }
+
+local Icons: { [PropertyPropertyProperty]: string } = {
+	Damage = "rbxassetid://116153831042938",
+	FireRate = "rbxassetid://117289508099114",
+	Range = "rbxassetid://95171919754669",
+	Specials = "rbxassetid://134876951462162",
+}
+
+local Colors: { [PropertyPropertyProperty]: Color3 } = {
+	Damage = Color3.new(0.772549, 0.109804, 0.109804),
+	FireRate = Color3.new(0.113725, 0.247059, 0.784314),
+	Range = Color3.new(0.749020, 0.843137, 0.133333),
+	Specials = Color3.new(0.921569, 0.600000, 0.149020),
+}
+
+local Layout: { [PropertyPropertyProperty]: number } = {
+	Damage = 1,
+	FireRate = 2,
+	Range = 3,
+	Specials = 4,
+}
+
+export type PropertyProperties = {
+	PropertyName: PropertyPropertyProperty & string,
+	Inital: number,
+	Final: number,
+	Other: string,
+	native: { [any]: any }?,
+	children: { [any]: any }?,
+}
+
+local function CreatePropertyFrame(Props: PropertyProperties)
+	local Color = Colors[Props.PropertyName]
+	local Order = Hooks.LayoutOrder()
+	local IsSpecial = Props.PropertyName == "Specials"
+
+	return e(Main.Frame, {
+		native = Join({
+			Size = UDim2.fromScale(1, 0.25),
+		}, Props.native),
+	}, {
+		UIFlex = e("UIListLayout", {
+			FillDirection = Enum.FillDirection.Horizontal,
+			VerticalAlignment = Enum.VerticalAlignment.Center,
+			SortOrder = Enum.SortOrder.LayoutOrder,
+		}),
+		Icon = e(Main.ImageLabel, {
+			native = {
+				Size = UDim2.fromScale(0.2, 1),
+				Image = Icons[Props.PropertyName],
+				LayoutOrder = Order(),
+			},
+		}, {
+			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+				AspectRatio = 1,
+			}),
+		}),
+		BeforeLabel = e(Main.TextLabel, {
+			native = {
+				Size = UDim2.fromScale(0.2, 1),
+				Text = if IsSpecial then Props.Other else HelperFunctions.NumberScaler.ShortenNumber(Props.Inital),
+				TextColor3 = Color,
+				LayoutOrder = Order(),
+			},
+		}),
+		ArrowImage = e(Main.ImageLabel, {
+			native = {
+				Size = UDim2.fromScale(0.2, 0.7),
+				Image = "rbxassetid://90650317828395",
+				LayoutOrder = Order(),
+				ImageColor3 = Color,
+				Visible = not IsSpecial,
+			},
+		}, {
+			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+				AspectRatio = 1.5,
+			}),
+		}),
+		Frame = e(Main.Frame, {
+			native = {
+				Size = UDim2.fromScale(0.05, 1),
+				LayoutOrder = Order(),
+			},
+		}),
+		AfterLabel = e(Main.TextLabel, {
+			native = {
+				Size = UDim2.fromScale(0.3, 1),
+				Text = HelperFunctions.NumberScaler.ShortenNumber(Props.Final),
+				TextColor3 = Color,
+				LayoutOrder = Order(),
+				Visible = not IsSpecial,
+				TextXAlignment = Enum.TextXAlignment.Left,
+			},
+		}),
+	}, Props.children)
+end
+
 local function CreateUpgradeFrame(Properties: Properties)
+	local UpgradeData = React.useContext(UpgradeContext.Context)
 	local Container: { current: WorldModel? } = React.useRef(nil :: WorldModel?)
+
+	local Styles, API = ReactSpring.useSpring(function()
+		return {
+			Scale = 0.9,
+		}
+	end)
+
+	local Visible, SetVisible = React.useState(UpgradeData.Enabled)
+
 	React.useEffect(function()
-		local Data = UnitClient.InitCharacter("Minigunner")
+		SetVisible(UpgradeData.Enabled)
+	end, { UpgradeData.Enabled })
+
+	React.useEffect(function()
+		SetVisible(Properties.IsVisible)
+	end, { Properties.IsVisible })
+
+	React.useEffect(function()
+		if Visible then
+			API.stop()
+			API.start({
+				Scale = 1,
+			})
+		else
+			API.stop()
+			API.start({
+				Scale = 0.9,
+			})
+		end
+	end, { Visible })
+
+	local InSell, SetSell = React.useState(false)
+
+	React.useEffect(function()
+		if InSell then
+			local SellPromise = Promise.delay(3):andThen(function()
+				SetSell(false)
+			end)
+
+			return function()
+				SellPromise:cancel()
+			end
+		end
+
+		return function() end
+	end, { InSell })
+
+	React.useEffect(function()
+		SetSell(false)
+	end, { UpgradeData })
+
+	local UpgradeFrames, SetUpgradeFrames = React.useState({})
+
+	React.useEffect(function()
+		local LevelData = UpgradeData.UpgradeData[UpgradeData.Level]
+		local AboveData = UpgradeData.UpgradeData[UpgradeData.Level + 1]
+
+		if AboveData then
+			local Frames = {}
+
+			for Property, Data in pairs(LevelData) do
+				if table.find(PropertyProperties, Property) then
+					local function GetValue(Data, Property: string)
+						if Property == "Damage" then
+							return Data[1]
+						else
+							return Data
+						end
+					end
+
+					Frames[Property] = CreatePropertyFrame({
+						PropertyName = Property :: any,
+						Inital = GetValue(Data, Property) :: any,
+						Final = GetValue(AboveData[Property], Property) :: any,
+						Other = tostring(Data),
+						native = {
+							LayoutOrder = Layout[Property :: any],
+						},
+					})
+				end
+			end
+			SetUpgradeFrames(Frames)
+		else
+			SetUpgradeFrames({})
+		end
+	end, { UpgradeData.UpgradeData :: any, UpgradeData.Level :: any })
+
+	React.useEffect(function()
+		local Data =
+			UnitClient.InitCharacter(UpgradeData.UnitName, UnitInfo.UnitInfo[UpgradeData.UnitName].ViewportOffset)
 		Data.UnitModel.Parent = Container.current
 
 		return function()
 			Data.Trove:Destroy()
 		end
-	end, {})
+	end, { UpgradeData.UpgradeData :: any, UpgradeData.Level :: any })
+
+	local PriorityClick = React.useCallback(function()
+		local Unit = UnitClient.GetUnit(UpgradeData.UniqueId)
+
+		if Unit then
+			Unit:ChangePriority()
+		end
+	end, { UpgradeData.Priority })
+
+	local SellClick = React.useCallback(function()
+		if InSell then
+			local Unit = UnitClient.GetUnit(UpgradeData.UniqueId)
+
+			if Unit then
+				Unit:Sell()
+			end
+		else
+			SetSell(true)
+		end
+	end, { UpgradeData.UniqueId :: any, InSell :: any })
+
+	local UpgradeClick = React.useCallback(function()
+		local Unit = UnitClient.GetUnit(UpgradeData.UniqueId)
+
+		if Unit then
+			Unit:LevelUp()
+		end
+	end, { UpgradeData.UniqueId })
+
+	local CloseClick = React.useCallback(function()
+		SetVisible(false)
+	end, { Visible })
 
 	return e(Main.ImageLabel, {
 		native = Join({
 			Size = UDim2.fromScale(0.8, 0.8),
 			Image = "rbxassetid://103903141717286",
+			Visible = Visible,
 		}, Properties.native),
 	}, {
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
@@ -62,12 +290,13 @@ local function CreateUpgradeFrame(Properties: Properties)
 		CloseButton = e(CloseButton, {
 			Position = UDim2.fromScale(1, 0),
 			Size = UDim2.fromScale(0.2, 0.25),
+			OnClick = CloseClick,
 		}),
 		UnitName = e(Main.TextLabel, {
 			native = {
-				Position = UDim2.fromScale(0.5, 0.175),
-				Size = UDim2.fromScale(0.8, 0.12),
-				Text = "Minigunner",
+				Position = UDim2.fromScale(0.5, 0.16),
+				Size = UDim2.fromScale(0.8, 0.1),
+				Text = UpgradeData.UnitName,
 			},
 		}, {
 			UIListLayout = e("UIListLayout", {
@@ -78,12 +307,19 @@ local function CreateUpgradeFrame(Properties: Properties)
 		}),
 		UnitFrame = e(Main.ViewportFrame, {
 			native = {
-				Size = UDim2.fromScale(0.45, 0.5),
-				Position = UDim2.fromScale(0.275, 0.55),
+				Size = UDim2.fromScale(0.5, 0.525),
+				Position = UDim2.fromScale(0.25, 0.525),
+				LightDirection = Vector3.new(0, -1, -1),
+				LightColor = Color3.new(1, 1, 1),
+				Ambient = Color3.new(1, 1, 1),
 			},
 		}, {
+			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+				AspectRatio = 1,
+			}),
 			ModelContainer = e("WorldModel", {
 				ref = Container,
+				WorldPivot = CFrame.new(),
 			}),
 			Camera = e("Camera", {
 				CFrame = CFrame.new(),
@@ -99,20 +335,164 @@ local function CreateUpgradeFrame(Properties: Properties)
 				CornerRadius = UDim.new(0.1, 0),
 			}),
 		}),
+		SellButton = e(Main.Animateables.TextButton, {
+			native = {
+				BackgroundColor3 = Color3.new(0.874510, 0.000000, 0.000000),
+				BackgroundTransparency = 0,
+				Position = UDim2.fromScale(0.375, 0.875),
+				Size = UDim2.fromScale(0.2, 0.1),
+				Text = "",
+				[React.Event.MouseButton1Click] = SellClick,
+			},
+		}, {
+			Label = e(Main.TextLabel, {
+				native = {
+					Size = UDim2.fromScale(0.9, 0.7),
+					Text = not InSell and string.format("Sell: %u", math.floor(UpgradeData.TotalCost / 3)) or "CONFIRM",
+				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeBasic, {
+					Stroke = 0.003,
+					Color = Color3.new(0, 0, 0),
+					native = {
+						LineJoinMode = Enum.LineJoinMode.Round,
+						ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual,
+					},
+				}),
+			}),
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.3, 0),
+			}),
+		}),
+		AttackPriorityButton = e(Main.Animateables.TextButton, {
+			native = {
+				BackgroundColor3 = Color3.new(0.443137, 0.443137, 0.443137),
+				BackgroundTransparency = 0,
+				Position = UDim2.fromScale(0.15, 0.875),
+				Size = UDim2.fromScale(0.2, 0.1),
+				Text = "",
+				[React.Event.MouseButton1Click] = PriorityClick,
+			},
+		}, {
+			Label = e(Main.TextLabel, {
+				native = {
+					Size = UDim2.fromScale(0.9, 0.7),
+					Text = UpgradeData.Priority,
+				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeBasic, {
+					Stroke = 0.0025,
+					Color = Color3.new(0, 0, 0),
+					native = {
+						ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual,
+					},
+				}),
+			}),
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.3, 0),
+			}),
+		}),
+		UpgradeButton = e(Main.Animateables.TextButton, {
+			native = {
+				BackgroundColor3 = Color3.new(0.078431, 1.000000, 0.231373),
+				BackgroundTransparency = 0,
+				Position = UDim2.fromScale(0.7, 0.875),
+				Size = UDim2.fromScale(0.25, 0.1),
+				Text = "",
+				[React.Event.MouseButton1Click] = UpgradeClick,
+			},
+		}, {
+			Label = e(Main.TextLabel, {
+				native = {
+					Size = UDim2.fromScale(0.9, 0.7),
+					Text = "Upgrade",
+				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeBasic, {
+					Stroke = 0.003,
+					Color = Color3.new(0, 0, 0),
+					native = {
+						LineJoinMode = Enum.LineJoinMode.Bevel,
+						ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual,
+					},
+				}),
+			}),
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.3, 0),
+			}),
+		}),
 		CurrentData = e(Main.Frame, {
 			native = {
 				BackgroundTransparency = 0,
 				BackgroundColor3 = Color3.new(0.207843, 0.031373, 0.274510),
-				Position = UDim2.fromScale(0.75, 0.6),
-				Size = UDim2.fromScale(0.4, 0.6),
+				Position = UDim2.fromScale(0.7, 0.525),
+				Size = UDim2.fromScale(0.45, 0.53),
 			},
 		}, {
 			UICorner = e("UICorner", {
 				CornerRadius = UDim.new(0.1, 0),
 			}),
+			LevelFrame = e(Main.Frame, {
+				native = {
+					Position = UDim2.fromScale(0.5, 0.125),
+					Size = UDim2.fromScale(0.8, 0.15),
+				},
+			}, {
+				Arrow = e(Main.ImageLabel, {
+					native = {
+						Size = UDim2.fromScale(1, 0.8),
+						Image = "rbxassetid://90650317828395",
+						Visible = UpgradeData.UpgradeData[UpgradeData.Level + 1] ~= nil,
+					},
+				}, {
+					UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+						AspectRatio = 1.5,
+					}),
+				}),
+				FirstLevel = e(Main.TextLabel, {
+					native = {
+						Position = UDim2.fromScale(0.14, 0.5),
+						Size = UDim2.fromScale(0.45, 0.9),
+						Text = string.format("Level %u", UpgradeData.Level),
+						TextXAlignment = Enum.TextXAlignment.Right,
+						Visible = UpgradeData.UpgradeData[UpgradeData.Level + 1] ~= nil,
+					},
+				}),
+				NextLevel = e(Main.TextLabel, {
+					native = {
+						Position = UDim2.fromScale(0.86, 0.5),
+						Size = UDim2.fromScale(0.45, 0.9),
+						Text = string.format("Level %u", UpgradeData.Level + 1),
+						TextXAlignment = Enum.TextXAlignment.Left,
+						Visible = UpgradeData.UpgradeData[UpgradeData.Level + 1] ~= nil,
+					},
+				}),
+				MaxedLabel = e(Main.TextLabel, {
+					native = {
+						Size = UDim2.fromScale(0.8, 0.8),
+						Text = "MAX",
+						Visible = UpgradeData.UpgradeData[UpgradeData.Level + 1] == nil,
+					},
+				}),
+			}),
+
 			UnitInfo = e(Main.ScrollingFrame, {
 				BarSize = 0.002,
-			}),
+				native = {
+					AnchorPoint = Vector2.new(),
+					Size = UDim2.fromScale(0.8, 0.7),
+					Position = UDim2.fromScale(0.1, 0.275),
+				},
+			}, {
+				UIListLayout = e("UIListLayout", {
+					FillDirection = Enum.FillDirection.Vertical,
+					SortOrder = Enum.SortOrder.LayoutOrder,
+					Padding = UDim.new(0, 0),
+				}),
+			}, UpgradeFrames),
+		}),
+		UIScale = e("UIScale", {
+			Scale = Styles.Scale,
 		}),
 	}, Properties.children)
 end

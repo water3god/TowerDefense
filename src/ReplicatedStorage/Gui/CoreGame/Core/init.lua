@@ -5,6 +5,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
@@ -30,6 +31,7 @@ local Bottom = require(GameFrames.Bottom)
 local Top = require(GameFrames.Top)
 local VoteFrame = require(GameFrames.VoteFrame)
 local EndFrame = require(GameFrames.EndFrame)
+local UpgradeFrame = require(GameFrames.UpgradeFrame)
 
 local Story = Gui.Story
 local MainStory = require(Story.MainStory)
@@ -40,6 +42,7 @@ local InventoryContext = require(Inventory.InventoryContext)
 local TradeMenuContext = require(Trade.TradeContext)
 local EquippedUnitsContext = require(GameFrames.EquippedUnitsContext)
 local WaveContext = require(GameFrames.WaveContext)
+local UpgradeContext = require(GameFrames.UpgradeContext)
 local StoryContext = require(Story.StoryContext)
 
 local IsRunning = RunService:IsRunning()
@@ -49,6 +52,8 @@ local IsLobby = require(Shared.IsLobby)
 
 local Constants = require(script.Constants)
 local OriginalPositions = require(script.OriginalPositions)
+
+local Camera = workspace.CurrentCamera
 
 export type InventoryProps = {
 	CloseClick: () -> (),
@@ -231,6 +236,39 @@ local function Render()
 		end
 	end, { VisibleFrame })
 
+	local ClickedUnit: string?, SetClickedUnit = React.useState(nil :: string?)
+
+	if not IsLobby then
+		React.useEffect(function()
+			local Params = RaycastParams.new()
+			Params.CollisionGroup = "PlacedCharacters"
+
+			local Connection = RunService.PostSimulation:Connect(function(Delta)
+				local MousePos = UserInputService:GetMouseLocation()
+				local Ray = Camera:ViewportPointToRay(MousePos.X, MousePos.Y)
+				local Raycast = workspace:Raycast(Ray.Origin, Ray.Direction, Params)
+
+				if Raycast and Raycast.Instance then
+				else
+				end
+			end)
+
+			local Connection1 = UserInputService.InputBegan:Connect(function(Input, Processed)
+				if Processed then
+					return
+				end
+
+				if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+				end
+			end)
+
+			return function()
+				Connection:Disconnect()
+				Connection1:Disconnect()
+			end
+		end, {})
+	end
+
 	React.useEffect(function()
 		API.stop()
 		API.start({
@@ -290,6 +328,9 @@ local function Render()
 				}),
 				VoteFrame = e(VoteFrame),
 				EndFrame = e(EndFrame),
+				UpgradeFrame = e(UpgradeContext.Provider, {
+					UnitId = ClickedUnit,
+				}),
 			}),
 			LobbyOnly = IsLobby and e("Folder", {}, {
 				WaitingFrame = e(StoryContext.Provider, {}, {

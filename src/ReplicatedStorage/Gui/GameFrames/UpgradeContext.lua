@@ -1,0 +1,114 @@
+--!strict
+
+-- By Wa1er_God --
+
+-- Services --
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+-- Libraries --
+local Packages = ReplicatedStorage.Packages
+local React = require(Packages.React)
+local e = React.createElement
+
+local Modules = ReplicatedStorage.Modules
+local HelperFunctions = require(Modules.HelperFunctions)
+local Join = HelperFunctions.joinDicts
+
+local GlobalClient = ReplicatedStorage.Client.GlobalClient
+local UnitClient = require(GlobalClient.UnitClient)
+
+local Shared = ReplicatedStorage.Shared
+local UnitInfo = require(Shared.UnitInfo)
+
+export type Data = {
+	UniqueId: string,
+	UnitName: string,
+	UpgradeData: UnitClient.TotalUnitData,
+	TotalCost: number,
+	Level: number,
+	Priority: UnitInfo.SortType | string,
+	Enabled: boolean,
+}
+
+local DefaultValue: Data = {
+	UniqueId = "IOD97208U43RI47U6RJE9i",
+	UnitName = "Minigunner",
+	UpgradeData = {
+		[0] = {
+			Cost = 10,
+			Damage = { 1 },
+			FireRate = 1,
+			Range = 10,
+		},
+	},
+	Priority = UnitInfo.SortTypes[1],
+	Level = 0,
+	TotalCost = 10,
+	Enabled = false,
+}
+
+local UpgradeContext = React.createContext(DefaultValue)
+
+export type Props = {
+	UnitId: string?,
+	children: { [any]: any }?,
+}
+
+local function UpgradeProvider(props: Props)
+	local Data, SetData = React.useState(DefaultValue)
+
+	React.useEffect(function()
+		local Unit = props.UnitId and UnitClient.GetUnit(props.UnitId)
+		if Unit then
+			SetData({
+				UniqueId = Unit.UniqueId,
+				UnitName = Unit.UnitName,
+				UpgradeData = Unit.UnitData.UnitData,
+				TotalCost = Unit.TotalCost,
+				Level = Unit.Level,
+				Enabled = true,
+				Priority = Unit.AttackPriority,
+			})
+
+			local Connection = Unit.Upgraded:Connect(function()
+				SetData(Join(Data, {
+					TotalCost = Unit.TotalCost,
+					Level = Unit.Level,
+				}) :: any)
+			end)
+
+			local Connection1 = Unit.PriorityChanged:Connect(function(Priority)
+				SetData(Join(Data, {
+					Priority = Unit.AttackPriority,
+				}) :: any)
+			end)
+
+			local Connection2 = Unit.Destroying:Once(function()
+				SetData(Join(Data, {
+					Enabled = false,
+				}) :: any)
+			end)
+
+			return function()
+				Connection:Disconnect()
+				Connection1:Disconnect()
+				Connection2:Disconnect()
+			end
+		else
+			SetData(Join(Data, {
+				Enabled = false,
+			}) :: any)
+		end
+
+		return function() end
+	end, { props.UnitId })
+
+	return e(UpgradeContext.Provider, {
+		value = Data,
+	}, props.children)
+end
+
+return {
+	Context = UpgradeContext,
+	Provider = UpgradeProvider,
+}

@@ -39,7 +39,7 @@ local GlobalClient = Client.GlobalClient
 local EnemyClient = require(GlobalClient.EnemyClient)
 
 local Shared = ReplicatedStorage.Shared
-local EnemyDamages = require(Shared.EnemyDamages)
+local UnitAttacks = require(Shared.UnitAttacks)
 local UnitInfo = require(Shared.UnitInfo)
 local Types = require(Shared.Types)
 
@@ -48,19 +48,25 @@ local Trove = require(Modules.Trove)
 local Signal = require(Modules.Signal)
 local HelperFunctions = require(Modules.HelperFunctions)
 
-local UnitAttacks = require(script.UnitAttacks)
-
 local Events = ReplicatedStorage.Remotes.Unit
 
 local Attack = Events.Attack
 local Destroy = Events.DestroyEvent
 local OnPlacement = Events.PlacementEvent
-local Upgrade = Events.Upgrade
+local OnUpgrade = Events.Upgrade
+local PriorityChanged = Events.PriorityChanged
 
 local OtherEvents = ReplicatedStorage.Remotes.UnitClient
 local PlaceUnit = OtherEvents.Placement
 local SellUnit = OtherEvents.Sell
 local Upgrade = OtherEvents.Upgrade
+local ChangePriority = OtherEvents.ChangePriority
+
+export type Unit = Types.Unit
+export type UnitModule = Types.UnitModule
+export type UnitInput = Types.UnitInput
+export type UnitData = UnitInfo.UnitData
+export type TotalUnitData = UnitInfo.TotalUnitData
 
 local Units: { [string]: Types.Unit } = {}
 
@@ -190,11 +196,12 @@ local function NewUnit(Input: Types.UnitInput)
 
 	self.AttackTrove = self.Trove:Extend()
 
-	self.Attacked = self.Trove:Add(Signal.new(), "DisconnectAll")
-	self.Upgraded = self.Trove:Add(Signal.new(), "DisconnectAll")
-	self.Destroying = self.Trove:Add(Signal.new(), "DisconnectAll")
+	self.Attacked = self.Trove:Construct(Signal)
+	self.Upgraded = self.Trove:Construct(Signal)
+	self.Destroying = self.Trove:Construct(Signal)
+	self.PriorityChanged = self.Trove:Construct(Signal)
 
-	self.ModelName = Input.ModelName
+	self.UnitName = Input.UnitName
 	self.CFrame = Input.CFrame
 	self.OwnerId = Input.OwnerId
 	self.AttackPriority = Input.AttackPriority
@@ -202,11 +209,11 @@ local function NewUnit(Input: Types.UnitInput)
 	self.CollisionRadius = Input.CollisionRadius
 	self.SpeedRatio = Input.SpeedRatio
 
-	self.UnitData = UnitInfo.UnitInfo[self.ModelName]
+	self.TotalCost = UnitInfo.CalculateTotalCost(self.UnitData.UnitData, self.Level)
+	self.UnitData = UnitInfo.UnitInfo[self.UnitName]
+	self.UnitAttacks = UnitAttacks[self.UnitName] :: any
 
-	self.UnitAttacks = UnitAttacks[self.ModelName] :: any
-
-	self.Character = self.Trove:Clone(UnitModels[self.ModelName])
+	self.Character = self.Trove:Clone(UnitModels[self.UnitName])
 	self.Root = self.Character.HumanoidRootPart
 	self.Humanoid = self.Character.Humanoid
 	self.Animator = self.Humanoid.Animator
@@ -247,7 +254,7 @@ local function NewUnit(Input: Types.UnitInput)
 	end
 
 	self.Animations = {}
-	local AnimFolder = UnitsAnimations:FindFirstChild(self.ModelName)
+	local AnimFolder = UnitsAnimations:FindFirstChild(self.UnitName)
 	if AnimFolder then
 		for _, Animation in ipairs(AnimFolder:GetChildren()) do
 			self.Animations[Animation.Name] = self.Animator:LoadAnimation(Animation)
@@ -333,12 +340,18 @@ function UnitModule:ApplyDetail()
 end
 
 function UnitModule:LevelUp()
-	Upgrade:FireClient()
+	Upgrade:FireClient(self.UniqueId)
+end
+
+function UnitModule:ChangePriority()
+	ChangePriority:FireServer(self.UniqueId)
+	self.AttackPriority = UnitInfo.GetNextSortType(self.AttackPriority)
 end
 
 function UnitModule:OnUpgrade(Level: number)
 	self.AttackTrove:Destroy()
 	self.Level = Level
+	self.TotalCost = UnitInfo.CalculateTotalCost(self.UnitData.UnitData, self.Level)
 	self.Upgraded:Fire(Level)
 	self:ApplyDetail()
 	self.VectorOffset = HelperFunctions.GetModelVectorOffset(self.Character)
@@ -356,6 +369,10 @@ function UnitModule:OnAttack(Input: Types.UnitAttackInput)
 	end
 
 	self.Attacked:Fire()
+end
+
+function UnitModule:Sell()
+	SellUnit:FireServer(self.UniqueId)
 end
 
 function UnitModule.GetUnit(UniqueId: string)
@@ -397,6 +414,8 @@ local function GetIdle(Unit: string)
 	return
 end
 
+local DefaultCFrame = CFrame.new(0, -0.4, -2) * CFrame.Angles(0, math.rad(-180), 0)
+
 function UnitModule.InitCharacter(Unit: string, Position: CFrame?)
 	local InitTrove = Trove.new()
 	local UnitModel: typeof(Rig) = InitTrove:Clone(UnitModels[Unit])
@@ -422,13 +441,16 @@ function UnitModule.InitCharacter(Unit: string, Position: CFrame?)
 		CenterPart = Root
 	end
 
-	CenterPart.CFrame = Position or CFrame.new()
+	CenterPart.CFrame = Position or DefaultCFrame
 
 	DisableHumanoid(Humanoid)
 
 	InitTrove:Connect(UnitModel:GetPropertyChangedSignal("Parent"), function()
-		local Track = Animator:LoadAnimation(GetIdle(Unit))
-		Track:Play()
+		local Animatiion = GetIdle(Unit)
+		if Animatiion then
+			local Track = Animator:LoadAnimation(GetIdle(Unit))
+			Track:Play()
+		end
 	end)
 
 	return {
@@ -440,7 +462,7 @@ end
 
 function UnitModule.InitPlacement(Unit: string)
 	local InitTrove = Trove.new()
-	local CharacterData = UnitModule.InitCharacter(Unit)
+	local CharacterData = UnitModule.InitCharacter(Unit, CFrame.new())
 	InitTrove:Add(CharacterData.Trove)
 	local UnitModel = CharacterData.UnitModel
 	local CenterPart = CharacterData.CenterPart
@@ -626,6 +648,25 @@ Attack.OnClientEvent:Connect(function(Data: Types.UnitAttackInput)
 
 	if Unit then
 		Unit:OnAttack(Data)
+	end
+end)
+
+PriorityChanged.OnClientEvent:Connect(function(Data: { UniqueId: string, Priority: UnitInfo.SortType })
+	local Unit = UnitModule.GetUnit(Data.UniqueId)
+
+	if Unit then
+		if Unit.AttackPriority ~= Data.Priority then
+			Unit.AttackPriority = Data.Priority
+			Unit.PriorityChanged:Fire(Data.Priority)
+		end
+	end
+end)
+
+OnUpgrade.OnClientEvent:Connect(function(Data: { UniqueId: string, Level: number })
+	local Unit = UnitModule.GetUnit(Data.UniqueId)
+
+	if Unit then
+		Unit:OnUpgrade(Data.Level)
 	end
 end)
 

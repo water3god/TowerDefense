@@ -2,181 +2,187 @@
 
 -- By Wa1er_God --
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage");
-local ServerScriptService = game:GetService("ServerScriptService");
-local ServerStorage = game:GetService("ServerStorage");
-local RunService = game:GetService("RunService");
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
+local ServerStorage = game:GetService("ServerStorage")
+local RunService = game:GetService("RunService")
 
-local Modules = ReplicatedStorage.Modules;
-local DelayHandler = require(Modules.DelayHandler);
-local HelperFunctions = require(Modules.HelperFunctions);
+local Modules = ReplicatedStorage.Modules
+local DelayHandler = require(Modules.DelayHandler)
+local HelperFunctions = require(Modules.HelperFunctions)
 
-local Remotes = ReplicatedStorage.Remotes;
-local UnitClient = Remotes.UnitClient;
+local Remotes = ReplicatedStorage.Remotes
+local UnitClient = Remotes.UnitClient
 
-local ChangePriority = UnitClient.ChangePriority;
-local Placement = UnitClient.Placement;
-local Upgrade = UnitClient.Upgrade;
-local Sell = UnitClient.Sell;
+local ChangePriority = UnitClient.ChangePriority
+local Placement = UnitClient.Placement
+local Upgrade = UnitClient.Upgrade
+local Sell = UnitClient.Sell
 
-local GlobalModules = ServerScriptService.GlobalModules;
-local Unit = require(GlobalModules.Unit);
-local Enemy = require(GlobalModules.Enemy);
-local GlobalWave = require(GlobalModules.GlobalWave);
+local GlobalModules = ServerScriptService.GlobalModules
+local Unit = require(GlobalModules.Unit)
+local Enemy = require(GlobalModules.Enemy)
+local GlobalWave = require(GlobalModules.GlobalWave)
 
-local PlayerData = require(GlobalModules.PlayerData);
+local PlayerData = require(GlobalModules.PlayerData)
 
-local UnitData = require(ServerStorage.Data.UnitData);
-local UnitInfo = require(ReplicatedStorage.Shared.UnitInfo);
+local UnitData = require(ServerStorage.Data.UnitData)
+local UnitInfo = require(ReplicatedStorage.Shared.UnitInfo)
 
-local CylinderCast = ReplicatedStorage.ModelStorage.Extra.CylinderCast;
+local CylinderCast = ReplicatedStorage.ModelStorage.Extra.CylinderCast
 
-local PriorityTypes = Enemy.GetSortTypes();
-
-type ChangePriorityData = {
-	UniqueId: string;
-	Priority: Enemy.SortType;
-};
+local PriorityTypes = Enemy.GetSortTypes()
 
 type PlacementData = {
-	Unit: string;
-	UnitPosition: Vector3;
-	RotationIndex: number;
-};
+	Unit: string,
+	UnitPosition: Vector3,
+	RotationIndex: number,
+}
 
-local CylinderCache: {[number]: BasePart} = {};
+local CylinderCache: { [number]: BasePart } = {}
 
 local function CloneCylinder(Radius: number)
 	if not CylinderCache[Radius] then
-		local Cylinder = CylinderCast:Clone();
-		Cylinder.Size = Vector3.new(Radius, Cylinder.Size.Y, Radius);
-		CylinderCache[Radius] = Cylinder;
+		local Cylinder = CylinderCast:Clone()
+		Cylinder.Size = Vector3.new(Radius, Cylinder.Size.Y, Radius)
+		CylinderCache[Radius] = Cylinder
 	end
 
-	return CylinderCache[Radius];
+	return CylinderCache[Radius]
 end
 
-ChangePriority.OnServerInvoke = function(Player: Player, Data: ChangePriorityData): Enemy.SortType?
-	local CurrentUnit = Unit.GetUnit(Data.UniqueId);
-	
+ChangePriority.OnServerEvent:Connect(function(Player: Player, UniqueId: string)
+	if typeof(UniqueId) ~= "string" then
+		return
+	end
+	local CurrentUnit = Unit.GetUnit(UniqueId)
+
 	if CurrentUnit then
 		if CurrentUnit.Owner == Player then
-			if DelayHandler("ChangeUnitPriority"..Player.UserId, 0.2) then
-				if typeof(Data.Priority) == "string" and table.find(PriorityTypes, Data.Priority) then
-					return CurrentUnit:ChangePriority(Data.Priority);
-				else
-					return CurrentUnit:ChangePriority();
-				end
-			end
+			CurrentUnit:ChangePriority()
 		end
 	end
-	
-	return nil;
-end
+end)
 
-local function CheckPlacement(InputCFrame: CFrame, UnitData: Unit.UnitInput): RaycastResult?
-	local UnitPos = HelperFunctions.ConvertToVec2(InputCFrame.Position);
-	
+local function CheckPlacement(InputCFrame: CFrame, UnitInfo: UnitInfo.UnitInfo): RaycastResult?
+	local UnitPos = HelperFunctions.ConvertToVec2(InputCFrame.Position)
+
 	for UniqueId, OtherUnit in pairs(Unit.GetUnits()) do
-		local Radius = UnitData.CollisionRadius + OtherUnit.CollisionRadius;
-		local OtherPos = HelperFunctions.ConvertToVec2(OtherUnit.CFrame.Position);
-		
+		local Radius = UnitInfo.CollisionRadius + OtherUnit.CollisionRadius
+		local OtherPos = HelperFunctions.ConvertToVec2(OtherUnit.CFrame.Position)
+
 		if (UnitPos - OtherPos).Magnitude < Radius / 2 then
-			return;
+			return
 		end
 	end
-	
-	local RayParams = RaycastParams.new();
-	RayParams.FilterType = Enum.RaycastFilterType.Exclude;
-	RayParams.CollisionGroup = "PlacementClient";
-	
-	local Raycast = workspace:Raycast(InputCFrame.Position + Vector3.new(0, 1, 0), -Vector3.yAxis * 4, RayParams);
-	
+
+	local RayParams = RaycastParams.new()
+	RayParams.FilterType = Enum.RaycastFilterType.Exclude
+
+	RayParams.CollisionGroup = "PlacementClient"
+
+	local Raycast = workspace:Raycast(InputCFrame.Position + Vector3.new(0, 1, 0), -Vector3.yAxis * 4, RayParams)
+
 	if Raycast and Raycast.Instance then
 		if Raycast.Instance:HasTag("CanPlace") then
-			local OvParams = OverlapParams.new();
-			OvParams.FilterType = Enum.RaycastFilterType.Exclude;
-			OvParams.CollisionGroup = "PlacementClient";
-			
-			local Cylinder = CloneCylinder(UnitData.CollisionRadius);
-			local Parts = workspace:GetPartsInPart(Cylinder, OvParams);
-			
+			local OvParams = OverlapParams.new()
+			OvParams.FilterType = Enum.RaycastFilterType.Exclude
+			OvParams.CollisionGroup = "PlacementClient"
+
+			local Cylinder = CloneCylinder(UnitInfo.CollisionRadius)
+			local Parts = workspace:GetPartsInPart(Cylinder, OvParams)
+
 			for _, BasePart in ipairs(Parts) do
 				if not BasePart:HasTag("CanPlace") then
-					return;
+					return
 				end
 			end
 		else
-			return;
+			return
 		end
 	else
-		return;
+		return
 	end
-	
-	return Raycast;
+
+	return Raycast
 end
 
 local function PlaceUnit(Player: Player, Wave: GlobalWave.GlobalWave, Data: PlacementData)
-	local InputCFrame = CFrame.new(Data.UnitPosition) * CFrame.Angles(0, math.rad(-90 * Data.RotationIndex), 0);
-	
-	local UnitData = UnitData.UnitData[Data.Unit];
-	
+	local InputCFrame = CFrame.new(Data.UnitPosition) * CFrame.Angles(0, math.rad(-90 * Data.RotationIndex), 0)
+
+	local UnitData = UnitData.UnitData[Data.Unit]
+	local UnitInfo = UnitInfo.UnitInfo[Data.Unit]
+
 	if UnitData then
-		local Cost = UnitData.UpgradeData[0].Cost;
+		local Cost = UnitInfo.UnitData[0].Cost
 
 		--if Wave:HasEnoughYen(Player.UserId, Cost) then
-			local Result = CheckPlacement(InputCFrame, UnitData);
-			if Result then
-				local Unit = Unit.new({
-					CFrame = InputCFrame;
-					Level = 0;
-				}, UnitData);
+		local Result = CheckPlacement(InputCFrame, UnitInfo)
+		if Result then
+			local Unit = Unit.new({
+				CFrame = InputCFrame,
+				Level = 0,
+			}, UnitData)
 
-				--Wave:AddUnit(Unit);
-				--Wave:SubtractYen(Player.UserId, Cost);
+			--Wave:AddUnit(Unit);
+			--Wave:SubtractYen(Player.UserId, Cost);
 			--end
 		end
 	end
 end
 
 local function OnPlacement(Player: Player, Data: PlacementData)
-	local PlayerData = PlayerData.GetPlayerData(Player);
-	
+	local PlayerData = PlayerData.GetPlayerData(Player)
+
 	if PlayerData then
-		local Wave = GlobalWave.GetWave();
+		local Wave = GlobalWave.GetWave()
 		if Wave then
-			PlaceUnit(Player, Wave, Data);
+			PlaceUnit(Player, Wave, Data)
 		end
 	end
 end
 
-
 Placement.OnServerEvent:Connect(function(Player: Player, Data: PlacementData)
-	if typeof(Data.Unit) ~= "string" or typeof(Data.UnitPosition) ~= "Vector3" or typeof(Data.RotationIndex) ~= "number" then
-		return;
+	if typeof(Data) ~= "table" then
+		return
 	end
-	if HelperFunctions.IsNan(Data.UnitPosition) or HelperFunctions.IsNan(Data.RotationIndex) or not HelperFunctions.IsInteger(Data.RotationIndex) then
-		return;
+	if
+		typeof(Data.Unit) ~= "string"
+		or typeof(Data.UnitPosition) ~= "Vector3"
+		or typeof(Data.RotationIndex) ~= "number"
+	then
+		return
 	end
-	OnPlacement(Player, Data);
+	if
+		HelperFunctions.IsNan(Data.UnitPosition)
+		or HelperFunctions.IsNan(Data.RotationIndex)
+		or not HelperFunctions.IsInteger(Data.RotationIndex)
+	then
+		return
+	end
+	OnPlacement(Player, Data)
 end)
 
-type UpgradeData = {
-	UniqueId: string;
-}
+Upgrade.OnServerEvent:Connect(function(Player: Player, UniqueId: string)
+	if typeof(UniqueId) ~= "string" then
+		return
+	end
 
-Upgrade.OnServerEvent:Connect(function(Player: Player, Data: UpgradeData)
-	local CurrentUnit = Unit.GetUnit(Data.UniqueId);
-	
+	local CurrentUnit = Unit.GetUnit(UniqueId)
+
 	if CurrentUnit and CurrentUnit.Owner == Player then
-		CurrentUnit:Upgrade();
+		CurrentUnit:Upgrade()
 	end
 end)
 
 Sell.OnServerEvent:Connect(function(Player: Player, UniqueId: string)
-	local CurrentUnit = Unit.GetUnit(UniqueId);
-	
-	if CurrentUnit then
-		CurrentUnit:Delete();
+	if typeof(UniqueId) ~= "string" then
+		return
+	end
+
+	local CurrentUnit = Unit.GetUnit(UniqueId)
+
+	if CurrentUnit and CurrentUnit:IsOwnedBy(Player) then
+		CurrentUnit:Delete()
 	end
 end)

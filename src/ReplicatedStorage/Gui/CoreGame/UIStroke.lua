@@ -72,7 +72,7 @@ function Funcs.UIStrokeBasic(Properties: PropertiesBasic)
 		Join({
 			Thickness = Size,
 			Color = Properties.Color or Color3.new(),
-			LineJoinMode = Enum.LineJoinMode.Miter,
+			LineJoinMode = Enum.LineJoinMode.Bevel,
 			ApplyStrokeMode = Properties.StrokeMode or Enum.ApplyStrokeMode.Contextual,
 			Transparency = Properties.Transparency or 0,
 		}, Properties.native),

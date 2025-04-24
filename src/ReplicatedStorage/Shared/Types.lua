@@ -125,7 +125,7 @@ export type EnemyClient = typeof(setmetatable({} :: EnemyData, {} :: EnemyModule
 
 export type UnitInput = {
 	UniqueId: string,
-	ModelName: string,
+	UnitName: string,
 	CFrame: CFrame,
 	OwnerId: number?,
 	AttackPriority: string,
@@ -151,11 +151,12 @@ type UnitData = {
 	VisualCFrame: CFrame,
 	VectorOffset: Vector3,
 
-	ModelName: string,
+	UnitName: string,
 	CFrame: CFrame,
 	OwnerId: number?,
-	AttackPriority: string,
+	AttackPriority: UnitInfo.SortType | string,
 	Level: number,
+	TotalCost: number,
 	CollisionRadius: number,
 	UnitData: UnitInfo.UnitInfo,
 
@@ -167,6 +168,7 @@ type UnitData = {
 
 	Attacked: Signal.Signal<>,
 	Upgraded: Signal.Signal<number>,
+	PriorityChanged: Signal.Signal<UnitInfo.SortType | string>,
 	Destroying: Signal.Signal<>,
 }
 
@@ -183,9 +185,11 @@ export type UnitModule = {
 
 	ApplyDetail: (self: Unit) -> (),
 
+	ChangePriority: (self: Unit) -> (),
 	LevelUp: (self: Unit) -> (),
 	OnUpgrade: (self: Unit, Level: number) -> (),
 	OnAttack: (self: Unit, Input: UnitAttackInput) -> (),
+	Sell: (self: Unit) -> (),
 
 	NewUnit: Signal.Signal<Unit>,
 

@@ -15,6 +15,7 @@ local e = React.createElement
 local Gui = ReplicatedStorage.Gui
 local GameFrames = Gui.GameFrames
 local UpgradeFrame = require(GameFrames.UpgradeFrame)
+local UpgradeContext = require(GameFrames.UpgradeContext)
 
 -- Controls --
 local controls = {}
@@ -25,7 +26,33 @@ local Story = {
 	reactRoblox = ReactRoblox,
 	--controls = controls,
 	story = function(Properties)
-		local UpgradeFrame = e(UpgradeFrame, {})
+		local UpgradeFrame = e(UpgradeContext.Context.Provider, {
+			value = {
+				UnitName = "Minigunner",
+				UpgradeData = {
+					[0] = {
+						Cost = 10,
+						Damage = { 1 },
+						FireRate = 1,
+						Range = 10,
+					},
+					[1] = {
+						Cost = 100,
+						Damage = { 2 },
+						FireRate = 0.5,
+						Range = 20,
+					},
+				},
+				Priority = "First",
+				Level = 0,
+				TotalCost = 10,
+				Enabled = true,
+			},
+		}, {
+			UpgradeFrame = e(UpgradeFrame, {
+				IsVisible = true,
+			}),
+		})
 		return UpgradeFrame
 	end,
 }
