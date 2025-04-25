@@ -6,6 +6,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
 
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
@@ -74,6 +75,8 @@ local Camera = workspace.CurrentCamera
 local GlobalWorkspace = workspace.GlobalWorkspace
 local EnemiesFolder: Folder = GlobalWorkspace.Enemies
 local UnitsFolder: Folder = GlobalWorkspace.Units
+
+local Player = Players.LocalPlayer
 
 export type InventoryProps = {
 	CloseClick: () -> (),
@@ -207,6 +210,8 @@ local function RenderStoryFrame(Props: any)
 	})
 end
 
+local PlayCFrame = CFrame.new(145.5, 7.834, 143.5) * CFrame.Angles(0, math.rad(25), 0)
+
 local function Render()
 	local VisibleFrame: string?, SetVisibleFrame = React.useState(nil :: string?)
 
@@ -255,6 +260,14 @@ local function Render()
 			end
 		end
 	end, { VisibleFrame })
+
+	local OnPlay = React.useCallback(function()
+		local Character = Player.Character
+
+		if Character then
+			Character:PivotTo(PlayCFrame)
+		end
+	end, {})
 
 	local PlacingUnitId: string?, SetUnitId = React.useState(nil :: string?)
 	local HoveredData: {
@@ -467,9 +480,7 @@ local function Render()
 				Size = UDim2.fromScale(0.1, 0.15),
 				Name = "Play",
 				Icon = "",
-				OnClick = function()
-					--OnMainButtonClick("InventoryFrame")
-				end,
+				OnClick = OnPlay,
 			}),
 			StoreButton = e(MainButtonFrame, {
 				Position = UDim2.fromScale(0.1, 0.5),
