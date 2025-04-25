@@ -111,7 +111,7 @@ type EnemyData = {
 
 export type EnemyModule = {
 	GetAnimationRatio: (self: EnemyClient) -> number,
-	PartIsDescendantOf: (self: Unit, Part: BasePart) -> boolean,
+	PartIsDescendantOf: (self: EnemyClient, Part: BasePart) -> boolean,
 
 	GetEnemy: (UniqueId: string) -> EnemyClient?,
 

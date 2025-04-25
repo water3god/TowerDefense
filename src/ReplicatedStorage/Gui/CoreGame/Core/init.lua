@@ -13,6 +13,8 @@ local ReactRoblox = require(Packages.ReactRoblox)
 local ReactSpring = require(Packages.ReactSpring)
 local e = React.createElement
 
+local Trove = require(Packages.Trove)
+local TableUtil = require(Packages.TableUtil)
 local Input = require(Packages.Input)
 local Touch = Input.Touch
 local Keyboard = Input.Keyboard
@@ -56,6 +58,11 @@ local StoryContext = require(Story.StoryContext)
 
 local IsRunning = RunService:IsRunning()
 
+local Client = ReplicatedStorage.Client
+local GlobalClient = Client.GlobalClient
+local UnitClient = require(GlobalClient.UnitClient)
+local EnemyClient = require(GlobalClient.EnemyClient)
+
 local Shared = ReplicatedStorage.Shared
 local IsLobby = require(Shared.IsLobby)
 
@@ -63,6 +70,10 @@ local Constants = require(script.Constants)
 local OriginalPositions = require(script.OriginalPositions)
 
 local Camera = workspace.CurrentCamera
+
+local GlobalWorkspace = workspace.GlobalWorkspace
+local EnemiesFolder: Folder = GlobalWorkspace.Enemies
+local UnitsFolder: Folder = GlobalWorkspace.Units
 
 export type InventoryProps = {
 	CloseClick: () -> (),
@@ -246,7 +257,14 @@ local function Render()
 	end, { VisibleFrame })
 
 	local PlacingUnitId: string?, SetUnitId = React.useState(nil :: string?)
-	local HoveredUnitId: string?, SetHoveredUnitId = React.useState(nil :: string?)
+	local HoveredData: {
+		Type: "Unit" | "Enemy",
+		Id: string,
+	}?, SetHoveredData = React.useState(nil :: {
+		Type: "Unit" | "Enemy",
+		Id: string,
+	}?)
+	local HoveredPos, SetHoveredPos = React.useBinding(Vector2.new())
 
 	if not IsLobby then
 		React.useEffect(function()
@@ -256,39 +274,84 @@ local function Render()
 			local function OnPress(Position: Vector2)
 				local Result = HelperFunctions.Raycast(Position)
 				if Result and Result.Instance then
-				end
-			end
-
-			local function OnFrame(Position: Vector2?)
-				if Position then
-					local Result = HelperFunctions.Raycast(Position)
-
-					if Result and Result.Position then
+					if Result.Instance:IsDescendantOf(GlobalWorkspace) then
+						for _, Unit in pairs(UnitClient.GetUnits()) do
+							if Unit:PartIsDescendantOf(Result.Instance) then
+								SetUnitId(Unit.UniqueId)
+								return
+							end
+						end
 					end
-					return
 				end
-				SetHovered(nil)
+				SetUnitId(nil)
 			end
+
+			local function OnFrame(Position: Vector2)
+				local Result = HelperFunctions.Raycast(Position)
+				if Result and Result.Instance then
+					if Result.Instance:IsDescendantOf(GlobalWorkspace) then
+						for _, Unit in pairs(UnitClient.GetUnits()) do
+							if Unit:PartIsDescendantOf(Result.Instance) then
+								if not HoveredData or HoveredData.Id ~= Unit.UniqueId then
+									SetHoveredData({
+										Type = "Unit",
+										Id = Unit.UniqueId,
+									})
+								end
+								SetHoveredPos(Position)
+								return
+							end
+						end
+						for _, Enemy in pairs(EnemyClient.GetEnemies()) do
+							if Enemy:PartIsDescendantOf(Result.Instance) then
+								if not HoveredData or HoveredData.Id ~= Enemy.UniqueId then
+									SetHoveredData({
+										Type = "Enemy",
+										Id = Enemy.UniqueId,
+									})
+								end
+								SetHoveredPos(Position)
+								return
+							end
+						end
+					end
+				end
+
+				SetHoveredData(nil)
+			end
+
+			local Trove = Trove.new()
 
 			local Disconnect = Input.PreferredInput.Observe(function(Preferred)
-				if Preferred == "Touch" then
-					local Touch = Touch.new()
+				Trove:Destroy()
+				if Preferred == "MouseKeyboard" then
+					local Mouse = Trove:Construct(Mouse)
+					local Keyboard = Trove:Construct(Keyboard)
 
-					Touch.TouchLongPress:Connect(function(Position: Vector2, Processed)
+					Mouse.LeftDown:Connect(function()
+						OnPress(Mouse:GetPosition())
+					end)
+
+					Trove:Connect(RunService.PostSimulation, function()
+						OnFrame(Mouse:GetPosition())
+					end)
+				elseif Preferred == "Gamepad" then
+				elseif Preferred == "Touch" then
+					local Touch = Trove:Construct(Touch)
+
+					Touch.TouchTap:Connect(function(TouchPositions: { Vector2 }, Processed: boolean)
 						if Processed then
 							return
 						end
-					end)
-				elseif Preferred == "Gamepad" then
-				elseif Preferred == "MouseKeyboard" then
-					local Mouse = Mouse.new()
-					local Keyboard = Keyboard.new()
 
-					Mouse.LeftDown:Connect(function() end)
+						OnFrame(TouchPositions[1])
+						OnPress(TouchPositions[1])
+					end)
 				end
 			end)
 
 			return function()
+				Trove:Destroy()
 				Disconnect()
 			end
 		end, {})
@@ -353,9 +416,13 @@ local function Render()
 				}),
 				VoteFrame = e(VoteFrame),
 				EndFrame = e(EndFrame),
-				--[[UpgradeFrame = e(UpgradeContext.Provider, {
-					UnitId = ClickedUnit,
-				}),]]
+				UpgradeContext = e(UpgradeContext.Provider, {
+					UnitId = PlacingUnitId,
+				}, {
+					UpgradeFrame = e(UpgradeFrame, {
+						IsVisible = PlacingUnitId ~= nil and UnitClient.GetUnit(PlacingUnitId) ~= nil,
+					}),
+				}),
 			}),
 			LobbyOnly = IsLobby and e("Folder", {}, {
 				WaitingFrame = e(StoryContext.Provider, {}, {

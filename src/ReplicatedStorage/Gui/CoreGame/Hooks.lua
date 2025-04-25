@@ -13,7 +13,6 @@ local Signal = require(Packages.Signal)
 
 local Modules = ReplicatedStorage.Modules
 local Join = require(Modules.JoinDicts)
-
 local HelperFunctions = require(Modules.HelperFunctions)
 
 local Hooks = {}

@@ -162,7 +162,9 @@ local function CreateUpgradeFrame(Properties: Properties)
 	end, { UpgradeData.Enabled })
 
 	React.useEffect(function()
-		SetVisible(Properties.IsVisible)
+		if UpgradeData.Enabled then
+			SetVisible(Properties.IsVisible)
+		end
 	end, { Properties.IsVisible })
 
 	React.useEffect(function()
