@@ -16,8 +16,8 @@ local PlayerVoted = VoteEvents.PlayerVoted
 local VoteRequest = VoteEvents.VoteRequest
 local Vote = VoteEvents.Vote
 
-local Modules = ReplicatedStorage.Modules
-local Signal = require(Modules.Signal)
+local Packages = ReplicatedStorage.Packages
+local Signal = require(Packages.Signal)
 
 export type WaveData = {
 	Wave: number,

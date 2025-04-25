@@ -2,322 +2,324 @@
 
 -- By Wa1er_God --
 
-local StartTime = 30;
-local CurveSize = 1;
-local WaveTweenTime = 6;
+local StartTime = 30
+local CurveSize = 1
+local WaveTweenTime = 6
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage");
-local Players = game:GetService("Players");
-local ServerScriptService = game:GetService("ServerScriptService");
-local ServerStorage = game:GetService("ServerStorage");
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local ServerScriptService = game:GetService("ServerScriptService")
+local ServerStorage = game:GetService("ServerStorage")
 
-local Modules = ReplicatedStorage.Modules;
-local Trove = require(Modules.Trove);
-local Signal = require(Modules.Signal);
-local HelperFunctions = require(Modules.HelperFunctions);
-local BezierPath = require(Modules.BezierPath);
-local GenerateId = require(Modules.GenerateId);
+local Packages = ReplicatedStorage.Packages
+local Trove = require(Packages.Trove)
+local Signal = require(Packages.Signal)
 
-local GlobalModules = ServerScriptService.GlobalModules;
-local Enemy = require(GlobalModules.Enemy);
+local Modules = ReplicatedStorage.Modules
+local HelperFunctions = require(Modules.HelperFunctions)
+local BezierPath = require(Modules.BezierPath)
+local GenerateId = require(Modules.GenerateId)
 
-local Data = ServerStorage.Data;
-local WaveData = require(Data.WaveData);
-local EnemyData = require(Data.EnemyData);
-local DifficultyData = require(Data.DifficultyData);
+local GlobalModules = ServerScriptService.GlobalModules
+local Enemy = require(GlobalModules.Enemy)
+
+local Data = ServerStorage.Data
+local WaveData = require(Data.WaveData)
+local EnemyData = require(Data.EnemyData)
+local DifficultyData = require(Data.DifficultyData)
 
 export type Input = {
-	Data: WaveData.WaveData;
-	Positions: {Vector3};
-	Difficulty: string;
-};
+	Data: WaveData.WaveData,
+	Positions: { Vector3 },
+	Difficulty: string,
+}
 
 export type InfiniteInput = {
-	Data: WaveData.InfiniteData;
-	Positions: {Vector3};
-	Difficulty: string;
-};
+	Data: WaveData.InfiniteData,
+	Positions: { Vector3 },
+	Difficulty: string,
+}
 
 type Data = {
-	Trove: Trove.Trove;
-	WaveTrove: Trove.Trove;
+	Trove: Trove.Trove,
+	WaveTrove: Trove.Trove,
 
-	Wave: number;
-	Time: number;
-	StartTime: number;
+	Wave: number,
+	Time: number,
+	StartTime: number,
 
-	DifficultyData: DifficultyData.Data;
+	DifficultyData: DifficultyData.Data,
 
-	BaseHealth: number;
-	MaxHealth: number;
+	BaseHealth: number,
+	MaxHealth: number,
 
-	Positions: {Vector3};
-	Data: WaveData.WaveData;
+	Positions: { Vector3 },
+	Data: WaveData.WaveData,
 
-	Bezier: BezierPath.Path;
-	BezierId: string;
+	Bezier: BezierPath.Path,
+	BezierId: string,
 
-	Passed: Signal.Signal<number>;
-	TimeChanged: Signal.Signal<number, number>;
-	Damaged: Signal.Signal<number>;
-	Healed: Signal.Signal<number>;
-	HealthChanged: Signal.Signal<number>;
-	MaxHealthChanged: Signal.Signal<number>;
-	OnSkipPrompt: Signal.Signal<>;
-	
-	EnemyAdded: Signal.Signal<Enemy.Enemy>;
-	EnemyDestroying: Signal.Signal<Enemy.Enemy>;
-	Ended: Signal.Signal<boolean>;
-};
+	Passed: Signal.Signal<number>,
+	TimeChanged: Signal.Signal<number, number>,
+	Damaged: Signal.Signal<number>,
+	Healed: Signal.Signal<number>,
+	HealthChanged: Signal.Signal<number>,
+	MaxHealthChanged: Signal.Signal<number>,
+	OnSkipPrompt: Signal.Signal<>,
+
+	EnemyAdded: Signal.Signal<Enemy.Enemy>,
+	EnemyDestroying: Signal.Signal<Enemy.Enemy>,
+	Ended: Signal.Signal<boolean>,
+}
 
 type Impl = {
-	new: (Input: Input) -> GlobalWave;
-	infinite: (Input: InfiniteInput) -> GlobalWave;
+	new: (Input: Input) -> GlobalWave,
+	infinite: (Input: InfiniteInput) -> GlobalWave,
 
-	NextWave: (self: GlobalWave) -> ();
+	NextWave: (self: GlobalWave) -> (),
 
-	Damage: (self: GlobalWave, Damage: number) -> ();
-	Heal: (self: GlobalWave, Healing: number) -> ();
-	SetHealth: (self: GlobalWave, Health: number) -> ();
+	Damage: (self: GlobalWave, Damage: number) -> (),
+	Heal: (self: GlobalWave, Healing: number) -> (),
+	SetHealth: (self: GlobalWave, Health: number) -> (),
 
-	End: (self: GlobalWave, Win: boolean) -> ();
+	End: (self: GlobalWave, Win: boolean) -> (),
 
-	_SetTime: (self: GlobalWave, Time: number) -> ();
+	_SetTime: (self: GlobalWave, Time: number) -> (),
 
-	GetWave: () -> GlobalWave?;
+	GetWave: () -> GlobalWave?,
 
-	Added: Signal.Signal<GlobalWave>;
+	Added: Signal.Signal<GlobalWave>,
 
-	__index: Impl;
-};
+	__index: Impl,
+}
 
-export type GlobalWave = typeof(setmetatable({} :: Data, {} :: Impl));
+export type GlobalWave = typeof(setmetatable({} :: Data, {} :: Impl))
 
-local GlobalWave: Impl = {} :: Impl;
-GlobalWave.__index = GlobalWave;
+local GlobalWave: Impl = {} :: Impl
+GlobalWave.__index = GlobalWave
 
-GlobalWave.Added = Signal.new();
-local CurrentWave: GlobalWave? = nil;
+GlobalWave.Added = Signal.new()
+local CurrentWave: GlobalWave? = nil
 
 --[=[
 	Constructs a new Wave.
 ]=]
 function GlobalWave.new(Input: Input)
-	local self = setmetatable({}, GlobalWave) :: GlobalWave;
+	local self = setmetatable({}, GlobalWave) :: GlobalWave
 
-	self.Trove = Trove.new();
-	self.WaveTrove = self.Trove:Extend();
+	self.Trove = Trove.new()
+	self.WaveTrove = self.Trove:Extend()
 
-	self.Passed = self.Trove:Construct(Signal);
-	self.TimeChanged = self.Trove:Construct(Signal);
-	self.Damaged = self.Trove:Construct(Signal);
-	self.Healed = self.Trove:Construct(Signal);
-	self.HealthChanged = self.Trove:Construct(Signal);
-	self.MaxHealthChanged = self.Trove:Construct(Signal);
-	self.OnSkipPrompt = self.Trove:Construct(Signal);
-	
-	self.EnemyAdded = self.Trove:Construct(Signal);
-	self.EnemyDestroying = self.Trove:Construct(Signal);
-	self.Ended = self.Trove:Construct(Signal);
+	self.Passed = self.Trove:Construct(Signal)
+	self.TimeChanged = self.Trove:Construct(Signal)
+	self.Damaged = self.Trove:Construct(Signal)
+	self.Healed = self.Trove:Construct(Signal)
+	self.HealthChanged = self.Trove:Construct(Signal)
+	self.MaxHealthChanged = self.Trove:Construct(Signal)
+	self.OnSkipPrompt = self.Trove:Construct(Signal)
 
-	self.Wave = 0;
-	self.Time = 0;
-	self.StartTime = 0;
+	self.EnemyAdded = self.Trove:Construct(Signal)
+	self.EnemyDestroying = self.Trove:Construct(Signal)
+	self.Ended = self.Trove:Construct(Signal)
 
-	self.DifficultyData = DifficultyData[Input.Difficulty];
+	self.Wave = 0
+	self.Time = 0
+	self.StartTime = 0
 
-	self.MaxHealth = self.DifficultyData.Health;
-	self.BaseHealth = self.MaxHealth;
+	self.DifficultyData = DifficultyData[Input.Difficulty]
 
-	self.Positions = Input.Positions;
-	self.Data = Input.Data;
+	self.MaxHealth = self.DifficultyData.Health
+	self.BaseHealth = self.MaxHealth
 
-	self.Bezier = BezierPath.new(self.Positions, CurveSize);
-	self.BezierId = GenerateId.GenerateId();
-	Enemy.AddBezier(self.BezierId, self.Bezier);
+	self.Positions = Input.Positions
+	self.Data = Input.Data
+
+	self.Bezier = BezierPath.new(self.Positions, CurveSize)
+	self.BezierId = GenerateId.GenerateId()
+	Enemy.AddBezier(self.BezierId, self.Bezier)
 
 	self.Trove:Add(function()
-		Enemy.RemoveBezier(self.BezierId);
+		Enemy.RemoveBezier(self.BezierId)
 	end)
 
-	self:_SetTime(StartTime);
+	self:_SetTime(StartTime)
 
 	self.WaveTrove:Add(task.delay(StartTime, function()
-		self:NextWave();
+		self:NextWave()
 	end))
 
 	self.Damaged:Connect(function()
 		if self.BaseHealth == 0 then
 			task.defer(function()
-				self:End(false);
+				self:End(false)
 			end)
 		end
 	end)
-	
+
 	self.EnemyAdded:Connect(function(Enemy: Enemy.Enemy)
 		Enemy.ReachedEnd:Once(function()
-			local Health = Enemy.Health;
-			self:Damage(Health);
+			local Health = Enemy.Health
+			self:Damage(Health)
 		end)
 	end)
 
-	CurrentWave = self;
-	self.Added:Fire(self);
-	return self;
+	CurrentWave = self
+	self.Added:Fire(self)
+	return self
 end
 
 function GlobalWave.infinite(InfInput: InfiniteInput)
 	local Data: WaveData.WaveData = {
-		Data = {};
-		EnemyData = InfInput.Data.EnemyData;
-	};
+		Data = {},
+		EnemyData = InfInput.Data.EnemyData,
+	}
 
 	local Input: Input = {
-		Data = Data;
-		Positions = InfInput.Positions;
-		Difficulty = InfInput.Difficulty;
-	};
+		Data = Data,
+		Positions = InfInput.Positions,
+		Difficulty = InfInput.Difficulty,
+	}
 
-	local OrderPriority = {};
-	local InfEnemyData = InfInput.Data.Data;
+	local OrderPriority = {}
+	local InfEnemyData = InfInput.Data.Data
 
 	for Enemy, Info in pairs(InfEnemyData) do
-		OrderPriority[Info.OrderPriority] = Enemy;
+		OrderPriority[Info.OrderPriority] = Enemy
 	end
 
-	local Wave = GlobalWave.new(Input);
+	local Wave = GlobalWave.new(Input)
 
 	local function AddInfoToWave(WaveNum: number)
-		WaveNum += 1;
+		WaveNum += 1
 
-		local EnemiesData = {};
-		local Time = 1;
+		local EnemiesData = {}
+		local Time = 1
 
 		for _, EnemyName in ipairs(OrderPriority) do
-			local Info = InfEnemyData[EnemyName];
+			local Info = InfEnemyData[EnemyName]
 
 			if Info.FirstSpawnWave > WaveNum then
-				continue;
+				continue
 			end
 			if Info.WaveDelay and math.fmod(WaveNum + Info.FirstSpawnWave, Info.WaveDelay) ~= 0 then
-				continue;
+				continue
 			end
 
-			EnemiesData[EnemyName] = {};
+			EnemiesData[EnemyName] = {}
 
 			for i = 1, Info.SpawnCount or 1, 1 do
-				table.insert(EnemiesData[EnemyName], Time);
-				Time += 1;
+				table.insert(EnemiesData[EnemyName], Time)
+				Time += 1
 			end
-			Time += 2;
+			Time += 2
 		end
 
-		Data.Data[WaveNum] = {Enemies = EnemiesData, Length = 5};
+		Data.Data[WaveNum] = { Enemies = EnemiesData, Length = 5 }
 	end
 
-	AddInfoToWave(Wave.Wave);
-	Wave.Passed:Connect(AddInfoToWave);
+	AddInfoToWave(Wave.Wave)
+	Wave.Passed:Connect(AddInfoToWave)
 
-	return Wave;
+	return Wave
 end
 
 function GlobalWave:NextWave()
-	self.WaveTrove:Destroy();
+	self.WaveTrove:Destroy()
 
 	if self.Wave >= #self.Data.Data then
-		self:End(true);
-		return;
+		self:End(true)
+		return
 	end
 
-	self:_SetTime(WaveTweenTime);
+	self:_SetTime(WaveTweenTime)
 
 	self.Trove:Add(task.delay(WaveTweenTime, function()
-		self.Wave += 1;
-		self.Passed:Fire(self.Wave);
-		local WaveData = self.Data.Data[self.Wave];
+		self.Wave += 1
+		self.Passed:Fire(self.Wave)
+		local WaveData = self.Data.Data[self.Wave]
 
-		self:_SetTime(WaveData.Length);
+		self:_SetTime(WaveData.Length)
 
 		self.WaveTrove:Add(task.delay(WaveData.Length, function()
-			self:NextWave();
+			self:NextWave()
 		end))
 
-		local ThreadCount = 0;
-		local EnemyCount = 0;
-		local LongestTime = 0;
+		local ThreadCount = 0
+		local EnemyCount = 0
+		local LongestTime = 0
 
-		local Destroying = self.WaveTrove:Construct(Signal);
+		local Destroying = self.WaveTrove:Construct(Signal)
 
 		self.WaveTrove:Connect(Destroying, function(Enemy: Enemy.Enemy)
-			EnemyCount -= 1;
+			EnemyCount -= 1
 			if ThreadCount <= 0 and EnemyCount <= 0 then
-				self:NextWave();
+				self:NextWave()
 			end
 		end)
 
 		for EnemyName, Times in pairs(WaveData.Enemies) do
-			local EnemyData = HelperFunctions.DeepClone(EnemyData[EnemyName]);
+			local EnemyData = HelperFunctions.DeepClone(EnemyData[EnemyName])
 
-			EnemyData.Health *= self.DifficultyData.HealthRatio;
+			EnemyData.Health *= self.DifficultyData.HealthRatio
 
 			for _, Time in ipairs(Times) do
-				ThreadCount += 1;
-				EnemyCount += 1;
+				ThreadCount += 1
+				EnemyCount += 1
 				if Time > LongestTime then
-					LongestTime = Time;
+					LongestTime = Time
 				end
 				self.WaveTrove:Add(task.delay(Time, function()
-					ThreadCount -= 1;
-					local Enemy = self.Trove:Construct(Enemy, {EnemyInfo = EnemyData, BezierId = self.BezierId});
-					self.EnemyAdded:Fire(Enemy);
+					ThreadCount -= 1
+					local Enemy = self.Trove:Construct(Enemy, { EnemyInfo = EnemyData, BezierId = self.BezierId })
+					self.EnemyAdded:Fire(Enemy)
 					Enemy.Destroying:Once(function()
-						self.EnemyDestroying:Fire(Enemy);
-						Destroying:Fire(Enemy);
+						self.EnemyDestroying:Fire(Enemy)
+						Destroying:Fire(Enemy)
 					end)
 				end))
 			end
 		end
-		
+
 		self.WaveTrove:Add(task.delay(LongestTime + 5, function()
-			self.OnSkipPrompt:Fire();
+			self.OnSkipPrompt:Fire()
 		end))
 	end))
 end
 
 function GlobalWave:Damage(Damage: number)
-	self:SetHealth(self.BaseHealth - Damage);
+	self:SetHealth(self.BaseHealth - Damage)
 end
 
 function GlobalWave:Heal(Healing: number)
-	self:SetHealth(self.BaseHealth + Healing);
+	self:SetHealth(self.BaseHealth + Healing)
 end
 
 function GlobalWave:SetHealth(Health: number)
-	local Old = self.BaseHealth;
-	self.BaseHealth = math.clamp(Health, 0, self.MaxHealth);
-	self.HealthChanged:Fire(self.BaseHealth);
+	local Old = self.BaseHealth
+	self.BaseHealth = math.clamp(Health, 0, self.MaxHealth)
+	self.HealthChanged:Fire(self.BaseHealth)
 
 	if Old > self.BaseHealth then
-		self.Damaged:Fire(Old - self.BaseHealth);
+		self.Damaged:Fire(Old - self.BaseHealth)
 	elseif Old < self.BaseHealth then
-		self.Healed:Fire(self.BaseHealth - Old);
+		self.Healed:Fire(self.BaseHealth - Old)
 	end
 end
 
 function GlobalWave:End(Win: boolean)
-	self.Ended:Fire(Win);
-	self.Trove:Destroy();
-	CurrentWave = nil;
+	self.Ended:Fire(Win)
+	self.Trove:Destroy()
+	CurrentWave = nil
 end
 
 function GlobalWave:_SetTime(Time: number)
-	self.Time = Time;
-	self.StartTime = workspace:GetServerTimeNow();
-	self.TimeChanged:Fire(self.Time, self.StartTime);
+	self.Time = Time
+	self.StartTime = workspace:GetServerTimeNow()
+	self.TimeChanged:Fire(self.Time, self.StartTime)
 end
 
 function GlobalWave.GetWave()
-	return CurrentWave;
+	return CurrentWave
 end
 
-return table.freeze(GlobalWave);
+return table.freeze(GlobalWave)

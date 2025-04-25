@@ -43,9 +43,11 @@ local UnitAttacks = require(Shared.UnitAttacks)
 local UnitInfo = require(Shared.UnitInfo)
 local Types = require(Shared.Types)
 
+local Packages = ReplicatedStorage.Packages
+local Trove = require(Packages.Trove)
+local Signal = require(Packages.Signal)
+
 local Modules = ReplicatedStorage.Modules
-local Trove = require(Modules.Trove)
-local Signal = require(Modules.Signal)
 local HelperFunctions = require(Modules.HelperFunctions)
 
 local Events = ReplicatedStorage.Remotes.Unit
@@ -321,6 +323,10 @@ end
 function UnitModule:RotateTo(Degree: number)
 	self.CFrame = CFrame.new(self.CFrame.Position) * CFrame.Angles(0, math.rad(Degree), 0)
 	self.VisualCFrame = self.CFrame + self.VectorOffset
+end
+
+function UnitModule:PartIsDescendantOf(Part: BasePart)
+	return Part:IsDescendantOf(self.Character)
 end
 
 function UnitModule:ApplyDetail()

@@ -8,10 +8,12 @@ local ServerStorage = game:GetService("ServerStorage")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 
+local Packages = ReplicatedStorage.Packages
+local Trove = require(Packages.Trove)
+local Signal = require(Packages.Signal)
+
 local Modules = ReplicatedStorage.Modules
 local BezierPath = require(Modules.BezierPath)
-local Trove = require(Modules.Trove)
-local Signal = require(Modules.Signal)
 local GenerateId = require(Modules.GenerateId)
 
 local Shared = ReplicatedStorage.Shared
@@ -32,6 +34,7 @@ export type EnemyInfo = {
 export type EnemyInput = {
 	EnemyInfo: EnemyInfo,
 	BezierId: string,
+	Players: { Player }?,
 }
 
 type EnemyData = {
@@ -53,6 +56,9 @@ type EnemyData = {
 	Reverse: boolean,
 	IsBoss: boolean,
 	Ally: boolean,
+
+	ReplicateTo: { Player },
+	IsGlobal: boolean,
 
 	AdornmentName: string?,
 	OriginalSpeed: number,
@@ -145,6 +151,9 @@ function Enemy.new(Input: EnemyInput)
 	self.IsBoss = Input.EnemyInfo.IsBoss
 	self.Ally = Input.EnemyInfo.Ally
 
+	self.Players = Input.Players or Players:GetPlayers()
+	self.IsGlobal = Input.Players == nil
+
 	self.AdornmentName = Input.EnemyInfo.AdornmentName
 
 	if self.Reverse then
@@ -192,6 +201,20 @@ function Enemy.new(Input: EnemyInput)
 			self:Destroy()
 		end
 	end)
+
+	if self.IsGlobal then
+		self.Trove:Connect(Players.PlayerAdded, function(Player: Player)
+			table.insert(self.ReplicateTo, Player)
+		end)
+
+		self.Trove:Connect(Players.PlayerRemoving, function(Player: Player)
+			local Index = table.find(self.ReplicateTo, Player)
+
+			if Index then
+				table.remove(self.ReplicateTo, Index)
+			end
+		end)
+	end
 
 	self.Spawned:Fire(self)
 

@@ -5,8 +5,11 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
-local Modules = ReplicatedStorage.Modules
-local Trove = require(Modules.Trove)
+local Packages = ReplicatedStorage.Packages
+local Trove = require(Packages.Trove)
+local Signal = require(Packages.Signal)
+
+local Camera = workspace.CurrentCamera
 
 local Random = Random.new()
 
@@ -442,6 +445,12 @@ function Funcs.DisableHumanoid(Humanoid: Humanoid)
 	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
 	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Flying, false)
 	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
+end
+
+-- Uses Viewport (Not Screen) to raycast
+function Funcs.Raycast(Position: Vector2)
+	local Ray = Camera:ViewportPointToRay(Position.X, Position.Y)
+	return workspace:Raycast(Ray.Origin, Ray.Direction)
 end
 
 -- Debug Functions --

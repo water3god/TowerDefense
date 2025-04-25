@@ -5,9 +5,11 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 
+local Packages = ReplicatedStorage.Packages
+local Trove = require(Packages.Trove)
+local Signal = require(Packages.Signal)
+
 local Modules = ReplicatedStorage.Modules
-local Signal = require(Modules.Signal)
-local Trove = require(Modules.Trove)
 local HelperFunctions = require(Modules.HelperFunctions)
 local DelayHandler = require(Modules.DelayHandler)
 local GenerateId = require(Modules.GenerateId)

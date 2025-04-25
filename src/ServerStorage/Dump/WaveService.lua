@@ -2,28 +2,29 @@
 
 -- By Wa1er_God --
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage");
-local Players = game:GetService("Players");
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
 
-local Modules = ReplicatedStorage.Modules;
-local Signal = require(Modules.Signal);
+local Packages = ReplicatedStorage.Packages
+local Signal = require(Packages.Signal)
 
-local Remotes = ReplicatedStorage.Remotes;
-local WaveEvents = Remotes.Waves;
+local Modules = ReplicatedStorage.Modules
 
-local SpectateRemote = WaveEvents.Spectate;
-local WaveSync = WaveEvents.WaveSync;
-local BaseHealthChanged = WaveEvents.BaseHealthChanged;
-local WavePassed = WaveEvents.WavePassed;
-local TimeChanged = WaveEvents.TimeChanged;
-local WaveEnded = WaveEvents.WaveEnded;
-local WaveSyncEvent = WaveEvents.WaveSyncEvent;
-local LeaveButton = WaveEvents.LeaveButton;
+local Remotes = ReplicatedStorage.Remotes
+local WaveEvents = Remotes.Waves
 
-local Player = Players.LocalPlayer;
+local SpectateRemote = WaveEvents.Spectate
+local WaveSync = WaveEvents.WaveSync
+local BaseHealthChanged = WaveEvents.BaseHealthChanged
+local WavePassed = WaveEvents.WavePassed
+local TimeChanged = WaveEvents.TimeChanged
+local WaveEnded = WaveEvents.WaveEnded
+local WaveSyncEvent = WaveEvents.WaveSyncEvent
+local LeaveButton = WaveEvents.LeaveButton
 
-local WaveService = {};
+local Player = Players.LocalPlayer
 
+local WaveService = {}
 
 -- Types --
 
@@ -173,6 +174,4 @@ function WaveService.LeaveButton()
 	LeaveButton:FireServer();
 end]]
 
-
-
-return WaveService;
+return WaveService

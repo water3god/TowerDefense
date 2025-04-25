@@ -13,6 +13,15 @@ local ReactRoblox = require(Packages.ReactRoblox)
 local ReactSpring = require(Packages.ReactSpring)
 local e = React.createElement
 
+local Input = require(Packages.Input)
+local Touch = Input.Touch
+local Keyboard = Input.Keyboard
+local Mouse = Input.Mouse
+local Gamepad = Input.Gamepad
+
+local Modules = ReplicatedStorage.Modules
+local HelperFunctions = require(Modules.HelperFunctions)
+
 local Gui = ReplicatedStorage.Gui
 local Inventory = Gui.Inventory
 local InventoryMain = require(Inventory.InventoryMain)
@@ -236,35 +245,51 @@ local function Render()
 		end
 	end, { VisibleFrame })
 
-	local ClickedUnit: string?, SetClickedUnit = React.useState(nil :: string?)
+	local PlacingUnitId: string?, SetUnitId = React.useState(nil :: string?)
+	local HoveredUnitId: string?, SetHoveredUnitId = React.useState(nil :: string?)
 
 	if not IsLobby then
 		React.useEffect(function()
 			local Params = RaycastParams.new()
 			Params.CollisionGroup = "PlacedCharacters"
 
-			local Connection = RunService.PostSimulation:Connect(function(Delta)
-				local MousePos = UserInputService:GetMouseLocation()
-				local Ray = Camera:ViewportPointToRay(MousePos.X, MousePos.Y)
-				local Raycast = workspace:Raycast(Ray.Origin, Ray.Direction, Params)
-
-				if Raycast and Raycast.Instance then
-				else
+			local function OnPress(Position: Vector2)
+				local Result = HelperFunctions.Raycast(Position)
+				if Result and Result.Instance then
 				end
-			end)
+			end
 
-			local Connection1 = UserInputService.InputBegan:Connect(function(Input, Processed)
-				if Processed then
+			local function OnFrame(Position: Vector2?)
+				if Position then
+					local Result = HelperFunctions.Raycast(Position)
+
+					if Result and Result.Position then
+					end
 					return
 				end
+				SetHovered(nil)
+			end
 
-				if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+			local Disconnect = Input.PreferredInput.Observe(function(Preferred)
+				if Preferred == "Touch" then
+					local Touch = Touch.new()
+
+					Touch.TouchLongPress:Connect(function(Position: Vector2, Processed)
+						if Processed then
+							return
+						end
+					end)
+				elseif Preferred == "Gamepad" then
+				elseif Preferred == "MouseKeyboard" then
+					local Mouse = Mouse.new()
+					local Keyboard = Keyboard.new()
+
+					Mouse.LeftDown:Connect(function() end)
 				end
 			end)
 
 			return function()
-				Connection:Disconnect()
-				Connection1:Disconnect()
+				Disconnect()
 			end
 		end, {})
 	end
@@ -328,9 +353,9 @@ local function Render()
 				}),
 				VoteFrame = e(VoteFrame),
 				EndFrame = e(EndFrame),
-				UpgradeFrame = e(UpgradeContext.Provider, {
+				--[[UpgradeFrame = e(UpgradeContext.Provider, {
 					UnitId = ClickedUnit,
-				}),
+				}),]]
 			}),
 			LobbyOnly = IsLobby and e("Folder", {}, {
 				WaitingFrame = e(StoryContext.Provider, {}, {

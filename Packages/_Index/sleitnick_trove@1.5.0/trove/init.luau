@@ -2,7 +2,6 @@
 
 local RunService = game:GetService("RunService")
 
-
 export type Trove = {
 	Extend: (self: Trove) -> Trove,
 	Clone: <T>(self: Trove, instance: T & Instance) -> T,
@@ -13,7 +12,6 @@ export type Trove = {
 	Add: <T>(self: Trove, object: T & Trackable, cleanupMethod: string?) -> T,
 	Remove: <T>(self: Trove, object: T & Trackable) -> boolean,
 	Clean: (self: Trove) -> (),
-	WrapClean: (self: Trove) -> () -> (),
 	AttachToInstance: (self: Trove, instance: Instance) -> RBXScriptConnection,
 	Destroy: (self: Trove) -> (),
 }
@@ -32,16 +30,15 @@ type TroveInternal = Trove & {
 ]=]
 export type Trackable =
 	Instance
-| RBXScriptConnection
-| ConnectionLike
-| PromiseLike
-| thread
-| ((...any) -> ...any)
-| Destroyable
-| DestroyableLowercase
-| Disconnectable
-| DisconnectableLowercase
-| any
+	| RBXScriptConnection
+	| ConnectionLike
+	| PromiseLike
+	| thread
+	| ((...any) -> ...any)
+	| Destroyable
+	| DestroyableLowercase
+	| Disconnectable
+	| DisconnectableLowercase
 
 --[=[
 	@within Trove
@@ -50,7 +47,7 @@ export type Trackable =
 	.Disconnect (self) -> ()
 ]=]
 type ConnectionLike = {
-	--Connected: boolean,
+	Connected: boolean,
 	Disconnect: (self: ConnectionLike) -> (),
 }
 

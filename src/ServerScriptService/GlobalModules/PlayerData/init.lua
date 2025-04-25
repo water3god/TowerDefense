@@ -7,10 +7,12 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local ServerStorage = game:GetService("ServerStorage")
 local Players = game:GetService("Players")
 
+local Packages = ReplicatedStorage.Packages
+local Trove = require(Packages.Trove)
+local Signal = require(Packages.Signal)
+
 local Modules = ReplicatedStorage.Modules
 local GenerateId = require(Modules.GenerateId)
-local Signal = require(Modules.Signal)
-local Trove = require(Modules.Trove)
 
 local Shared = ReplicatedStorage.Shared
 local LevelRequirements = require(Shared.LevelRequirements)

@@ -17,11 +17,13 @@ local DestroyEvent = UnitEvents.DestroyEvent
 local UpgradeEvent = UnitEvents.Upgrade
 local PriorityChanged = UnitEvents.PriorityChanged
 
+local Packages = ReplicatedStorage.Packages
+local Trove = require(Packages.Trove)
+local Signal = require(Packages.Signal)
+
 local Modules = ReplicatedStorage.Modules
 local GenerateId = require(Modules.GenerateId)
 local HelperFunctions = require(Modules.HelperFunctions)
-local Signal = require(Modules.Signal)
-local Trove = require(Modules.Trove)
 
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)

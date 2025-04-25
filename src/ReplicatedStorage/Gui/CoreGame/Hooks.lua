@@ -9,10 +9,10 @@ local TweenService = game:GetService("TweenService")
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
 local e = React.createElement
+local Signal = require(Packages.Signal)
 
 local Modules = ReplicatedStorage.Modules
 local Join = require(Modules.JoinDicts)
-local Signal = require(Modules.Signal)
 
 local HelperFunctions = require(Modules.HelperFunctions)
 

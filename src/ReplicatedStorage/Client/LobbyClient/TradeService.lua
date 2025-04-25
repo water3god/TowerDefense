@@ -9,8 +9,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Player = Players.LocalPlayer
 
-local Modules = ReplicatedStorage.Modules
-local Signal = require(Modules.Signal)
+local Packages = ReplicatedStorage.Packages
+local Signal = require(Packages.Signal)
 
 local Types = require(ReplicatedStorage.Shared.Types)
 

@@ -4,9 +4,11 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local Packages = ReplicatedStorage.Packages
+local Trove = require(Packages.Trove)
+local Signal = require(Packages.Signal)
+
 local Modules = ReplicatedStorage.Modules
-local Trove = require(Modules.Trove)
-local Signal = require(Modules.Signal)
 local BezierPath = require(Modules.BezierPath)
 
 local Shared = ReplicatedStorage.Shared
@@ -109,12 +111,13 @@ type EnemyData = {
 
 export type EnemyModule = {
 	GetAnimationRatio: (self: EnemyClient) -> number,
+	PartIsDescendantOf: (self: Unit, Part: BasePart) -> boolean,
 
 	GetEnemy: (UniqueId: string) -> EnemyClient?,
 
 	GetEnemies: () -> { [string]: EnemyClient },
 
-	NewEnemy: Signal.Signal<EnemyClient>,
+	NewEnemy: Signal.Signal<EnemyClient, boolean>,
 
 	__index: EnemyModule,
 }
@@ -182,6 +185,7 @@ export type UnitModule = {
 	) -> (),
 	RotateToEnemy: (self: Unit, Enemy: EnemyClient) -> (),
 	RotateTo: (self: Unit, Degree: number) -> (),
+	PartIsDescendantOf: (self: Unit, Part: BasePart) -> boolean,
 
 	ApplyDetail: (self: Unit) -> (),
 

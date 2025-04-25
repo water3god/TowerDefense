@@ -37,6 +37,7 @@ export type Properties = {
 	SetHovered: (HoveredId: string?) -> ()?,
 	SetVisible: ((Visible: boolean) -> ())?,
 	GetHovered: (() -> string?)?,
+	SetPlacingId: ((UniqueId: string?) -> ())?,
 
 	native: { [any]: any }?,
 	children: { [any]: any }?,
@@ -105,9 +106,15 @@ type PlacementData = {
 	UniqueId: string,
 }
 
-local function CreateBottomFrame(Properties: Properties)
+local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 	local Context = React.useContext(EquippedUnitsContext.Context)
 	local Units = Context.Units
+
+	React.useImperativeHandle(ref, function()
+		return {
+			Click = function() end,
+		}
+	end, {})
 
 	local LobbyClick = React.useCallback(function(UniqueId: string)
 		if Properties.SetHovered and Properties.GetHovered and Properties.SetVisible then
@@ -121,6 +128,12 @@ local function CreateBottomFrame(Properties: Properties)
 	end, { Properties.SetHovered :: any, Properties.SetVisible :: any, Properties.GetHovered :: any })
 
 	local PlacementData: PlacementData?, SetPlacement = React.useState(nil :: PlacementData?)
+
+	React.useEffect(function()
+		if PlacementData and Properties.SetPlacingId then
+			Properties.SetPlacingId(PlacementData.UniqueId)
+		end
+	end, { PlacementData })
 
 	local GameClick = React.useCallback(function(UniqueId: string)
 		local Unit = InventoryService:GetInventory().Units[UniqueId]
@@ -250,6 +263,6 @@ local function CreateBottomFrame(Properties: Properties)
 			}),
 		}),
 	}, Properties.children)
-end
+end)
 
 return CreateBottomFrame

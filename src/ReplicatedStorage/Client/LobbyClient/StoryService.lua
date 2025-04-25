@@ -7,8 +7,8 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 
-local Modules = ReplicatedStorage.Modules
-local Signal = require(Modules.Signal)
+local Packages = ReplicatedStorage.Packages
+local Signal = require(Packages.Signal)
 
 local Remotes = ReplicatedStorage.Remotes
 local BoothEvents = Remotes.Booth
