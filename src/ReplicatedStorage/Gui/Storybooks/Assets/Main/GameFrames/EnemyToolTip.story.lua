@@ -27,12 +27,15 @@ local controls = {
 local Story = {
 	react = React,
 	reactRoblox = ReactRoblox,
-	--controls = controls,
+	controls = controls,
 	story = function(Properties)
 		local Frame = e(EnemyToolTip.Create, {
 			EnemyName = Properties.controls.Name,
 			Health = Properties.controls.Health,
 			MaxHealth = Properties.controls.MaxHealth,
+			native = {
+				Position = UDim2.fromScale(0.5, 0.3),
+			},
 		})
 		return Frame
 	end,

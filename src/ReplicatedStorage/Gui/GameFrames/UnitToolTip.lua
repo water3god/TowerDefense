@@ -104,11 +104,11 @@ local function CreateUnitToolTip(Props: Props)
 	end, { Props.Data })
 
 	return e(Main.ImageLabel, {
-		native = {
+		native = Join({
 			Size = UDim2.fromScale(0.4, 0.3),
 			Position = Props.Position,
 			Image = "rbxassetid://103903141717286",
-		},
+		}, Props.native),
 	}, {
 		UIAspectRatio = e("UIAspectRatioConstraint", {
 			AspectRatio = 2,

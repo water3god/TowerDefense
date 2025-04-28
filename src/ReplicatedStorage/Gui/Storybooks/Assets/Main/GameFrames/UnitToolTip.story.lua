@@ -17,18 +17,23 @@ local GameFrames = Gui.GameFrames
 local UnitToolTip = require(GameFrames.UnitToolTip)
 
 -- Controls --
-local controls = {}
+local controls = {
+	Damage = 10,
+	FireRate = 10,
+	Range = 1,
+}
 
 -- Story --
 local Story = {
 	react = React,
 	reactRoblox = ReactRoblox,
-	--controls = controls,
+	controls = controls,
 	story = function(Properties)
 		local Frame = e(UnitToolTip.Create, {
 			UnitName = "Minigunner",
-			Data = {
-				["Damage" :: any] = 1,
+			Data = Properties.controls,
+			native = {
+				Position = UDim2.fromScale(0.5, 0.4),
 			},
 		})
 		return Frame
