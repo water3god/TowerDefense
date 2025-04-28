@@ -241,7 +241,21 @@ SpeedEvent.OnClientEvent:Connect(function(Data: { UniqueId: string, Speed: numbe
 	end
 end)
 
-HealthEvent.OnClientEvent:Connect(function() end)
+HealthEvent.OnClientEvent:Connect(function(UniqueId: string, Health: number, MaxHealth: number)
+	local Enemy = Enemies[UniqueId]
+
+	if Enemy then
+		if Enemy.Health ~= Health then
+			Enemy.Health = Health
+			Enemy.HealthChanged:Fire(Health)
+		end
+
+		if Enemy.MaxHealth ~= MaxHealth then
+			Enemy.MaxHealth = MaxHealth
+			Enemy.MaxHealthChanged:Fire(MaxHealth)
+		end
+	end
+end)
 
 DestroyEvent.OnClientEvent:Connect(function(UniqueIds: { string })
 	for _, Id in ipairs(UniqueIds) do

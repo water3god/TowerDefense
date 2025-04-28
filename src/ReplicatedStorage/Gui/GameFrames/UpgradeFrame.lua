@@ -33,6 +33,7 @@ local UpgradeContext = require(GameFrames.UpgradeContext)
 local Shared = ReplicatedStorage.Shared
 local IsLobby = require(Shared.IsLobby)
 local UnitInfo = require(Shared.UnitInfo)
+local Stats = UnitInfo.Stats
 
 local Client = ReplicatedStorage.Client
 local GlobalClient = Client.GlobalClient
@@ -46,32 +47,8 @@ export type Properties = {
 	children: { [any]: any }?,
 }
 
-export type PropertyPropertyProperty = "Damage" | "Range" | "FireRate" | "Specials"
-local PropertyProperties = { "Damage", "Range", "FireRate", "Specials" }
-
-local Icons: { [PropertyPropertyProperty]: string } = {
-	Damage = "rbxassetid://116153831042938",
-	FireRate = "rbxassetid://117289508099114",
-	Range = "rbxassetid://95171919754669",
-	Specials = "rbxassetid://134876951462162",
-}
-
-local Colors: { [PropertyPropertyProperty]: Color3 } = {
-	Damage = Color3.new(0.772549, 0.109804, 0.109804),
-	FireRate = Color3.new(0.113725, 0.247059, 0.784314),
-	Range = Color3.new(0.749020, 0.843137, 0.133333),
-	Specials = Color3.new(0.921569, 0.600000, 0.149020),
-}
-
-local Layout: { [PropertyPropertyProperty]: number } = {
-	Damage = 1,
-	FireRate = 2,
-	Range = 3,
-	Specials = 4,
-}
-
 export type PropertyProperties = {
-	PropertyName: PropertyPropertyProperty & string,
+	PropertyName: UnitInfo.StatProperty & string,
 	Inital: number,
 	Final: number,
 	Other: string,
@@ -80,7 +57,7 @@ export type PropertyProperties = {
 }
 
 local function CreatePropertyFrame(Props: PropertyProperties)
-	local Color = Colors[Props.PropertyName]
+	local Color = Stats.Colors[Props.PropertyName]
 	local Order = Hooks.LayoutOrder()
 	local IsSpecial = Props.PropertyName == "Specials"
 
@@ -97,7 +74,7 @@ local function CreatePropertyFrame(Props: PropertyProperties)
 		Icon = e(Main.ImageLabel, {
 			native = {
 				Size = UDim2.fromScale(0.2, 1),
-				Image = Icons[Props.PropertyName],
+				Image = Stats.Icons[Props.PropertyName],
 				LayoutOrder = Order(),
 			},
 		}, {
@@ -167,8 +144,11 @@ local function CreateUpgradeFrame(Properties: Properties)
 		end
 	end, { Properties.IsVisible })
 
+	local TrueVisible, SetTrueVisible = React.useState(false)
+
 	React.useEffect(function()
 		if Visible then
+			SetTrueVisible(true)
 			API.stop()
 			API.start({
 				Scale = 1,
@@ -177,7 +157,9 @@ local function CreateUpgradeFrame(Properties: Properties)
 			API.stop()
 			API.start({
 				Scale = 0.9,
-			})
+			}):andThen(function()
+				SetTrueVisible(false)
+			end)
 		end
 	end, { Visible })
 
@@ -211,7 +193,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 			local Frames = {}
 
 			for Property, Data in pairs(LevelData) do
-				if table.find(PropertyProperties, Property) then
+				if table.find(Stats.StatProperties, Property) then
 					local function GetValue(Data, Property: string)
 						if Property == "Damage" then
 							return Data[1]
@@ -226,7 +208,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 						Final = GetValue(AboveData[Property], Property) :: any,
 						Other = tostring(Data),
 						native = {
-							LayoutOrder = Layout[Property :: any],
+							LayoutOrder = Stats.Layout[Property :: any],
 						},
 					})
 				end
@@ -283,7 +265,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 		native = Join({
 			Size = UDim2.fromScale(0.8, 0.8),
 			Image = "rbxassetid://103903141717286",
-			Visible = Visible,
+			Visible = TrueVisible,
 		}, Properties.native),
 	}, {
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {

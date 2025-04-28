@@ -76,8 +76,16 @@ Enemy.Spawned:Connect(function(NewEnemy: Enemy.Enemy)
 	end)
 
 	local function HandleHealth(Health: number, MaxHealth: number)
-		HelperFunctions.FireClients(HealthEvent, NewEnemy.ReplicateTo, Health, MaxHealth)
+		HelperFunctions.FireClients(HealthEvent, NewEnemy.ReplicateTo, NewEnemy.UniqueId, Health, MaxHealth)
 	end
+
+	NewEnemy.HealthChanged:Connect(function(Health)
+		HandleHealth(Health, NewEnemy.MaxHealth)
+	end)
+
+	NewEnemy.MaxHealthChanged:Connect(function(MaxHealth)
+		HandleHealth(NewEnemy.Health, MaxHealth)
+	end)
 
 	NewEnemy.Destroying:Once(function()
 		HelperFunctions.FireClients(DestroyEvent, NewEnemy.ReplicateTo,  {UniqueId})

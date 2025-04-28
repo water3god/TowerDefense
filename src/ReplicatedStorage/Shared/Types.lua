@@ -172,6 +172,7 @@ type UnitData = {
 	Attacked: Signal.Signal<>,
 	Upgraded: Signal.Signal<number>,
 	PriorityChanged: Signal.Signal<UnitInfo.SortType | string>,
+	PropertyChanged: Signal.Signal<string>, -- Does not fire on Upgrade --
 	Destroying: Signal.Signal<>,
 }
 
@@ -194,6 +195,9 @@ export type UnitModule = {
 	OnUpgrade: (self: Unit, Level: number) -> (),
 	OnAttack: (self: Unit, Input: UnitAttackInput) -> (),
 	Sell: (self: Unit) -> (),
+
+	GetProperties: (self: Unit) -> { [UnitInfo.StatProperty]: number },
+	GetSpecial: (self: Unit) -> string?,
 
 	NewUnit: Signal.Signal<Unit>,
 

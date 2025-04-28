@@ -202,6 +202,7 @@ local function NewUnit(Input: Types.UnitInput)
 	self.Upgraded = self.Trove:Construct(Signal)
 	self.Destroying = self.Trove:Construct(Signal)
 	self.PriorityChanged = self.Trove:Construct(Signal)
+	self.PropertyChanged = self.Trove:Construct(Signal)
 
 	self.UnitName = Input.UnitName
 	self.CFrame = Input.CFrame
@@ -379,6 +380,20 @@ end
 
 function UnitModule:Sell()
 	SellUnit:FireServer(self.UniqueId)
+end
+
+function UnitModule:GetProperties()
+	local UnitData = self.UnitData.UnitData
+	local Level = self.Level
+	return {
+		Damage = UnitData[Level].Damage[1],
+		FireRate = UnitData[Level].FireRate,
+		Range = UnitData[Level].Range,
+	}
+end
+
+function UnitModule:GetSpecial()
+	return
 end
 
 function UnitModule.GetUnit(UniqueId: string)

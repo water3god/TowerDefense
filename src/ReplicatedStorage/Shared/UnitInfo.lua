@@ -168,6 +168,39 @@ local function CalculateTotalCost(UpgradeData: TotalUnitData, GivenLevel: number
 	return TotalCost
 end
 
+local Stats = {}
+
+export type StatProperty = "Damage" | "Range" | "FireRate" | "Specials"
+local StatProperties = { "Damage", "Range", "FireRate", "Specials" }
+
+local Icons: { [StatProperty]: string } = {
+	Damage = "rbxassetid://116153831042938",
+	FireRate = "rbxassetid://117289508099114",
+	Range = "rbxassetid://95171919754669",
+	Specials = "rbxassetid://134876951462162",
+}
+
+local Colors: { [StatProperty]: Color3 } = {
+	Damage = Color3.new(0.772549, 0.109804, 0.109804),
+	FireRate = Color3.new(0.113725, 0.247059, 0.784314),
+	Range = Color3.new(0.749020, 0.843137, 0.133333),
+	Specials = Color3.new(0.921569, 0.600000, 0.149020),
+}
+
+local Layout: { [StatProperty]: number } = {
+	Damage = 1,
+	FireRate = 2,
+	Range = 3,
+	Specials = 4,
+}
+
+Stats.StatProperties = StatProperties
+Stats.Icons = Icons
+Stats.Colors = Colors
+Stats.Layout = Layout
+
+Data.Stats = Stats
+
 Data.UnitInfo = UnitInfo
 Data.LevelInfo = LevelInfo
 Data.CalculateTotalCost = CalculateTotalCost
