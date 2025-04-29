@@ -3,13 +3,9 @@
 -- By Wa1er_God --
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Players = game:GetService("Players")
 
 local Packages = ReplicatedStorage.Packages
 local Signal = require(Packages.Signal)
-
-local Modules = ReplicatedStorage.Modules
-local HelperFunctions = require(Modules.HelperFunctions)
 
 local Remotes = ReplicatedStorage.Remotes
 local InventoryEvents = Remotes.Inventory
@@ -25,14 +21,6 @@ local XPChangedEvent = LevelEvents.XPChanged
 
 local Shared = ReplicatedStorage.Shared
 local Types = require(Shared.Types)
-local UnitInfo = require(Shared.UnitInfo)
-local GameInfo = require(Shared.GameInfo)
-
-local Client = ReplicatedStorage.Client
-local GlobalClient = Client.GlobalClient
-local GUI = GlobalClient.GUI
-local UnitFrame = GUI.UnitFrame
-local RewardFrame = GUI.Reward
 
 local CurrentInventory: {
 	Units: {
@@ -42,13 +30,6 @@ local CurrentInventory: {
 	Units = {},
 	--Gamepasses = {};
 }
-
-local LevelData: { [number]: number } = {
-	[1] = 3,
-	[10] = 4,
-	[20] = 5,
-}
-
 local Synced = Signal.new()
 local UnitAdded = Signal.new()
 local UnitChanged = Signal.new()
@@ -106,8 +87,6 @@ Data.XPChanged = XPChanged
 Data.GetItemRequest = Signal.new()
 
 Data.IsSynced = IsSynced
-
-Data.UnitFrame = UnitFrame
 
 Data.EquippedUnits = {} :: { string }
 
