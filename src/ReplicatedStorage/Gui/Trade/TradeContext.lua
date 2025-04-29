@@ -13,6 +13,8 @@ local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
 local e = React.createElement
 
+local Trove = require(Packages.Trove)
+
 local Modules = ReplicatedStorage.Modules
 local Join = require(Modules.JoinDicts)
 
@@ -28,7 +30,8 @@ local function TradeContextProvider(props: props)
 	local TradeStatuses, SetTradeStatuses = React.useState({} :: { [Player]: string })
 
 	React.useEffect(function()
-		local Connection = TradeService.SyncedStatus:Connect(function(OtherPlayer: Player, Status: string)
+		local Trove = Trove.new()
+		Trove:Connect(TradeService.SyncedStatus, function(OtherPlayer: Player, Status: string)
 			if Player ~= OtherPlayer then
 				SetTradeStatuses(Join(TradeStatuses, {
 					[OtherPlayer] = Status,
@@ -36,7 +39,7 @@ local function TradeContextProvider(props: props)
 			end
 		end)
 
-		local OtherConnection = Players.PlayerRemoving:Connect(function(OtherPlayer)
+		Trove:Connect(Players.PlayerRemoving, function(OtherPlayer)
 			if Player ~= OtherPlayer then
 				local NewTable = table.clone(TradeStatuses)
 				NewTable[OtherPlayer] = nil
@@ -44,10 +47,7 @@ local function TradeContextProvider(props: props)
 			end
 		end)
 
-		return function()
-			Connection:Disconnect()
-			OtherConnection:Disconnect()
-		end
+		return Trove:WrapClean()
 	end, {})
 
 	return e(TradeContext.Provider, {

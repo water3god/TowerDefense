@@ -28,6 +28,8 @@ local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
 local e = React.createElement
 
+local Trove = require(Packages.Trove)
+
 export type Properties = {
 	Toggle: (Visible: boolean) -> (),
 	native: { [any]: any },
@@ -88,32 +90,26 @@ local function TradeMain(Properties: Properties)
 	end, { TradeData })
 
 	React.useEffect(function()
-		local Connection1 = TradeService.NewTrade:Connect(function(TradeData)
+		local Trove = Trove.new()
+		Trove:Connect(TradeService.NewTrade, function(TradeData)
 			SetTradeData(TradeData)
 			Properties.Toggle(true)
 		end)
 
-		local Connection2 = TradeService.Ended:Connect(function()
+		Trove:Connect(TradeService.Ended, function()
 			SetTradeData(nil)
 			Properties.Toggle(false)
 		end)
 
-		local Connection3 = TradeService.UnitAdded:Connect(
-			function(VisualData: TradeService.VisualUnitData, Player: Player)
-				SetTradeData(TradeService.GetTradeData())
-			end
-		)
-
-		local Connection4 = TradeService.UnitRemoving:Connect(function(UniqueId: string, Player: Player)
+		Trove:Connect(TradeService.UnitAdded, function(VisualData: TradeService.VisualUnitData, Player: Player)
 			SetTradeData(TradeService.GetTradeData())
 		end)
 
-		return function()
-			Connection1:Disconnect()
-			Connection2:Disconnect()
-			Connection3:Disconnect()
-			Connection4:Disconnect()
-		end
+		Trove:Connect(TradeService.UnitRemoving, function(UniqueId: string, Player: Player)
+			SetTradeData(TradeService.GetTradeData())
+		end)
+
+		return Trove:WrapClean()
 	end, {})
 
 	return e(Main.ImageLabel, {

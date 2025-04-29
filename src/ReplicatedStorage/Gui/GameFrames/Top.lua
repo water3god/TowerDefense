@@ -44,6 +44,11 @@ local function CreateTopFrame(Props: Properties)
 		SetTime(WaveData.Time, WaveData.StartTime)
 	end, { WaveData })
 
+	React.useEffect(function()
+		SetHealth(WaveData.BaseHealth)
+		SetMaxHealth(WaveData.MaxHealth)
+	end, { WaveData.BaseHealth, WaveData.MaxHealth })
+
 	return WaveData.BaseHealth
 		and e(Main.Frame, {
 			native = Join({

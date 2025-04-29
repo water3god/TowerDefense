@@ -250,6 +250,42 @@ local function CreateMainStory(Properties: Properties)
 		end
 	end, { Properties.IsVisible })
 
+	local FullMapName = React.useMemo(function()
+		return GameInfo.GetFullName(
+			(GameInfo.GetMapFromId(CurrentMap) :: any).Name,
+			Stage,
+			(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo[Stage].Name
+		)
+	end, { CurrentMap :: any, Stage :: any })
+
+	local LevelCount = React.useMemo(function()
+		return #(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo
+	end, { CurrentMap :: any })
+
+	local FirstValue = React.useMemo(function()
+		local MapData = StoryData.CompletedMaps[CurrentMap]
+
+		if MapData and MapData[Stage] and MapData[Stage][Difficulty] and MapData[Stage][Difficulty].FinishedCount then
+			return tostring(MapData[Stage][Difficulty].FinishedCount)
+		else
+			return "N/A"
+		end
+	end, { CurrentMap :: any, Stage :: any, Difficulty :: any, StoryData :: any })
+
+	local SecondValue = React.useMemo(function()
+		local MapData = StoryData.CompletedMaps[CurrentMap]
+
+		if MapData and MapData[Stage] and MapData[Stage][Difficulty] and MapData[Stage][Difficulty].FastestTime then
+			return tostring(MapData[Stage][Difficulty].FastestTime)
+		else
+			return "N/A"
+		end
+	end, { CurrentMap :: any, Stage :: any, Difficulty :: any, StoryData :: any })
+
+	local MapImage = React.useMemo(function()
+		return (GameInfo.GetMapFromId(CurrentMap) :: any).Image :: string
+	end, { CurrentMap :: any })
+
 	return e(Main.ImageLabel, {
 		native = Join({
 			Position = UDim2.fromScale(0.4, 0.45),
@@ -264,11 +300,7 @@ local function CreateMainStory(Properties: Properties)
 			native = {
 				Position = UDim2.fromScale(0.45, 0.17),
 				Size = UDim2.fromScale(0.7, 0.1),
-				Text = GameInfo.GetFullName(
-					(GameInfo.GetMapFromId(CurrentMap) :: any).Name,
-					Stage,
-					(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo[Stage].Name
-				), --"Colussem: 1 - Survival",
+				Text = FullMapName, --"Colussem: 1 - Survival",
 			},
 		}),
 		Bar = e(Main.CanvasGroup, {
@@ -431,7 +463,7 @@ local function CreateMainStory(Properties: Properties)
 					Stage1 = e(CreateStage, {
 						Number = 1,
 						Hovered = Stage == 1,
-						Visible = #(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo >= 1,
+						Visible = LevelCount >= 1,
 						OnClick = function()
 							SetStage(1)
 						end,
@@ -439,7 +471,7 @@ local function CreateMainStory(Properties: Properties)
 					Stage2 = e(CreateStage, {
 						Number = 2,
 						Hovered = Stage == 2,
-						Visible = #(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo >= 2,
+						Visible = LevelCount >= 2,
 						OnClick = function()
 							SetStage(2)
 						end,
@@ -447,7 +479,7 @@ local function CreateMainStory(Properties: Properties)
 					Stage3 = e(CreateStage, {
 						Number = 3,
 						Hovered = Stage == 3,
-						Visible = #(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo >= 3,
+						Visible = LevelCount >= 3,
 						OnClick = function()
 							SetStage(3)
 						end,
@@ -455,7 +487,7 @@ local function CreateMainStory(Properties: Properties)
 					Stage4 = e(CreateStage, {
 						Number = 4,
 						Hovered = Stage == 4,
-						Visible = #(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo >= 4,
+						Visible = LevelCount >= 4,
 						OnClick = function()
 							SetStage(4)
 						end,
@@ -463,7 +495,7 @@ local function CreateMainStory(Properties: Properties)
 					Stage5 = e(CreateStage, {
 						Number = 5,
 						Hovered = Stage == 5,
-						Visible = #(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo >= 5,
+						Visible = LevelCount >= 5,
 						OnClick = function()
 							SetStage(5)
 						end,
@@ -528,11 +560,7 @@ local function CreateMainStory(Properties: Properties)
 				native = {
 					Position = UDim2.fromScale(0.75, 0.5),
 					Size = UDim2.fromScale(0.3, 0.2),
-					Text = StoryData.CompletedMaps[CurrentMap]
-							and StoryData.CompletedMaps[CurrentMap][Stage]
-							and StoryData.CompletedMaps[CurrentMap][Stage][Difficulty]
-							and StoryData.CompletedMaps[CurrentMap][Stage][Difficulty].FinishedCount
-						or "N/A",
+					Text = FirstValue,
 					TextXAlignment = Enum.TextXAlignment.Right,
 				},
 			}),
@@ -548,11 +576,7 @@ local function CreateMainStory(Properties: Properties)
 				native = {
 					Position = UDim2.fromScale(0.75, 0.8),
 					Size = UDim2.fromScale(0.3, 0.2),
-					Text = StoryData.CompletedMaps[CurrentMap]
-							and StoryData.CompletedMaps[CurrentMap][Stage]
-							and StoryData.CompletedMaps[CurrentMap][Stage][Difficulty]
-							and StoryData.CompletedMaps[CurrentMap][Stage][Difficulty].FastestTime
-						or "N/A",
+					Text = SecondValue,
 					TextXAlignment = Enum.TextXAlignment.Right,
 				},
 			}),
@@ -614,7 +638,7 @@ local function CreateMainStory(Properties: Properties)
 			native = {
 				Position = UDim2.fromScale(0.65, 0.525),
 				Size = UDim2.fromScale(0.6, 0.55),
-				Image = (GameInfo.GetMapFromId(CurrentMap) :: any).Image,
+				Image = MapImage,
 				ScaleType = Enum.ScaleType.Crop,
 			},
 		}, {

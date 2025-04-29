@@ -10,8 +10,9 @@ local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
 local e = React.createElement
 
+local Trove = require(Packages.Trove)
+
 local InventoryService = require(ReplicatedStorage.Client.GlobalClient.InventoryService)
-local Types = require(ReplicatedStorage.Shared.Types)
 
 local InventoryContext = React.createContext({
 	Units = {},
@@ -27,30 +28,28 @@ local function ContextProvider(props)
 	})
 
 	React.useEffect(function()
-		task.spawn(function()
+		local Trove = Trove.new()
+
+		Trove:Add(task.spawn(function()
 			if not InventoryService.IsSynced then
 				InventoryService.Synced:Wait()
 			end
 			SetInventory(InventoryService:GetInventory())
-		end)
+		end))
 
-		local Connection = InventoryService.UnitAdded:Connect(function(Unit: Types.VisualUnitData)
+		Trove:Connect(InventoryService.UnitAdded, function()
 			SetInventory(table.clone(InventoryService:GetInventory()))
 		end)
 
-		local Connection1 = InventoryService.UnitRemoved:Connect(function()
+		Trove:Connect(InventoryService.UnitRemoved, function()
 			SetInventory(table.clone(InventoryService:GetInventory()))
 		end)
 
-		local Connection2 = InventoryService.UnitChanged:Connect(function()
+		Trove:Connect(InventoryService.UnitChanged, function()
 			SetInventory(table.clone(InventoryService:GetInventory()))
 		end)
 
-		return function()
-			Connection:Disconnect()
-			Connection1:Disconnect()
-			Connection2:Disconnect()
-		end
+		return Trove:WrapClean()
 	end, {})
 
 	return e(InventoryContext.Provider, {

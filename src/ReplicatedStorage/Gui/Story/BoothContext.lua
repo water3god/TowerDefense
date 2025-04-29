@@ -11,6 +11,8 @@ local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
 local e = React.createElement
 
+local Trove = require(Packages.Trove)
+
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Hooks = require(CoreGame.Hooks)
@@ -56,6 +58,7 @@ local function Provider(props: Properties)
 
 	React.useEffect(function()
 		local Booth = Booth.GetBooth(props.BoothId)
+		local Trove = Trove.new()
 
 		if Booth then
 			local function HandleWaiting()
@@ -101,24 +104,14 @@ local function Provider(props: Properties)
 				HandleOther()
 			end
 
-			local Connection1 = Booth.StartedWaiting:Connect(function()
-				HandleWaiting()
-			end)
-			local Connection2 = Booth.BoothEnded:Connect(HandleOther)
-			local Connection3 = Booth.PlayerAdded:Connect(OnPlayerChanged)
-			local Connection4 = Booth.PlayerRemoving:Connect(OnPlayerChanged)
-			local Connection5 = Booth.StartedChoosing:Connect(HandleChoosing)
-
-			return function()
-				Connection1:Disconnect()
-				Connection2:Disconnect()
-				Connection3:Disconnect()
-				Connection4:Disconnect()
-				Connection5:Disconnect()
-			end
+			Trove:Connect(Booth.StartedWaiting, HandleWaiting)
+			Trove:Connect(Booth.BoothEnded, HandleOther)
+			Trove:Connect(Booth.PlayerAdded, OnPlayerChanged)
+			Trove:Connect(Booth.PlayerRemoving, OnPlayerChanged)
+			Trove:Connect(Booth.StartedChoosing, HandleChoosing)
 		end
 
-		return function() end
+		return Trove:WrapClean()
 	end, {})
 
 	return e(Context.Provider, {

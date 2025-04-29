@@ -261,6 +261,22 @@ local function CreateUpgradeFrame(Properties: Properties)
 		SetVisible(false)
 	end, { Visible })
 
+	local SellText = React.useMemo(function()
+		if InSell then
+			return "CONFIRM"
+		else
+			return string.format("Sell: %u", math.floor(UpgradeData.TotalCost / 3))
+		end
+	end, { UpgradeData.TotalCost, InSell :: any })
+
+	local HasNextLevel = React.useMemo(function()
+		if UpgradeData.UpgradeData[UpgradeData.Level + 1] then
+			return true
+		else
+			return false
+		end
+	end, { UpgradeData.Level })
+
 	return e(Main.ImageLabel, {
 		native = Join({
 			Size = UDim2.fromScale(0.8, 0.8),
@@ -332,7 +348,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 			Label = e(Main.TextLabel, {
 				native = {
 					Size = UDim2.fromScale(0.9, 0.7),
-					Text = not InSell and string.format("Sell: %u", math.floor(UpgradeData.TotalCost / 3)) or "CONFIRM",
+					Text = SellText,
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeBasic, {
@@ -426,7 +442,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 					native = {
 						Size = UDim2.fromScale(1, 0.8),
 						Image = "rbxassetid://90650317828395",
-						Visible = UpgradeData.UpgradeData[UpgradeData.Level + 1] ~= nil,
+						Visible = HasNextLevel,
 					},
 				}, {
 					UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
@@ -439,7 +455,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 						Size = UDim2.fromScale(0.45, 0.9),
 						Text = string.format("Level %u", UpgradeData.Level),
 						TextXAlignment = Enum.TextXAlignment.Right,
-						Visible = UpgradeData.UpgradeData[UpgradeData.Level + 1] ~= nil,
+						Visible = HasNextLevel,
 					},
 				}),
 				NextLevel = e(Main.TextLabel, {
@@ -448,14 +464,14 @@ local function CreateUpgradeFrame(Properties: Properties)
 						Size = UDim2.fromScale(0.45, 0.9),
 						Text = string.format("Level %u", UpgradeData.Level + 1),
 						TextXAlignment = Enum.TextXAlignment.Left,
-						Visible = UpgradeData.UpgradeData[UpgradeData.Level + 1] ~= nil,
+						Visible = HasNextLevel,
 					},
 				}),
 				MaxedLabel = e(Main.TextLabel, {
 					native = {
 						Size = UDim2.fromScale(0.8, 0.8),
 						Text = "MAX",
-						Visible = UpgradeData.UpgradeData[UpgradeData.Level + 1] == nil,
+						Visible = not HasNextLevel,
 					},
 				}),
 			}),

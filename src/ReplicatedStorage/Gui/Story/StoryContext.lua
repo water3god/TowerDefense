@@ -10,6 +10,8 @@ local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
 local e = React.createElement
 
+local Trove = require(Packages.Trove)
+
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Hooks = require(CoreGame.Hooks)
@@ -41,14 +43,15 @@ local function Provider(props)
 	} :: Context)
 
 	React.useEffect(function()
-		local Connection = StoryService.BoothChoosing:Connect(function(Data)
+		local Trove = Trove.new()
+		Trove:Connect(StoryService.BoothChoosing, function(Data)
 			local NewTable = table.clone(Value)
 			NewTable.Enabled = true
 			NewTable.BoothTimeData = Data
 			SetValue(NewTable)
 		end)
 
-		local Connection1 = StoryService.BoothRestarted:Connect(function()
+		Trove:Connect(StoryService.BoothRestarted, function()
 			local NewTable = table.clone(Value)
 			NewTable.Enabled = false
 			NewTable.Data = nil
@@ -56,7 +59,7 @@ local function Provider(props)
 			SetValue(NewTable)
 		end)
 
-		local Connection2 = StoryService.BoothWaiting:Connect(function(Data: StoryService.BoothData)
+		Trove:Connect(StoryService.BoothWaiting, function(Data: StoryService.BoothData)
 			local NewTable = table.clone(Value)
 			NewTable.Enabled = true
 			NewTable.Data = Data
@@ -64,29 +67,21 @@ local function Provider(props)
 			SetValue(NewTable)
 		end)
 
-		local Connection3 = StoryService.PlayerChanged:Connect(
-			function(PlayerId: number, Added: boolean, Changed: boolean)
-				if Changed and Value.Data and StoryService.Data then
-					local NewTable = table.clone(Value)
-					NewTable.Data = table.clone(StoryService.Data) :: any
-					SetValue(NewTable)
-				end
+		Trove:Connect(StoryService.PlayerChanged, function(PlayerId: number, Added: boolean, Changed: boolean)
+			if Changed and Value.Data and StoryService.Data then
+				local NewTable = table.clone(Value)
+				NewTable.Data = table.clone(StoryService.Data) :: any
+				SetValue(NewTable)
 			end
-		)
+		end)
 
-		local Connection4 = StoryService.MapDataChanged:Connect(function(Data)
+		Trove:Connect(StoryService.MapDataChanged, function(Data)
 			local NewTable = table.clone(Value)
 			NewTable.CompletedMaps = Data
 			SetValue(NewTable)
 		end)
 
-		return function()
-			Connection:Disconnect()
-			Connection1:Disconnect()
-			Connection2:Disconnect()
-			Connection3:Disconnect()
-			Connection4:Disconnect()
-		end
+		return Trove:WrapClean()
 	end, {})
 
 	return e(Context.Provider, {

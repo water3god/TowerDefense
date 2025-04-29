@@ -50,6 +50,12 @@ local function CreateBoothFrame(Props: Properties)
 		SetTime(BoothData.EndTime - BoothData.StartTime, BoothData.StartTime)
 	end, { BoothData })
 
+	local FullMapName = React.useMemo(function()
+		return GameData
+				and GameInfo.GetFullName(GameData.MapData.Name, GameData.StageData.Index, GameData.StageData.Name)
+			or ""
+	end, { GameData })
+
 	return e(Main.ImageLabel, {
 		native = Join({
 			Position = UDim2.fromScale(0.5, 0.6),
@@ -94,11 +100,7 @@ local function CreateBoothFrame(Props: Properties)
 					native = {
 						Position = UDim2.fromScale(0.5, 0.2),
 						Size = UDim2.fromScale(0.8, 0.12),
-						Text = GameData and GameInfo.GetFullName(
-							GameData.MapData.Name,
-							GameData.StageData.Index,
-							GameData.StageData.Name
-						) or "",
+						Text = FullMapName,
 					},
 				}, {
 					UIStroke = e("UIStroke", {

@@ -10,6 +10,8 @@ local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
 local e = React.createElement
 
+local Trove = require(Packages.Trove)
+
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
@@ -30,44 +32,40 @@ local function Provider(props)
 	local Value, SetValue = React.useState(Default :: WaveService.WaveData)
 
 	React.useEffect(function()
-		local Connection = WaveService.Added:Connect(function()
+		local Trove = Trove.new()
+
+		Trove:Connect(WaveService.Added, function()
 			SetValue(WaveService.GetWaveData() :: any)
 		end)
 
-		local Connection1 = WaveService.HealthChanged:Connect(function(BaseHealth: number, MaxHealth: number)
+		Trove:Connect(WaveService.HealthChanged, function(BaseHealth: number, MaxHealth: number)
 			SetValue(Join(Value, {
 				BaseHealth = BaseHealth,
 				MaxHealth = MaxHealth,
 			}) :: any)
 		end)
 
-		local Connection2 = WaveService.Passed:Connect(function(Wave)
+		Trove:Connect(WaveService.Passed, function(Wave)
 			SetValue(Join(Value, {
 				Wave = Wave,
 			}) :: any)
 		end)
 
-		local Connection3 = WaveService.TimeChanged:Connect(function(Time: number, StartTime: number)
+		Trove:Connect(WaveService.TimeChanged, function(Time: number, StartTime: number)
 			SetValue(Join(Value, {
 				StartTime = StartTime,
 				Time = Time,
 			}) :: any)
 		end)
 
-		local Connection4 = WaveService.Ended:Connect(function()
+		Trove:Connect(WaveService.Ended, function()
 			local NewTable = table.clone(Value)
 			Value.Time = 0
 			Value.StartTime = 0
 			SetValue(NewTable)
 		end)
 
-		return function()
-			Connection:Disconnect()
-			Connection1:Disconnect()
-			Connection2:Disconnect()
-			Connection3:Disconnect()
-			Connection4:Disconnect()
-		end
+		return Trove:WrapClean()
 	end, {})
 
 	return e(Context.Provider, {
