@@ -1,3 +1,3 @@
-local IsLobby = game:GetService("ReplicatedStorage").Client:FindFirstChild("LobbyClient") ~= nil
+local IsLobby = workspace:FindFirstChild("MainMap") ~= nil
 
 return IsLobby

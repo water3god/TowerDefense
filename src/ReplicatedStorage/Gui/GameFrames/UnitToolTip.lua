@@ -109,7 +109,9 @@ local function CreateUnitToolTip(Props: Props)
 	return e(Main.ImageLabel, {
 		native = Join({
 			Size = UDim2.fromScale(0.4, 0.3),
-			Position = Props.Position,
+			Position = Props.Position and Props.Position:map(function(Position: Vector2)
+				return UDim2.fromOffset(Position.X, Position.Y)
+			end),
 			Image = "rbxassetid://103903141717286",
 		}, Props.native),
 	}, {

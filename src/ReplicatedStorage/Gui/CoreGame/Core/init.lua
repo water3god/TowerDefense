@@ -80,6 +80,8 @@ local UnitsFolder: Folder = GlobalWorkspace.Units
 
 local Player = Players.LocalPlayer
 
+print(IsLobby)
+
 export type InventoryProps = {
 	CloseClick: () -> (),
 	Visible: boolean,
