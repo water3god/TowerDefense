@@ -3,15 +3,10 @@
 -- By Wa1er_God --
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Players = game:GetService("Players")
 
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
-local ReactRoblox = require(Packages.ReactRoblox)
 local e = React.createElement
-
-local Modules = ReplicatedStorage.Modules
-local Join = require(Modules.JoinDicts)
 
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame

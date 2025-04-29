@@ -9,10 +9,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
-local UIStroke = require(CoreGame.UIStroke)
-
-local Modules = ReplicatedStorage.Modules
-local Join = require(Modules.JoinDicts)
 
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)

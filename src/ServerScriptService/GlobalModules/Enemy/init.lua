@@ -293,6 +293,7 @@ function Enemy.GetSortedEnemy(EnemiesInput: { Enemy }, SortType: UnitInfo.SortTy
 	local ClosestValue: number? = nil
 
 	if SortType == "First" then
+		ClosestValue = 0
 		for _, Enemy in ipairs(EnemiesInput) do
 			if ClosestValue > ClosestEnemy.TimePosition then
 				ClosestEnemy = Enemy
@@ -300,6 +301,7 @@ function Enemy.GetSortedEnemy(EnemiesInput: { Enemy }, SortType: UnitInfo.SortTy
 			end
 		end
 	elseif SortType == "Last" then
+		ClosestValue = 1
 		for _, Enemy in ipairs(EnemiesInput) do
 			if ClosestValue < ClosestEnemy.TimePosition then
 				ClosestEnemy = Enemy
@@ -307,6 +309,7 @@ function Enemy.GetSortedEnemy(EnemiesInput: { Enemy }, SortType: UnitInfo.SortTy
 			end
 		end
 	elseif SortType == "Strongest" then
+		ClosestValue = 0
 		for _, Enemy in ipairs(EnemiesInput) do
 			if ClosestValue > ClosestEnemy.Health then
 				ClosestEnemy = Enemy
@@ -314,6 +317,7 @@ function Enemy.GetSortedEnemy(EnemiesInput: { Enemy }, SortType: UnitInfo.SortTy
 			end
 		end
 	elseif SortType == "Weakest" then
+		ClosestValue = math.huge
 		for _, Enemy in ipairs(EnemiesInput) do
 			if ClosestValue < ClosestEnemy.Health then
 				ClosestEnemy = Enemy

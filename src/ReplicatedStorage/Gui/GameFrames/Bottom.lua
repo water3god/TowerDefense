@@ -11,6 +11,10 @@ local React = require(Packages.React)
 local Trove = require(Packages.Trove)
 local e = React.createElement
 
+local Trove = require(Packages.Trove)
+local Input = require(Packages.Input)
+local Keyboard = Input.Keyboard
+
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
@@ -139,20 +143,39 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 		local Unit = InventoryService:GetInventory().Units[UniqueId]
 		if PlacementData then
 			PlacementData.Trove:Destroy()
-			if PlacementData.UniqueId == UniqueId then
-				return
+		end
+
+		if Unit then
+			if PlacementData and PlacementData.UniqueId == UniqueId then
+				SetPlacement(nil)
+			else
+				local Trove = UnitClient.InitPlacement(Unit.Unit)
+				SetPlacement({
+					Trove = Trove,
+					UniqueId = UniqueId,
+				})
 			end
 		end
-		if Unit then
-			local Trove = UnitClient.InitPlacement(Unit.Unit)
-			SetPlacement({
-				Trove = Trove,
-				UniqueId = UniqueId,
-			})
-		else
-			SetPlacement(nil)
-		end
 	end, { PlacementData })
+
+	if not IsLobby then
+		React.useEffect(function()
+			local Trove = Trove.new()
+			local Keyboard = Trove:Construct(Keyboard)
+
+			Keyboard.KeyDown:Connect(function(KeyCode: Enum.KeyCode)
+				if KeyCode.Value >= 49 and KeyCode.Value <= 53 then
+					local Key = KeyCode.Value - 48
+
+					if Units[Key] then
+						GameClick(Units[Key].UniqueId)
+					end
+				end
+			end)
+
+			return Trove:WrapClean()
+		end, { Units, PlacementData :: any })
+	end
 
 	local Click = IsLobby and LobbyClick or GameClick
 

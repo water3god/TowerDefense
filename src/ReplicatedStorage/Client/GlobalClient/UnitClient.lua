@@ -209,10 +209,10 @@ local function NewUnit(Input: Types.UnitInput)
 	self.OwnerId = Input.OwnerId
 	self.AttackPriority = Input.AttackPriority
 	self.Level = Input.Level
-	self.CollisionRadius = Input.CollisionRadius
 	self.SpeedRatio = Input.SpeedRatio
 
 	self.UnitData = UnitInfo.UnitInfo[self.UnitName]
+	self.CollisionRadius = self.UnitData.CollisionRadius
 	self.TotalCost = UnitInfo.CalculateTotalCost(self.UnitData.UnitData, self.Level)
 	self.UnitAttacks = UnitAttacks[self.UnitName] :: any
 
@@ -462,14 +462,12 @@ function UnitModule.InitCharacter(Unit: string, Position: CFrame?)
 		CenterPart = Root
 	end
 
-	CenterPart.CFrame = Position or DefaultCFrame
-
 	DisableHumanoid(Humanoid)
 
 	InitTrove:Connect(UnitModel:GetPropertyChangedSignal("Parent"), function()
-		local Animatiion = GetIdle(Unit)
-		if Animatiion then
-			local Track = Animator:LoadAnimation(GetIdle(Unit))
+		local Animation = GetIdle(Unit)
+		if Animation then
+			local Track = Animator:LoadAnimation(Animation)
 			Track:Play()
 		end
 	end)
@@ -500,7 +498,7 @@ function UnitModule.InitPlacement(Unit: string)
 		end
 	end
 
-	local Root = UnitModel.HumanoidRootPart
+	local Root = CharacterData.CenterPart
 
 	local Pos, Size = UnitModel:GetBoundingBox()
 	local BottomPosition = Pos.Position - Vector3.new(0, Size.Y / 2, 0)
@@ -600,6 +598,7 @@ function UnitModule.InitPlacement(Unit: string)
 					+ VectorOffset
 
 				local OldValid = IsValid
+
 				local Parts = CastCylinder(UnitPosition, OvParams)
 				IsValid = CheckValidity(Parts)
 				OnValdiityCheck(OldValid)
@@ -649,10 +648,7 @@ function UnitModule.InitPlacement(Unit: string)
 	end
 
 	InitTrove:Connect(UserInputService.InputBegan, HandleInput)
-
-	InitTrove:Add(task.delay(0.1, function()
-		InitTrove:BindToRenderStep("InitPlacement", Enum.RenderPriority.Character.Value, OnFrame)
-	end))
+	InitTrove:BindToRenderStep("InitPlacement", Enum.RenderPriority.Character.Value, OnFrame)
 
 	return InitTrove
 end
