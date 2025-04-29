@@ -80,8 +80,6 @@ local UnitsFolder: Folder = GlobalWorkspace.Units
 
 local Player = Players.LocalPlayer
 
-print(IsLobby)
-
 export type InventoryProps = {
 	CloseClick: () -> (),
 	Visible: boolean,
@@ -444,14 +442,14 @@ local function Render()
 					UnitId = HoveredData and HoveredData.Type == "Unit" and HoveredData.Id :: any,
 					Position = HoveredPos,
 					native = {
-						Visible = HoveredData and HoveredData.Type == "Unit",
+						Visible = HoveredData ~= nil and HoveredData.Type == "Unit",
 					},
 				}),
 				EnemyToolTip = e(EnemyToolTip.Connected, {
 					EnemyId = HoveredData and HoveredData.Type == "Enemy" and HoveredData.Id :: any,
 					Position = HoveredPos,
 					native = {
-						Visible = HoveredData and HoveredData.Type == "Enemy",
+						Visible = HoveredData ~= nil and HoveredData.Type == "Enemy",
 					},
 				}),
 			}),
