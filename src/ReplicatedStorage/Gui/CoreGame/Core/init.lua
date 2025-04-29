@@ -44,6 +44,8 @@ local Top = require(GameFrames.Top)
 local VoteFrame = require(GameFrames.VoteFrame)
 local EndFrame = require(GameFrames.EndFrame)
 local UpgradeFrame = require(GameFrames.UpgradeFrame)
+local UnitToolTip = require(GameFrames.UnitToolTip)
+local EnemyToolTip = require(GameFrames.EnemyToolTip)
 
 local Story = Gui.Story
 local MainStory = require(Story.MainStory)
@@ -435,6 +437,20 @@ local function Render()
 					UpgradeFrame = e(UpgradeFrame, {
 						IsVisible = PlacingUnitId ~= nil and UnitClient.GetUnit(PlacingUnitId) ~= nil,
 					}),
+				}),
+				UnitToolTip = e(UnitToolTip.Connected, {
+					UnitId = HoveredData and HoveredData.Type == "Unit" and HoveredData.Id :: any,
+					Position = HoveredPos,
+					native = {
+						Visible = HoveredData and HoveredData.Type == "Unit",
+					},
+				}),
+				EnemyToolTip = e(EnemyToolTip.Connected, {
+					EnemyId = HoveredData and HoveredData.Type == "Enemy" and HoveredData.Id :: any,
+					Position = HoveredPos,
+					native = {
+						Visible = HoveredData and HoveredData.Type == "Enemy",
+					},
 				}),
 			}),
 			LobbyOnly = IsLobby and e("Folder", {}, {

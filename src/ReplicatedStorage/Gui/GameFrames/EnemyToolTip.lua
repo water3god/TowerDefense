@@ -11,6 +11,8 @@ local React = require(Packages.React)
 local ReactRoblox = require(Packages.ReactRoblox)
 local e = React.createElement
 
+local Trove = require(Packages.Trove)
+
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
@@ -26,18 +28,18 @@ local GlobalClient = Client.GlobalClient
 local EnemyClient = require(GlobalClient.EnemyClient)
 
 export type ConnectedProps = {
+	EnemyId: string?,
 	Position: React.Binding<Vector2>?,
-	UnitId: string?,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
 
 export type Props = {
-	Position: React.Binding<Vector2>?,
-
 	EnemyName: string,
 	Health: number,
 	MaxHealth: number,
+
+	Position: React.Binding<Vector2>?,
 
 	native: { [any]: any }?,
 	children: { [any]: any }?,
@@ -109,8 +111,9 @@ local function CreateConnected(Props: ConnectedProps)
 	})
 
 	React.useEffect(function()
-		if Props.UnitId then
-			local Enemy = EnemyClient.GetEnemy(Props.UnitId)
+		local Trove = Trove.new()
+		if Props.EnemyId then
+			local Enemy = EnemyClient.GetEnemy(Props.EnemyId)
 			if Enemy then
 				SetData({
 					EnemyName = Enemy.ModelName,
@@ -118,26 +121,23 @@ local function CreateConnected(Props: ConnectedProps)
 					MaxHealth = Enemy.MaxHealth,
 				})
 
-				local Connection = Enemy.HealthChanged:Connect(function(Health: number)
+				Trove:Connect(Enemy.HealthChanged, function(Health: number)
 					SetData(Join(Data, {
 						MaxHealth = Health,
 					}) :: any)
 				end)
 
-				local Connection1 = Enemy.MaxHealthChanged:Connect(function(MaxHealth: number)
+				Trove:Connect(Enemy.MaxHealthChanged, function(MaxHealth: number)
 					SetData(Join(Data, {
 						MaxHealth = MaxHealth,
 					}) :: any)
 				end)
 
-				return function()
-					Connection:Disconnect()
-					Connection1:Disconnect()
-				end
+				Trove:Connect(Enemy.Destroying, Trove:WrapClean())
 			end
 		end
-		return function() end
-	end, { Props.UnitId })
+		return Trove:WrapClean()
+	end, { Props.EnemyId })
 
 	return e(CreateEnemyToolTip, {
 		EnemyName = Data.EnemyName,

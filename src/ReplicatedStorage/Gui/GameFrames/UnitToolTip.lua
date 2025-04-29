@@ -32,15 +32,18 @@ local Stats = UnitInfo.Stats
 
 export type ConnectedProps = {
 	UnitId: string?,
+
 	Position: React.Binding<Vector2>?,
+
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
 
 export type Props = {
 	UnitName: string,
-	Position: React.Binding<Vector2>?,
 	Data: { [UnitInfo.StatProperty]: number },
+
+	Position: React.Binding<Vector2>?,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
@@ -167,15 +170,11 @@ local function UnitConnected(Props: ConnectedProps)
 					})
 				end)
 
-				Trove:Connect(Unit.Destroying, function()
-					Trove:Destroy()
-				end)
+				Trove:Connect(Unit.Destroying, Trove:WrapClean())
 			end
 		end
 
-		return function()
-			Trove:Destroy()
-		end
+		return Trove:WrapClean()
 	end, { Props.UnitId })
 
 	return e(CreateUnitToolTip, {
