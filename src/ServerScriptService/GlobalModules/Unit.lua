@@ -138,7 +138,7 @@ local function SendInfo(Units: { [string]: Unit }, Players: { Player })
 	for Id, Unit in pairs(Units) do
 		Data[tostring(Unit.UniqueId)] = {
 			UniqueId = Unit.UniqueId,
-			ModelName = Unit.UnitName,
+			UnitName = Unit.UnitName,
 			CFrame = Unit.CFrame,
 			OwnerId = Unit.OwnerId,
 			AttackPriority = Unit.AttackPriority,

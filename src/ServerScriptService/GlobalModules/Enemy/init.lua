@@ -204,14 +204,18 @@ function Enemy.new(Input: EnemyInput)
 
 	if self.IsGlobal then
 		self.Trove:Connect(Players.PlayerAdded, function(Player: Player)
-			table.insert(self.ReplicateTo, Player)
+			if self.ReplicateTo then
+				table.insert(self.ReplicateTo, Player)
+			end
 		end)
 
 		self.Trove:Connect(Players.PlayerRemoving, function(Player: Player)
-			local Index = table.find(self.ReplicateTo, Player)
+			if self.ReplicateTo then
+				local Index = table.find(self.ReplicateTo, Player)
 
-			if Index then
-				table.remove(self.ReplicateTo, Index)
+				if Index then
+					table.remove(self.ReplicateTo, Index)
+				end
 			end
 		end)
 	end

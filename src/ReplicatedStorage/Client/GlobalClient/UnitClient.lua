@@ -212,8 +212,8 @@ local function NewUnit(Input: Types.UnitInput)
 	self.CollisionRadius = Input.CollisionRadius
 	self.SpeedRatio = Input.SpeedRatio
 
-	self.TotalCost = UnitInfo.CalculateTotalCost(self.UnitData.UnitData, self.Level)
 	self.UnitData = UnitInfo.UnitInfo[self.UnitName]
+	self.TotalCost = UnitInfo.CalculateTotalCost(self.UnitData.UnitData, self.Level)
 	self.UnitAttacks = UnitAttacks[self.UnitName] :: any
 
 	self.Character = self.Trove:Clone(UnitModels[self.UnitName])
@@ -562,7 +562,6 @@ function UnitModule.InitPlacement(Unit: string)
 				return false
 			end
 		end
-
 		if UnitPosition then
 			local UnitPosition = HelperFunctions.ConvertToVec2(UnitPosition)
 			for _, Unit in pairs(Units) do
