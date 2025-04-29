@@ -31,8 +31,6 @@ local UnitInfo = require(ReplicatedStorage.Shared.UnitInfo)
 
 local CylinderCast = ReplicatedStorage.ModelStorage.Extra.CylinderCast
 
-local PriorityTypes = Enemy.GetSortTypes()
-
 type PlacementData = {
 	Unit: string,
 	UnitPosition: Vector3,

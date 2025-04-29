@@ -10,6 +10,10 @@ local ServerStorage = game:GetService("ServerStorage")
 local TeleportService = game:GetService("TeleportService")
 local MemoryStoreService = game:GetService("MemoryStoreService")
 
+if not require(ReplicatedStorage.Shared.IsLobby) then
+	return
+end
+
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
 local ReactRoblox = require(Packages.ReactRoblox)

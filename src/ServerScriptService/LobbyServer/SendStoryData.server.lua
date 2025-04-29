@@ -7,6 +7,10 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local Players = game:GetService("Players")
 
+if not require(ReplicatedStorage.Shared.IsLobby) then
+	return
+end
+
 local Remotes = ReplicatedStorage.Remotes
 local BoothEvents = Remotes.Booth
 local DataEvents = BoothEvents.DataEvents
