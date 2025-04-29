@@ -2,76 +2,80 @@
 
 -- By Wa1er_God --
 
-local DifficultyInfo = {};
+local DifficultyInfo = {}
 
-local Players = game:GetService("Players");
-local ReplicatedStorage = game:GetService("ReplicatedStorage") ;
-local ServerStorage = game:GetService("ServerStorage");
-local ServerScriptService = game:GetService("ServerScriptService");
-local MessagingService = game:GetService("MessagingService");
-local MemoryStoreService = game:GetService("MemoryStoreService");
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerStorage = game:GetService("ServerStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
+local MessagingService = game:GetService("MessagingService")
+local MemoryStoreService = game:GetService("MemoryStoreService")
 
-local StartGame = ReplicatedStorage.Remotes.Waves.Server.StartGame;
+if require(ReplicatedStorage.Shared.IsLobby) then
+	return
+end
 
-local Shared = ReplicatedStorage.Shared;
-local Constants = require(Shared.Constants);
-local Types = require(Shared.Types);
+local StartGame = ReplicatedStorage.Remotes.Waves.Server.StartGame
 
-local Map = workspace:FindFirstChild("GameMap");
+local Shared = ReplicatedStorage.Shared
+local Constants = require(Shared.Constants)
+local Types = require(Shared.Types)
 
-local WaveData = require(ServerStorage.Data.WaveData);
+local Map = workspace:FindFirstChild("GameMap")
 
-local GlobalModules = ServerScriptService.GlobalModules;
-local GlobalWave = require(GlobalModules.GlobalWave);
-local UnitModule = require(GlobalModules.Unit);
+local WaveData = require(ServerStorage.Data.WaveData)
 
-local MapStore = MemoryStoreService:GetHashMap(Constants.INFORMATIONHASHMAP);
+local GlobalModules = ServerScriptService.GlobalModules
+local GlobalWave = require(GlobalModules.GlobalWave)
+local UnitModule = require(GlobalModules.Unit)
 
-local OldValues: Types.RecieveData? = nil;
+local MapStore = MemoryStoreService:GetHashMap(Constants.INFORMATIONHASHMAP)
+
+local OldValues: Types.RecieveData? = nil
 
 local function Init(DataInput: Types.RecieveData?)
 	if not Map then
-		return;
+		return
 	end
-	
-	local PositionFolder = Map:FindFirstChild("Positions") :: Folder;
-	local Positions = {};
-	
+
+	local PositionFolder = Map:FindFirstChild("Positions") :: Folder
+	local Positions = {}
+
 	if not PositionFolder then
-		return;
+		return
 	end
 
 	for _, Base in ipairs(PositionFolder:GetChildren()) do
 		if Base:IsA("BasePart") then
-			table.insert(Positions, Base.CFrame.Position);
+			table.insert(Positions, Base.CFrame.Position)
 		end
 	end
-	
-	local Data = DataInput or OldValues :: Types.RecieveData;
-	OldValues = Data;
 
-	local FoundData = WaveData[Data.LevelId];
+	local Data = DataInput or OldValues :: Types.RecieveData
+	OldValues = Data
+
+	local FoundData = WaveData[Data.LevelId]
 
 	if FoundData then
 		for _, Unit in pairs(UnitModule.GetUnits()) do
-			Unit:Delete();
+			Unit:Delete()
 		end
 		GlobalWave.new({
-			Data = FoundData;
-			Positions = Positions;
-			Difficulty = Data.Difficulty;
-		});
+			Data = FoundData,
+			Positions = Positions,
+			Difficulty = Data.Difficulty,
+		})
 	end
 end
 
-StartGame.Event:Connect(Init);
+StartGame.Event:Connect(Init)
 
 if game["Run Service"]:IsStudio() then
 	Init({
-		LevelId = "Hastingsv1";
-		Difficulty = "Normal";
+		LevelId = "Hastingsv1",
+		Difficulty = "Normal",
 	})
-	return;
+	return
 end
 
 local function KickPlayer(Player: Player)
@@ -80,23 +84,23 @@ end
 
 local function OnError()
 	for _, Player in ipairs(Players:GetPlayers()) do
-		KickPlayer(Player);
+		KickPlayer(Player)
 	end
 
-	Players.PlayerAdded:Connect(KickPlayer);
+	Players.PlayerAdded:Connect(KickPlayer)
 end
 
 local Success, Value = xpcall(function()
-	return MapStore:GetAsync(tostring(game.PrivateServerId));
+	return MapStore:GetAsync(tostring(game.PrivateServerId))
 end, OnError)
 
-print(Success, Value);
+print(Success, Value)
 
 if Success then
 	if Value then
-		Init(Value);
-		return;
+		Init(Value)
+		return
 	end
 end
 
-OnError();
+OnError()

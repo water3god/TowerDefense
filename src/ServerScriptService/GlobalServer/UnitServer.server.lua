@@ -7,6 +7,10 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local ServerStorage = game:GetService("ServerStorage")
 local RunService = game:GetService("RunService")
 
+if require(ReplicatedStorage.Shared.IsLobby) then
+	return
+end
+
 local Modules = ReplicatedStorage.Modules
 local DelayHandler = require(Modules.DelayHandler)
 local HelperFunctions = require(Modules.HelperFunctions)
