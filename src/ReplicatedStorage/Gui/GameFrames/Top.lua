@@ -39,8 +39,6 @@ local function CreateTopFrame(Props: Properties)
 
 	React.useEffect(function()
 		SetWave(WaveData.Wave)
-		SetHealth(WaveData.BaseHealth)
-		SetMaxHealth(WaveData.MaxHealth)
 		SetTime(WaveData.Time, WaveData.StartTime)
 	end, { WaveData })
 

@@ -178,7 +178,13 @@ type UnitData = {
 
 export type UnitModule = {
 	TPToRootPosition: (self: Unit) -> (),
-	PlayAnimation: (self: Unit, AnimationName: string, SecondsAfter: number?, SpeedRatio: number?) -> AnimationTrack?,
+	PlayAnimation: (
+		self: Unit,
+		AnimationName: string,
+		SecondsAfter: number?,
+		SpeedRatio: number?,
+		FadeTime: number?
+	) -> AnimationTrack?,
 	Watch: (
 		self: Unit,
 		Anim: AnimationTrack,
@@ -212,7 +218,10 @@ export type UnitModule = {
 		Trove: Trove.Trove,
 		CenterPart: BasePart,
 	},
-	InitPlacement: (Unit: string) -> Trove.Trove,
+	InitPlacement: (Unit: string) -> {
+		Trove: Trove.Trove,
+		Clicked: Signal.Signal<>,
+	},
 
 	__index: UnitModule,
 }

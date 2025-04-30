@@ -11,6 +11,8 @@ local React = require(Packages.React)
 local ReactSpring = require(Packages.ReactSpring)
 local e = React.createElement
 
+local Promise = require(Packages.Promise)
+
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
@@ -80,17 +82,20 @@ local function CreateVoteFrame(Props: Props)
 		SetVisible(false)
 	end, {})
 
-	local Visiblity, SetVisibility = React.useBinding(false)
+	local Visiblity, SetVisibility = React.useState(false)
+	local Promise = React.useRef(nil :: Promise.Promise?)
 
 	React.useEffect(function()
 		if IsVisible then
+			if Promise.current then
+				Promise.current:cancel()
+			end
 			SetVisibility(true)
-
 			API.start({
 				Scale = 1,
 			})
 		else
-			API.start({
+			Promise.current = API.start({
 				Scale = 0.9,
 			}):andThen(function()
 				SetVisibility(false)

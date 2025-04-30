@@ -8,6 +8,7 @@ local RunService = game:GetService("RunService")
 local Packages = ReplicatedStorage.Packages
 local Trove = require(Packages.Trove)
 local Signal = require(Packages.Signal)
+local Promise = require(Packages.Promise)
 
 local Camera = workspace.CurrentCamera
 
@@ -291,6 +292,34 @@ function Funcs.ConnectTime(StartTime: number, EndTime: number, Func: (Time: numb
 	end
 
 	return Connection
+end
+
+function Funcs.TweenPromise(TotalTime: number, Handler: (alpha: number) -> ())
+	return Promise.new(function(resolve, reject, onCancel)
+		local TotalTime = 0.5
+		local Count = 0
+
+		local Connection: RBXScriptConnection? = nil
+
+		onCancel(function()
+			if Connection then
+				Connection:Disconnect()
+				resolve()
+			end
+		end)
+
+		Connection = RunService.PostSimulation:Connect(function(Delta: number)
+			Count = math.clamp(Count + Delta / TotalTime, 0, 1)
+			Handler(Count)
+
+			if Count >= 1 then
+				if Connection then
+					Connection:Disconnect()
+					resolve()
+				end
+			end
+		end)
+	end)
 end
 
 local NumberScaler = {}

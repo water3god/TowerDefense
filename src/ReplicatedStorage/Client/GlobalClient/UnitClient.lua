@@ -46,6 +46,7 @@ local Types = require(Shared.Types)
 local Packages = ReplicatedStorage.Packages
 local Trove = require(Packages.Trove)
 local Signal = require(Packages.Signal)
+local Promise = require(Packages.Promise)
 
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
@@ -264,7 +265,7 @@ local function NewUnit(Input: Types.UnitInput)
 		end
 	end
 
-	self:PlayAnimation("Idle")
+	self:PlayAnimation("Idle", nil, nil, 0)
 
 	Units[self.UniqueId] = self
 
@@ -283,11 +284,11 @@ function UnitModule:TPToRootPosition()
 	self.CenterPart.CFrame = self.VisualCFrame
 end
 
-function UnitModule:PlayAnimation(AnimationName: string, SecondsAfter: number?, SpeedRatio: number?)
+function UnitModule:PlayAnimation(AnimationName: string, SecondsAfter: number?, SpeedRatio: number?, FadeTime: number?)
 	local Anim = self.Animations[AnimationName]
 
 	if Anim then
-		Anim:Play()
+		Anim:Play(FadeTime)
 		if SpeedRatio then
 			Anim:AdjustSpeed(SpeedRatio)
 		end
@@ -407,7 +408,7 @@ end
 local function GetMouseIsPointing(Params: RaycastParams?)
 	local MouseLocation = UserInputService:GetMouseLocation()
 	local Ray = Camera:ViewportPointToRay(MouseLocation.X, MouseLocation.Y)
-	return workspace:Raycast(Ray.Origin, Ray.Direction * 1000, Params)
+	return workspace:Raycast(Ray.Origin, Ray.Direction * 500, Params)
 end
 
 local function TweenTransparency(BasePart: BasePart, Transparency: number)
@@ -462,15 +463,25 @@ function UnitModule.InitCharacter(Unit: string, Position: CFrame?)
 		CenterPart = Root
 	end
 
+	InitTrove:Add(task.defer(function()
+		if Position then
+			CenterPart.CFrame = Position
+		else
+			CenterPart.CFrame = DefaultCFrame
+		end
+	end))
+
 	DisableHumanoid(Humanoid)
 
-	InitTrove:Connect(UnitModel:GetPropertyChangedSignal("Parent"), function()
-		local Animation = GetIdle(Unit)
-		if Animation then
-			local Track = Animator:LoadAnimation(Animation)
-			Track:Play()
+	InitTrove:Add(UnitModel:GetPropertyChangedSignal("Parent"):Once(function()
+		if UnitModel.Parent ~= nil then
+			local Animation = GetIdle(Unit)
+			if Animation then
+				local Track = Animator:LoadAnimation(Animation)
+				Track:Play(0)
+			end
 		end
-	end)
+	end))
 
 	return {
 		UnitModel = UnitModel,
@@ -481,6 +492,12 @@ end
 
 function UnitModule.InitPlacement(Unit: string)
 	local InitTrove = Trove.new()
+
+	local Data = {
+		Trove = InitTrove,
+		Clicked = InitTrove:Construct(Signal),
+	}
+
 	local CharacterData = UnitModule.InitCharacter(Unit, CFrame.new())
 	InitTrove:Add(CharacterData.Trove)
 	local UnitModel = CharacterData.UnitModel
@@ -536,7 +553,7 @@ function UnitModule.InitPlacement(Unit: string)
 	local RotationIndex: number = 0
 	local IsValid: boolean = false
 
-	InitTrove:Add(task.delay(0.1, function()
+	InitTrove:Add(task.defer(function()
 		for Id, Unit in pairs(Units) do
 			TweenTransparency(Unit.RadiusPart, 0)
 		end
@@ -587,6 +604,20 @@ function UnitModule.InitPlacement(Unit: string)
 		end
 	end
 
+	local AnimatedRotation = RotationIndex
+	local Changed = InitTrove:Construct(Signal)
+	local CurrentPromise: Promise.Promise? = nil
+
+	Changed:Connect(function()
+		if CurrentPromise then
+			CurrentPromise:cancel()
+		end
+		CurrentPromise = InitTrove:AddPromise(HelperFunctions.TweenPromise(0.1, function(alpha: number)
+			AnimatedRotation = TweenService:GetValue(alpha, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
+				+ (RotationIndex - 1)
+		end) :: any)
+	end)
+
 	local function OnFrame()
 		local RaycastResult: RaycastResult? = GetMouseIsPointing(RayParams)
 
@@ -594,7 +625,7 @@ function UnitModule.InitPlacement(Unit: string)
 			UnitPosition = RaycastResult.Position
 
 			if UnitPosition then
-				CenterPart.CFrame = CFrame.new(UnitPosition) * CFrame.Angles(0, math.rad(-90 * RotationIndex), 0)
+				CenterPart.CFrame = CFrame.new(UnitPosition) * CFrame.Angles(0, math.rad(-90 * AnimatedRotation), 0)
 					+ VectorOffset
 
 				local OldValid = IsValid
@@ -615,6 +646,7 @@ function UnitModule.InitPlacement(Unit: string)
 
 	local function RotateIndex()
 		RotationIndex = math.fmod(RotationIndex + 1, 4)
+		Changed:Fire()
 		OnFrame()
 	end
 
@@ -630,6 +662,7 @@ function UnitModule.InitPlacement(Unit: string)
 				UnitPosition = UnitPosition,
 				RotationIndex = RotationIndex,
 			})
+			Data.Clicked:Fire()
 			InitTrove:Destroy()
 		end
 	end
@@ -650,7 +683,7 @@ function UnitModule.InitPlacement(Unit: string)
 	InitTrove:Connect(UserInputService.InputBegan, HandleInput)
 	InitTrove:BindToRenderStep("InitPlacement", Enum.RenderPriority.Character.Value, OnFrame)
 
-	return InitTrove
+	return Data
 end
 
 OnPlacement.OnClientEvent:Connect(function(PlacementData: { [string]: Types.UnitInput })

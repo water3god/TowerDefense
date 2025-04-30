@@ -11,6 +11,7 @@ local React = require(Packages.React)
 local e = React.createElement
 
 local Trove = require(Packages.Trove)
+local Promise = require(Packages.Promise)
 
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
@@ -34,36 +35,19 @@ local function Provider(props)
 	React.useEffect(function()
 		local Trove = Trove.new()
 
-		Trove:Connect(WaveService.Added, function()
-			SetValue(WaveService.GetWaveData() :: any)
-		end)
+		local function SetWaveData()
+			local Data = WaveService.GetWaveData()
+			if Data then
+				SetValue(table.clone(Data))
+			end
+		end
 
-		Trove:Connect(WaveService.HealthChanged, function(BaseHealth: number, MaxHealth: number)
-			SetValue(Join(Value, {
-				BaseHealth = BaseHealth,
-				MaxHealth = MaxHealth,
-			}) :: any)
-		end)
-
-		Trove:Connect(WaveService.Passed, function(Wave)
-			SetValue(Join(Value, {
-				Wave = Wave,
-			}) :: any)
-		end)
-
-		Trove:Connect(WaveService.TimeChanged, function(Time: number, StartTime: number)
-			SetValue(Join(Value, {
-				StartTime = StartTime,
-				Time = Time,
-			}) :: any)
-		end)
-
-		Trove:Connect(WaveService.Ended, function()
-			local NewTable = table.clone(Value)
-			Value.Time = 0
-			Value.StartTime = 0
-			SetValue(NewTable)
-		end)
+		SetWaveData()
+		Trove:Connect(WaveService.Added, SetWaveData)
+		Trove:Connect(WaveService.HealthChanged, SetWaveData)
+		Trove:Connect(WaveService.Passed, SetWaveData)
+		Trove:Connect(WaveService.TimeChanged, SetWaveData)
+		Trove:Connect(WaveService.Ended, SetWaveData)
 
 		return Trove:WrapClean()
 	end, {})

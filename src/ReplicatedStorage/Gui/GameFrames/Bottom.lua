@@ -16,6 +16,7 @@ local Input = require(Packages.Input)
 local Keyboard = Input.Keyboard
 
 local Modules = ReplicatedStorage.Modules
+local DelayHandler = require(Modules.DelayHandler)
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
 
@@ -140,6 +141,9 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 	end, { PlacementData })
 
 	local GameClick = React.useCallback(function(UniqueId: string)
+		if not DelayHandler("GameClick", 0.1) then
+			return
+		end
 		local Unit = InventoryService:GetInventory().Units[UniqueId]
 		if PlacementData then
 			PlacementData.Trove:Destroy()
@@ -149,11 +153,15 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 			if PlacementData and PlacementData.UniqueId == UniqueId then
 				SetPlacement(nil)
 			else
-				local Trove = UnitClient.InitPlacement(Unit.Unit)
+				local InitData = UnitClient.InitPlacement(Unit.Unit)
 				SetPlacement({
-					Trove = Trove,
+					Trove = InitData.Trove,
 					UniqueId = UniqueId,
 				})
+
+				InitData.Clicked:Connect(function()
+					SetPlacement(nil)
+				end)
 			end
 		end
 	end, { PlacementData })
