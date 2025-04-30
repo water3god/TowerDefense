@@ -123,6 +123,7 @@ local function PlaceUnit(Player: Player, Wave: GlobalWave.GlobalWave, Data: Plac
 		if Result then
 			local Unit = Unit.new({
 				CFrame = InputCFrame,
+				OwnerId = Player.UserId,
 				Level = 0,
 			}, UnitData)
 

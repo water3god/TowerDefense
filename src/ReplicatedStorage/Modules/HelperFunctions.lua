@@ -304,7 +304,7 @@ function Funcs.TweenPromise(TotalTime: number, Handler: (alpha: number) -> ())
 		onCancel(function()
 			if Connection then
 				Connection:Disconnect()
-				resolve()
+				reject()
 			end
 		end)
 
@@ -474,12 +474,16 @@ function Funcs.DisableHumanoid(Humanoid: Humanoid)
 	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
 	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Flying, false)
 	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
+
+	if Humanoid.Parent and Humanoid.Parent:FindFirstChild("Animate") then
+		(Humanoid.Parent :: any).Animate.Enabled = false
+	end
 end
 
 -- Uses Viewport (Not Screen) to raycast
-function Funcs.Raycast(Position: Vector2)
+function Funcs.Raycast(Position: Vector2, Params: RaycastParams?)
 	local Ray = Camera:ViewportPointToRay(Position.X, Position.Y)
-	return workspace:Raycast(Ray.Origin, Ray.Direction)
+	return workspace:Raycast(Ray.Origin, Ray.Direction * 500, Params)
 end
 
 -- Debug Functions --
@@ -492,6 +496,45 @@ function Funcs.Debug.VisualizeRaycast(Origin: Vector3, Direction: Vector3)
 	Raycast.Name = "Raycast"
 	Raycast.Size = Vector3.new(1, 1, Direction.Magnitude)
 	Raycast.Parent = workspace
+end
+
+function Funcs.Debug.VisualizeRay(Ray: Ray)
+	Funcs.Debug.VisualizeRaycast(Ray.Origin, Ray.Direction)
+end
+
+function Funcs.Debug.VisualizeRayResult(Result: RaycastResult?)
+	if Result then
+		local Part = CreateDefaultPart()
+		Part.Position = Result.Position
+		Part.Parent = workspace
+	end
+end
+
+function Funcs.Debug.VisualizeScreenPos(Position: Vector2)
+	local Gui: any = nil
+	if RunService:IsRunning() then
+		Gui = Players.LocalPlayer.PlayerGui
+	else
+		Gui = game:GetService("StarterGui")
+	end
+
+	local Screen = Instance.new("ScreenGui")
+	Screen.Archivable = false
+	Screen.IgnoreGuiInset = true
+	Screen.DisplayOrder = 20
+
+	local Frame = Instance.new("Frame")
+	Frame.Name = "DebugFrame"
+	Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+	Frame.Size = UDim2.fromScale(0.04, 0.04)
+	Frame.Position = UDim2.fromOffset(Position.X, Position.Y)
+	Frame.Parent = Screen
+
+	Screen.Parent = Gui
+
+	task.delay(2, function()
+		Screen:Destroy()
+	end)
 end
 
 function Funcs.Debug.VisualizePosition(Position: Vector3)

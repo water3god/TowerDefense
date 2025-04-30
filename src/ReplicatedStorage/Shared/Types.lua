@@ -150,6 +150,7 @@ type UnitData = {
 	Humanoid: typeof(Rig.Humanoid),
 	Animator: typeof(Rig.Humanoid.Animator),
 	RadiusPart: typeof(CollisionRadius),
+	RangePart: BasePart,
 
 	VisualCFrame: CFrame,
 	VectorOffset: Vector3,
@@ -169,7 +170,10 @@ type UnitData = {
 	UnitAttacks: { [number]: { (Unit: Unit, AttackInput: UnitAttackInput, Enemy: EnemyClient?, Delay: number) -> () } },
 	Animations: { [string]: AnimationTrack },
 
+	IsClicked: boolean,
+
 	Attacked: Signal.Signal<>,
+	CharacterClicked: Signal.Signal<boolean>,
 	Upgraded: Signal.Signal<number>,
 	PriorityChanged: Signal.Signal<UnitInfo.SortType | string>,
 	PropertyChanged: Signal.Signal<string>, -- Does not fire on Upgrade --
@@ -193,6 +197,7 @@ export type UnitModule = {
 	RotateToEnemy: (self: Unit, Enemy: EnemyClient) -> (),
 	RotateTo: (self: Unit, Degree: number) -> (),
 	PartIsDescendantOf: (self: Unit, Part: BasePart) -> boolean,
+	ClickCharacter: (self: Unit, Enabled: boolean) -> (),
 
 	ApplyDetail: (self: Unit) -> (),
 

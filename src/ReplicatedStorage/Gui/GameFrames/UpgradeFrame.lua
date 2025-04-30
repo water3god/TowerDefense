@@ -235,7 +235,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 		if Unit then
 			Unit:ChangePriority()
 		end
-	end, { UpgradeData.Priority })
+	end, { UpgradeData.Priority, UpgradeData.UniqueId })
 
 	local SellClick = React.useCallback(function()
 		if InSell then

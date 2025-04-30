@@ -10,6 +10,8 @@ local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
 local e = React.createElement
 
+local Trove = require(Packages.Trove)
+
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
@@ -58,6 +60,7 @@ local function UpgradeProvider(props: Props)
 	local Data, SetData = React.useState(DefaultValue)
 
 	React.useEffect(function()
+		local Trove = Trove.new()
 		local Unit = props.UnitId and UnitClient.GetUnit(props.UnitId)
 		if Unit then
 			SetData({
@@ -70,37 +73,32 @@ local function UpgradeProvider(props: Props)
 				Priority = Unit.AttackPriority,
 			})
 
-			local Connection = Unit.Upgraded:Connect(function()
+			Trove:Connect(Unit.Upgraded, function()
 				SetData(Join(Data, {
 					TotalCost = Unit.TotalCost,
 					Level = Unit.Level,
 				}) :: any)
 			end)
 
-			local Connection1 = Unit.PriorityChanged:Connect(function(Priority)
+			Trove:Connect(Unit.PriorityChanged, function(Priority)
+				print(Priority)
 				SetData(Join(Data, {
 					Priority = Unit.AttackPriority,
 				}) :: any)
 			end)
 
-			local Connection2 = Unit.Destroying:Once(function()
+			Trove:Connect(Unit.Destroying, function()
 				SetData(Join(Data, {
 					Enabled = false,
 				}) :: any)
 			end)
-
-			return function()
-				Connection:Disconnect()
-				Connection1:Disconnect()
-				Connection2:Disconnect()
-			end
 		else
 			SetData(Join(Data, {
 				Enabled = false,
 			}) :: any)
 		end
 
-		return function() end
+		return Trove:WrapClean()
 	end, { props.UnitId })
 
 	return e(UpgradeContext.Provider, {

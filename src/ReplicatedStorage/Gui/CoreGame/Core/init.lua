@@ -283,11 +283,26 @@ local function Render()
 
 	if not IsLobby then
 		React.useEffect(function()
+			if PlacingUnitId then
+				local Unit = UnitClient.GetUnit(PlacingUnitId)
+				if Unit and not Unit.IsClicked then
+					Unit:ClickCharacter(true)
+				end
+			else
+				for _, Unit in pairs(UnitClient.GetUnits()) do
+					if Unit.IsClicked then
+						Unit:ClickCharacter(false)
+					end
+				end
+			end
+		end, { PlacingUnitId })
+
+		React.useEffect(function()
 			local Params = RaycastParams.new()
 			Params.CollisionGroup = "PlacedCharacters"
 
 			local function OnPress(Position: Vector2)
-				local Result = HelperFunctions.Raycast(Position)
+				local Result = HelperFunctions.Raycast(Position, Params)
 				if Result and Result.Instance then
 					if Result.Instance:IsDescendantOf(GlobalWorkspace) then
 						for _, Unit in pairs(UnitClient.GetUnits()) do
@@ -434,8 +449,16 @@ local function Render()
 				UpgradeContext = e(UpgradeContext.Provider, {
 					UnitId = PlacingUnitId,
 				}, {
-					UpgradeFrame = e(UpgradeFrame, {
-						IsVisible = PlacingUnitId ~= nil and UnitClient.GetUnit(PlacingUnitId) ~= nil,
+					UpgradeContainer = e(Main.Frame, {
+						native = {
+							Position = UDim2.fromScale(0, 0.5),
+							Size = UDim2.fromScale(0.4, 0.55),
+							AnchorPoint = Vector2.new(0, 0.5),
+						},
+					}, {
+						UpgradeFrame = e(UpgradeFrame, {
+							IsVisible = PlacingUnitId ~= nil and UnitClient.GetUnit(PlacingUnitId) ~= nil,
+						}),
 					}),
 				}),
 				UnitToolTip = e(UnitToolTip.Connected, {

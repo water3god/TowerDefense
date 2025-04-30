@@ -129,20 +129,51 @@ local function WeldParts(Character: typeof(ModelStorage.Extra.Rig), Adornment: M
 	end
 end
 
-local function DisableHumanoid(Humanoid: Humanoid)
-	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, false)
-	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Freefall, false)
-	Humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
-	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Dead, false)
-	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Swimming, false)
-	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Climbing, false)
-	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Landed, false)
-	Humanoid:SetStateEnabled(Enum.HumanoidStateType.PlatformStanding, false)
-	Humanoid:SetStateEnabled(Enum.HumanoidStateType.RunningNoPhysics, false)
-	Humanoid:SetStateEnabled(Enum.HumanoidStateType.StrafingNoPhysics, false)
-	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
-	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Flying, false)
-	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
+local function GetRotatingRange(Range: number)
+	local Trove = Trove.new()
+	local RangePart: BasePart = Trove:Clone(RangeDisplay)
+	RangePart.CollisionGroup = "PlacementClient"
+
+	local CurrentPromise: Promise.Promise? = nil
+
+	local Connection: RBXScriptConnection? = nil
+	local function Animate(Range: number, Enabled: boolean)
+		if CurrentPromise then
+			CurrentPromise:cancel()
+			CurrentPromise = nil
+		end
+
+		local ShrunkRange = Range * 0.5
+		RangePart.Size = Vector3.new(ShrunkRange, RangePart.Size.Y, ShrunkRange)
+		local NumberLerp = Enabled and Lerps.number(ShrunkRange, Range) or Lerps.number(Range, ShrunkRange)
+		local Promise = Trove:AddPromise(HelperFunctions.TweenPromise(0.1, function(alpha: number)
+			local NewAlpha = TweenService:GetValue(alpha, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
+			local LerpedRange = NumberLerp(NewAlpha)
+			RangePart.Size = Vector3.new(LerpedRange, RangePart.Size.Y, LerpedRange)
+		end) :: any) :: Promise.Promise
+
+		Promise:andThen(function()
+			CurrentPromise = nil
+		end)
+
+		CurrentPromise = Promise
+
+		return Promise
+	end
+
+	Trove:Connect(RangePart:GetPropertyChangedSignal("Parent"), function()
+		if Connection then
+			Connection:Disconnect()
+			Connection = nil
+		end
+		if RangePart.Parent then
+			Connection = Trove:Connect(RunService.PreSimulation, function()
+				RangePart.CFrame *= CFrame.Angles(0, math.rad(1), 0)
+			end) :: any
+		end
+	end)
+
+	return RangePart, Animate, Trove
 end
 
 --[[Part0 is the part being attached, Part1 is the Root (Usually Middle or PrimaryPart) part. ]]
@@ -165,27 +196,6 @@ local function SetAdornment(Character: typeof(Rig), AdornmentName: string)
 	return Adornment
 end
 
-local function GetRangePart(Range: number)
-	local RangeDisplay = RangeDisplay:Clone()
-	RangeDisplay.Size = Vector3.new(Range, RangeDisplay.Size.Y, Range)
-	local Connection: RBXScriptConnection? = nil
-
-	RangeDisplay:GetPropertyChangedSignal("Parent"):Connect(function()
-		if RangeDisplay.Parent then
-			Connection = RunService.PostSimulation:Connect(function()
-				RangeDisplay.CFrame *= CFrame.Angles(0, math.rad(1), 0)
-			end)
-		else
-			if Connection then
-				Connection:Disconnect()
-				Connection = nil
-			end
-		end
-	end)
-
-	return RangeDisplay
-end
-
 local function CastCylinder(Position: Vector3, Params: OverlapParams?)
 	local Cast = CylinderCast:Clone()
 	Cast.CFrame = CFrame.new(Position) * Cast.CFrame.Rotation
@@ -202,9 +212,10 @@ local function NewUnit(Input: Types.UnitInput)
 
 	self.Attacked = self.Trove:Construct(Signal)
 	self.Upgraded = self.Trove:Construct(Signal)
-	self.Destroying = self.Trove:Construct(Signal)
+	self.CharacterClicked = self.Trove:Construct(Signal)
 	self.PriorityChanged = self.Trove:Construct(Signal)
 	self.PropertyChanged = self.Trove:Construct(Signal)
+	self.Destroying = self.Trove:Construct(Signal)
 
 	self.UnitName = Input.UnitName
 	self.CFrame = Input.CFrame
@@ -224,7 +235,7 @@ local function NewUnit(Input: Types.UnitInput)
 	self.Animator = self.Humanoid.Animator
 	self.SizeRatio = self.Humanoid.BodyHeightScale.Value
 
-	DisableHumanoid(self.Humanoid)
+	HelperFunctions.DisableHumanoid(self.Humanoid)
 	self.Root.Anchored = true
 
 	local CenterVector3 = self.UnitData.Vector3Offset
@@ -252,6 +263,43 @@ local function NewUnit(Input: Types.UnitInput)
 	self.RadiusPart.CFrame = self.CFrame
 	self.RadiusPart.Parent = self.Character
 
+	self.IsClicked = false
+
+	local RangePart, Animate, RangeTrove = GetRotatingRange(1)
+
+	self.RangePart = RangePart
+	self.Trove:Add(RangeTrove)
+
+	local function GetRange()
+		return self.UnitData.UnitData[self.Level].Range
+	end
+
+	local function OnClick()
+		RangePart.Parent = self.Character
+		Animate(GetRange(), false)
+	end
+
+	local function OnClose()
+		local Prom = Animate(GetRange(), false)
+		Prom:andThen(function()
+			RangePart.Parent = nil
+		end)
+	end
+
+	self.CharacterClicked:Connect(function(Enabled: boolean)
+		if Enabled then
+			OnClick()
+		else
+			OnClose()
+		end
+	end)
+
+	self.Upgraded:Connect(function()
+		if self.IsClicked then
+			OnClick()
+		end
+	end)
+
 	for _, BasePart in ipairs(self.Character:GetDescendants()) do
 		if BasePart:IsA("BasePart") then
 			BasePart.CollisionGroup = "PlacedCharacters"
@@ -266,9 +314,9 @@ local function NewUnit(Input: Types.UnitInput)
 		end
 	end
 
-	self:PlayAnimation("Idle", nil, nil, 0)
-
 	Units[self.UniqueId] = self
+
+	self:PlayAnimation("Idle", nil, nil, 0)
 
 	self.NewUnit:Fire(self)
 end
@@ -332,6 +380,11 @@ function UnitModule:PartIsDescendantOf(Part: BasePart)
 	return Part:IsDescendantOf(self.Character)
 end
 
+function UnitModule:ClickCharacter(Enabled: boolean)
+	self.IsClicked = Enabled
+	self.CharacterClicked:Fire(Enabled)
+end
+
 function UnitModule:ApplyDetail()
 	local AdornmentName = self.UnitData.UnitData[self.Level].Armor
 
@@ -349,12 +402,13 @@ function UnitModule:ApplyDetail()
 end
 
 function UnitModule:LevelUp()
-	Upgrade:FireClient(self.UniqueId)
+	Upgrade:FireServer(self.UniqueId)
 end
 
 function UnitModule:ChangePriority()
 	ChangePriority:FireServer(self.UniqueId)
 	self.AttackPriority = UnitInfo.GetNextSortType(self.AttackPriority)
+	self.PriorityChanged:Fire(self.AttackPriority)
 end
 
 function UnitModule:OnUpgrade(Level: number)
@@ -472,7 +526,7 @@ function UnitModule.InitCharacter(Unit: string, Position: CFrame?)
 		end
 	end))
 
-	DisableHumanoid(Humanoid)
+	HelperFunctions.DisableHumanoid(Humanoid)
 
 	InitTrove:Add(UnitModel:GetPropertyChangedSignal("Parent"):Once(function()
 		if UnitModel.Parent ~= nil then
@@ -521,7 +575,10 @@ function UnitModule.InitPlacement(Unit: string)
 	local Pos, Size = UnitModel:GetBoundingBox()
 	local BottomPosition = Pos.Position - Vector3.new(0, Size.Y / 2, 0)
 
-	local RangePart = InitTrove:Add(GetRangePart(Range))
+	local RangePart, Animate, RangeTrove = GetRotatingRange(Range)
+	InitTrove:Add(RangeTrove)
+	Animate(Range, true)
+
 	RangePart.CFrame = CFrame.new(BottomPosition)
 	Weld(RangePart, Root)
 	RangePart.Parent = UnitModel
@@ -710,6 +767,7 @@ Attack.OnClientEvent:Connect(function(Data: Types.UnitAttackInput)
 end)
 
 PriorityChanged.OnClientEvent:Connect(function(Data: { UniqueId: string, Priority: UnitInfo.SortType })
+	print(Data)
 	local Unit = UnitModule.GetUnit(Data.UniqueId)
 
 	if Unit then
