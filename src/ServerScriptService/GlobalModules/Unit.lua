@@ -259,9 +259,7 @@ function Unit:UpdateEnemy()
 end
 
 function Unit:ChangePriority()
-	print("Changed2")
 	self.AttackPriority = UnitInfo.GetNextSortType(self.AttackPriority)
-
 	HelperFunctions.FireClients(PriorityChanged, self.ReplicateTo, {
 		UniqueId = self.UniqueId,
 		Priority = self.AttackPriority,

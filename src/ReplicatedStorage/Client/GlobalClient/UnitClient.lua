@@ -767,7 +767,6 @@ Attack.OnClientEvent:Connect(function(Data: Types.UnitAttackInput)
 end)
 
 PriorityChanged.OnClientEvent:Connect(function(Data: { UniqueId: string, Priority: UnitInfo.SortType })
-	print(Data)
 	local Unit = UnitModule.GetUnit(Data.UniqueId)
 
 	if Unit then
