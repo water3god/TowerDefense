@@ -37,6 +37,10 @@ local Main = require(CoreGame.Main)
 local UIStroke = require(CoreGame.UIStroke)
 local Hooks = require(CoreGame.Hooks)
 
+local Client = ReplicatedStorage.Client
+local GlobalClient = Client.GlobalClient
+local WaveService = require(GlobalClient.WaveService)
+
 export type Props = {
 	native: { [any]: any }?,
 	children: { [any]: any }?,
@@ -50,12 +54,16 @@ local function CreateVoteFrame(Props: Props)
 		Total = #Players:GetPlayers(),
 	})
 
-	--[[React.useEffect(function()
+	React.useEffect(function()
 		if not WaveService.GetWaveData() and WaveService.Win ~= nil then
 			SetSuccess(WaveService.Win)
 			SetEnabled(true)
 		end
-	end, {})]]
+	end, {})
+
+	Hooks.useEventConnection(WaveService.Added, function()
+		SetEnabled(false)
+	end, {})
 
 	Hooks.useEventConnection(OnEnd.OnClientEvent, function(Data: { VotedCount: number, Win: boolean })
 		SetData(Join(PlayerData:getValue(), {
