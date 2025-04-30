@@ -50,6 +50,7 @@ local Promise = require(Packages.Promise)
 
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
+local Lerps = require(Modules.Lerps)
 
 local Events = ReplicatedStorage.Remotes.Unit
 
@@ -612,9 +613,17 @@ function UnitModule.InitPlacement(Unit: string)
 		if CurrentPromise then
 			CurrentPromise:cancel()
 		end
+		local FinalIndex = RotationIndex
+
+		if FinalIndex == 0 then
+			AnimatedRotation -= 4
+		end
+
+		local NumberLerp = Lerps.number(AnimatedRotation, FinalIndex)
+
 		CurrentPromise = InitTrove:AddPromise(HelperFunctions.TweenPromise(0.1, function(alpha: number)
-			AnimatedRotation = TweenService:GetValue(alpha, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
-				+ (RotationIndex - 1)
+			local Value = TweenService:GetValue(alpha, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
+			AnimatedRotation = NumberLerp(Value)
 		end) :: any)
 	end)
 
