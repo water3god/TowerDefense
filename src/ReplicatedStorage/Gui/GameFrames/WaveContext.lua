@@ -17,6 +17,10 @@ local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
 
+local Gui = ReplicatedStorage.Gui
+local CoreGame = Gui.CoreGame
+local Hooks = require(CoreGame.Hooks)
+
 local WaveService = require(ReplicatedStorage.Client.GlobalClient.WaveService)
 
 local Default = {
@@ -47,10 +51,16 @@ local function Provider(props)
 		Trove:Connect(WaveService.HealthChanged, SetWaveData)
 		Trove:Connect(WaveService.Passed, SetWaveData)
 		Trove:Connect(WaveService.TimeChanged, SetWaveData)
-		Trove:Connect(WaveService.Ended, SetWaveData)
 
 		return Trove:WrapClean()
 	end, {})
+
+	Hooks.useEventConnection(WaveService.Ended, function()
+		SetValue(Join(Value, {
+			StartTime = 0,
+			Time = 0,
+		}) :: any)
+	end, { Value })
 
 	return e(Context.Provider, {
 		value = Value,

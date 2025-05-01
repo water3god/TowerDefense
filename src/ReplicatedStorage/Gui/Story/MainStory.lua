@@ -606,7 +606,7 @@ local function CreateMainStory(Properties: Properties)
 				},
 				children = {
 					UIStroke = e(UIStroke.UIStrokeBasic, {
-						Stroke = 0.004,
+						Stroke = 0.002,
 					}),
 				},
 			}),

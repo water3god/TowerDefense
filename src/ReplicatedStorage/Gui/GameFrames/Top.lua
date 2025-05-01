@@ -73,7 +73,7 @@ local function CreateTopFrame(Props: Properties)
 					},
 				}, {
 					UIStroke = e(UIStroke.UIStrokeBasic, {
-						Stroke = 0.005,
+						Stroke = 0.003,
 					}),
 				}),
 				Title = e(Main.TextLabel, {
@@ -84,7 +84,7 @@ local function CreateTopFrame(Props: Properties)
 					},
 				}, {
 					UIStroke = e(UIStroke.UIStrokeBasic, {
-						Stroke = 0.005,
+						Stroke = 0.003,
 					}),
 				}),
 			}),
@@ -104,7 +104,7 @@ local function CreateTopFrame(Props: Properties)
 					},
 				}, {
 					UIStroke = e(UIStroke.UIStrokeBasic, {
-						Stroke = 0.005,
+						Stroke = 0.003,
 					}),
 				}),
 				Title = e(Main.TextLabel, {
@@ -115,7 +115,7 @@ local function CreateTopFrame(Props: Properties)
 					},
 				}, {
 					UIStroke = e(UIStroke.UIStrokeBasic, {
-						Stroke = 0.005,
+						Stroke = 0.003,
 					}),
 				}),
 			}),
@@ -129,10 +129,10 @@ local function CreateTopFrame(Props: Properties)
 				UICorner = e("UICorner", {
 					CornerRadius = UDim.new(1, 0),
 				}),
-				--[[UIStroke = e(UIStroke.UIStrokeBasic, {
+				UIStroke = e(UIStroke.UIStrokeBasic, {
 					Stroke = 0.004,
 					Color = Color3.fromRGB(33, 199, 47),
-				}),]]
+				}),
 				Bar = e(Main.Frame, {
 					native = {
 						BackgroundTransparency = 0,
@@ -163,7 +163,7 @@ local function CreateTopFrame(Props: Properties)
 							Rotation = 90,
 						}),
 						UIStroke = e(UIStroke.UIStrokeBasic, {
-							Stroke = 0.005,
+							Stroke = 0.003,
 						}),
 					},
 				}),

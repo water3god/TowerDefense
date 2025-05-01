@@ -283,16 +283,15 @@ local function Render()
 
 	if not IsLobby then
 		React.useEffect(function()
+			for _, Unit in pairs(UnitClient.GetUnits()) do
+				if Unit.IsClicked then
+					Unit:ClickCharacter(false)
+				end
+			end
 			if PlacingUnitId then
 				local Unit = UnitClient.GetUnit(PlacingUnitId)
 				if Unit and not Unit.IsClicked then
 					Unit:ClickCharacter(true)
-				end
-			else
-				for _, Unit in pairs(UnitClient.GetUnits()) do
-					if Unit.IsClicked then
-						Unit:ClickCharacter(false)
-					end
 				end
 			end
 		end, { PlacingUnitId })
@@ -316,11 +315,16 @@ local function Render()
 				SetUnitId(nil)
 			end
 
+			local Count = 0
+
 			local function OnFrame(Position: Vector2)
-				local Result = HelperFunctions.Raycast(Position)
+				local Result = HelperFunctions.Raycast(Position, Params)
 				if Result and Result.Instance then
 					if Result.Instance:IsDescendantOf(GlobalWorkspace) then
 						for _, Unit in pairs(UnitClient.GetUnits()) do
+							if PlacingUnitId == Unit.UniqueId then
+								continue
+							end
 							if Unit:PartIsDescendantOf(Result.Instance) then
 								if not HoveredData or HoveredData.Id ~= Unit.UniqueId then
 									SetHoveredData({
@@ -347,7 +351,12 @@ local function Render()
 					end
 				end
 
-				SetHoveredData(nil)
+				if Count > 10 then
+					Count = 0
+					SetHoveredData(nil)
+				else
+					Count += 1
+				end
 			end
 
 			local Trove = Trove.new()

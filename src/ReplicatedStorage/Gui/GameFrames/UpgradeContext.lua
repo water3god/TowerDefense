@@ -63,14 +63,19 @@ local function UpgradeProvider(props: Props)
 		local Trove = Trove.new()
 		local Unit = props.UnitId and UnitClient.GetUnit(props.UnitId)
 		if Unit then
-			local function Set()
+			local function Set(EnabledInput: boolean?)
+				local Enabled = true
+				if EnabledInput ~= nil then
+					Enabled = EnabledInput
+				end
+
 				SetData({
 					UniqueId = Unit.UniqueId,
 					UnitName = Unit.UnitName,
 					UpgradeData = Unit.UnitData.UnitData,
 					TotalCost = Unit.TotalCost,
 					Level = Unit.Level,
-					Enabled = true,
+					Enabled = Enabled ~= nil or true,
 					Priority = Unit.AttackPriority,
 				})
 			end
@@ -81,10 +86,12 @@ local function UpgradeProvider(props: Props)
 			Trove:Connect(Unit.PriorityChanged, Set)
 
 			Trove:Connect(Unit.Destroying, function()
-				SetData(DefaultValue)
+				Set(false)
 			end)
 		else
-			SetData(DefaultValue)
+			SetData(Join(Data, {
+				Enabled = false,
+			}) :: any)
 		end
 
 		return Trove:WrapClean()

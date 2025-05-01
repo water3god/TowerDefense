@@ -4,6 +4,7 @@
 
 -- Services --
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local GuiService = game:GetService("GuiService")
 
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
@@ -108,8 +109,10 @@ local function CreateUnitToolTip(Props: Props)
 
 	return e(Main.ImageLabel, {
 		native = Join({
-			Size = UDim2.fromScale(0.4, 0.3),
-			Position = Props.Position and Props.Position:map(function(Position: Vector2)
+			Size = UDim2.fromScale(0.2, 0.15),
+			Position = Props.Position and Props.Position:map(function(PositionInput: Vector2)
+				local Position = PositionInput - GuiService:GetGuiInset()
+
 				return UDim2.fromOffset(Position.X, Position.Y)
 			end),
 			Image = "rbxassetid://103903141717286",

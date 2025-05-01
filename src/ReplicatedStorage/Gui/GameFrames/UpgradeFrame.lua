@@ -129,6 +129,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 	local Styles, API = ReactSpring.useSpring(function()
 		return {
 			Scale = 0.9,
+			config = { mass = 0.5, tension = 10000, friction = 1000, clamp = true, precision = 0.01 },
 		}
 	end)
 

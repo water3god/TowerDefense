@@ -160,7 +160,7 @@ local function CreateVoteFrame(Props: Props)
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.004,
+					Stroke = 0.002,
 				}),
 			}),
 		}),
@@ -190,7 +190,7 @@ local function CreateVoteFrame(Props: Props)
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.004,
+					Stroke = 0.002,
 				}),
 			}),
 		}),
@@ -213,7 +213,7 @@ local function CreateVoteFrame(Props: Props)
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStrokeBasic, {
-				Stroke = 0.003,
+				Stroke = 0.002,
 			}),
 		}),
 		Title = e(Main.TextLabel, {

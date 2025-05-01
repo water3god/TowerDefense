@@ -144,10 +144,10 @@ local function GetRotatingRange(Range: number)
 		end
 
 		local ShrunkRange = Range * 0.5
-		RangePart.Size = Vector3.new(ShrunkRange, RangePart.Size.Y, ShrunkRange)
 		local NumberLerp = Enabled and Lerps.number(ShrunkRange, Range) or Lerps.number(Range, ShrunkRange)
-		local Promise = Trove:AddPromise(HelperFunctions.TweenPromise(0.1, function(alpha: number)
-			local NewAlpha = TweenService:GetValue(alpha, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
+		local Promise = Trove:AddPromise(HelperFunctions.TweenPromise(0.05, function(alpha: number)
+			local Direction = if Enabled then Enum.EasingDirection.Out else Enum.EasingDirection.In
+			local NewAlpha = TweenService:GetValue(alpha, Enum.EasingStyle.Cubic, Direction)
 			local LerpedRange = NumberLerp(NewAlpha)
 			RangePart.Size = Vector3.new(LerpedRange, RangePart.Size.Y, LerpedRange)
 		end) :: any) :: Promise.Promise
@@ -168,7 +168,7 @@ local function GetRotatingRange(Range: number)
 		end
 		if RangePart.Parent then
 			Connection = Trove:Connect(RunService.PreSimulation, function()
-				RangePart.CFrame *= CFrame.Angles(0, math.rad(1), 0)
+				RangePart.CFrame *= CFrame.Angles(0, math.rad(0.5), 0)
 			end) :: any
 		end
 	end)
@@ -268,6 +268,8 @@ local function NewUnit(Input: Types.UnitInput)
 	local RangePart, Animate, RangeTrove = GetRotatingRange(1)
 
 	self.RangePart = RangePart
+	self.RangePart.Anchored = true
+	self.RangePart.CFrame = self.CFrame
 	self.Trove:Add(RangeTrove)
 
 	local function GetRange()
@@ -276,7 +278,8 @@ local function NewUnit(Input: Types.UnitInput)
 
 	local function OnClick()
 		RangePart.Parent = self.Character
-		Animate(GetRange(), false)
+
+		Animate(GetRange(), true)
 	end
 
 	local function OnClose()
@@ -284,6 +287,12 @@ local function NewUnit(Input: Types.UnitInput)
 		Prom:andThen(function()
 			RangePart.Parent = nil
 		end)
+	end
+
+	if self.IsClicked then
+		OnClick()
+	else
+		OnClose()
 	end
 
 	self.CharacterClicked:Connect(function(Enabled: boolean)
@@ -575,14 +584,6 @@ function UnitModule.InitPlacement(Unit: string)
 	local Pos, Size = UnitModel:GetBoundingBox()
 	local BottomPosition = Pos.Position - Vector3.new(0, Size.Y / 2, 0)
 
-	local RangePart, Animate, RangeTrove = GetRotatingRange(Range)
-	InitTrove:Add(RangeTrove)
-	Animate(Range, true)
-
-	RangePart.CFrame = CFrame.new(BottomPosition)
-	Weld(RangePart, Root)
-	RangePart.Parent = UnitModel
-
 	local Ratio = UnitModel.Humanoid.BodyHeightScale.Value
 
 	local RadiusPart = InitTrove:Clone(RadiusReference)
@@ -610,6 +611,19 @@ function UnitModule.InitPlacement(Unit: string)
 	local UnitPosition: Vector3? = nil
 	local RotationIndex: number = 0
 	local IsValid: boolean = false
+
+	local RangePart, Animate, RangeTrove = GetRotatingRange(Range)
+	InitTrove:Add(RangeTrove)
+	Animate(Range, true)
+
+	InitTrove:Connect(RunService.PreSimulation, function()
+		if UnitPosition then
+			RangePart.CFrame = CFrame.new(UnitPosition) * RangePart.CFrame.Rotation
+		end
+	end)
+
+	RangePart.Anchored = true
+	RangePart.Parent = workspace
 
 	InitTrove:Add(task.defer(function()
 		for Id, Unit in pairs(Units) do
