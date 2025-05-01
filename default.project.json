@@ -2,6 +2,69 @@
   "name": "project",
   "tree": {
     "$className": "DataModel",
+    "Lighting": {
+      "$className": "Lighting",
+      "DepthOfField": {
+        "$className": "DepthOfFieldEffect",
+        "$properties": {
+          "Enabled": true,
+          "FarIntensity": 0.2,
+          "FocusDistance": 0.05,
+          "InFocusRadius": 40,
+          "NearIntensity": 0.75
+        }
+      },
+      "Atmosphere": {
+        "$className": "Atmosphere",
+        "$properties": {
+          "Density": 0.3,
+          "Offset": 0.25,
+          "Color": [
+            0.78,
+            0.78,
+            0.78
+          ],
+          "Decay": [
+            0.415686,
+            0.439216,
+            0.490196
+          ],
+          "Glare": 0,
+          "Haze": 0
+        }
+      },
+      "Sky": {
+        "$className": "Sky",
+        "$properties": {
+          "CelestialBodiesShown": true,
+          "MoonAngularSize": 11,
+          "SunAngularSize": 11
+        }
+      },
+      "Bloom": {
+        "$className": "BloomEffect",
+        "$properties": {
+          "Enabled": true,
+          "Intensity": 1,
+          "Size": 24,
+          "Threshold": 2
+        }
+      },
+      "SunRays": {
+        "$className": "SunRaysEffect",
+        "$properties": {
+          "Enabled": true,
+          "Intensity": 0.1,
+          "Spread": 0.1
+        }
+      }
+    },
+    "HttpService": {
+      "$className": "HttpService",
+      "$properties": {
+        "HttpEnabled": true
+      }
+    },
     "ReplicatedFirst": {
       "$className": "ReplicatedFirst",
       "$ignoreUnknownInstances": true,
