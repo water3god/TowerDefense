@@ -164,7 +164,8 @@ function Enemy.new(Input: EnemyInput)
 
 	self.SpeedChanges = { { TimeStart = workspace:GetServerTimeNow(), Speed = self.Speed } }
 	self.OriginalSpeed = self.Speed
-	self.VectorOffset = Vector3.new(Random:NextNumber(-0.5, 0.5), 0, Random:NextNumber(-0.5, 0.5))
+	self.VectorOffset = Vector3.zero
+	--self.VectorOffset = Vector3.new(Random:NextNumber(-0.5, 0.5), 0, Random:NextNumber(-0.5, 0.5))
 
 	self.Bezier = Beziers[Input.BezierId]
 	self.BezierId = Input.BezierId
@@ -264,7 +265,6 @@ function Enemy:Destroy()
 	self.Destroying:Fire()
 	self.Trove:Destroy()
 	Enemies[self.UniqueId] = nil
-	table.clear(self :: any)
 	setmetatable(self :: any, nil)
 end
 
@@ -295,7 +295,7 @@ function Enemy.GetSortedEnemy(EnemiesInput: { Enemy }, SortType: UnitInfo.SortTy
 	if SortType == "First" then
 		ClosestValue = 0
 		for _, Enemy in ipairs(EnemiesInput) do
-			if ClosestValue > ClosestEnemy.TimePosition then
+			if ClosestValue < ClosestEnemy.TimePosition then
 				ClosestEnemy = Enemy
 				ClosestValue = Enemy.TimePosition
 			end
@@ -303,7 +303,7 @@ function Enemy.GetSortedEnemy(EnemiesInput: { Enemy }, SortType: UnitInfo.SortTy
 	elseif SortType == "Last" then
 		ClosestValue = 1
 		for _, Enemy in ipairs(EnemiesInput) do
-			if ClosestValue < ClosestEnemy.TimePosition then
+			if ClosestValue > ClosestEnemy.TimePosition then
 				ClosestEnemy = Enemy
 				ClosestValue = Enemy.TimePosition
 			end
@@ -311,7 +311,7 @@ function Enemy.GetSortedEnemy(EnemiesInput: { Enemy }, SortType: UnitInfo.SortTy
 	elseif SortType == "Strongest" then
 		ClosestValue = 0
 		for _, Enemy in ipairs(EnemiesInput) do
-			if ClosestValue > ClosestEnemy.Health then
+			if ClosestValue < ClosestEnemy.Health then
 				ClosestEnemy = Enemy
 				ClosestValue = Enemy.Health
 			end
@@ -319,7 +319,7 @@ function Enemy.GetSortedEnemy(EnemiesInput: { Enemy }, SortType: UnitInfo.SortTy
 	elseif SortType == "Weakest" then
 		ClosestValue = math.huge
 		for _, Enemy in ipairs(EnemiesInput) do
-			if ClosestValue < ClosestEnemy.Health then
+			if ClosestValue > ClosestEnemy.Health then
 				ClosestEnemy = Enemy
 				ClosestValue = Enemy.Health
 			end

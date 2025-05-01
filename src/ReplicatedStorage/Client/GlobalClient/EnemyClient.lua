@@ -22,6 +22,7 @@ local HelperFunctions = require(Modules.HelperFunctions)
 
 local Shared = ReplicatedStorage.Shared
 local Types = require(Shared.Types)
+local Constants = require(Shared.Constants)
 
 local AnimationFolder = ReplicatedStorage.Animations
 local EnemiesAnimations = AnimationFolder.Enemies
@@ -208,7 +209,7 @@ end
 LocationEvent.OnClientEvent:Connect(function(UniqueId: string, Waypoints: { Vector3 }?)
 	if Waypoints then
 		if not Beziers[UniqueId] then
-			Beziers[UniqueId] = BezierPath.new(Waypoints, 5)
+			Beziers[UniqueId] = BezierPath.new(Waypoints, Constants.BEZIERCURVE)
 		end
 	else
 		if Beziers[UniqueId] then

@@ -3,7 +3,6 @@
 -- By Wa1er_God --
 
 local StartTime = 30
-local CurveSize = 1
 local WaveTweenTime = 6
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -19,6 +18,9 @@ local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local BezierPath = require(Modules.BezierPath)
 local GenerateId = require(Modules.GenerateId)
+
+local Shared = ReplicatedStorage.Shared
+local Constants = require(Shared.Constants)
 
 local GlobalModules = ServerScriptService.GlobalModules
 local Enemy = require(GlobalModules.Enemy)
@@ -134,7 +136,7 @@ function GlobalWave.new(Input: Input)
 	self.Positions = Input.Positions
 	self.Data = Input.Data
 
-	self.Bezier = BezierPath.new(self.Positions, CurveSize)
+	self.Bezier = BezierPath.new(self.Positions, Constants.BEZIERCURVE)
 	self.BezierId = GenerateId.GenerateId()
 	Enemy.AddBezier(self.BezierId, self.Bezier)
 

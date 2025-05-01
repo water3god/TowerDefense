@@ -353,7 +353,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.003,
+					Stroke = 0.002,
 					Color = Color3.new(0, 0, 0),
 					native = {
 						LineJoinMode = Enum.LineJoinMode.Round,
@@ -382,7 +382,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.0025,
+					Stroke = 0.002,
 					Color = Color3.new(0, 0, 0),
 					native = {
 						ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual,
@@ -410,7 +410,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.003,
+					Stroke = 0.002,
 					Color = Color3.new(0, 0, 0),
 					native = {
 						LineJoinMode = Enum.LineJoinMode.Bevel,
@@ -471,7 +471,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 				MaxedLabel = e(Main.TextLabel, {
 					native = {
 						Size = UDim2.fromScale(0.8, 0.8),
-						Text = "MAX",
+						Text = string.format("%u - MAX", UpgradeData.Level),
 						Visible = not HasNextLevel,
 					},
 				}),

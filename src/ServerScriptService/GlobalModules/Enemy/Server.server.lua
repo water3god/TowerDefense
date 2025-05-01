@@ -88,7 +88,7 @@ Enemy.Spawned:Connect(function(NewEnemy: Enemy.Enemy)
 	end)
 
 	NewEnemy.Destroying:Once(function()
-		HelperFunctions.FireClients(DestroyEvent, NewEnemy.ReplicateTo,  {UniqueId})
+		HelperFunctions.FireClients(DestroyEvent, NewEnemy.ReplicateTo, { UniqueId })
 	end)
 end)
 
@@ -101,24 +101,33 @@ Enemy.BezierRemoving:Connect(function(UniqueId: string)
 end)
 
 @native
-local function OnFrame()
+local function CalculateTimePosition(Enemy: Enemy.Enemy)
+	local NewTime = 0
 	local CurrentTime = workspace:GetServerTimeNow()
+
+	for _, Data in ipairs(Enemy.SpeedChanges) do
+		local EndTime = Data.TimeEnd or CurrentTime
+		local Difference = EndTime - Data.TimeStart
+
+		NewTime += (Data.Speed / Enemy.PathLength) * Difference
+	end
+
+	NewTime = math.clamp(NewTime, 0, 1)
+	if Enemy.Reverse then
+		NewTime = math.abs(NewTime - 1)
+	end
+
+	return NewTime
+end
+
+@native
+local function OnFrame()
 	for Id, Enemy in pairs(Enemies) do
-		local NewTime = 0
+		local TimePosition = CalculateTimePosition(Enemy)
 
-		for _, Data in ipairs(Enemy.SpeedChanges) do
-			local EndTime = Data.TimeEnd or CurrentTime
-			local Difference = EndTime - Data.TimeStart
+		Enemy.TimePosition = TimePosition
 
-			NewTime += (Data.Speed / Enemy.PathLength) * Difference
-		end
-		NewTime = math.clamp(NewTime, 0, 1)
-		if Enemy.Reverse then
-			NewTime = math.abs(NewTime - 1)
-		end
-		Enemy.TimePosition = NewTime
-
-		Enemy.CFrame = Enemy.Bezier:CalculateUniformCFrame(Enemy.TimePosition)
+		Enemy.CFrame = Enemy.Bezier:CalculateUniformCFrame(Enemy.TimePosition) + Enemy.VectorOffset
 
 		if Enemy.TimePosition == 0 or Enemy.TimePosition == 1 then
 			Enemy.ReachedEnd:Fire()

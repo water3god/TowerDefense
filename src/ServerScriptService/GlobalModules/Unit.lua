@@ -230,6 +230,9 @@ function Unit:UpdateEnemy()
 	local FireRate = LevelData.FireRate
 
 	local EnemiesInRange = Enemy.GetEnemiesInRange(self.CFrame.Position, Range)
+	for _, Enemy in ipairs(EnemiesInRange) do
+		HelperFunctions.Debug.VisualizeCFrame(Enemy.CFrame)
+	end
 	local ClosestEnemy = Enemy.GetSortedEnemy(EnemiesInRange, self.AttackPriority)
 
 	if ClosestEnemy == self.CurrentEnemy then

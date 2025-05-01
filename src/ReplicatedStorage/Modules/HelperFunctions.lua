@@ -23,7 +23,7 @@ local function CreateDefaultPart()
 	Part.CanQuery = false
 	Part.CanTouch = false
 
-	task.delay(10, function()
+	task.delay(0.1, function()
 		Part:Destroy()
 	end)
 
