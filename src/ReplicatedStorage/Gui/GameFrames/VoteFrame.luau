@@ -41,6 +41,7 @@ local function CreateVoteFrame(Props: Props)
 				mass = 1,
 				tension = 500,
 				friction = 30,
+				precision = 0.02,
 			},
 		}
 	end)

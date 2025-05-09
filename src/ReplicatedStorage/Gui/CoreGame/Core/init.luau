@@ -281,6 +281,10 @@ local function Render()
 	}?)
 	local HoveredPos, SetHoveredPos = React.useBinding(Vector2.new())
 
+	local OnBottomUnitClick = React.useCallback(function()
+		SetUnitId(nil)
+	end, { PlacingUnitId })
+
 	if not IsLobby then
 		React.useEffect(function()
 			for _, Unit in pairs(UnitClient.GetUnits()) do
@@ -494,15 +498,23 @@ local function Render()
 				BottomFrame = e(Bottom, {
 					SetHovered = SetHovered,
 					GetHovered = GetHovered,
+					UnitClick = OnBottomUnitClick,
 					SetVisible = function(Visible: boolean)
 						SetVisibleInternal(Constants.INVENTORY_FRAME, Visible)
 					end,
+					native = {
+						Position = Styles.Size:map(function(Size: number)
+							return UDim2.fromScale(0.5, 0.9):Lerp(UDim2.fromScale(0.5, 1.1), Size)
+						end),
+					},
 				}),
 			}),
 		}),
 		Buttons = IsLobby and e(Main.Frame, {
 			native = {
-				Position = UDim2.fromScale(0.1, 0.5),
+				Position = Styles.Size:map(function(Size: number)
+					return UDim2.fromScale(0.1, 0.5):Lerp(UDim2.fromScale(-0.1, 0.5), Size)
+				end),
 				Size = UDim2.fromScale(0.15, 0.4),
 			},
 		}, {

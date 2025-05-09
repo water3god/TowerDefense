@@ -23,9 +23,7 @@ local Main = require(CoreGame.Main)
 local CloseButton = require(CoreGame.CloseButton)
 local UIStroke = require(CoreGame.UIStroke)
 local Hooks = require(CoreGame.Hooks)
-
-local Inventory = Gui.Inventory
-local UnitFrame = require(Inventory.UnitFrame)
+local UnitView = require(CoreGame.UnitView)
 
 local GameFrames = Gui.GameFrames
 local UpgradeContext = require(GameFrames.UpgradeContext)
@@ -33,6 +31,7 @@ local UpgradeContext = require(GameFrames.UpgradeContext)
 local Shared = ReplicatedStorage.Shared
 local IsLobby = require(Shared.IsLobby)
 local UnitInfo = require(Shared.UnitInfo)
+local RarityInfo = require(Shared.RarityInfo)
 local Stats = UnitInfo.Stats
 
 local Client = ReplicatedStorage.Client
@@ -124,7 +123,6 @@ end
 
 local function CreateUpgradeFrame(Properties: Properties)
 	local UpgradeData = React.useContext(UpgradeContext.Context)
-	local Container: { current: WorldModel? } = React.useRef(nil :: WorldModel?)
 
 	local Styles, API = ReactSpring.useSpring(function()
 		return {
@@ -220,16 +218,6 @@ local function CreateUpgradeFrame(Properties: Properties)
 		end
 	end, { UpgradeData.UpgradeData :: any, UpgradeData.Level :: any })
 
-	React.useEffect(function()
-		local Data =
-			UnitClient.InitCharacter(UpgradeData.UnitName, UnitInfo.UnitInfo[UpgradeData.UnitName].ViewportOffset)
-		Data.UnitModel.Parent = Container.current
-
-		return function()
-			Data.Trove:Destroy()
-		end
-	end, { UpgradeData.UpgradeData :: any, UpgradeData.Level :: any })
-
 	local PriorityClick = React.useCallback(function()
 		local Unit = UnitClient.GetUnit(UpgradeData.UniqueId)
 
@@ -278,15 +266,33 @@ local function CreateUpgradeFrame(Properties: Properties)
 		end
 	end, { UpgradeData.Level })
 
+	local RarityData: RarityInfo.RarityInfo = React.useMemo(function()
+		local Rarity = UnitInfo.UnitInfo[UpgradeData.UnitName].Rarity
+		return RarityInfo[Rarity :: any]
+	end, { UpgradeData.UniqueId })
+
 	return e(Main.ImageLabel, {
 		native = Join({
 			Size = UDim2.fromScale(0.8, 0.8),
-			Image = "rbxassetid://103903141717286",
+			Image = "rbxassetid://127454767718648",
 			Visible = TrueVisible,
 		}, Properties.native),
 	}, {
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 1.5,
+		}),
+		UIStroke = e(UIStroke.UIStrokeBasic, {
+			Stroke = 0.001,
+			Color = Color3.new(1, 1, 1),
+			native = {
+				LineJoinMode = Enum.LineJoinMode.Round,
+			},
+		}),
+		UICorner = e("UICorner", {
+			CornerRadius = UDim.new(0.02, 0),
+		}),
+		UIGradient = e("UIGradient", {
+			Color = RarityData.BackgroundColor,
 		}),
 		CloseButton = e(CloseButton, {
 			Position = UDim2.fromScale(1, 0),
@@ -300,34 +306,30 @@ local function CreateUpgradeFrame(Properties: Properties)
 				Text = UpgradeData.UnitName,
 			},
 		}, {
-			UIListLayout = e("UIListLayout", {
-				FillDirection = Enum.FillDirection.Vertical,
-				SortOrder = Enum.SortOrder.LayoutOrder,
-				Padding = UDim.new(0, 0),
+			UIGradient = e("UIGradient", {
+				Color = RarityData.Color,
+			}),
+			UIStroke = e(UIStroke.UIStroke, {
+				Stroke = 0.001,
+				GradColor = RarityData.StrokeColor,
+				native = {
+					LineJoinMode = Enum.LineJoinMode.Miter,
+				},
 			}),
 		}),
-		UnitFrame = e(Main.ViewportFrame, {
+		UnitFrame = e(UnitView, {
+			UnitName = UpgradeData.UnitName,
 			native = {
 				Size = UDim2.fromScale(0.5, 0.525),
 				Position = UDim2.fromScale(0.25, 0.525),
-				LightDirection = Vector3.new(0, -1, -1),
-				LightColor = Color3.new(1, 1, 1),
-				Ambient = Color3.new(1, 1, 1),
 			},
 		}, {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 				AspectRatio = 1,
 			}),
-			ModelContainer = e("WorldModel", {
-				ref = Container,
-				WorldPivot = CFrame.new(),
-			}),
-			Camera = e("Camera", {
-				CFrame = CFrame.new(),
-			}),
-			UIStroke = e(UIStroke.UIStrokeBasic, {
+			UIStroke = e(UIStroke.UIStroke, {
 				Stroke = 0.001,
-				Color = Color3.new(1, 1, 1),
+				GradColor = RarityData.BackgroundColor,
 				native = {
 					LineJoinMode = Enum.LineJoinMode.Round,
 				},

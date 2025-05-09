@@ -537,8 +537,14 @@ function UnitModule.InitCharacter(Unit: string, Position: CFrame?)
 
 	HelperFunctions.DisableHumanoid(Humanoid)
 
-	InitTrove:Add(UnitModel:GetPropertyChangedSignal("Parent"):Once(function()
+	local Connection: RBXScriptConnection? = nil
+
+	Connection = InitTrove:Add(UnitModel:GetPropertyChangedSignal("Parent"):Connect(function()
 		if UnitModel.Parent ~= nil then
+			if Connection then
+				Connection:Disconnect()
+				Connection = nil
+			end
 			local Animation = GetIdle(Unit)
 			if Animation then
 				local Track = Animator:LoadAnimation(Animation)

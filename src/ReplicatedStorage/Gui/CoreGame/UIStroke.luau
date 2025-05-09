@@ -9,6 +9,8 @@ local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
 local e = React.createElement
 
+local Trove = require(Packages.Trove)
+
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
@@ -83,6 +85,63 @@ end
 function Funcs.UIStroke(Properties: PropertiesNormal)
 	return e(
 		Funcs.UIStrokeBasic,
+		Join(
+			Properties,
+			{
+				native = Join({
+					Color = Color3.new(1, 1, 1),
+				}, Properties.native),
+			} :: any
+		),
+		{
+			UIGradient = e(CreateUIGrad, {
+				Color = Properties.GradColor,
+			}),
+		},
+		Properties.children
+	)
+end
+
+function Funcs.UIStrokeAdvanced(Properties: PropertiesBasic)
+	local Size, SetSize = React.useState(1)
+
+	local Stroke: { current: UIStroke? } = React.useRef(nil)
+
+	React.useEffect(function()
+		local Trove = Trove.new()
+
+		if Stroke.current then
+			local Stroke = Stroke.current
+
+			if Stroke.Parent and Stroke.Parent:IsA("GuiObject") then
+				Trove:Connect(Stroke.Parent:GetPropertyChangedSignal("AbsoluteSize"), function()
+					local AbsoluteSize = Stroke.Parent.AbsoluteSize
+					local TotalSize = (AbsoluteSize.X + AbsoluteSize.Y) / 2
+					SetSize(TotalSize * Properties.Stroke)
+				end)
+			end
+		end
+
+		return Trove:WrapClean()
+	end, { Stroke.current, Properties.Stroke :: any })
+
+	return e(
+		"UIStroke",
+		Join({
+			ref = Stroke,
+			Thickness = Size,
+			Color = Properties.Color or Color3.new(),
+			LineJoinMode = Enum.LineJoinMode.Bevel,
+			ApplyStrokeMode = Properties.StrokeMode or Enum.ApplyStrokeMode.Contextual,
+			Transparency = Properties.Transparency or 0,
+		}, Properties.native),
+		Properties.children
+	)
+end
+
+function Funcs.UIStrokeGradient(Properties: PropertiesNormal)
+	return e(
+		Funcs.UIStrokeAdvanced,
 		Join(
 			Properties,
 			{

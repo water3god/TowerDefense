@@ -8,7 +8,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
-local Trove = require(Packages.Trove)
 local e = React.createElement
 
 local Trove = require(Packages.Trove)
@@ -43,6 +42,7 @@ export type Properties = {
 	SetVisible: ((Visible: boolean) -> ())?,
 	GetHovered: (() -> string?)?,
 	SetPlacingId: ((UniqueId: string?) -> ())?,
+	UnitClick: (() -> ())?,
 
 	native: { [any]: any }?,
 	children: { [any]: any }?,
@@ -148,6 +148,9 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 		if PlacementData then
 			PlacementData.Trove:Destroy()
 		end
+		if Properties.UnitClick then
+			Properties.UnitClick()
+		end
 
 		if Unit then
 			if PlacementData and PlacementData.UniqueId == UniqueId then
@@ -190,7 +193,6 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 	return e(Main.CanvasGroup, {
 		native = Join({
 			Size = UDim2.fromScale(0.4, 0.2),
-			Position = UDim2.fromScale(0.5, 0.9),
 		}, Properties.native),
 	}, {
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {

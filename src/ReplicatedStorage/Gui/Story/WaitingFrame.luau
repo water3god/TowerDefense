@@ -103,7 +103,7 @@ local function CreateWaitingFrame(Props: Properties)
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.003,
+					Stroke = 0.002,
 				}),
 			}),
 		}),
