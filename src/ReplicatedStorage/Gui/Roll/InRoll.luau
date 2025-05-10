@@ -8,7 +8,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
-local ReactRoblox = require(Packages.ReactRoblox)
 local ReactSpring = require(Packages.ReactSpring)
 local e = React.createElement
 
@@ -214,7 +213,7 @@ local function CreateInRoll(props: Properties)
 	end, { props.UnitNames :: any, props.LastFiredTime :: any, props.AutoRoll :: any })
 
 	local CloseClick = React.useCallback(function()
-		if props.CloseClick then
+		if props.CloseClick and workspace:GetServerTimeNow() - props.LastFiredTime > Constants.ROLLDELAYTIME * 0.9 then
 			if not props.AutoRoll then
 				SetVisible(false)
 				props.CloseClick()
@@ -248,6 +247,7 @@ local function CreateInRoll(props: Properties)
 				Size = UDim2.fromScale(0.5, 0.2),
 				Image = "rbxassetid://80739823452825",
 				ImageColor3 = Color3.new(1.000000, 0.125490, 0.125490),
+				Visible = props.AutoRoll,
 				[React.Event.MouseButton1Click] = CancelAutoRoll,
 			},
 		}, {

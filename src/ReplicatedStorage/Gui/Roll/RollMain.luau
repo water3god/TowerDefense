@@ -36,6 +36,7 @@ local RarityInfo = require(Shared.RarityInfo)
 
 export type Properties = {
 	CloseClick: () -> (),
+	SetVisible: () -> (),
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
@@ -138,6 +139,10 @@ local function CreateRollMain(props: Properties)
 
 		return Frames
 	end, { RollData.Units })
+
+	Hooks.useEventConnection(RollService.Touched, function()
+		props.SetVisible()
+	end, { props.SetVisible })
 
 	local Time, _, SetTime = Hooks.UseTime()
 

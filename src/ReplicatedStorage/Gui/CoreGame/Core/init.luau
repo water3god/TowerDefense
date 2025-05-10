@@ -223,6 +223,7 @@ local function RenderRollFrame(Props: any)
 	return e(RollContext.Provider, {}, {
 		MainStory = e(RollMain, {
 			CloseClick = Props.CloseClick,
+			SetVisible = Props.SetVisible,
 			native = {
 				Position = Position,
 				Visible = Visiblity,
@@ -278,6 +279,22 @@ local function Render()
 	end, { VisibleFrame })
 
 	local SetVisibleInternal = React.useCallback(function(Name: string, Visible: boolean)
+		if Visible then
+			SetVisibleFrame(Name)
+		else
+			if VisibleFrame == Name then
+				SetVisibleFrame(nil)
+			end
+		end
+	end, { VisibleFrame })
+
+	local SetVisibleRetricted = React.useCallback(function(Name: string, Visible: boolean)
+		if VisibleFrame and table.find(Restricted, VisibleFrame) then
+			if VisibleFrame ~= Name then
+				return
+			end
+		end
+
 		if Visible then
 			SetVisibleFrame(Name)
 		else
@@ -424,8 +441,6 @@ local function Render()
 		end, {})
 	end
 
-	print(Constants.IN_ROLL)
-
 	React.useEffect(function()
 		API.stop()
 		API.start({
@@ -473,9 +488,12 @@ local function Render()
 					end,
 				}),
 				[Constants.ROLL_FRAME] = e(RenderRollFrame, {
-					Visible = if VisibleFrame == Constants.INVENTORY_FRAME then true else false,
+					Visible = if VisibleFrame == Constants.ROLL_FRAME then true else false,
 					CloseClick = function()
 						OnCloseClick(Constants.ROLL_FRAME)
+					end,
+					SetVisible = function()
+						SetVisibleRetricted(Constants.ROLL_FRAME, true)
 					end,
 				}),
 				[Constants.IN_ROLL] = e(InRoll.Connected, {

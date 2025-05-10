@@ -35,6 +35,7 @@ local Story = {
 		}, {
 			RollMain = e(RollMain, {
 				CloseClick = function() end,
+				SetVisible = function() end,
 			}),
 		})
 

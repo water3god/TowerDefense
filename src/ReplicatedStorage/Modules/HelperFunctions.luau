@@ -4,11 +4,13 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
 
 local Packages = ReplicatedStorage.Packages
 local Trove = require(Packages.Trove)
-local Signal = require(Packages.Signal)
 local Promise = require(Packages.Promise)
+
+local DelayHandler = require(script.Parent.DelayHandler)
 
 local Camera = workspace.CurrentCamera
 
@@ -264,6 +266,19 @@ function Funcs.SafeTeleport(func: () -> TeleportAsyncResult, MaxCount: number): 
 	return Returned
 end
 
+function Funcs.GetPlayerFromPart(Part: BasePart)
+	local Parent = Part.Parent :: Instance
+	if Parent:IsA("Model") then
+		if Parent:FindFirstChildWhichIsA("Humanoid") and DelayHandler(Parent, 1) then
+			local Player = Players:GetPlayerFromCharacter(Parent)
+
+			return Player
+		end
+	end
+
+	return
+end
+
 function Funcs.CalcTime(Time: number, StartTime: number, CurrentTime: number)
 	return Time - (CurrentTime - StartTime)
 end
@@ -405,7 +420,6 @@ function Funcs.PlaySound(Sound: Sound, Origin: CFrame)
 	end)
 end
 
-local Players = game:GetService("Players")
 local Thumbnails: { [Player]: string } = {}
 
 function Funcs.GetThumbnailAsync(Player: Player)

@@ -21,6 +21,7 @@ local RollEvent = RollEvents.RollEvent
 local StopAutoRoll = RollEvents.StopAutoRoll
 
 local Shared = ReplicatedStorage.Shared
+local IsLobby = require(Shared.IsLobby)
 local Constants = require(Shared.Constants)
 local RollDelayTime = Constants.ROLLDELAYTIME
 
@@ -33,6 +34,10 @@ local SafePlayerAdded = require(SafePlayer.SafePlayerAdded)
 
 local ServerData = ServerStorage.Data
 local ChanceData = require(ServerData.ChanceData)
+
+if not IsLobby then
+	return
+end
 
 AutoRoll.OnServerEvent:Connect(function(Player: Player, Enabled: boolean)
 	if typeof(Enabled) ~= "boolean" then

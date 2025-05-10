@@ -8,6 +8,10 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Packages = ReplicatedStorage.Packages
 local Signal = require(Packages.Signal)
 
+local Modules = ReplicatedStorage.Modules
+local ObserveTag = require(Modules.ObserveTag)
+local HelperFunctions = require(Modules.HelperFunctions)
+
 local Remotes = ReplicatedStorage.Remotes
 local RollRemotes = Remotes.Roll
 local AutoRoll = RollRemotes.AutoRoll
@@ -36,6 +40,7 @@ local Module: {
 	Data: RollData,
 	Rolled: Signal.Signal<RollData>,
 	AutoRollStopped: Signal.Signal<>,
+	Touched: Signal.Signal<>,
 	Roll: (Count: number) -> (),
 	SetAutoRoll: (Enabled: boolean) -> (),
 	StopAutoRoll: () -> (),
@@ -48,6 +53,7 @@ local Module: {
 		},
 		Rolled = Signal.new(),
 		AutoRollStopped = Signal.new(),
+		Touched = Signal.new(),
 		Roll = Roll,
 		SetAutoRoll = SetAutoRoll,
 		StopAutoRoll = StopAutoRoll,
@@ -64,5 +70,23 @@ end
 
 StopAutoRollEvent.OnClientEvent:Connect(HandleStopAutoRoll)
 RollEvent.OnClientEvent:Connect(HandleRoll)
+
+ObserveTag.ObserveTag("RollBooth", function(BasePart: Instance)
+	if BasePart:IsA("BasePart") then
+		local Connection = BasePart.Touched:Connect(function(OtherPart)
+			local Player = HelperFunctions.GetPlayerFromPart(OtherPart)
+
+			if Player then
+				Module.Touched:Fire()
+			end
+		end)
+
+		return function()
+			Connection:Disconnect()
+		end
+	end
+
+	return function() end
+end)
 
 return Module

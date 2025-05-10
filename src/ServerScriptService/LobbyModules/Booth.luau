@@ -3,7 +3,6 @@
 -- By Wa1er_God --
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Players = game:GetService("Players")
 
 local Packages = ReplicatedStorage.Packages
 local Trove = require(Packages.Trove)
@@ -11,7 +10,6 @@ local Signal = require(Packages.Signal)
 
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
-local DelayHandler = require(Modules.DelayHandler)
 local GenerateId = require(Modules.GenerateId)
 
 local Shared = ReplicatedStorage.Shared
@@ -19,19 +17,6 @@ local Constants = require(Shared.Constants)
 local Types = require(Shared.Types)
 
 local VectorOffset = Vector3.new(0, 3, 0)
-
-local function GetPlayerFromPart(Part: BasePart)
-	local Parent = Part.Parent :: Instance
-	if Parent:IsA("Model") then
-		if Parent:FindFirstChildWhichIsA("Humanoid") and DelayHandler(Parent, 1) then
-			local Player = Players:GetPlayerFromCharacter(Parent)
-
-			return Player
-		end
-	end
-
-	return
-end
 
 export type Status = "Idle" | "ChoosingMap" | "LoadingPlayers" | "LoadingIn"
 
@@ -135,7 +120,7 @@ function Booth.new(Input: BoothInput)
 			return
 		end
 
-		local Player = GetPlayerFromPart(BasePart)
+		local Player = HelperFunctions.GetPlayerFromPart(BasePart)
 
 		if Player then
 			if table.find(GlobalPlayersQueue, Player) then
