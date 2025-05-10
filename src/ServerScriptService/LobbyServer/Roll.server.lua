@@ -50,7 +50,7 @@ local Counts = { 1, 3, 10 }
 
 local Delays: { [Player]: { MinimumTime: number, Timer: any } } = {}
 
-local function Roll(Data: PlayerData.PlayerData, Count: number)
+local function Roll(Data: PlayerData.PlayerData, Count: number, Auto: boolean)
 	Delays[Data.Player].MinimumTime = tick() + RollDelayTime
 
 	local SendData = {}
@@ -62,7 +62,11 @@ local function Roll(Data: PlayerData.PlayerData, Count: number)
 	end
 
 	if #SendData > 0 then
-		RollEvent:FireClient(Data.Player, SendData)
+		RollEvent:FireClient(Data.Player, {
+			SentTime = workspace:GetServerTimeNow(),
+			Data = SendData,
+			AutoRoll = Auto,
+		})
 	end
 end
 
@@ -72,7 +76,7 @@ local function InitTimer(Data: PlayerData.PlayerData, Count: number)
 	Time.AllowDrift = false
 
 	Time.Tick:Connect(function()
-		Roll(Data, Count)
+		Roll(Data, Count, true)
 	end)
 
 	Trove:Connect(Data.Player.Destroying, function()
@@ -101,7 +105,7 @@ RollEvent.OnServerEvent:Connect(function(Player: Player, Count: number)
 	local PlayerData = PlayerData.GetPlayerData(Player)
 
 	if PlayerData and Delays[Player].MinimumTime <= tick() then
-		Roll(PlayerData, Count)
+		Roll(PlayerData, Count, PlayerData.Profile.Data.AutoRoll)
 		if PlayerData.Profile.Data.AutoRoll then
 			InitTimer(PlayerData, Count)
 		end
@@ -113,6 +117,7 @@ StopAutoRoll.OnServerEvent:Connect(function(Player)
 
 	if PlayerData and Delays[Player].Timer then
 		Delays[Player].Timer:Destroy()
+		StopAutoRoll:FireClient(Player)
 	end
 end)
 

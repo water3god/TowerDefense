@@ -7,6 +7,8 @@ local Constants = {
 	TRADE_FRAME = "TradeFrame",
 	TRADE_MENU = "TradeMenu",
 	STORY_FRAME = "StoryFrame",
+	ROLL_FRAME = "RollFrame",
+	IN_ROLL = "InRoll",
 }
 
 return Constants

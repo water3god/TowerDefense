@@ -33,6 +33,8 @@ local Story = {
 		end
 		local Frame = e(InRoll.Create, {
 			UnitNames = Units,
+			LastFiredTime = workspace:GetServerTimeNow(),
+			AutoRoll = false,
 		})
 		return Frame
 	end,

@@ -33,7 +33,9 @@ local Story = {
 				TotalTime = workspace:GetServerTimeNow() + 30,
 			},
 		}, {
-			RollMain = e(RollMain),
+			RollMain = e(RollMain, {
+				CloseClick = function() end,
+			}),
 		})
 
 		return Roll

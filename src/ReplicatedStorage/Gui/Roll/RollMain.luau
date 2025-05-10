@@ -27,14 +27,15 @@ local Roll = Gui.Roll
 local RollContext = require(Roll.RollContext)
 
 local Client = ReplicatedStorage.Client
-local GlobalClient = Client.GlobalClient
-local UnitClient = require(GlobalClient.UnitClient)
+local LobbyClient = Client.LobbyClient
+local RollService = require(LobbyClient.RollService)
 
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
 local RarityInfo = require(Shared.RarityInfo)
 
 export type Properties = {
+	CloseClick: () -> (),
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
@@ -152,6 +153,10 @@ local function CreateRollMain(props: Properties)
 
 	local InAutoSell, SetAutoSell = React.useState(false)
 
+	local SummonClick = React.useCallback(function()
+		RollService.Roll(RollMultiplier)
+	end, { RollMultiplier })
+
 	local OnAutoClick = React.useCallback(function()
 		SetAutoSell(not InAutoSell)
 	end, { InAutoSell })
@@ -168,6 +173,7 @@ local function CreateRollMain(props: Properties)
 		CloseButton = e(CloseButton, {
 			Position = UDim2.fromScale(1, 0),
 			Size = UDim2.fromScale(0.25, 0.2),
+			OnClick = props.CloseClick,
 		}),
 		Title = e(Title, {
 			Title = "SUMMON",
@@ -227,6 +233,7 @@ local function CreateRollMain(props: Properties)
 				Size = UDim2.fromScale(0.3, 0.2),
 				Position = UDim2.fromScale(0.5, 0.87),
 				ImageColor3 = Color3.new(0.521569, 0.094118, 0.784314),
+				[React.Event.MouseButton1Click] = SummonClick,
 			},
 		}, {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {

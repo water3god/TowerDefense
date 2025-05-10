@@ -12,6 +12,8 @@ local ReactRoblox = require(Packages.ReactRoblox)
 local ReactSpring = require(Packages.ReactSpring)
 local e = React.createElement
 
+local Promise = require(Packages.Promise)
+
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
@@ -22,12 +24,22 @@ local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
 local UnitView = require(CoreGame.UnitView)
 local UIStroke = require(CoreGame.UIStroke)
+local Hooks = require(CoreGame.Hooks)
+
+local Client = ReplicatedStorage.Client
+local LobbyClient = Client.LobbyClient
+local RollService = require(LobbyClient.RollService)
 
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
 local RarityInfo = require(Shared.RarityInfo)
+local Constants = require(Shared.Constants)
 
 export type Properties = {
+	SetVisible: (Visible: boolean) -> ()?,
+	CloseClick: () -> ()?,
+	LastFiredTime: number,
+	AutoRoll: boolean,
 	UnitNames: { string },
 	native: { [any]: any }?,
 	children: { [any]: any }?,
@@ -35,6 +47,13 @@ export type Properties = {
 
 export type UnitProperties = {
 	UnitName: string,
+	native: { [any]: any }?,
+	children: { [any]: any }?,
+}
+
+export type ConnectedProperties = {
+	SetVisible: (Visible: boolean) -> (),
+	CloseClick: () -> (),
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
@@ -123,6 +142,14 @@ end
 local MaxPerRow = 4
 
 local function CreateInRoll(props: Properties)
+	local Visible, SetVisible = React.useState(false)
+
+	React.useEffect(function()
+		if props.SetVisible then
+			props.SetVisible(Visible)
+		end
+	end, { Visible })
+
 	local MainFrames: any = React.useMemo(function()
 		local Frames = {}
 		local RowCount = math.ceil(#props.UnitNames / MaxPerRow)
@@ -159,22 +186,69 @@ local function CreateInRoll(props: Properties)
 				}),
 			}, UnitFrames)
 		end
-
 		return Frames
 	end, { props.UnitNames })
 
+	React.useEffect(function()
+		if HelperFunctions.Len(props.UnitNames) > 0 then
+			SetVisible(true)
+		end
+
+		local TimeDifference = workspace:GetServerTimeNow() - props.LastFiredTime
+		local DelayTime = Constants.ROLLDELAYTIME * 0.7 - TimeDifference
+		if props.AutoRoll then
+			local Promise = Promise.delay(DelayTime):andThen(function()
+				SetVisible(false)
+			end)
+
+			return function()
+				Promise:cancel()
+			end
+		else
+			if DelayTime <= 0 then
+				SetVisible(false)
+			end
+		end
+
+		return function() end
+	end, { props.UnitNames :: any, props.LastFiredTime :: any, props.AutoRoll :: any })
+
+	local CloseClick = React.useCallback(function()
+		if props.CloseClick then
+			if not props.AutoRoll then
+				SetVisible(false)
+				props.CloseClick()
+			end
+		end
+	end, { props.CloseClick :: any, props.AutoRoll :: any })
+
+	local CancelAutoRoll = React.useCallback(function()
+		if props.AutoRoll then
+			RollService.StopAutoRoll()
+		end
+	end, { props.AutoRoll })
+
 	return e(Main.Frame, {
 		native = Join({
+			Visible = Visible,
 			Position = UDim2.fromScale(0.5, 0.4),
 			Size = UDim2.fromScale(0.8, 0.6),
 		}, props.native),
 	}, {
+		BackClick = e(Main.TextButton, {
+			native = {
+				Size = UDim2.fromScale(3, 3),
+				Text = "",
+				[React.Event.MouseButton1Click] = CloseClick,
+			},
+		}),
 		StopAutoButton = e(Main.Animateables.ImageButton, {
 			native = {
 				Position = UDim2.fromScale(0.5, 1.2),
 				Size = UDim2.fromScale(0.5, 0.2),
 				Image = "rbxassetid://80739823452825",
 				ImageColor3 = Color3.new(1.000000, 0.125490, 0.125490),
+				[React.Event.MouseButton1Click] = CancelAutoRoll,
 			},
 		}, {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
@@ -194,8 +268,29 @@ local function CreateInRoll(props: Properties)
 	}, MainFrames, props.children)
 end
 
-local function CreateRollConnected(props)
-	return e(CreateInRoll)
+local function CreateRollConnected(props: ConnectedProperties)
+	local LastFiredTime, SetLastFiredTime = React.useState(1)
+	local UnitNames, SetUnitNames = React.useState({})
+	local InAutoRoll, SetAutoRoll = React.useState(false)
+
+	Hooks.useEventConnection(RollService.Rolled, function(RollData: RollService.RollData)
+		SetLastFiredTime(RollData.SentTime)
+		SetUnitNames(RollData.Data)
+		SetAutoRoll(RollData.AutoRoll)
+	end, {})
+
+	Hooks.useEventConnection(RollService.AutoRollStopped, function()
+		SetAutoRoll(false)
+	end, {})
+
+	return e(CreateInRoll, {
+		SetVisible = props.SetVisible,
+		CloseClick = props.CloseClick,
+		LastFiredTime = LastFiredTime,
+		UnitNames = UnitNames,
+		AutoRoll = InAutoRoll,
+		native = props.native,
+	}, props.children)
 end
 
 return {

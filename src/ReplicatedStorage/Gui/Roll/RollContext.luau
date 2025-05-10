@@ -14,6 +14,11 @@ local e = React.createElement
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
+local Hooks = require(CoreGame.Hooks)
+
+local Client = ReplicatedStorage.Client
+local LobbyClient = Client.LobbyClient
+local RollService = require(LobbyClient.RollService)
 
 export type RollData = {
 	Units: { [number]: string },
@@ -22,7 +27,7 @@ export type RollData = {
 }
 
 local Default: RollData = {
-	Units = {},
+	Units = { "Scout", "Scout", "Scout" },
 	TimeStart = 0,
 	TotalTime = 30,
 }

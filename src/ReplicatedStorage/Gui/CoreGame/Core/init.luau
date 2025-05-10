@@ -51,6 +51,10 @@ local Story = Gui.Story
 local MainStory = require(Story.MainStory)
 local WaitingFrame = require(Story.WaitingFrame)
 
+local Roll = Gui.Roll
+local InRoll = require(Roll.InRoll)
+local RollMain = require(Roll.RollMain)
+
 -- Contexts --
 local InventoryContext = require(Inventory.InventoryContext)
 local TradeMenuContext = require(Trade.TradeContext)
@@ -58,6 +62,7 @@ local EquippedUnitsContext = require(GameFrames.EquippedUnitsContext)
 local WaveContext = require(GameFrames.WaveContext)
 local UpgradeContext = require(GameFrames.UpgradeContext)
 local StoryContext = require(Story.StoryContext)
+local RollContext = require(Roll.RollContext)
 
 local IsRunning = RunService:IsRunning()
 
@@ -71,12 +76,9 @@ local IsLobby = require(Shared.IsLobby)
 
 local Constants = require(script.Constants)
 local OriginalPositions = require(script.OriginalPositions)
-
-local Camera = workspace.CurrentCamera
+local Restricted = require(script.Restricted)
 
 local GlobalWorkspace = workspace.GlobalWorkspace
-local EnemiesFolder: Folder = GlobalWorkspace.Enemies
-local UnitsFolder: Folder = GlobalWorkspace.Units
 
 local Player = Players.LocalPlayer
 
@@ -212,6 +214,23 @@ local function RenderStoryFrame(Props: any)
 	})
 end
 
+local function RenderRollFrame(Props: any)
+	local Position, Visiblity = AnimateWrapper({
+		Visible = Props.Visible,
+		Name = Constants.ROLL_FRAME,
+	})
+
+	return e(RollContext.Provider, {}, {
+		MainStory = e(RollMain, {
+			CloseClick = Props.CloseClick,
+			native = {
+				Position = Position,
+				Visible = Visiblity,
+			},
+		}),
+	})
+end
+
 local PlayCFrame = CFrame.new(145.5, 7.834, 143.5) * CFrame.Angles(0, math.rad(25), 0)
 
 local function Render()
@@ -240,6 +259,11 @@ local function Render()
 	end)
 
 	local OnMainButtonClick = React.useCallback(function(Name: string)
+		if VisibleFrame and table.find(Restricted, VisibleFrame) then
+			if VisibleFrame ~= Name then
+				return
+			end
+		end
 		if VisibleFrame == Name then
 			SetVisibleFrame(nil)
 		else
@@ -400,6 +424,8 @@ local function Render()
 		end, {})
 	end
 
+	print(Constants.IN_ROLL)
+
 	React.useEffect(function()
 		API.stop()
 		API.start({
@@ -425,22 +451,18 @@ local function Render()
 						OnCloseClick(Constants.INVENTORY_FRAME)
 					end,
 				}),
-			} :: any,
-			{
 				[Constants.TRADE_FRAME] = e(RenderTradeFrame, {
 					Visible = if VisibleFrame == Constants.TRADE_FRAME then true else false,
 					Toggle = function(Visible)
 						SetVisibleInternal(Constants.TRADE_FRAME, Visible)
 					end,
-				}),
-			} :: any,
-			{
+				}) :: any,
 				[Constants.TRADE_MENU] = e(RenderTradeMenu, {
 					Visible = if VisibleFrame == Constants.TRADE_MENU then true else false,
 					CloseClick = function()
 						OnCloseClick(Constants.TRADE_MENU)
 					end,
-				}) :: any,
+				}),
 				[Constants.STORY_FRAME] = e(RenderStoryFrame, {
 					Visible = if VisibleFrame == Constants.STORY_FRAME then true else false,
 					Toggle = function(Visible)
@@ -449,8 +471,22 @@ local function Render()
 					CloseClick = function()
 						OnCloseClick(Constants.STORY_FRAME)
 					end,
+				}),
+				[Constants.ROLL_FRAME] = e(RenderRollFrame, {
+					Visible = if VisibleFrame == Constants.INVENTORY_FRAME then true else false,
+					CloseClick = function()
+						OnCloseClick(Constants.ROLL_FRAME)
+					end,
+				}),
+				[Constants.IN_ROLL] = e(InRoll.Connected, {
+					SetVisible = function(Visible: boolean)
+						SetVisibleInternal(Constants.IN_ROLL, Visible)
+					end,
+					CloseClick = function()
+						SetVisibleInternal(Constants.ROLL_FRAME, true)
+					end,
 				}) :: any,
-			}
+			} :: any
 		),
 		OtherGui = e("Folder", {}, {
 			GameOnly = not IsLobby and e("Folder", {}, {
