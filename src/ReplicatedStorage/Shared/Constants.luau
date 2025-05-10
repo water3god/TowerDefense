@@ -11,6 +11,8 @@ local Constants = {
 	BEZIERCURVE = 5,
 
 	INFORMATIONHASHMAP = "TOWERDEFENCEHASHMAP",
+
+	ROLLDELAYTIME = 3,
 }
 
 return Constants

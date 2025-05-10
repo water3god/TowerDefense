@@ -20,9 +20,6 @@ local LevelRequirements = require(Shared.LevelRequirements)
 local Utility = ServerScriptService.Utility
 local ProfileStore = require(Utility.ProfileStore)
 
-local GlobalModules = ServerScriptService.GlobalModules
-local Unit = require(GlobalModules.Unit)
-
 local Template = require(ServerStorage.Data.DefaultData)
 
 local SettingData = require(ReplicatedStorage.Shared.Settings)
@@ -57,6 +54,7 @@ type PlayerDataData<T> = {
 	UnitAdded: Signal.Signal<Template.UnitData>,
 	UnitChanged: Signal.Signal<Template.UnitData>,
 	UnitRemoved: Signal.Signal<Template.UnitData>,
+	AutoRollChanged: Signal.Signal<boolean>,
 
 	StageChanged: Signal.Signal<StageParamData>,
 
@@ -87,6 +85,8 @@ type PlayerDataImpl = {
 	AddUnitFromExisting: (self: PlayerData, UnitData: Template.UnitData) -> Template.UnitData?,
 	DeleteUnit: (self: PlayerData, UniqueId: string) -> (),
 	GetUnitFromId: (self: PlayerData, UniqueId: string) -> Template.UnitData?,
+
+	SetAutoRoll: (self: PlayerData, AutoRoll: boolean) -> (),
 
 	SetCoins: (self: PlayerData, Coins: number) -> (),
 	AddCoins: (self: PlayerData, Coins: number) -> (),
@@ -206,6 +206,7 @@ function PlayerData.new(Player: Player)
 
 	self.SettingChanged = self._Trove:Construct(Signal)
 	self.Rolled = self._Trove:Construct(Signal)
+	self.AutoRollChanged = self._Trove:Construct(Signal)
 
 	self.XPChanged = self._Trove:Construct(Signal)
 	self.LeveledUp = self._Trove:Construct(Signal)
@@ -391,6 +392,11 @@ function PlayerData:GetUnitFromId(UniqueId: string)
 	return Data.Units[UniqueId]
 end
 
+function PlayerData:SetAutoRoll(AutoRoll: boolean)
+	self.Profile.Data.AutoRoll = AutoRoll
+	self.AutoRollChanged:Fire(AutoRoll)
+end
+
 function PlayerData:SetCoins(Coins: number)
 	local CoinCount = math.max(Coins, 0)
 	self.Profile.Data.Coins = CoinCount
@@ -429,8 +435,6 @@ function PlayerData:AddStage(StageParamData: StageParamData)
 	then
 		warn("PlayerData:AddStage (Invalid Parameters)")
 	end
-
-	local function AddToData(StageData) end
 
 	local Data = self.Profile.Data
 	if not Data.CompletedMaps[StageParamData.Map] then

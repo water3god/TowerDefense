@@ -169,7 +169,7 @@ local function CreateInRoll(props: Properties)
 			Size = UDim2.fromScale(0.8, 0.6),
 		}, props.native),
 	}, {
-		ContinueButton = e(Main.Animateables.ImageButton, {
+		StopAutoButton = e(Main.Animateables.ImageButton, {
 			native = {
 				Position = UDim2.fromScale(0.5, 1.2),
 				Size = UDim2.fromScale(0.5, 0.2),
@@ -182,7 +182,7 @@ local function CreateInRoll(props: Properties)
 			}),
 			Label = e(Main.TextLabel, {
 				native = {
-					Text = "Continue",
+					Text = "Stop Auto Summon",
 					Size = UDim2.fromScale(0.7, 0.7),
 				},
 			}, {

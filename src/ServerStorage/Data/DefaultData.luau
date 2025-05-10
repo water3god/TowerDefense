@@ -28,6 +28,7 @@ export type Data = {
 	Gamepasses: {
 		[string]: GamepassData,
 	},
+	AutoRoll: boolean,
 	CompletedMaps: { [string]: { [number]: { [string]: StageData } } },
 	Level: number,
 	XP: number,
@@ -51,6 +52,7 @@ local Data: Data = {
 		MythicSkip = false,
 		CanTrade = true,
 	},
+	AutoRoll = false,
 	CompletedMaps = {},
 	Level = 1,
 	XP = 0,
