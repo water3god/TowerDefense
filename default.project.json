@@ -2,6 +2,13 @@
   "name": "TowerDefense",
   "tree": {
     "$className": "DataModel",
+    "Workspace": {
+      "$className": "Workspace",
+      "$ignoreUnknownInstances": true,
+      "GlobalWorkspace": {
+        "$path": "Models/GlobalWorkspace.rbxm"
+      }
+    },
     "Lighting": {
       "$className": "Lighting",
       "DepthOfField": {
@@ -74,7 +81,7 @@
         "$path": "Packages"
       },
       "Remotes": {
-        "$path": "Remotes.rbxm"
+        "$path": "Models/Remotes.rbxm"
       }
     },
     "ServerScriptService": {
