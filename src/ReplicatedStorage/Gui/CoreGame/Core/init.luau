@@ -233,6 +233,7 @@ local function RenderRollFrame(Props: any)
 end
 
 local PlayCFrame = CFrame.new(145.5, 7.834, 143.5) * CFrame.Angles(0, math.rad(25), 0)
+local SummonCFrame = CFrame.new(-170, 10, -215)
 
 local function Render()
 	local VisibleFrame: string?, SetVisibleFrame = React.useState(nil :: string?)
@@ -310,6 +311,14 @@ local function Render()
 
 		if Character then
 			Character:PivotTo(PlayCFrame)
+		end
+	end, {})
+
+	local OnSummon = React.useCallback(function()
+		local Character = Player.Character
+
+		if Character then
+			Character:PivotTo(SummonCFrame)
 		end
 	end, {})
 
@@ -606,6 +615,13 @@ local function Render()
 				OnClick = function()
 					--OnMainButtonClick("InventoryFrame")
 				end,
+			}),
+			SummonButton = e(MainButtonFrame, {
+				Position = UDim2.fromScale(0.1, 0.5),
+				Size = UDim2.fromScale(0.1, 0.15),
+				Name = "Summon",
+				Icon = "",
+				OnClick = OnSummon,
 			}),
 			TradeButton = e(MainButtonFrame, {
 				Position = UDim2.fromScale(0.1, 0.5),
