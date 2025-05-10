@@ -289,7 +289,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			AspectRatio = 2,
 		}),
 		MainDataFrame = e(Main.ScrollingFrame, {
-			BarSize = 0.05,
+			BarSize = 0.02,
 			native = {
 				AnchorPoint = Vector2.new(0.5, 0.5),
 				BackgroundTransparency = 1,

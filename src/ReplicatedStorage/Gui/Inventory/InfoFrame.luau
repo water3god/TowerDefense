@@ -2,9 +2,6 @@
 
 -- By Wa1er_God --
 
-local DefaultFont =
-	Font.new("rbxasset://fonts/families/FredokaOne.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
-
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Packages = ReplicatedStorage.Packages
@@ -18,6 +15,7 @@ local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local UIStroke = require(CoreGame.UIStroke)
 local Main = require(CoreGame.Main)
+local UnitView = require(CoreGame.UnitView)
 
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
@@ -67,21 +65,39 @@ local function InitViewport(Viewport: ViewportFrame, Data: UnitData)
 end
 
 local function CreateInfoFrame(Properties: Properties)
-	local ViewportReference = React.useRef(nil :: ViewportFrame?)
-	local IsUnit = if Properties.Type == "Unit" then true else false
-	local HasValue = if Properties.Data then true else false
-	local UnitData: UnitData = Properties.Data :: UnitData
+	local IsUnit = React.useMemo(function()
+		return Properties.Type == "Unit"
+	end, { Properties.Type })
 
-	React.useEffect(function()
-		if ViewportReference.current then
-			if Properties.Data and IsUnit then
-				return InitViewport(ViewportReference.current, Properties.Data :: UnitData)
-			end
+	local HasValue = React.useMemo(function()
+		if Properties.Data then
+			return true
 		else
-			warn("No Refference")
+			return false
 		end
-		return function() end
-	end, { Properties.Name })
+	end, { Properties.Data })
+
+	local UnitData = React.useMemo(function()
+		return Properties.Data :: UnitData
+	end, { Properties.Data })
+
+	local RotationCFrame = React.useBinding(CFrame.Angles(math.rad(20), 0, 0))
+
+	local BarSize = React.useMemo(function()
+		if IsUnit and HasValue then
+			return UDim2.fromScale(UnitData.UnitData.XP / UnitData.UnitData.NeededXP, 0.9)
+		else
+			return UDim2.fromScale(0, 0)
+		end
+	end, { IsUnit, HasValue, UnitData :: any })
+
+	local XPText = React.useMemo(function()
+		if IsUnit and HasValue then
+			return string.format("%u/%u", UnitData.UnitData.XP, UnitData.UnitData.NeededXP)
+		else
+			return ""
+		end
+	end, { IsUnit, HasValue, UnitData :: any })
 
 	return e(Main.ImageLabel, {
 		native = {
@@ -91,11 +107,15 @@ local function CreateInfoFrame(Properties: Properties)
 			Visible = Properties.Visible,
 		},
 	}, {
-		ViewportFrame = e(Main.ViewportFrame, {
+		ViewportFrame = e(UnitView, {
+			UnitName = Properties.Name,
+			Distance = 4,
+			RotationCFrame = RotationCFrame,
+			Size = UDim2.fromScale(1.2, 1.2),
+			Offset = Vector3.new(0, -1, 0),
 			native = {
 				Position = UDim2.fromScale(0.5, 0.45),
 				Size = UDim2.fromScale(0.9, 0.425),
-				ref = ViewportReference,
 			},
 		}, {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
@@ -170,9 +190,7 @@ local function CreateInfoFrame(Properties: Properties)
 						BackgroundTransparency = 0,
 						BackgroundColor3 = Color3.fromRGB(255, 0, 201),
 						Position = UDim2.fromScale(0, 0.05),
-						Size = if IsUnit and HasValue
-							then UDim2.fromScale(UnitData.UnitData.XP / UnitData.UnitData.NeededXP, 0.9)
-							else UDim2.fromScale(0, 0),
+						Size = BarSize,
 					},
 				}, {
 					UICorner = e("UICorner", {
@@ -184,9 +202,7 @@ local function CreateInfoFrame(Properties: Properties)
 				native = {
 					Position = UDim2.fromScale(0.5, 0.5),
 					Size = UDim2.fromScale(0.99, 0.9),
-					Text = if IsUnit and HasValue
-						then string.format("%u/%u", UnitData.UnitData.XP, UnitData.UnitData.NeededXP)
-						else "",
+					Text = XPText,
 				},
 			}),
 		}),
