@@ -240,6 +240,7 @@ local function Render()
 	local Styles, API = ReactSpring.useSpring(function()
 		return {
 			Size = 0,
+			Inverted = 0,
 		}
 	end)
 
@@ -445,6 +446,7 @@ local function Render()
 		API.stop()
 		API.start({
 			Size = if VisibleFrame then 20 else 0,
+			Inverted = if VisibleFrame then 1 else 0,
 		})
 	end, { VisibleFrame })
 
@@ -557,7 +559,7 @@ local function Render()
 						SetVisibleInternal(Constants.INVENTORY_FRAME, Visible)
 					end,
 					native = {
-						Position = Styles.Size:map(function(Size: number)
+						Position = Styles.Inverted:map(function(Size: number)
 							return UDim2.fromScale(0.5, 0.9):Lerp(UDim2.fromScale(0.5, 1.1), Size)
 						end),
 					},
@@ -566,7 +568,7 @@ local function Render()
 		}),
 		Buttons = IsLobby and e(Main.Frame, {
 			native = {
-				Position = Styles.Size:map(function(Size: number)
+				Position = Styles.Inverted:map(function(Size: number)
 					return UDim2.fromScale(0.1, 0.5):Lerp(UDim2.fromScale(-0.1, 0.5), Size)
 				end),
 				Size = UDim2.fromScale(0.15, 0.4),
