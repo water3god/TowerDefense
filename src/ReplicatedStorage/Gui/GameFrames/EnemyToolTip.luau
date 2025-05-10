@@ -49,7 +49,7 @@ export type Props = {
 local function CreateEnemyToolTip(Props: Props)
 	return e(Main.ImageLabel, {
 		native = Join({
-			Size = UDim2.fromScale(0.2, 0.15),
+			Size = UDim2.fromScale(0.15, 0.1),
 			Position = Props.Position and Props.Position:map(function(PositionInput: Vector2)
 				local Position = PositionInput - GuiService:GetGuiInset()
 
