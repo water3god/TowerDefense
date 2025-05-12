@@ -6,6 +6,7 @@ local DefaultBackgroundImage = "rbxassetid://122297615155487"
 local HighlightedBackgroundImage = "rbxassetid://107455378505876"
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
@@ -31,6 +32,8 @@ export type Properties = {
 	Hovered: boolean?,
 	Disabled: boolean?,
 
+	Animated: boolean?,
+
 	BackgroundColor: ColorSequence?,
 	NameColor: ColorSequence?,
 	NameStrokeColor: ColorSequence?,
@@ -47,6 +50,28 @@ export type Properties = {
 }
 
 local function CreateBaseFrame(Properties: Properties)
+	local Rotation, SetRotation = React.useBinding(0)
+
+	React.useEffect(function()
+		if Properties.Animated then
+			local Connection = RunService.PostSimulation:Connect(function()
+				local NewRotation = Rotation:getValue() + 0.4
+
+				if NewRotation > 360 then
+					SetRotation(NewRotation - 360)
+				else
+					SetRotation(NewRotation)
+				end
+			end)
+
+			return function()
+				Connection:Disconnect()
+			end
+		end
+
+		return function() end
+	end, { Properties.Animated, Properties.BackgroundColor :: any })
+
 	return e(Main.Frame, {
 		native = Join({
 			Position = Properties.Position or UDim2.fromScale(0.5, 0.5),
@@ -74,6 +99,7 @@ local function CreateBaseFrame(Properties: Properties)
 			}, {
 				UIGradient = e("UIGradient", {
 					Color = Properties.BackgroundColor or ColorSequence.new(Color3.new(1, 1, 1)),
+					Rotation = Rotation,
 				}),
 			}),
 			MainImage = e(Main.ImageLabel, {

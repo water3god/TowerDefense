@@ -190,7 +190,7 @@ local function CreateRollMain(props: Properties)
 				Image = "rbxassetid://80739823452825",
 				Size = UDim2.fromScale(0.25, 0.15),
 				Position = UDim2.fromScale(0.17, 0.88),
-				ImageColor3 = Color3.new(0.521569, 0.094118, 0.784314),
+				ImageColor3 = Color3.fromRGB(135, 1, 203),
 			},
 		}, {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
@@ -213,7 +213,7 @@ local function CreateRollMain(props: Properties)
 				Image = "rbxassetid://80739823452825",
 				Size = UDim2.fromScale(0.25, 0.15),
 				Position = UDim2.fromScale(0.82, 0.88),
-				ImageColor3 = Color3.new(0.521569, 0.094118, 0.784314),
+				ImageColor3 = Color3.fromRGB(135, 1, 203),
 				[React.Event.MouseButton1Click] = OnAutoClick,
 			},
 		}, {
@@ -237,7 +237,7 @@ local function CreateRollMain(props: Properties)
 				Image = "rbxassetid://80739823452825",
 				Size = UDim2.fromScale(0.3, 0.2),
 				Position = UDim2.fromScale(0.5, 0.87),
-				ImageColor3 = Color3.new(0.521569, 0.094118, 0.784314),
+				ImageColor3 = Color3.fromRGB(135, 1, 203),
 				[React.Event.MouseButton1Click] = SummonClick,
 			},
 		}, {

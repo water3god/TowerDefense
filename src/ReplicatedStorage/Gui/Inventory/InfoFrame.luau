@@ -111,10 +111,9 @@ local function CreateInfoFrame(Properties: Properties)
 			UnitName = Properties.Name,
 			Distance = 4,
 			RotationCFrame = RotationCFrame,
-			Size = UDim2.fromScale(1.2, 1.2),
 			Offset = Vector3.new(0, -1, 0),
 			native = {
-				Position = UDim2.fromScale(0.5, 0.45),
+				Position = UDim2.fromScale(0.5, 0.5),
 				Size = UDim2.fromScale(0.9, 0.425),
 			},
 		}, {

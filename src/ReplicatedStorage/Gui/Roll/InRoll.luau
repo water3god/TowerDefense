@@ -4,6 +4,7 @@
 
 -- Services --
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
 
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
@@ -11,6 +12,8 @@ local React = require(Packages.React)
 local ReactSpring = require(Packages.ReactSpring)
 local e = React.createElement
 
+local Trove = require(Packages.Trove)
+local Input = require(Packages.Input)
 local Promise = require(Packages.Promise)
 
 local Modules = ReplicatedStorage.Modules
@@ -212,14 +215,50 @@ local function CreateInRoll(props: Properties)
 		return function() end
 	end, { props.UnitNames :: any, props.LastFiredTime :: any, props.AutoRoll :: any })
 
-	local CloseClick = React.useCallback(function()
-		if props.CloseClick and workspace:GetServerTimeNow() - props.LastFiredTime > Constants.ROLLDELAYTIME * 0.9 then
-			if not props.AutoRoll then
-				SetVisible(false)
-				props.CloseClick()
+	React.useEffect(function()
+		local Trove = Trove.new()
+		if not Visible then
+			return function() end
+		end
+
+		local function CloseClick()
+			if
+				props.CloseClick
+				and workspace:GetServerTimeNow() - props.LastFiredTime > Constants.ROLLDELAYTIME * 0.9
+			then
+				if not props.AutoRoll then
+					SetVisible(false)
+					props.CloseClick()
+				end
 			end
 		end
-	end, { props.CloseClick :: any, props.AutoRoll :: any })
+
+		local Disconnect = Input.PreferredInput.Observe(function(Preferred)
+			Trove:Destroy()
+			if Preferred == "MouseKeyboard" then
+				local Mouse = Trove:Construct(Input.Mouse)
+
+				Mouse.LeftUp:Connect(function()
+					CloseClick()
+				end)
+			elseif Preferred == "Touch" then
+				local Touch = Trove:Construct(Input.Touch)
+
+				Touch.TouchTapInWorld:Connect(function(_, Processed: boolean)
+					if Processed then
+						return
+					end
+					CloseClick()
+				end)
+			elseif Preferred == "Gamepad" then
+			end
+		end)
+
+		return function()
+			Trove:Destroy()
+			Disconnect()
+		end
+	end, { props.AutoRoll, props.CloseClick :: any, Visible, props.LastFiredTime :: any })
 
 	local CancelAutoRoll = React.useCallback(function()
 		if props.AutoRoll then
@@ -234,13 +273,6 @@ local function CreateInRoll(props: Properties)
 			Size = UDim2.fromScale(0.8, 0.6),
 		}, props.native),
 	}, {
-		BackClick = e(Main.TextButton, {
-			native = {
-				Size = UDim2.fromScale(3, 3),
-				Text = "",
-				[React.Event.MouseButton1Click] = CloseClick,
-			},
-		}),
 		StopAutoButton = e(Main.Animateables.ImageButton, {
 			native = {
 				Position = UDim2.fromScale(0.5, 1.2),

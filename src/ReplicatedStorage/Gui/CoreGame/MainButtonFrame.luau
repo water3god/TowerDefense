@@ -31,9 +31,10 @@ local function CreateButtonFrame(Properties: Properties)
 		RightText = "",
 		Image = Properties.Icon,
 
+		Animated = true,
 		BackgroundColor = ColorSequence.new(
-			Color3.new(0.258824, 0.043137, 0.384314),
-			Color3.new(0.564706, 0.113725, 0.827451)
+			Color3.new(0.309804, 0.054902, 0.458824),
+			Color3.new(0.666667, 0.141176, 0.976471)
 		),
 		OnClick = Properties.OnClick,
 

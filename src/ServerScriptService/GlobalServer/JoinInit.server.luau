@@ -73,7 +73,7 @@ StartGame.Event:Connect(Init)
 if game["Run Service"]:IsStudio() then
 	Init({
 		LevelId = "Hastingsv1",
-		Difficulty = "Normal",
+		Difficulty = "Insane",
 	})
 	return
 end
