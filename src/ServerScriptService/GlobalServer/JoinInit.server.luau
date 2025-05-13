@@ -65,6 +65,7 @@ local function Init(DataInput: Types.RecieveData?)
 			Data = FoundData,
 			Positions = Positions,
 			Difficulty = Data.Difficulty,
+			IsInfinite = false,
 		})
 	end
 end

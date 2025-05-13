@@ -118,18 +118,16 @@ local function PlaceUnit(Player: Player, Wave: GlobalWave.GlobalWave, Data: Plac
 	if UnitData then
 		local Cost = UnitInfo.UnitData[0].Cost
 
-		--if Wave:HasEnoughYen(Player.UserId, Cost) then
-		local Result = CheckPlacement(InputCFrame, UnitInfo)
-		if Result then
-			local Unit = Unit.new({
-				CFrame = InputCFrame,
-				OwnerId = Player.UserId,
-				Level = 0,
-			}, UnitData)
-
-			--Wave:AddUnit(Unit);
-			--Wave:SubtractYen(Player.UserId, Cost);
-			--end
+		if Wave:HasEnoughCoins(Player.UserId, Cost) then
+			local Result = CheckPlacement(InputCFrame, UnitInfo)
+			if Result then
+				Unit.new({
+					CFrame = InputCFrame,
+					OwnerId = Player.UserId,
+					Level = 0,
+				}, UnitData)
+				Wave:SubtractCoinsFromUser(Player.UserId, Cost)
+			end
 		end
 	end
 end

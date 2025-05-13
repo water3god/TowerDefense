@@ -32,6 +32,7 @@ local DifficultyData = require(Data.DifficultyData)
 
 export type Input = {
 	Data: WaveData.WaveData,
+	IsInfinite: boolean,
 	Positions: { Vector3 },
 	PlayerIds: { number },
 	Difficulty: string,
@@ -85,7 +86,12 @@ type Impl = {
 	NextWave: (self: GlobalWave) -> (),
 
 	AddCoins: (self: GlobalWave, Coins: number) -> (),
+	HasEnoughCoins: (self: GlobalWave, UserId: number, NeededCoins: number) -> (),
+
+	SetCoinsUser: (self: GlobalWave, UserId: number, Coins: number) -> (),
+	SubtractCoinsFromUser: (self: GlobalWave, UserId: number, Coins: number) -> (),
 	AddCoinsToUser: (self: GlobalWave, UserId: number, Coins: number) -> (),
+
 	Damage: (self: GlobalWave, Damage: number) -> (),
 	Heal: (self: GlobalWave, Healing: number) -> (),
 	SetHealth: (self: GlobalWave, Health: number) -> (),
@@ -136,6 +142,12 @@ function GlobalWave.new(Input: Input)
 	self.StartTime = 0
 
 	self.DifficultyData = DifficultyData[Input.Difficulty]
+
+	if not Input.IsInfinite then
+		self.DifficultyData.HealthRatio = 1
+		self.DifficultyData.HeathIncrRatio = 1
+		self.DifficultyData.SpeedAdditive = 0
+	end
 
 	self.MaxHealth = self.DifficultyData.Health
 	self.BaseHealth = self.MaxHealth
@@ -195,6 +207,7 @@ function GlobalWave.infinite(InfInput: InfiniteInput)
 		Positions = InfInput.Positions,
 		Difficulty = InfInput.Difficulty,
 		PlayerIds = InfInput.PlayerIds,
+		IsInfinite = true,
 	}
 
 	local OrderPriority = {}
@@ -303,17 +316,39 @@ function GlobalWave:NextWave()
 	end))
 end
 
+function GlobalWave:SetCoinsUser(UserId: number, Coins: number)
+	if self.Coins[UserId] then
+		self.Coins[UserId] = math.max(Coins, 0)
+	end
+	self.CoinsChanged:Fire(UserId, Coins)
+end
+
+function GlobalWave:SubtractCoinsFromUser(UserId: number, Coins: number)
+	if self.Coins[UserId] then
+		self:SetCoinsUser(UserId, self.Coins[UserId] - Coins)
+	end
+end
+
+function GlobalWave:AddCoinsToUser(UserId: number, Coins: number)
+	if self.Coins[UserId] then
+		self:SetCoinsUser(UserId, self.Coins[UserId] + Coins)
+	end
+end
+
 function GlobalWave:AddCoins(Coins: number)
 	for UserId, _ in pairs(self.Coins) do
 		self:AddCoinsToUser(UserId, Coins)
 	end
 end
 
-function GlobalWave:AddCoinsToUser(UserId: number, Coins: number)
-	if self.Coins[UserId] then
-		self.Coins[UserId] += Coins
+function GlobalWave:HasEnoughCoins(UserId: number, NeededCoins: number)
+	local Coins = self.Coins[UserId]
+	if Coins then
+		if NeededCoins <= Coins then
+			return true
+		end
 	end
-	self.CoinsChanged:Fire(UserId, Coins)
+	return false
 end
 
 function GlobalWave:Damage(Damage: number)
