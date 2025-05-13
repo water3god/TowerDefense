@@ -5,7 +5,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
 
 local Packages = ReplicatedStorage.Packages
@@ -595,7 +594,7 @@ local function Render()
 				Position = UDim2.fromScale(0.1, 0.5),
 				Size = UDim2.fromScale(0.1, 0.15),
 				Name = "Inventory",
-				Icon = "",
+				Icon = "rbxassetid://126162489334707",
 				OnClick = function()
 					OnMainButtonClick(Constants.INVENTORY_FRAME)
 				end,
@@ -604,14 +603,14 @@ local function Render()
 				Position = UDim2.fromScale(0.1, 0.5),
 				Size = UDim2.fromScale(0.1, 0.15),
 				Name = "Play",
-				Icon = "",
+				Icon = "rbxassetid://123087872755553",
 				OnClick = OnPlay,
 			}),
 			StoreButton = e(MainButtonFrame, {
 				Position = UDim2.fromScale(0.1, 0.5),
 				Size = UDim2.fromScale(0.1, 0.15),
 				Name = "Store",
-				Icon = "",
+				Icon = "rbxassetid://101802087294765",
 				OnClick = function()
 					--OnMainButtonClick("InventoryFrame")
 				end,
@@ -620,14 +619,15 @@ local function Render()
 				Position = UDim2.fromScale(0.1, 0.5),
 				Size = UDim2.fromScale(0.1, 0.15),
 				Name = "Summon",
-				Icon = "",
+				Icon = "rbxassetid://103961311594276",
 				OnClick = OnSummon,
 			}),
 			TradeButton = e(MainButtonFrame, {
 				Position = UDim2.fromScale(0.1, 0.5),
 				Size = UDim2.fromScale(0.1, 0.15),
 				Name = "Trade",
-				Icon = "",
+				Icon = "rbxassetid://71136210616050",
+				IconColor = ColorSequence.new(Color3.new(1, 1, 1)),
 				OnClick = function()
 					OnMainButtonClick(Constants.TRADE_MENU)
 				end,

@@ -13,6 +13,7 @@ local Constants = {
 	INFORMATIONHASHMAP = "TOWERDEFENCEHASHMAP",
 
 	ROLLDELAYTIME = 3,
+	STARTCOINS = 500,
 }
 
 return Constants

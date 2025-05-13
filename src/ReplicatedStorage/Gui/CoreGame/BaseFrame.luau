@@ -42,6 +42,8 @@ export type Properties = {
 	RightColor: ColorSequence?,
 	RightStrokeColor: ColorSequence?,
 
+	ImageColor: ColorSequence?,
+
 	OnClick: ((...any) -> ...any)?,
 
 	native: { [any]: any }?,
@@ -111,6 +113,11 @@ local function CreateBaseFrame(Properties: Properties)
 					ZIndex = 1,
 					ScaleType = Enum.ScaleType.Fit,
 				},
+			}, {
+				UIGradient = e("UIGradient", {
+					Color = Properties.ImageColor or ColorSequence.new(Color3.new(1, 1, 1)),
+					Rotation = Rotation,
+				}),
 			}),
 			BaseName = e(Main.TextLabel, {
 				native = {

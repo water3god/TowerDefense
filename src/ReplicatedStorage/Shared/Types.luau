@@ -249,6 +249,7 @@ export type SentData = {
 }
 
 export type RecieveData = {
+	PlayerIds: { number },
 	LevelId: string,
 	Difficulty: string,
 }

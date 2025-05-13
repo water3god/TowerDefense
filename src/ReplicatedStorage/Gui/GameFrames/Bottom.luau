@@ -23,10 +23,12 @@ local Join = HelperFunctions.joinDicts
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
+local UIStroke = require(CoreGame.UIStroke)
 local UnitFrame = require(Gui.Inventory.UnitFrame)
 
 local GameFrames = Gui.GameFrames
 local EquippedUnitsContext = require(GameFrames.EquippedUnitsContext)
+local Currency = require(GameFrames.Currency)
 
 local Shared = ReplicatedStorage.Shared
 local LevelRequirements = require(Shared.LevelRequirements)
@@ -112,8 +114,9 @@ type PlacementData = {
 }
 
 local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
-	local Context = React.useContext(EquippedUnitsContext.Context)
-	local Units = Context.Units
+	local UnitsContext = React.useContext(EquippedUnitsContext.Context)
+	local CurrencyContext = React.useContext(Currency.Context)
+	local Units = UnitsContext.Units
 
 	React.useImperativeHandle(ref, function()
 		return {
@@ -190,7 +193,11 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 
 	local Click = IsLobby and LobbyClick or GameClick
 
-	return e(Main.CanvasGroup, {
+	local CurrencyValue = React.useMemo(function()
+		return HelperFunctions.NumberScaler.ShortenNumber(CurrencyContext.Value)
+	end, { CurrencyContext.Value })
+
+	return e(Main.Frame, {
 		native = Join({
 			Size = UDim2.fromScale(0.4, 0.2),
 		}, Properties.native),
@@ -198,12 +205,53 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 3.555,
 		}),
+		GoldFrame = e(Main.Frame, {
+			native = {
+				Position = UDim2.fromScale(0.5, -0.1),
+				Size = UDim2.fromScale(0.5, 0.2),
+			},
+		}, {
+			UIListLayout = e("UIListLayout", {
+				SortOrder = Enum.SortOrder.LayoutOrder,
+				FillDirection = Enum.FillDirection.Horizontal,
+				Padding = UDim.new(0, 0),
+			}),
+			Frame = e(Main.Frame, {
+				native = {
+					Size = UDim2.fromScale(0.375, 1),
+				},
+			}),
+			Icon = e(Main.ImageLabel, {
+				native = {
+					Position = UDim2.fromScale(0.5, 0.5),
+					Image = CurrencyContext.Icon,
+				},
+			}, {
+				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+					AspectRatio = 1,
+				}),
+			}),
+			Label = e(Main.TextLabel, {
+				native = {
+					Text = CurrencyValue,
+					TextXAlignment = Enum.TextXAlignment.Left,
+					Size = UDim2.fromScale(0.6, 1),
+				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.02,
+				}),
+				UIPadding = e("UIPadding", {
+					PaddingLeft = UDim.new(0.05, 0),
+				}),
+			}),
+		}),
 		Frame1 = e(CreateBaseFrame, {
 			UniqueId = Units[1] and Units[1].UniqueId,
 			LevelReq = LevelRequirements.EquippedFrames[1],
 			UnitName = Units[1] and Units[1].Unit,
 			Level = Units[1] and Units[1].Level,
-			GlobalLevel = Context.GlobalLevel,
+			GlobalLevel = UnitsContext.GlobalLevel,
 			OnClick = Click,
 			native = {
 				Position = UDim2.fromScale(0.15, 0.35),
@@ -215,7 +263,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 			LevelReq = LevelRequirements.EquippedFrames[2],
 			UnitName = Units[2] and Units[2].Unit,
 			Level = Units[2] and Units[2].Level,
-			GlobalLevel = Context.GlobalLevel,
+			GlobalLevel = UnitsContext.GlobalLevel,
 			OnClick = Click,
 			native = {
 				Position = UDim2.fromScale(0.325, 0.35),
@@ -227,7 +275,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 			LevelReq = LevelRequirements.EquippedFrames[3],
 			UnitName = Units[3] and Units[3].Unit,
 			Level = Units[3] and Units[3].Level,
-			GlobalLevel = Context.GlobalLevel,
+			GlobalLevel = UnitsContext.GlobalLevel,
 			OnClick = Click,
 			native = {
 				Position = UDim2.fromScale(0.5, 0.35),
@@ -239,7 +287,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 			LevelReq = LevelRequirements.EquippedFrames[4],
 			UnitName = Units[4] and Units[4].Unit,
 			Level = Units[4] and Units[4].Level,
-			GlobalLevel = Context.GlobalLevel,
+			GlobalLevel = UnitsContext.GlobalLevel,
 			OnClick = Click,
 			native = {
 				Position = UDim2.fromScale(0.675, 0.35),
@@ -251,7 +299,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 			LevelReq = LevelRequirements.EquippedFrames[5],
 			UnitName = Units[5] and Units[5].Unit,
 			Level = Units[5] and Units[5].Level,
-			GlobalLevel = Context.GlobalLevel,
+			GlobalLevel = UnitsContext.GlobalLevel,
 			OnClick = Click,
 			native = {
 				Position = UDim2.fromScale(0.85, 0.35),
@@ -279,7 +327,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 						BackgroundColor3 = Color3.fromRGB(104, 36, 132),
 						AnchorPoint = Vector2.new(0, 0.5),
 						Position = UDim2.fromScale(0, 0.5),
-						Size = UDim2.fromScale(math.clamp(Context.XP / Context.NeededXP, 0, 1), 1),
+						Size = UDim2.fromScale(math.clamp(UnitsContext.XP / UnitsContext.NeededXP, 0, 1), 1),
 					},
 				}, {
 					UICorner = e("UICorner", {
@@ -290,7 +338,12 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 			LevelLabel = e(Main.TextLabel, {
 				native = {
 					Size = UDim2.fromScale(0.3, 0.8),
-					Text = string.format("Level %u (%u/%u)", Context.GlobalLevel, Context.XP, Context.NeededXP),
+					Text = string.format(
+						"Level %u (%u/%u)",
+						UnitsContext.GlobalLevel,
+						UnitsContext.XP,
+						UnitsContext.NeededXP
+					),
 					ZIndex = 2,
 				},
 			}),

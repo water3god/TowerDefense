@@ -15,6 +15,7 @@ local BaseFrame = require(CoreGame.BaseFrame)
 export type Properties = {
 	Name: string,
 	Icon: string,
+	IconColor: ColorSequence?,
 	OnClick: (...any) -> ...any,
 
 	native: { [any]: any }?,
@@ -29,13 +30,12 @@ local function CreateButtonFrame(Properties: Properties)
 		Name = Properties.Name,
 		LeftText = "",
 		RightText = "",
-		Image = Properties.Icon,
+		MainImage = Properties.Icon,
 
 		Animated = true,
-		BackgroundColor = ColorSequence.new(
-			Color3.new(0.309804, 0.054902, 0.458824),
-			Color3.new(0.666667, 0.141176, 0.976471)
-		),
+		BackgroundColor = Properties.IconColor
+			or ColorSequence.new(Color3.new(0.309804, 0.054902, 0.458824), Color3.new(0.666667, 0.141176, 0.976471)),
+		ImageColor = ColorSequence.new(Color3.new(0.309804, 0.054902, 0.458824)),
 		OnClick = Properties.OnClick,
 
 		Position = Properties.Position,

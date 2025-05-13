@@ -65,7 +65,7 @@ type PlayerDataData<T> = {
 	XPChanged: Signal.Signal<number>,
 	LeveledUp: Signal.Signal<number>,
 
-	CoinsChanged: Signal.Signal<number>,
+	GoldChanged: Signal.Signal<number>,
 
 	Destroying: Signal.Signal<>,
 }
@@ -88,9 +88,9 @@ type PlayerDataImpl = {
 
 	SetAutoRoll: (self: PlayerData, AutoRoll: boolean) -> (),
 
-	SetCoins: (self: PlayerData, Coins: number) -> (),
-	AddCoins: (self: PlayerData, Coins: number) -> (),
-	SubtractCoins: (self: PlayerData, Coins: number) -> (),
+	SetGold: (self: PlayerData, Gold: number) -> (),
+	AddGold: (self: PlayerData, Gold: number) -> (),
+	SubtractGold: (self: PlayerData, Gold: number) -> (),
 
 	OwnsStage: (self: PlayerData, Data: GetStageData) -> boolean,
 	AddStage: (self: PlayerData, Data: StageParamData) -> (),
@@ -211,7 +211,7 @@ function PlayerData.new(Player: Player)
 	self.XPChanged = self._Trove:Construct(Signal)
 	self.LeveledUp = self._Trove:Construct(Signal)
 
-	self.CoinsChanged = self._Trove:Construct(Signal)
+	self.GoldChanged = self._Trove:Construct(Signal)
 	self.StageChanged = self._Trove:Construct(Signal)
 
 	self.Destroying = self._Trove:Construct(Signal)
@@ -397,20 +397,20 @@ function PlayerData:SetAutoRoll(AutoRoll: boolean)
 	self.AutoRollChanged:Fire(AutoRoll)
 end
 
-function PlayerData:SetCoins(Coins: number)
-	local CoinCount = math.max(Coins, 0)
-	self.Profile.Data.Coins = CoinCount
-	self.CoinsChanged:Fire(CoinCount)
+function PlayerData:SetGold(Gold: number)
+	local GoldCount = math.max(Gold, 0)
+	self.Profile.Data.Gold = GoldCount
+	self.GoldChanged:Fire(GoldCount)
 end
 
-function PlayerData:AddCoins(Coins: number)
-	local CurrentCoins = self.Profile.Data.Coins
-	self:SetCoins(CurrentCoins + Coins)
+function PlayerData:AddGold(Gold: number)
+	local CurrentGold = self.Profile.Data.Gold
+	self:SetGold(CurrentGold + Gold)
 end
 
-function PlayerData:SubtractCoins(Coins: number)
-	local CurrentCoins = self.Profile.Data.Coins
-	self:SetCoins(CurrentCoins - Coins)
+function PlayerData:SubtractGold(Gold: number)
+	local CurrentGold = self.Profile.Data.Gold
+	self:SetGold(CurrentGold - Gold)
 end
 
 function PlayerData:OwnsStage(ParamData: GetStageData)

@@ -33,12 +33,14 @@ local DifficultyData = require(Data.DifficultyData)
 export type Input = {
 	Data: WaveData.WaveData,
 	Positions: { Vector3 },
+	PlayerIds: { number },
 	Difficulty: string,
 }
 
 export type InfiniteInput = {
 	Data: WaveData.InfiniteData,
 	Positions: { Vector3 },
+	PlayerIds: { number },
 	Difficulty: string,
 }
 
@@ -55,12 +57,14 @@ type Data = {
 	BaseHealth: number,
 	MaxHealth: number,
 
+	Coins: { [number]: number },
 	Positions: { Vector3 },
 	Data: WaveData.WaveData,
 
 	Bezier: BezierPath.Path,
 	BezierId: string,
 
+	CoinsChanged: Signal.Signal<number, number>,
 	Passed: Signal.Signal<number>,
 	TimeChanged: Signal.Signal<number, number>,
 	Damaged: Signal.Signal<number>,
@@ -80,6 +84,8 @@ type Impl = {
 
 	NextWave: (self: GlobalWave) -> (),
 
+	AddCoins: (self: GlobalWave, Coins: number) -> (),
+	AddCoinsToUser: (self: GlobalWave, UserId: number, Coins: number) -> (),
 	Damage: (self: GlobalWave, Damage: number) -> (),
 	Heal: (self: GlobalWave, Healing: number) -> (),
 	SetHealth: (self: GlobalWave, Health: number) -> (),
@@ -112,6 +118,7 @@ function GlobalWave.new(Input: Input)
 	self.Trove = Trove.new()
 	self.WaveTrove = self.Trove:Extend()
 
+	self.CoinsChanged = self.Trove:Construct(Signal)
 	self.Passed = self.Trove:Construct(Signal)
 	self.TimeChanged = self.Trove:Construct(Signal)
 	self.Damaged = self.Trove:Construct(Signal)
@@ -135,6 +142,13 @@ function GlobalWave.new(Input: Input)
 
 	self.Positions = Input.Positions
 	self.Data = Input.Data
+
+	self.Coins = {}
+
+	for _, PlayerId in ipairs(Input.PlayerIds) do
+		self.Coins[PlayerId] = 0
+		self:AddCoinsToUser(PlayerId, Constants.STARTCOINS)
+	end
 
 	self.Bezier = BezierPath.new(self.Positions, Constants.BEZIERCURVE)
 	self.BezierId = GenerateId.GenerateId()
@@ -180,6 +194,7 @@ function GlobalWave.infinite(InfInput: InfiniteInput)
 		Data = Data,
 		Positions = InfInput.Positions,
 		Difficulty = InfInput.Difficulty,
+		PlayerIds = InfInput.PlayerIds,
 	}
 
 	local OrderPriority = {}
@@ -286,6 +301,19 @@ function GlobalWave:NextWave()
 			self.OnSkipPrompt:Fire()
 		end))
 	end))
+end
+
+function GlobalWave:AddCoins(Coins: number)
+	for UserId, _ in pairs(self.Coins) do
+		self:AddCoinsToUser(UserId, Coins)
+	end
+end
+
+function GlobalWave:AddCoinsToUser(UserId: number, Coins: number)
+	if self.Coins[UserId] then
+		self.Coins[UserId] += Coins
+	end
+	self.CoinsChanged:Fire(UserId, Coins)
 end
 
 function GlobalWave:Damage(Damage: number)

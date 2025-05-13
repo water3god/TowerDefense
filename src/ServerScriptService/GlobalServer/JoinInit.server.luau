@@ -61,6 +61,7 @@ local function Init(DataInput: Types.RecieveData?)
 			Unit:Delete()
 		end
 		GlobalWave.new({
+			PlayerIds = Data.PlayerIds,
 			Data = FoundData,
 			Positions = Positions,
 			Difficulty = Data.Difficulty,
@@ -71,7 +72,10 @@ end
 StartGame.Event:Connect(Init)
 
 if game["Run Service"]:IsStudio() then
+	local PlayerList = Players:GetPlayers()
+	local Ids = { PlayerList[1].UserId }
 	Init({
+		PlayerIds = Ids,
 		LevelId = "Hastingsv1",
 		Difficulty = "Insane",
 	})

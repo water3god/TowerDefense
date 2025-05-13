@@ -34,7 +34,7 @@ export type Data = {
 	XP: number,
 	RollCount: number,
 	Settings: { [Settings.Setting]: any },
-	Coins: number,
+	Gold: number,
 }
 
 local Data: Data = {
@@ -58,7 +58,7 @@ local Data: Data = {
 	XP = 0,
 	RollCount = 0,
 	Gamepasses = {},
-	Coins = 0,
+	Gold = 0,
 }
 
 return Data

@@ -5,8 +5,8 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 
-local Modules = ReplicatedStorage.Modules
-local Trove = require(Modules.Trove)
+local Packages = ReplicatedStorage.Packages
+local Trove = require(Packages.Trove)
 
 local WavesEvents = ReplicatedStorage.Remotes.Waves
 
