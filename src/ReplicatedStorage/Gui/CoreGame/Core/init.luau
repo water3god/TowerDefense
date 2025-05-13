@@ -60,6 +60,7 @@ local TradeMenuContext = require(Trade.TradeContext)
 local EquippedUnitsContext = require(GameFrames.EquippedUnitsContext)
 local WaveContext = require(GameFrames.WaveContext)
 local UpgradeContext = require(GameFrames.UpgradeContext)
+local CurrencyContext = require(GameFrames.Currency)
 local StoryContext = require(Story.StoryContext)
 local RollContext = require(Roll.RollContext)
 
@@ -558,7 +559,13 @@ local function Render()
 					WaitingFrame = e(WaitingFrame),
 				}),
 			}),
-			BottomFrame = e(EquippedUnitsContext.Provider, {}, {
+
+			BottomFrame = e(Hooks.ContextStack, {
+				providers = {
+					EquippedUnitsContext.Provider,
+					CurrencyContext.Provider,
+				},
+			}, {
 				BottomFrame = e(Bottom, {
 					SetHovered = SetHovered,
 					GetHovered = GetHovered,

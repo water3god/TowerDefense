@@ -191,6 +191,10 @@ function GlobalWave.new(Input: Input)
 		end)
 	end)
 
+	self.Passed:Connect(function(Wave: number)
+		self:AddCoins(Input.Data.Data[Wave].CoinBonus)
+	end)
+
 	CurrentWave = self
 	self.Added:Fire(self)
 	return self
@@ -244,7 +248,7 @@ function GlobalWave.infinite(InfInput: InfiniteInput)
 			Time += 2
 		end
 
-		Data.Data[WaveNum] = { Enemies = EnemiesData, Length = 5 }
+		Data.Data[WaveNum] = { Enemies = EnemiesData, Length = Time, CoinBonus = 200 + 50 * WaveNum }
 	end
 
 	AddInfoToWave(Wave.Wave)
