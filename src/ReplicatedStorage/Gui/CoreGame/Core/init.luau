@@ -634,7 +634,7 @@ local function Render()
 				Size = UDim2.fromScale(0.1, 0.15),
 				Name = "Trade",
 				Icon = "rbxassetid://71136210616050",
-				IconColor = ColorSequence.new(Color3.new(1, 1, 1)),
+				IconColor = ColorSequence.new(Color3.fromRGB(137, 77, 178)),
 				OnClick = function()
 					OnMainButtonClick(Constants.TRADE_MENU)
 				end,

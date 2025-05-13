@@ -41,10 +41,10 @@ local function CurrencyProvider(props)
 	React.useEffect(function()
 		if IsLobby then
 			SetCurrencyName("Gold")
-			SetIcon("rbxassetid://72304165589077")
+			SetIcon("rbxassetid://123591871678972")
 		else
 			SetCurrencyName("Coins")
-			SetIcon("rbxassetid://123591871678972")
+			SetIcon("rbxassetid://72304165589077")
 		end
 	end, {})
 

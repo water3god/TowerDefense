@@ -73,8 +73,7 @@ end
 StartGame.Event:Connect(Init)
 
 if game["Run Service"]:IsStudio() then
-	local PlayerList = Players:GetPlayers()
-	local Ids = { PlayerList[1].UserId }
+	local Ids = { 343804839 }
 	Init({
 		PlayerIds = Ids,
 		LevelId = "Hastingsv1",
