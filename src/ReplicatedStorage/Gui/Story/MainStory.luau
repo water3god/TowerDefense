@@ -126,10 +126,12 @@ local function CreateMainStory(Properties: Properties)
 				LeftText = "",
 				RightText = string.format("%ux", Reward.Count),
 				Name = Reward.Reward,
-				UnitImage = RewardData.Image,
+				MainImage = RewardData.Image,
 
 				BackgroundColor = RewardData.BackgroundColor,
 				NameColor = RewardData.RewardColor,
+				NameStrokeColor = ColorSequence.new(Color3.new()),
+				RightStrokeColor = ColorSequence.new(Color3.new()),
 
 				native = {
 					ZIndex = ResourceOrder(),

@@ -50,19 +50,19 @@ local GameInfo: { MapInfo } = {
 				RewardInfo = {
 					Normal = {
 						{
-							Reward = "Coins",
+							Reward = "Gold",
 							Count = 100,
 						},
 					},
 					Hard = {
 						{
-							Reward = "Coins",
+							Reward = "Gold",
 							Count = 100,
 						},
 					},
 					Insane = {
 						{
-							Reward = "Coins",
+							Reward = "Gold",
 							Count = 100,
 						},
 					},
@@ -76,19 +76,19 @@ local GameInfo: { MapInfo } = {
 				RewardInfo = {
 					Normal = {
 						{
-							Reward = "Coins",
+							Reward = "Gold",
 							Count = 100,
 						},
 					},
 					Hard = {
 						{
-							Reward = "Coins",
+							Reward = "Gold",
 							Count = 100,
 						},
 					},
 					Insane = {
 						{
-							Reward = "Coins",
+							Reward = "Gold",
 							Count = 100,
 						},
 					},
@@ -128,19 +128,19 @@ local GameInfo: { MapInfo } = {
 				RewardInfo = {
 					Normal = {
 						{
-							Reward = "Coins",
+							Reward = "Gold",
 							Count = 100,
 						},
 					},
 					Hard = {
 						{
-							Reward = "Coins",
+							Reward = "Gold",
 							Count = 100,
 						},
 					},
 					Insane = {
 						{
-							Reward = "Coins",
+							Reward = "Gold",
 							Count = 100,
 						},
 					},
@@ -154,19 +154,19 @@ local GameInfo: { MapInfo } = {
 				RewardInfo = {
 					Normal = {
 						{
-							Reward = "Coins",
+							Reward = "Gold",
 							Count = 100,
 						},
 					},
 					Hard = {
 						{
-							Reward = "Coins",
+							Reward = "Gold",
 							Count = 100,
 						},
 					},
 					Insane = {
 						{
-							Reward = "Coins",
+							Reward = "Gold",
 							Count = 100,
 						},
 					},
@@ -187,9 +187,9 @@ export type RewardData = {
 }
 
 local RewardInfo: { [string]: RewardData } = {
-	["Coins"] = {
-		Image = "",
-		RewardColor = ColorSequence.new(Color3.new(1, 0.885954, 0.202899)),
+	["Gold"] = {
+		Image = "rbxassetid://123591871678972",
+		RewardColor = ColorSequence.new(Color3.new(1, 0.921569, 0.203922)),
 		StrokeColor = ColorSequence.new(Color3.new(1, 1, 1)),
 		BackgroundColor = ColorSequence.new(Color3.new(1, 0.720638, 0.311101)),
 	},

@@ -128,8 +128,8 @@ local function CreateBaseFrame(Properties: Properties)
 					ZIndex = 2,
 				},
 			}, {
-				UIStroke = e(UIStroke.UIStroke, {
-					Stroke = 0.0015,
+				UIStroke = e(UIStroke.UIStrokeGradient, {
+					Stroke = 0.02,
 					GradColor = if Properties.NameStrokeColor
 						then Properties.NameStrokeColor
 						else ColorSequence.new(Color3.new(1, 1, 1)),
@@ -151,8 +151,8 @@ local function CreateBaseFrame(Properties: Properties)
 					ZIndex = 2,
 				},
 			}, {
-				UIStroke = e(UIStroke.UIStroke, {
-					Stroke = 0.0015,
+				UIStroke = e(UIStroke.UIStrokeGradient, {
+					Stroke = 0.02,
 					GradColor = Properties.LeftStrokeColor or ColorSequence.new(Color3.new(1, 1, 1)),
 					native = {
 						Enabled = if Properties.LeftStrokeColor then true else false,
@@ -172,8 +172,8 @@ local function CreateBaseFrame(Properties: Properties)
 					ZIndex = 2,
 				},
 			}, {
-				UIStroke = e(UIStroke.UIStroke, {
-					Stroke = 0.0015,
+				UIStroke = e(UIStroke.UIStrokeGradient, {
+					Stroke = 0.02,
 					GradColor = Properties.RightStrokeColor or ColorSequence.new(Color3.new(1, 1, 1)),
 					native = {
 						Enabled = if Properties.RightStrokeColor then true else false,

@@ -124,7 +124,6 @@ local function ConvertIdsToDecals(Images: { string })
 end
 
 local function PreloadAsync()
-	ContentProvider:PreloadAsync({ game, ReplicatedStorage })
 	ContentProvider:PreloadAsync(ConvertIdsToDecals(Images))
 	if not Player.Character then
 		Player.CharacterAdded:Wait()
