@@ -238,8 +238,12 @@ function Enemy:AdjustSpeed(Speed: number)
 end
 
 function Enemy:SetHealth(Health: number)
-	self.Health = math.clamp(Health, 0, self.MaxHealth)
-	self.HealthChanged:Fire(self.Health)
+	self.Trove:Add(task.defer(function()
+		if getmetatable(self) then
+			self.Health = math.clamp(Health, 0, self.MaxHealth)
+			self.HealthChanged:Fire(self.Health)
+		end
+	end))
 end
 
 function Enemy:SetMaxHealth(MaxHealth: number)
@@ -265,6 +269,7 @@ function Enemy:Destroy()
 	self.Destroying:Fire()
 	self.Trove:Destroy()
 	Enemies[self.UniqueId] = nil
+	table.clear(self :: any)
 	setmetatable(self :: any, nil)
 end
 

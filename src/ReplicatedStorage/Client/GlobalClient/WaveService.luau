@@ -47,6 +47,7 @@ local Module: {
 	TimeChanged: Signal.Signal<number, number>,
 	Ended: Signal.Signal<boolean, GameInfo.ResourceData>,
 	Win: boolean?,
+	EndData: GameInfo.ResourceData?,
 
 	VoteData: {
 		VoteStarted: Signal.Signal<VoteData>,
@@ -65,6 +66,7 @@ local Module: {
 		TimeChanged = Signal.new(),
 		Ended = Signal.new(),
 		Win = nil,
+		EndData = nil,
 
 		VoteData = {
 			VoteStarted = Signal.new(),
@@ -111,8 +113,9 @@ TimeChanged.OnClientEvent:Connect(function(Data: { Time: number, StartTime: numb
 	end
 end)
 
-WaveEnded.OnClientEvent:Connect(function(Win: boolean, Data)
+WaveEnded.OnClientEvent:Connect(function(Win: boolean, Data: GameInfo.ResourceData)
 	Module.Win = Win
+	Module.EndData = Data
 	if WaveData then
 		Module.Ended:Fire(Win, Data)
 		WaveData = nil

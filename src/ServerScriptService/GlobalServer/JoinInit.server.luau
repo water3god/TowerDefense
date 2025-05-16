@@ -67,7 +67,7 @@ local function Init(DataInput: Types.RecieveData?)
 		GlobalWave.new({
 			PlayerIds = Data.PlayerIds,
 			XPMultiplier = XPMultiplier,
-			RewardInfo = (LevelInfo :: any).RewardInfo,
+			RewardInfo = (LevelInfo :: any).RewardInfo[Data.Difficulty],
 			Data = FoundData,
 			Positions = Positions,
 			Difficulty = Data.Difficulty,

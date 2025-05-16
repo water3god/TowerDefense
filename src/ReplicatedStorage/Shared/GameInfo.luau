@@ -59,15 +59,21 @@ local GameInfo: { MapInfo } = {
 				RewardInfo = {
 					Normal = {
 						Units = {},
-						Resources = {},
+						Resources = {
+							{ Resource = "Gold", Count = 3 },
+						},
 					},
 					Hard = {
 						Units = {},
-						Resources = {},
+						Resources = {
+							{ Resource = "Gold", Count = 3 },
+						},
 					},
 					Insane = {
 						Units = {},
-						Resources = {},
+						Resources = {
+							{ Resource = "Gold", Count = 3 },
+						},
 					},
 				},
 			},
@@ -79,7 +85,9 @@ local GameInfo: { MapInfo } = {
 				RewardInfo = {
 					Normal = {
 						Units = {},
-						Resources = {},
+						Resources = {
+							{ Resource = "Gold", Count = 3 },
+						},
 					},
 					Hard = {
 						Units = {},

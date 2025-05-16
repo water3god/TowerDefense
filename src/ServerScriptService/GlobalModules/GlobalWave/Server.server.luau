@@ -106,6 +106,7 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 					PlayerData:AddUnitXP(EquippedUnit, TotalXP)
 					Data.NewLevel = OldData.Level
 					Data.NewXP = OldData.XP
+					print(Data)
 					table.insert(SendData.ExistingUnits, Data)
 				end
 

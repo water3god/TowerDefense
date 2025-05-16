@@ -57,11 +57,7 @@ export type Props = {
 	Success: boolean,
 	SetVisible: ((Visible: boolean) -> ())?,
 	PlayerData: React.Binding<{ Votes: number, Total: number }>,
-	EndData: {
-		Units: { string },
-		Resources: { { Resource: string, Count: number } },
-		ExistingUnits: { { Name: string, OldLevel: number, NewLevel: number, OldXP: number, NewXP: number } },
-	},
+	EndData: GameInfo.ResourceData,
 
 	native: { [any]: any }?,
 	children: { [any]: any }?,
@@ -501,7 +497,7 @@ local function CreateVoteFrame(Props: Props)
 				}),
 			}, RewardFrames),
 		}),
-		Backgroundstuff = e(Main.Frame, {
+		BackgroundFrame1 = e(Main.Frame, {
 			native = {
 				BackgroundTransparency = 0,
 				Size = UDim2.fromScale(1.2, 1.2),
@@ -513,10 +509,10 @@ local function CreateVoteFrame(Props: Props)
 				Transparency = TransparencySequence,
 			}),
 		}),
-		Backgroundstuff2 = e(Main.Frame, {
+		BackgroundFrame2 = e(Main.Frame, {
 			native = {
 				BackgroundTransparency = 0,
-				Size = UDim2.fromScale(1.2, 1.2),
+				Size = UDim2.fromScale(2, 2),
 				ZIndex = -2,
 			},
 		}, {
@@ -534,6 +530,7 @@ local function CreateEndFrameButton(props)
 		native = {
 			Image = "rbxassetid://105684513155812",
 			Visible = props.Visible,
+			Size = UDim2.fromScale(0.2, 0.1),
 			[React.Event.MouseButton1Click] = function()
 				props.SetVisible(true)
 			end,
@@ -566,9 +563,12 @@ local function VoteConnected(props)
 		Total = #Players:GetPlayers(),
 	})
 
+	local EndData, SetEndData = React.useState({ Units = {}, Resources = {}, ExistingUnits = {} })
+
 	React.useEffect(function()
-		if not WaveService.GetWaveData() and WaveService.Win ~= nil then
+		if not WaveService.GetWaveData() and WaveService.Win ~= nil and WaveService.EndData ~= nil then
 			SetSuccess(WaveService.Win)
+			SetEndData(WaveService.EndData)
 			SetEnabled(true)
 		end
 	end, {})
@@ -604,13 +604,17 @@ local function VoteConnected(props)
 		}) :: any)
 	end, {})
 
+	Hooks.useEventConnection(WaveService.Ended, function(_, Data)
+		SetEndData(Data)
+	end, { EndData })
+
 	return e(React.Fragment, nil, {
 		EndFrame = e(CreateVoteFrame, {
 			Enabled = Enabled and VisualEnabled,
 			SetVisible = SetVisualEnabled,
 			Success = Success,
 			PlayerData = PlayerData,
-			EndData = { Units = {}, Resources = {}, ExistingUnits = {} },
+			EndData = EndData,
 			native = props.native,
 		}, props.children),
 		EndButton = e(CreateEndFrameButton, {

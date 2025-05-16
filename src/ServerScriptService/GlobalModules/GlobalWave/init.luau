@@ -317,7 +317,14 @@ function GlobalWave:NextWave()
 				end
 				self.WaveTrove:Add(task.delay(Time, function()
 					ThreadCount -= 1
-					local Enemy = self.Trove:Construct(Enemy, { EnemyInfo = EnemyData, BezierId = self.BezierId })
+					local Enemy = Enemy.new({ EnemyInfo = EnemyData, BezierId = self.BezierId })
+
+					self.Trove:Add(function()
+						if getmetatable(Enemy) then
+							Enemy:Destroy()
+						end
+					end)
+
 					self.EnemyAdded:Fire(Enemy)
 					Enemy.Destroying:Once(function()
 						self.EnemyDestroying:Fire(Enemy)
