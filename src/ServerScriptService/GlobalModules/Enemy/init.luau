@@ -186,9 +186,6 @@ function Enemy.new(Input: EnemyInput)
 			self.Healed:Fire(Health - OldHP)
 		end
 		OldHP = Health
-		if Health == 0 then
-			self:Destroy()
-		end
 	end)
 
 	self.MaxHealthChanged:Connect(function(MaxHealth: number)
@@ -238,12 +235,8 @@ function Enemy:AdjustSpeed(Speed: number)
 end
 
 function Enemy:SetHealth(Health: number)
-	self.Trove:Add(task.defer(function()
-		if getmetatable(self) then
-			self.Health = math.clamp(Health, 0, self.MaxHealth)
-			self.HealthChanged:Fire(self.Health)
-		end
-	end))
+	self.Health = math.clamp(Health, 0, self.MaxHealth)
+	self.HealthChanged:Fire(self.Health)
 end
 
 function Enemy:SetMaxHealth(MaxHealth: number)

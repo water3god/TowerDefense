@@ -317,11 +317,11 @@ function GlobalWave:NextWave()
 				end
 				self.WaveTrove:Add(task.delay(Time, function()
 					ThreadCount -= 1
-					local Enemy = Enemy.new({ EnemyInfo = EnemyData, BezierId = self.BezierId })
+					local Enemy = self.Trove:Construct(Enemy, { EnemyInfo = EnemyData, BezierId = self.BezierId })
 
-					self.Trove:Add(function()
-						if getmetatable(Enemy) then
-							Enemy:Destroy()
+					Enemy.HealthChanged:Connect(function(Health: number)
+						if Health == 0 then
+							self.Trove:Remove(Enemy :: any)
 						end
 					end)
 

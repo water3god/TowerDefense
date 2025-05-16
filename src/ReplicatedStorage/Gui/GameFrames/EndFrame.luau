@@ -327,6 +327,7 @@ local function CreateVoteFrame(Props: Props)
 		native = Join({
 			Size = UDim2.fromScale(0.95, 0.7),
 			Visible = Props.Enabled,
+			ZIndex = 2,
 		}, Props.native),
 	}, {
 		CloseButton = e(CloseButton, {
@@ -500,7 +501,7 @@ local function CreateVoteFrame(Props: Props)
 		BackgroundFrame1 = e(Main.Frame, {
 			native = {
 				BackgroundTransparency = 0,
-				Size = UDim2.fromScale(1.2, 1.2),
+				Size = UDim2.fromScale(2, 2),
 				ZIndex = -2,
 			},
 		}, {
@@ -530,6 +531,7 @@ local function CreateEndFrameButton(props)
 		native = {
 			Image = "rbxassetid://105684513155812",
 			Visible = props.Visible,
+			Position = UDim2.fromScale(0.5, 0.7),
 			Size = UDim2.fromScale(0.2, 0.1),
 			[React.Event.MouseButton1Click] = function()
 				props.SetVisible(true)
