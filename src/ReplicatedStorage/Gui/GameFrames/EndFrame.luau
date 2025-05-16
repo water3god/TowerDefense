@@ -539,7 +539,7 @@ local function CreateEndFrameButton(props)
 		},
 	}, {
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-			AspectRatio = 1.75,
+			AspectRatio = 3,
 		}),
 		Label = e(Main.TextLabel, {
 			native = {
