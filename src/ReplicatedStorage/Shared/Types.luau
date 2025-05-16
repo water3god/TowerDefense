@@ -38,7 +38,7 @@ export type RawUnitData = {
 }
 
 export type RewardData = {
-	Reward: string,
+	Resource: string,
 	Count: number,
 }
 
@@ -250,6 +250,7 @@ export type SentData = {
 
 export type RecieveData = {
 	PlayerIds: { number },
+	MapId: string,
 	LevelId: string,
 	Difficulty: string,
 }

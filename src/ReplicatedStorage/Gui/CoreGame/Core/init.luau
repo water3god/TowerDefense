@@ -523,7 +523,9 @@ local function Render()
 					TopFrame = e(Top),
 				}),
 				VoteFrame = e(VoteFrame),
-				EndFrame = e(EndFrame.Connected),
+				EndFrame = e(EndFrame.Connected, {
+					Enabled = true,
+				}),
 				UpgradeContext = e(UpgradeContext.Provider, {
 					UnitId = PlacingUnitId,
 				}, {

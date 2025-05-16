@@ -21,6 +21,7 @@ local GenerateId = require(Modules.GenerateId)
 
 local Shared = ReplicatedStorage.Shared
 local Constants = require(Shared.Constants)
+local GameInfo = require(Shared.GameInfo)
 
 local GlobalModules = ServerScriptService.GlobalModules
 local Enemy = require(GlobalModules.Enemy)
@@ -32,7 +33,9 @@ local DifficultyData = require(Data.DifficultyData)
 
 export type Input = {
 	Data: WaveData.WaveData,
+	RewardInfo: GameInfo.RewardInfo,
 	IsInfinite: boolean,
+	XPMultiplier: number,
 	Positions: { Vector3 },
 	PlayerIds: { number },
 	Difficulty: string,
@@ -40,6 +43,8 @@ export type Input = {
 
 export type InfiniteInput = {
 	Data: WaveData.InfiniteData,
+	RewardInfo: GameInfo.RewardInfo,
+	XPMultiplier: number,
 	Positions: { Vector3 },
 	PlayerIds: { number },
 	Difficulty: string,
@@ -53,7 +58,10 @@ type Data = {
 	Time: number,
 	StartTime: number,
 
+	RewardInfo: GameInfo.RewardInfo,
 	DifficultyData: DifficultyData.Data,
+	IsInfinite: boolean,
+	XPMultiplier: number,
 
 	BaseHealth: number,
 	MaxHealth: number,
@@ -142,6 +150,9 @@ function GlobalWave.new(Input: Input)
 	self.StartTime = 0
 
 	self.DifficultyData = DifficultyData[Input.Difficulty]
+	self.IsInfinite = Input.IsInfinite
+	self.XPMultiplier = Input.XPMultiplier
+	self.RewardInfo = Input.RewardInfo
 
 	if not Input.IsInfinite then
 		self.DifficultyData.HealthRatio = 1
@@ -208,6 +219,8 @@ function GlobalWave.infinite(InfInput: InfiniteInput)
 
 	local Input: Input = {
 		Data = Data,
+		RewardInfo = InfInput.RewardInfo,
+		XPMultiplier = InfInput.XPMultiplier,
 		Positions = InfInput.Positions,
 		Difficulty = InfInput.Difficulty,
 		PlayerIds = InfInput.PlayerIds,

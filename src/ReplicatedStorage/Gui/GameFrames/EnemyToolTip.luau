@@ -77,8 +77,8 @@ local function CreateEnemyToolTip(Props: Props)
 			UICorner = e("UICorner", {
 				CornerRadius = UDim.new(0.3, 0),
 			}),
-			UIStroke = e(UIStroke.UIStrokeBasic, {
-				Stroke = 0.003,
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.02,
 				native = {
 					Color = Color3.fromRGB(127, 32, 165),
 					LineJoinMode = Enum.LineJoinMode.Round,

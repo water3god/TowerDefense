@@ -21,7 +21,6 @@ local controls = {}
 
 local function Container()
 	local Enabled = React.useState(true)
-	local Success = React.useBinding(false)
 	local PlayerData = React.useBinding({
 		Votes = 3,
 		Total = 3,
@@ -29,8 +28,19 @@ local function Container()
 
 	return e(EndFrame.Create, {
 		Enabled = Enabled,
-		Success = Success,
+		Success = false,
 		PlayerData = PlayerData,
+		EndData = {
+			Units = {
+				"Scout",
+			},
+			Resources = {
+				{ Resource = "Gold", Count = 10 },
+			},
+			ExistingUnits = {
+				{ Name = "Scout", OldXP = 10, OldLevel = 1, NewXP = 50, NewLevel = 100 },
+			},
+		},
 		--[[native = {
 			Size = UDim2.fromScale(0.8, 0.3),
 			Position = UDim2.fromScale(0.5, 0.5),

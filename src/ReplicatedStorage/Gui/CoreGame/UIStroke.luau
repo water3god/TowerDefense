@@ -114,11 +114,13 @@ function Funcs.UIStrokeAdvanced(Properties: PropertiesBasic)
 			local Stroke = Stroke.current
 
 			if Stroke.Parent and Stroke.Parent:IsA("GuiObject") then
-				Trove:Connect(Stroke.Parent:GetPropertyChangedSignal("AbsoluteSize"), function()
+				local function Set()
 					local AbsoluteSize = Stroke.Parent.AbsoluteSize
 					local TotalSize = (AbsoluteSize.X + AbsoluteSize.Y) / 2
 					SetSize(TotalSize * Properties.Stroke)
-				end)
+				end
+				Set()
+				Trove:Connect(Stroke.Parent:GetPropertyChangedSignal("AbsoluteSize"), Set)
 			end
 		end
 

@@ -20,7 +20,7 @@ local UnitInfo = require(Shared.UnitInfo)
 
 export type Properties = {
 	UnitName: string,
-	Level: number,
+	Level: number | React.Binding<number>,
 	Cost: number,
 	Hovered: boolean?,
 
@@ -40,7 +40,7 @@ export type Properties = {
 local function CreateUnitFrameRaw(Properties: Properties)
 	return e(BaseFrame, {
 		Name = Properties.UnitName,
-		LeftText = tostring(Properties.Level),
+		LeftText = typeof(Properties.Level) == "number" and tostring(Properties.Level) or Properties.Level :: any,
 		RightText = string.format("$%u", Properties.Cost),
 		RightColor = ColorSequence.new(Color3.new(1, 0.706813, 0.310231)),
 
@@ -65,7 +65,7 @@ end
 
 export type PropertiesMain = {
 	UnitName: string,
-	Level: number,
+	Level: number | React.Binding<number>,
 	Hovered: boolean?,
 
 	Disabled: boolean?,

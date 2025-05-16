@@ -16,6 +16,11 @@ local GenerateId = require(Modules.GenerateId)
 
 local Shared = ReplicatedStorage.Shared
 local LevelRequirements = require(Shared.LevelRequirements)
+local GameInfo = require(Shared.GameInfo)
+
+local CalculateUnitXP = GameInfo.XPData.CalculateUnitXP
+local CalculatePlayerXP = GameInfo.XPData.CalculatePlayerXP
+local UnitMaxLevel = GameInfo.XPData.UnitMaxLevel
 
 local Utility = ServerScriptService.Utility
 local ProfileStore = require(Utility.ProfileStore)
@@ -125,20 +130,6 @@ PlayerData.__index = PlayerData
 local MainDatastore = ProfileStore.New("MainDataStorev0.01", Template)
 
 local PlayerDatas: { [Player]: PlayerData } = {}
-
-local function CalculateUnitXP(Level: number)
-	local Multiplier = 1.04
-	local BaseXP = 100
-
-	return math.round(BaseXP * math.pow(Multiplier, Level))
-end
-
-local function CalculatePlayerXP(Level: number)
-	local Multiplier = 1.03
-	local BaseXP = 100
-
-	return math.round(BaseXP * math.pow(Multiplier, Level))
-end
 
 local LevelData = LevelRequirements
 
@@ -510,7 +501,7 @@ function PlayerData:AddUnitXP(UnitId: string, XP: number)
 	local UnitData = Data.Units[UnitId]
 
 	if UnitData then
-		if UnitData.Level >= 100 then
+		if UnitData.Level >= UnitMaxLevel then
 			return
 		end
 
@@ -520,7 +511,7 @@ function PlayerData:AddUnitXP(UnitId: string, XP: number)
 			UnitData.Level += 1
 			UnitData.NeededXP = CalculateUnitXP(UnitData.Level)
 
-			if UnitData.Level >= 100 then
+			if UnitData.Level >= UnitMaxLevel then
 				break
 			end
 		end

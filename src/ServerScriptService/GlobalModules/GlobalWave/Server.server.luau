@@ -13,6 +13,12 @@ local WaveEnded = WaveEvents.WaveEnded
 local Passed = WaveEvents.Passed
 local Added = WaveEvents.Added
 
+local Shared = ReplicatedStorage.Shared
+local GameInfo = require(Shared.GameInfo)
+
+local GlobalModules = ServerScriptService.GlobalModules
+local PlayerData = require(GlobalModules.PlayerData)
+
 local GlobalWave = require(script.Parent)
 
 local function SerializeWave(Wave: GlobalWave.GlobalWave)
@@ -30,6 +36,21 @@ local function SendHealthInfo(Wave: GlobalWave.GlobalWave)
 		BaseHealth = Wave.BaseHealth,
 		MaxHealth = Wave.MaxHealth,
 	})
+end
+
+local function CalculateXPNormal(Win: boolean, Wave: number, XPMultiplier: number)
+	local XP = math.floor(math.pow(Wave, 1.5) * 2)
+	XP *= XPMultiplier
+	if not Win then
+		XP /= 1.5
+	end
+	return XP
+end
+
+local function CalculateXPInfinite(Wave: number, XPMultiplier: number)
+	local XP = math.floor(math.pow(Wave, 1.2) * 2)
+	XP *= XPMultiplier
+	return XP
 end
 
 local function OnAdded(Wave: GlobalWave.GlobalWave)
@@ -52,7 +73,45 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 	end)
 
 	Wave.Ended:Connect(function(Win: boolean)
-		WaveEnded:FireAllClients(Win)
+		local TotalXP = 0
+		if Wave.IsInfinite then
+			TotalXP = CalculateXPInfinite(Wave.Wave, Wave.XPMultiplier)
+		else
+			TotalXP = CalculateXPNormal(Win, Wave.Wave, Wave.XPMultiplier)
+		end
+
+		for _, Player in ipairs(Players:GetPlayers()) do
+			local PlayerData = PlayerData.GetPlayerData(Player)
+			local SendData = { Units = {}, Resources = {}, ExistingUnits = {} }
+
+			if PlayerData then
+				for _, Unit in ipairs(Wave.RewardInfo.Units) do
+					PlayerData:AddUnit(Unit)
+					table.insert(SendData, Unit)
+				end
+
+				for _, Resource in ipairs(Wave.RewardInfo.Resources) do
+					if Resource.Resource == "Gold" then
+						PlayerData:AddGold(Resource.Count)
+					else
+						-- Add Artifact --
+					end
+					table.insert(SendData.Resources, Resource)
+				end
+
+				for _, EquippedUnit in ipairs(PlayerData:GetEquippedUnits()) do
+					local OldData = PlayerData:GetUnitFromId(EquippedUnit) :: any
+
+					local Data = { Name = OldData.Unit, OldLevel = OldData.Level, OldXP = OldData.XP }
+					PlayerData:AddUnitXP(EquippedUnit, TotalXP)
+					Data.NewLevel = OldData.Level
+					Data.NewXP = OldData.XP
+					table.insert(SendData.ExistingUnits, Data)
+				end
+
+				WaveEnded:FireClient(Player, Win, SendData)
+			end
+		end
 	end)
 end
 

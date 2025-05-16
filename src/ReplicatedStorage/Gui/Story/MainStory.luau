@@ -86,13 +86,9 @@ local function CreateMainStory(Properties: Properties)
 		end
 	end, { StoryData })
 
-	local MapData, SetMapData = React.useState({})
-
 	local CurrentMap, SetMap = React.useState(GameInfo.GameInfo[1].MapId)
 	local Stage, SetStage = React.useState(1)
 	local Difficulty, SetDifficulty = React.useState("Normal")
-
-	local ResourceFrames, SetResourceFrames = React.useState({})
 
 	local MapClicked = React.useCallback(function(MapId)
 		if CurrentMap ~= MapId then
@@ -100,7 +96,7 @@ local function CreateMainStory(Properties: Properties)
 		end
 	end, { CurrentMap })
 
-	React.useEffect(function()
+	local ResourceFrames = React.useMemo(function()
 		local ResourceOrder = LayoutOrder()
 
 		local RewardInfo = (GameInfo.GetMapFromId(CurrentMap) :: GameInfo.MapInfo).LevelInfo[Stage]
@@ -108,24 +104,22 @@ local function CreateMainStory(Properties: Properties)
 
 		local FrameTable: { [string]: React.ReactNode } = {}
 
-		local UnitData = RewardInfo.UnitInfo
-
-		for _, Unit in ipairs(UnitData) do
-			FrameTable["Unit" .. Unit.Unit] = e(UnitFrame.CreateUnitFrame, {
-				UnitName = Unit.Unit,
-				Level = Unit.Level,
+		for _, Unit in ipairs(Data.Units) do
+			FrameTable["Unit" .. Unit] = e(UnitFrame.CreateUnitFrame, {
+				UnitName = Unit,
+				Level = 1,
 				native = {
 					ZIndex = ResourceOrder(),
 				},
 			})
 		end
 
-		for Index, Reward in ipairs(Data) do
-			local RewardData = GameInfo.RewardInfo[Reward.Reward]
-			FrameTable["Reward" .. Reward.Reward] = e(BaseFrame, {
+		for Index, Reward in ipairs(Data.Resources) do
+			local RewardData = GameInfo.RewardInfo[Reward.Resource]
+			FrameTable["Reward" .. Reward.Resource] = e(BaseFrame, {
 				LeftText = "",
 				RightText = string.format("%ux", Reward.Count),
-				Name = Reward.Reward,
+				Name = Reward.Resource,
 				MainImage = RewardData.Image,
 
 				BackgroundColor = RewardData.BackgroundColor,
@@ -138,10 +132,10 @@ local function CreateMainStory(Properties: Properties)
 				},
 			})
 		end
-		SetResourceFrames(FrameTable)
+		return FrameTable
 	end, { Difficulty })
 
-	React.useEffect(function()
+	local MapData = React.useMemo(function()
 		local Data = {}
 		for Index, MapData in ipairs(GameInfo.GameInfo) do
 			Data[MapData.MapId] = e(Main.Animateables.TextButton, {
@@ -211,7 +205,7 @@ local function CreateMainStory(Properties: Properties)
 				},
 			})
 		end
-		SetMapData(Data)
+		return Data
 	end, { StoryData })
 
 	React.useEffect(function()

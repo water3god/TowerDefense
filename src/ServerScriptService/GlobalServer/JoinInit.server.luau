@@ -20,6 +20,7 @@ local StartGame = ReplicatedStorage.Remotes.Waves.Server.StartGame
 local Shared = ReplicatedStorage.Shared
 local Constants = require(Shared.Constants)
 local Types = require(Shared.Types)
+local GameInfo = require(Shared.GameInfo)
 
 local Map = workspace:FindFirstChild("GameMap")
 
@@ -54,6 +55,9 @@ local function Init(DataInput: Types.RecieveData?)
 	local Data = DataInput or OldValues :: Types.RecieveData
 	OldValues = Data
 
+	local _, LevelInfo = GameInfo.GetDataFromInfo(Data.MapId, Data.LevelId)
+	local XPMultiplier: number = (LevelInfo :: any).XPMultiplier
+
 	local FoundData = WaveData[Data.LevelId]
 
 	if FoundData then
@@ -62,6 +66,8 @@ local function Init(DataInput: Types.RecieveData?)
 		end
 		GlobalWave.new({
 			PlayerIds = Data.PlayerIds,
+			XPMultiplier = XPMultiplier,
+			RewardInfo = (LevelInfo :: any).RewardInfo,
 			Data = FoundData,
 			Positions = Positions,
 			Difficulty = Data.Difficulty,
@@ -76,6 +82,7 @@ if game["Run Service"]:IsStudio() then
 	local Ids = { 343804839 }
 	Init({
 		PlayerIds = Ids,
+		MapId = "BattleOfHastings",
 		LevelId = "Hastingsv1",
 		Difficulty = "Insane",
 	})

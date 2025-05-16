@@ -87,6 +87,7 @@ local function TpToMap(Data: Types.SentData)
 
 	local NewData: Types.RecieveData = {
 		PlayerIds = PlayerIds,
+		MapId = Data.MapId,
 		LevelId = Data.LevelId,
 		Difficulty = Data.Difficulty,
 	}

@@ -19,6 +19,9 @@ local Vote = VoteEvents.Vote
 local Packages = ReplicatedStorage.Packages
 local Signal = require(Packages.Signal)
 
+local Shared = ReplicatedStorage.Shared
+local GameInfo = require(Shared.GameInfo)
+
 export type WaveData = {
 	Wave: number,
 	BaseHealth: number,
@@ -42,7 +45,7 @@ local Module: {
 	HealthChanged: Signal.Signal<number, number>,
 	Passed: Signal.Signal<number>,
 	TimeChanged: Signal.Signal<number, number>,
-	Ended: Signal.Signal<boolean>,
+	Ended: Signal.Signal<boolean, GameInfo.ResourceData>,
 	Win: boolean?,
 
 	VoteData: {
@@ -108,10 +111,10 @@ TimeChanged.OnClientEvent:Connect(function(Data: { Time: number, StartTime: numb
 	end
 end)
 
-WaveEnded.OnClientEvent:Connect(function(Win: boolean)
+WaveEnded.OnClientEvent:Connect(function(Win: boolean, Data)
 	Module.Win = Win
 	if WaveData then
-		Module.Ended:Fire(Win)
+		Module.Ended:Fire(Win, Data)
 		WaveData = nil
 	end
 end)

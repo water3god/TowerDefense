@@ -6,6 +6,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local TeleportService = game:GetService("TeleportService")
+local RunService = game:GetService("RunService")
 
 local Player = Players.LocalPlayer
 
@@ -18,17 +19,18 @@ local Promise = require(Packages.Promise)
 local e = React.createElement
 
 local Modules = ReplicatedStorage.Modules
+local Lerps = require(Modules.Lerps)
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
 
 local Remotes = ReplicatedStorage.Remotes
 
 local GameEndEvents = Remotes.Waves.GameEnd
-local OnVote: RemoteEvent = GameEndEvents.OnVote
-local OnEnd: RemoteEvent = GameEndEvents.OnEnd
-local Vote: RemoteEvent = GameEndEvents.Vote
+local OnVote = GameEndEvents.OnVote
+local OnEnd = GameEndEvents.OnEnd
+local Vote = GameEndEvents.Vote
 
-local TPGuiSet: BindableEvent = Remotes.Booth.ClientOnly.TPGuiSet
+local TPGuiSet = Remotes.Booth.ClientOnly.TPGuiSet
 
 -- Reference UI --
 local Gui = ReplicatedStorage.Gui
@@ -36,6 +38,8 @@ local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
 local UIStroke = require(CoreGame.UIStroke)
 local Hooks = require(CoreGame.Hooks)
+local BaseFrame = require(CoreGame.BaseFrame)
+local CloseButton = require(CoreGame.CloseButton)
 
 local Inventory = Gui.Inventory
 local UnitFrame = require(Inventory.UnitFrame)
@@ -45,27 +49,118 @@ local GlobalClient = Client.GlobalClient
 local WaveService = require(GlobalClient.WaveService)
 
 local Shared = ReplicatedStorage.Shared
-local UnitInfo = require(Shared.UnitInfo)
+local GameInfo = require(Shared.GameInfo)
+local XPData = GameInfo.XPData
 
 export type Props = {
 	Enabled: boolean,
-	Success: React.Binding<boolean>,
+	Success: boolean,
+	SetVisible: ((Visible: boolean) -> ())?,
 	PlayerData: React.Binding<{ Votes: number, Total: number }>,
+	EndData: {
+		Units: { string },
+		Resources: { { Resource: string, Count: number } },
+		ExistingUnits: { { Name: string, OldLevel: number, NewLevel: number, OldXP: number, NewXP: number } },
+	},
 
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
 
-local function CreateResourceFrame(props)
-	return e(Main.Frame, {
-		native = Join({}, props.native),
+export type ResourceProps = {
+	Name: string,
+	Value: number,
+	native: { [any]: any }?,
+	children: { [any]: any }?,
+}
+
+export type UnitXPProps = {
+	Data: { Name: string, OldLevel: number, NewLevel: number, OldXP: number, NewXP: number },
+	native: { [any]: any }?,
+	children: { [any]: any }?,
+}
+
+local Default = {
+	BackgroundColor = ColorSequence.new(Color3.new()),
+	Image = "",
+	RewardColor = ColorSequence.new(Color3.new()),
+	StrokeColor = ColorSequence.new(Color3.new()),
+}
+
+type UnitXP = { Level: number, XP: number, NeededXP: number }
+
+local function CreateResourceFrame(props: ResourceProps)
+	local ResourceData = React.useMemo(function()
+		return GameInfo.RewardInfo[props.Name] or Default
+	end, {})
+
+	return e(BaseFrame, {
+		LeftText = "",
+		RightText = string.format("%ux", props.Value),
+		Name = props.Name,
+		MainImage = ResourceData.Image,
+
+		BackgroundColor = ResourceData.BackgroundColor,
+		NameColor = ResourceData.RewardColor,
+		NameStrokeColor = ColorSequence.new(Color3.new()),
+		RightStrokeColor = ColorSequence.new(Color3.new()),
+		native = props.native,
 	}, props.children)
 end
 
-local function CreateUnitXPFrame(props)
-	local Image = React.useMemo(function()
-		return UnitInfo.UnitInfo[props.UnitName].Image
-	end, { props.UnitName })
+local function CreateUnitXPFrame(props: UnitXPProps)
+	local Styles, API = ReactSpring.useSpring(function()
+		return {
+			alpha = 0,
+		}
+	end)
+
+	local BindingData = React.useRef(1)
+
+	local XPInfo: React.Binding<UnitXP> = Styles.alpha:map(function(alpha: number)
+		local Level: number = nil
+		local XP: number = nil
+		local NeededXP: number = nil
+		local Data = props.Data
+
+		local LerpGain = math.lerp(0, BindingData.current, alpha)
+		local total = 0
+
+		for i = Data.OldLevel, Data.NewLevel, 1 do
+			local Goal = XPData.CalculateUnitXP(i)
+			total += Goal
+
+			if LerpGain <= total then
+				Level = i
+				XP = (LerpGain + XPData.CalculateUnitXP(i + 1)) - total
+				NeededXP = Goal
+				break
+			end
+		end
+
+		return {
+			Level = Level,
+			XP = XP,
+			NeededXP = NeededXP,
+		}
+	end)
+
+	React.useEffect(function()
+		local XPGain = 0
+		local Data = props.Data
+		for i = Data.OldLevel, Data.NewLevel - 1, 1 do
+			local Gain = XPData.CalculateUnitXP(i)
+			XPGain += Gain
+		end
+
+		XPGain -= Data.OldXP
+		XPGain += Data.NewXP
+
+		BindingData.current = XPGain
+		API.start({
+			alpha = 1,
+		})
+	end, {})
 
 	return e(Main.Frame, {
 		native = Join({
@@ -81,7 +176,13 @@ local function CreateUnitXPFrame(props)
 			},
 		}, {
 			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.25, 0),
+				CornerRadius = UDim.new(0.2, 0),
+			}),
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.015,
+				native = {
+					LineJoinMode = Enum.LineJoinMode.Round,
+				},
 			}),
 		}),
 		UnitImage = e(UnitFrame.CreateUnitFrame, {
@@ -89,15 +190,16 @@ local function CreateUnitXPFrame(props)
 				Size = UDim2.fromScale(0.5, 0.9),
 				Position = UDim2.fromScale(0.15, 0.5),
 			},
-
-			UnitName = props.UnitName,
-			Level = 3,
+			UnitName = props.Data.Name,
+			Level = XPInfo:map(function(data: UnitXP)
+				return data.Level
+			end),
 		}),
 		NameLabel = e(Main.TextLabel, {
 			native = {
 				Size = UDim2.fromScale(0.7, 0.3),
 				Position = UDim2.fromScale(0.6, 0.25),
-				Text = props.UnitName,
+				Text = props.Data.Name,
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
@@ -112,11 +214,16 @@ local function CreateUnitXPFrame(props)
 				Position = UDim2.fromScale(0.6, 0.65),
 			},
 		}, {
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.4, 0),
+			}),
 			XPLabel = e(Main.TextLabel, {
 				native = {
 					Size = UDim2.fromScale(0.9, 0.8),
 					Position = UDim2.fromScale(0.5, 0.5),
-					Text = "50 / 100",
+					Text = XPInfo:map(function(data: UnitXP)
+						return string.format("%u / %u", data.XP, data.NeededXP)
+					end),
 					ZIndex = 3,
 				},
 			}, {
@@ -128,7 +235,9 @@ local function CreateUnitXPFrame(props)
 				native = {
 					BackgroundColor3 = Color3.new(0.211765, 0.756863, 0.090196),
 					BackgroundTransparency = 0,
-					Size = UDim2.fromScale(0.5, 1),
+					Size = XPInfo:map(function(data: UnitXP)
+						return UDim2.fromScale(math.clamp(data.XP / data.NeededXP, 0, 1), 1)
+					end),
 					Position = UDim2.fromScale(0, 0.5),
 					AnchorPoint = Vector2.new(0, 0.5),
 					ZIndex = 2,
@@ -138,7 +247,31 @@ local function CreateUnitXPFrame(props)
 	}, props.children)
 end
 
+local TransparencySequence = NumberSequence.new({
+	NumberSequenceKeypoint.new(0, 1),
+	NumberSequenceKeypoint.new(0.1, 0.8),
+	NumberSequenceKeypoint.new(0.9, 0.8),
+	NumberSequenceKeypoint.new(1, 1),
+})
+
+local WinData = {
+	[true] = {
+		GradColor = ColorSequence.new(Color3.new(0.341176, 0.87451, 0.294118)),
+		StrokeColor = ColorSequence.new(Color3.new(0.235294, 0.752941, 0.188235)),
+	},
+	[false] = {
+		GradColor = ColorSequence.new(Color3.new(0.701961, 0.105882, 0.105882)),
+		StrokeColor = ColorSequence.new(Color3.new(0.627451, 0.12549, 0.109804)),
+	},
+}
+
 local function CreateVoteFrame(Props: Props)
+	local CloseClick = React.useCallback(function()
+		if Props.SetVisible then
+			Props.SetVisible(false)
+		end
+	end, { Props.SetVisible })
+
 	local RestartClick = React.useCallback(function()
 		Vote:FireServer()
 	end, {})
@@ -152,26 +285,85 @@ local function CreateVoteFrame(Props: Props)
 		end)
 	end, {})
 
+	local RewardFrames = React.useMemo(function()
+		local RewardOrder = Hooks.LayoutOrder()
+		local Frames: { [string]: React.Node } = {}
+
+		for Index, Unit in ipairs(Props.EndData.Units) do
+			Frames["Unit" .. Unit .. Index] = e(UnitFrame.CreateUnitFrame, {
+				Level = 1,
+				UnitName = Unit,
+				native = {
+					LayoutOrder = RewardOrder(),
+				},
+			})
+		end
+
+		for _, Data in ipairs(Props.EndData.Resources) do
+			Frames["Resource" .. Data.Resource] = e(CreateResourceFrame, {
+				Name = Data.Resource,
+				Value = Data.Count,
+				native = {
+					LayoutOrder = RewardOrder(),
+				},
+			})
+		end
+
+		return Frames
+	end, { Props.EndData })
+
+	local ExistingUnits = React.useMemo(function()
+		local Frames = {}
+
+		for Index, UnitData in pairs(Props.EndData.ExistingUnits) do
+			Frames[UnitData.Name .. Index] = e(CreateUnitXPFrame, {
+				Data = UnitData,
+				native = {
+					LayoutOrder = Index,
+				},
+			})
+		end
+
+		return Frames
+	end, { Props.EndData.ExistingUnits })
+
 	return e(Main.Frame, {
 		native = Join({
-			BackgroundTransparency = 0,
-			BackgroundColor3 = Color3.new(),
 			Size = UDim2.fromScale(0.95, 0.7),
 			Visible = Props.Enabled,
 		}, Props.native),
 	}, {
+		CloseButton = e(CloseButton, {
+			Position = UDim2.fromScale(1, 0),
+			Size = UDim2.fromScale(0.3, 0.2),
+			OnClick = CloseClick,
+			native = {
+				ZIndex = 4,
+			},
+		}),
+		MainBackground = e(Main.Frame, {
+			native = {
+				BackgroundTransparency = 0,
+				BackgroundColor3 = Color3.new(),
+				Size = UDim2.fromScale(1, 1),
+				ZIndex = 0,
+				Visible = Props.Enabled,
+			},
+		}, {
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.05, 0),
+			}),
+			UIStroke = e(UIStroke.UIStrokeGradient, {
+				Stroke = 0.005,
+				GradColor = WinData[Props.Success].StrokeColor,
+				native = {
+					Color = Color3.new(1, 1, 1),
+					LineJoinMode = Enum.LineJoinMode.Round,
+				},
+			}),
+		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 1.75,
-		}),
-		UICorner = e("UICorner", {
-			CornerRadius = UDim.new(0.15, 0),
-		}),
-		UIStroke = e(UIStroke.UIStrokeBasic, {
-			Stroke = 0.002,
-			native = {
-				Color = Color3.fromRGB(103, 103, 104),
-				LineJoinMode = Enum.LineJoinMode.Round,
-			},
 		}),
 		RestartButton = e(Main.Animateables.TextButton, {
 			native = {
@@ -256,12 +448,12 @@ local function CreateVoteFrame(Props: Props)
 			native = {
 				BackgroundTransparency = 0,
 				BackgroundColor3 = Color3.new(0.243137, 0.054902, 0.368627),
-				Position = UDim2.fromScale(0.75, 0.45),
-				Size = UDim2.fromScale(0.35, 0.7),
+				Position = UDim2.fromScale(0.775, 0.425),
+				Size = UDim2.fromScale(0.4, 0.8),
 			},
 		}, {
 			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.1, 0),
+				CornerRadius = UDim.new(0.05, 0),
 			}),
 			Scrolling = e(Main.ScrollingFrame, {
 				BarSize = 0.01,
@@ -274,29 +466,101 @@ local function CreateVoteFrame(Props: Props)
 					SortOrder = Enum.SortOrder.LayoutOrder,
 					HorizontalAlignment = Enum.HorizontalAlignment.Center,
 				}),
-				TestFrame = e(CreateUnitXPFrame, {
-					UnitName = "Scout",
+			}, ExistingUnits :: any),
+		}),
+		Rewards = e(Main.Frame, {
+			native = {
+				BackgroundColor3 = Color3.new(0.243137, 0.054902, 0.368627),
+				BackgroundTransparency = 0,
+				Position = UDim2.fromScale(0.3, 0.6),
+				Size = UDim2.fromScale(0.4, 0.3),
+			},
+		}, {
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.1, 0),
+			}),
+			RewardsTitle = e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.5, 0.15),
+					Size = UDim2.fromScale(0.6, 0.2),
+					Text = "Rewards",
+				},
+			}),
+			MainFrame = e(Main.ScrollingFrame, {
+				BarSize = 0.002,
+				native = {
+					AutomaticCanvasSize = Enum.AutomaticSize.X,
+					Position = UDim2.fromScale(0.5, 0.65),
+					Size = UDim2.fromScale(0.95, 0.65),
+				},
+			}, {
+				UIListLayout = e("UIListLayout", {
+					HorizontalAlignment = Enum.HorizontalAlignment.Left,
+					FillDirection = Enum.FillDirection.Horizontal,
+					SortOrder = Enum.SortOrder.LayoutOrder,
 				}),
-				TestFrame2 = e(CreateUnitXPFrame, {
-					UnitName = "Scout",
-				}),
-				TestFrame3 = e(CreateUnitXPFrame, {
-					UnitName = "Scout",
-				}),
-				TestFrame4 = e(CreateUnitXPFrame, {
-					UnitName = "Scout",
-				}),
-				TestFrame5 = e(CreateUnitXPFrame, {
-					UnitName = "Scout",
-				}),
+			}, RewardFrames),
+		}),
+		Backgroundstuff = e(Main.Frame, {
+			native = {
+				BackgroundTransparency = 0,
+				Size = UDim2.fromScale(1.2, 1.2),
+				ZIndex = -2,
+			},
+		}, {
+			UIGradient = e("UIGradient", {
+				Color = WinData[Props.Success].GradColor,
+				Transparency = TransparencySequence,
+			}),
+		}),
+		Backgroundstuff2 = e(Main.Frame, {
+			native = {
+				BackgroundTransparency = 0,
+				Size = UDim2.fromScale(1.2, 1.2),
+				ZIndex = -2,
+			},
+		}, {
+			UIGradient = e("UIGradient", {
+				Color = WinData[Props.Success].GradColor,
+				Transparency = TransparencySequence,
+				Rotation = 90,
 			}),
 		}),
 	}, Props.children)
 end
 
+local function CreateEndFrameButton(props)
+	return e(Main.Animateables.ImageButton, {
+		native = {
+			Image = "rbxassetid://105684513155812",
+			Visible = props.Visible,
+			[React.Event.MouseButton1Click] = function()
+				props.SetVisible(true)
+			end,
+		},
+	}, {
+		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+			AspectRatio = 1.75,
+		}),
+		Label = e(Main.TextLabel, {
+			native = {
+				Text = "Open End",
+			},
+		}),
+	})
+end
+
 local function VoteConnected(props)
 	local Enabled, SetEnabled = React.useState(false)
-	local Success, SetSuccess = React.useBinding(false)
+	local VisualEnabled, SetVisualEnabled = React.useState(false)
+
+	React.useEffect(function()
+		if props.Enabled then
+			SetVisualEnabled(true)
+		end
+	end, { Enabled })
+
+	local Success, SetSuccess = React.useState(false)
 	local PlayerData, SetData = React.useBinding({
 		Votes = 0,
 		Total = #Players:GetPlayers(),
@@ -340,12 +604,20 @@ local function VoteConnected(props)
 		}) :: any)
 	end, {})
 
-	return e(CreateVoteFrame, {
-		Enabled = Enabled,
-		Success = Success,
-		PlayerData = PlayerData,
-		native = props.native,
-	}, props.children)
+	return e(React.Fragment, nil, {
+		EndFrame = e(CreateVoteFrame, {
+			Enabled = Enabled and VisualEnabled,
+			SetVisible = SetVisualEnabled,
+			Success = Success,
+			PlayerData = PlayerData,
+			EndData = { Units = {}, Resources = {}, ExistingUnits = {} },
+			native = props.native,
+		}, props.children),
+		EndButton = e(CreateEndFrameButton, {
+			Visible = not VisualEnabled,
+			SetVisible = SetVisualEnabled,
+		}),
+	})
 end
 
 return {
