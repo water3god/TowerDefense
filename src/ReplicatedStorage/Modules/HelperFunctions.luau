@@ -382,7 +382,6 @@ function NumberScaler.ShortenNumber(InputNumber: number, PrecisionInput: number?
 	local PrecisionMultiple: number = math.pow(10, Precision)
 
 	local Result: string = tostring(math.floor((InputNumber / NearestMultiple) * PrecisionMultiple) / PrecisionMultiple)
-		.. " "
 		.. Suffix
 
 	if Negative then

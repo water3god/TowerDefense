@@ -109,10 +109,13 @@ RollEvent.OnServerEvent:Connect(function(Player: Player, Count: number)
 
 	local PlayerData = PlayerData.GetPlayerData(Player)
 
-	if PlayerData and Delays[Player].MinimumTime <= tick() then
-		Roll(PlayerData, Count, PlayerData.Profile.Data.AutoRoll)
-		if PlayerData.Profile.Data.AutoRoll then
-			InitTimer(PlayerData, Count)
+	if PlayerData and PlayerData.Profile.Data.Gold >= Constants.ROLLCOSTS.MAIN * Count then
+		if Delays[Player].MinimumTime <= tick() then
+			PlayerData:SubtractGold(Constants.ROLLCOSTS.MAIN * Count)
+			Roll(PlayerData, Count, PlayerData.Profile.Data.AutoRoll)
+			if PlayerData.Profile.Data.AutoRoll then
+				InitTimer(PlayerData, Count)
+			end
 		end
 	end
 end)

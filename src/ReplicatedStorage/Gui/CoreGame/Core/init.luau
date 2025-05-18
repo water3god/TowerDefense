@@ -577,7 +577,7 @@ local function Render()
 					end,
 					native = {
 						Position = Styles.Inverted:map(function(Size: number)
-							return UDim2.fromScale(0.5, 0.9):Lerp(UDim2.fromScale(0.5, 1.1), Size)
+							return UDim2.fromScale(0.5, 0.9):Lerp(UDim2.fromScale(0.5, 1.2), Size)
 						end),
 					},
 				}),

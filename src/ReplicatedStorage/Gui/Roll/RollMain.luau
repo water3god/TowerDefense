@@ -33,6 +33,7 @@ local RollService = require(LobbyClient.RollService)
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
 local RarityInfo = require(Shared.RarityInfo)
+local Constants = require(Shared.Constants)
 
 export type Properties = {
 	CloseClick: () -> (),
@@ -166,6 +167,11 @@ local function CreateRollMain(props: Properties)
 		SetAutoSell(not InAutoSell)
 	end, { InAutoSell })
 
+	local SummonText = React.useMemo(function()
+		local CostString = HelperFunctions.NumberScaler.ShortenNumber(Constants.ROLLCOSTS.MAIN * RollMultiplier)
+		return string.format("Summon: %s Gold", CostString)
+	end, { RollMultiplier })
+
 	return e(Main.ImageLabel, {
 		native = Join({
 			Size = UDim2.fromScale(0.6, 0.5),
@@ -235,8 +241,8 @@ local function CreateRollMain(props: Properties)
 		SummonButton = e(Main.Animateables.ImageButton, {
 			native = {
 				Image = "rbxassetid://80739823452825",
-				Size = UDim2.fromScale(0.3, 0.2),
-				Position = UDim2.fromScale(0.5, 0.87),
+				Size = UDim2.fromScale(0.4, 0.2),
+				Position = UDim2.fromScale(0.5, 0.85),
 				ImageColor3 = Color3.fromRGB(135, 1, 203),
 				[React.Event.MouseButton1Click] = SummonClick,
 			},
@@ -246,8 +252,8 @@ local function CreateRollMain(props: Properties)
 			}),
 			Label = e(Main.TextLabel, {
 				native = {
-					Size = UDim2.fromScale(0.6, 0.6),
-					Text = "Summon",
+					Size = UDim2.fromScale(0.8, 0.4),
+					Text = SummonText,
 				},
 				children = {
 					UIStroke = e(UIStroke.UIStrokeBasic, {

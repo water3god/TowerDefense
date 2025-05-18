@@ -17,9 +17,11 @@ local GameFrames = Gui.GameFrames
 local EndFrame = require(GameFrames.EndFrame)
 
 -- Controls --
-local controls = {}
+local controls = {
+	Success = true,
+}
 
-local function Container()
+local function Container(props: any)
 	local Enabled = React.useState(true)
 	local PlayerData = React.useBinding({
 		Votes = 3,
@@ -28,7 +30,7 @@ local function Container()
 
 	return e(EndFrame.Create, {
 		Enabled = Enabled,
-		Success = false,
+		Success = props.controls.Success,
 		PlayerData = PlayerData,
 		EndData = {
 			Units = {
@@ -52,9 +54,9 @@ end
 local Story = {
 	react = React,
 	reactRoblox = ReactRoblox,
-	--controls = controls,
+	controls = controls,
 	story = function(Properties)
-		return e(Container)
+		return e(Container, Properties)
 	end,
 }
 

@@ -239,7 +239,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.05,
+					Stroke = 0.02,
 				}),
 				UIPadding = e("UIPadding", {
 					PaddingLeft = UDim.new(0.05, 0),
