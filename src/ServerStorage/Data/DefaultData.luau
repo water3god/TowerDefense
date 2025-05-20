@@ -15,6 +15,12 @@ export type GamepassData = {
 	UniqueId: string,
 }
 
+export type ResourceData = {
+	Resource: string,
+	Count: number,
+	UniqueId: string,
+}
+
 export type StageData = {
 	FastestTime: number,
 	FinishedCount: number,
@@ -28,6 +34,9 @@ export type Data = {
 	Gamepasses: {
 		[string]: GamepassData,
 	},
+	Resources: {
+		[string]: ResourceData,
+	},
 	AutoRoll: boolean,
 	CompletedMaps: { [string]: { [number]: { [string]: StageData } } },
 	Level: number,
@@ -40,6 +49,8 @@ export type Data = {
 local Data: Data = {
 	EquippedUnits = {},
 	Units = {},
+	Gamepasses = {},
+	Resources = {},
 	Settings = {
 		Music = true,
 		MusicVolume = 1,
@@ -57,7 +68,6 @@ local Data: Data = {
 	Level = 1,
 	XP = 0,
 	RollCount = 0,
-	Gamepasses = {},
 	Gold = 0,
 }
 

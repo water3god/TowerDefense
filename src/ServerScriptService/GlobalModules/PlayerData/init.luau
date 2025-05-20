@@ -173,13 +173,13 @@ local function Len(Table: { [any]: any } & {})
 	return Count
 end
 
-local function SyncIds(Table: { [any]: any })
+local function SyncIds(Table: { [string]: any })
 	for UniqueId, Data in pairs(Table) do
 		if GenerateId.IdIsTaken(UniqueId) then
 			local NewId = GenerateId.GenerateId()
 			Table[UniqueId] = nil
 			Table[NewId] = Data
-			Table.UniqueId = NewId
+			Data.UniqueId = NewId
 		end
 	end
 end
@@ -229,7 +229,7 @@ function PlayerData.new(Player: Player)
 				local NewId = GenerateId.GenerateId()
 				Data.Units[UniqueId] = nil
 				Data.Units[NewId] = UnitData
-				Data.Units[NewId].UniqueId = NewId
+				UnitData.UniqueId = NewId
 
 				local Index = table.find(Data.EquippedUnits, UniqueId)
 				if Index then
@@ -239,6 +239,7 @@ function PlayerData.new(Player: Player)
 		end
 
 		SyncIds(Data.Gamepasses)
+		SyncIds(Data.Resources)
 
 		self.Profile.OnSessionEnd:Connect(function()
 			self:Delete()

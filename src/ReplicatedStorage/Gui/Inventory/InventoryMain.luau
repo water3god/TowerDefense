@@ -95,6 +95,7 @@ local function CreateBaseButton(Properties: {
 		native = JoinDicts({
 			Size = UDim2.fromScale(0.2, 1),
 			Image = "rbxassetid://90225038866735",
+			[React.Event.MouseButton1Click] = Properties.OnClick,
 		}, Properties.native),
 	}, {
 		TextLabel = React.createElement(Main.TextLabel, {
@@ -324,20 +325,15 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		return Sorts
 	end, { InventoryData, FilterMethod :: any })
 
-	local Units = React.useMemo(function()
-		local UsedId = false
+	local InventoryNodes = React.useMemo(function()
 		local Table: { [string]: React.Node } = {}
 
 		@native
-		local function Handle(Data: Types.VisualUnitData)
+		local function HandleUnitData(Data: Types.VisualUnitData)
 			if Filter ~= "" then
 				if not string.lower(Data.Unit):match(string.lower(Filter)) then
 					return
 				end
-			end
-
-			if Data.UniqueId == HoveredId then
-				UsedId = true
 			end
 
 			local Unit = e(HandleUnit, {
@@ -353,11 +349,22 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			Table[Data.UniqueId] = Unit
 		end
 
-		for _, Data in pairs(InventoryData.Units) do
-			Handle(Data)
+		local function HandleResourceData(Data: Types.RewardData)
+			if Filter ~= "" then
+				if not string.lower(Data.Resource):match(string.lower(Filter)) then
+					return
+				end
+			end
 		end
-		if not UsedId and HoveredId ~= nil then
-			SetHovered(nil)
+
+		if OpenFrame == "Unit" then
+			for _, Data in pairs(InventoryData.Units) do
+				HandleUnitData(Data)
+			end
+			if HoveredId and not InventoryData.Units[HoveredId] then
+				SetHovered(nil)
+			end
+		elseif OpenFrame == "Resource" then
 		end
 		return Table
 	end, {
@@ -367,6 +374,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		InventoryData :: any,
 		Filter :: any,
 		FilterMethod :: any,
+		OpenFrame :: any,
 	})
 
 	local function IsEquipped(Id: string)
@@ -463,7 +471,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			UIPadding = e("UIPadding", {
 				PaddingRight = UDim.new(0.03, 0),
 			}),
-		}, Units),
+		}, InventoryNodes),
 		CheckButton = e(Main.Animateables.ImageButton, {
 			native = {
 				Visible = if InSell then true else false,
@@ -517,7 +525,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			UnitsButton = e(CreateBaseButton, {
 				Text = "Units",
 				OnClick = function()
-					SetOpenFrame("Units")
+					SetOpenFrame("Unit")
 				end,
 				native = {
 					LayoutOrder = 1,
@@ -525,14 +533,18 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			}),
 			GamepassesButton = e(CreateBaseButton, {
 				Text = "Gamepasses",
-				OnClick = function() end,
+				OnClick = function()
+					SetOpenFrame("Gamepass")
+				end,
 				native = {
 					LayoutOrder = 2,
 				},
 			}),
 			ResourcesButton = e(CreateBaseButton, {
 				Text = "Resources",
-				OnClick = function() end,
+				OnClick = function()
+					SetOpenFrame("Resource")
+				end,
 				native = {
 					LayoutOrder = 3,
 				},

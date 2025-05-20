@@ -25,7 +25,8 @@ local function OnDataAdded(Data: PlayerData.PlayerData)
 	local GivenData = Data.Profile.Data
 	InventorySync:FireClient(Player, {
 		Units = GivenData.Units,
-		Gamepasses = {},
+		Gamepasses = GivenData.Gamepasses,
+		Resources = GivenData.Resources,
 	}, GivenData.EquippedUnits, { Level = GivenData.Level, XP = GivenData.XP, NeededXP = Data.NeededXP })
 
 	Data.UnitEquipped:Connect(function(Unit: string, Index: number)

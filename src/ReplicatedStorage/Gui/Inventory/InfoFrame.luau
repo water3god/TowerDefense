@@ -19,12 +19,13 @@ local UnitView = require(CoreGame.UnitView)
 
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
+local GameInfo = require(Shared.GameInfo)
 local RarityInfo = require(Shared.RarityInfo)
 local Types = require(Shared.Types)
 
 local UnitModels = ReplicatedStorage.ModelStorage.Units
 local UnitAnimations = ReplicatedStorage.Animations.Units
-export type InfoType = "Unit" | "Gamepass"
+export type InfoType = "Unit" | "Gamepass" | "Resource"
 
 export type UnitData = Types.VisualUnitData
 
@@ -50,14 +51,6 @@ local function CreateInfoFrame(Properties: Properties)
 		return Properties.Type == "Unit"
 	end, { Properties.Type })
 
-	local HasValue = React.useMemo(function()
-		if Properties.Data then
-			return true
-		else
-			return false
-		end
-	end, { Properties.Data })
-
 	local RotationCFrame = React.useBinding(CFrame.Angles(math.rad(20), 0, 0))
 
 	local BarSize = React.useMemo(function()
@@ -66,7 +59,7 @@ local function CreateInfoFrame(Properties: Properties)
 		else
 			return UDim2.fromScale(0, 0)
 		end
-	end, { IsUnit, HasValue })
+	end, { IsUnit, Properties.Data :: any })
 
 	local XPText = React.useMemo(function()
 		if IsUnit and Properties.Data then
@@ -74,7 +67,15 @@ local function CreateInfoFrame(Properties: Properties)
 		else
 			return ""
 		end
-	end, { IsUnit, HasValue })
+	end, { IsUnit, Properties.Data :: any })
+
+	local Icon = React.useMemo(function()
+		if Properties.Type == "Resource" then
+			return GameInfo.RewardInfo[Properties.Name :: any].Image
+		else
+			return ""
+		end
+	end, { Properties.Type, Properties.Name :: any, Properties.Rarity :: any })
 
 	return e(Main.ImageLabel, {
 		native = {
@@ -92,13 +93,22 @@ local function CreateInfoFrame(Properties: Properties)
 			native = {
 				Position = UDim2.fromScale(0.5, 0.5),
 				Size = UDim2.fromScale(0.9, 0.45),
+				Visible = IsUnit,
 			},
 		}, {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 				AspectRatio = 1,
 			}),
-			Camera = e("Camera", {
-				CFrame = CFrame.new(0, 0, 0),
+		}),
+		IconFrame = e(Main.ImageLabel, {
+			native = {
+				Position = UDim2.fromScale(0.5, 0.5),
+				Size = UDim2.fromScale(0.9, 0.45),
+				Image = Icon,
+			},
+		}, {
+			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+				AspectRatio = 1,
 			}),
 		}),
 		EquipButton = e(Main.Animateables.ImageButton, {
