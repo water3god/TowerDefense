@@ -10,8 +10,11 @@ export type UnitData = {
 	NeededXP: number,
 }
 
-export type GamepassData = {
-	Gamepass: string,
+export type ProductData = {
+	ProductId: number,
+	Name: string,
+	IsGamepass: boolean,
+	Count: number,
 	UniqueId: string,
 }
 
@@ -31,8 +34,9 @@ export type Data = {
 	Units: {
 		[string]: UnitData,
 	},
-	Gamepasses: {
-		[string]: GamepassData,
+	Gamepasses: { number },
+	Products: {
+		[string]: ProductData,
 	},
 	Resources: {
 		[string]: ResourceData,
@@ -50,6 +54,7 @@ local Data: Data = {
 	EquippedUnits = {},
 	Units = {},
 	Gamepasses = {},
+	Products = {},
 	Resources = {},
 	Settings = {
 		Music = true,

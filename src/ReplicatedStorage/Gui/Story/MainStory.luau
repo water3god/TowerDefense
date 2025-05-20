@@ -28,6 +28,7 @@ local LayoutOrder = Hooks.LayoutOrder
 
 local Inventory = Gui.Inventory
 local UnitFrame = require(Inventory.UnitFrame)
+local ResourceFrame = require(Inventory.ResourceFrame)
 
 local Story = Gui.Story
 local StoryContext = require(Story.StoryContext)
@@ -116,17 +117,9 @@ local function CreateMainStory(Properties: Properties)
 
 		for Index, Reward in ipairs(Data.Resources) do
 			local RewardData = GameInfo.RewardInfo[Reward.Resource]
-			FrameTable["Reward" .. Reward.Resource] = e(BaseFrame, {
-				LeftText = "",
-				RightText = string.format("%ux", Reward.Count),
+			FrameTable["Reward" .. Reward.Resource] = e(ResourceFrame, {
 				Name = Reward.Resource,
-				MainImage = RewardData.Image,
-
-				BackgroundColor = RewardData.BackgroundColor,
-				NameColor = RewardData.RewardColor,
-				NameStrokeColor = ColorSequence.new(Color3.new()),
-				RightStrokeColor = ColorSequence.new(Color3.new()),
-
+				Value = Reward.Count,
 				native = {
 					ZIndex = ResourceOrder(),
 				},

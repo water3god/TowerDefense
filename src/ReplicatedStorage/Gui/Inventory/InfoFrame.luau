@@ -20,12 +20,13 @@ local UnitView = require(CoreGame.UnitView)
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
 local GameInfo = require(Shared.GameInfo)
+local ProductInfo = require(Shared.ProductInfo)
 local RarityInfo = require(Shared.RarityInfo)
 local Types = require(Shared.Types)
 
 local UnitModels = ReplicatedStorage.ModelStorage.Units
 local UnitAnimations = ReplicatedStorage.Animations.Units
-export type InfoType = "Unit" | "Gamepass" | "Resource"
+export type InfoType = "Unit" | "Product" | "Resource"
 
 export type UnitData = Types.VisualUnitData
 
@@ -39,10 +40,10 @@ export type Properties = {
 	Rarity: string?,
 	IsEquipped: boolean,
 
-	Data: Data?,
+	Data: any,
 	RarityInfo: RarityInfo.RarityInfo?,
 
-	OnEquipClick: () -> ()?,
+	OnFirstClick: () -> ()?,
 	OnSellClick: () -> ()?,
 }
 
@@ -71,11 +72,49 @@ local function CreateInfoFrame(Properties: Properties)
 
 	local Icon = React.useMemo(function()
 		if Properties.Type == "Resource" then
-			return GameInfo.RewardInfo[Properties.Name :: any].Image
+			local Resource = GameInfo.RewardInfo[Properties.Name :: any]
+
+			if Resource then
+				return GameInfo.RewardInfo[Properties.Name :: any].Image
+			else
+				return ""
+			end
+		elseif Properties.Type == "Product" then
+			if Properties.Data then
+				if Properties.Data.IsGamepass then
+					return ProductInfo.GamepassInfo[Properties.Data.ProductId].Image
+				else
+					return ProductInfo.ProductInfo[Properties.Data.ProductId].Image
+				end
+			else
+				return ""
+			end
 		else
 			return ""
 		end
 	end, { Properties.Type, Properties.Name :: any, Properties.Rarity :: any })
+
+	local FirstText = React.useMemo(function()
+		if Properties.Type == "Unit" then
+			if Properties.IsEquipped then
+				return "Unequip"
+			else
+				return "Equip"
+			end
+		elseif Properties.Type == "Product" then
+			return "Use"
+		else
+			return ""
+		end
+	end, { Properties.Type, Properties.IsEquipped :: any })
+
+	local UnitName = React.useMemo(function()
+		if Properties.Name ~= "" and Properties.Type == "Unit" then
+			return Properties.Name
+		else
+			return nil
+		end
+	end, { Properties.Name })
 
 	return e(Main.ImageLabel, {
 		native = {
@@ -86,7 +125,7 @@ local function CreateInfoFrame(Properties: Properties)
 		},
 	}, {
 		ViewportFrame = e(UnitView, {
-			UnitName = Properties.Name,
+			UnitName = UnitName,
 			Distance = 4,
 			RotationCFrame = RotationCFrame,
 			Offset = Vector3.new(0, -1, 0),
@@ -111,19 +150,20 @@ local function CreateInfoFrame(Properties: Properties)
 				AspectRatio = 1,
 			}),
 		}),
-		EquipButton = e(Main.Animateables.ImageButton, {
+		FirstButton = e(Main.Animateables.ImageButton, {
 			native = {
 				Position = UDim2.fromScale(0.5, 0.92),
 				Size = UDim2.fromScale(0.8, 0.125),
 				Image = "rbxassetid://72606508098140",
-				[React.Event.MouseButton1Click] = Properties.OnEquipClick,
+				Visible = FirstText ~= "",
+				[React.Event.MouseButton1Click] = Properties.OnFirstClick,
 			},
 		}, {
 			TextLabel = e(Main.TextLabel, {
 				native = {
 					Position = UDim2.fromScale(0.5, 0.5),
 					Size = UDim2.fromScale(0.6, 0.6),
-					Text = Properties.IsEquipped and "Unequip" or "Equip",
+					Text = FirstText,
 					TextColor3 = Color3.new(1, 1, 1),
 				},
 			}),
@@ -132,6 +172,7 @@ local function CreateInfoFrame(Properties: Properties)
 			native = {
 				Position = UDim2.fromScale(0.8, 0.66),
 				Size = UDim2.fromScale(0.21, 0.12),
+				Visible = IsUnit,
 				Image = "rbxasset://textures/ui/GuiImagePlaceholder.png",
 			},
 		}, {

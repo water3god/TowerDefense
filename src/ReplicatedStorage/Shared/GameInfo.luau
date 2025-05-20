@@ -15,6 +15,7 @@ are some boosts that grant certain units a higher chance of obtaining it. Infini
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Shared = ReplicatedStorage.Shared
 local Types = require(Shared.Types)
+local RarityInfo = require(Shared.RarityInfo)
 
 export type Difficulty = "Normal" | "Hard" | "Insane"
 local Difficulty = { "Normal", "Hard", "Hard" }
@@ -60,19 +61,19 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 3 },
+							{ Resource = "Gold", Count = 3, UniqueId = "" },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 3 },
+							{ Resource = "Gold", Count = 3, UniqueId = "" },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 3 },
+							{ Resource = "Gold", Count = 3, UniqueId = "" },
 						},
 					},
 				},
@@ -86,7 +87,7 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 3 },
+							{ Resource = "Gold", Count = 3, UniqueId = "" },
 						},
 					},
 					Hard = {
@@ -167,17 +168,13 @@ local GameInfo: { MapInfo } = {
 
 export type RewardData = {
 	Image: string,
-	RewardColor: ColorSequence, --
-	StrokeColor: ColorSequence, -- color of the stroke (global);
-	BackgroundColor: ColorSequence, -- color of the background frame (small);
+	Rarity: RarityInfo.Rarity | string,
 }
 
 local RewardInfo: { [string]: RewardData } = {
 	["Gold"] = {
 		Image = "rbxassetid://123591871678972",
-		RewardColor = ColorSequence.new(Color3.new(1, 0.921569, 0.203922)),
-		StrokeColor = ColorSequence.new(Color3.new(1, 1, 1)),
-		BackgroundColor = ColorSequence.new(Color3.new(1, 0.720638, 0.311101)),
+		Rarity = "Common",
 	},
 }
 

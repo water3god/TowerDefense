@@ -17,6 +17,7 @@ local GenerateId = require(Modules.GenerateId)
 local Shared = ReplicatedStorage.Shared
 local LevelRequirements = require(Shared.LevelRequirements)
 local GameInfo = require(Shared.GameInfo)
+local ProductInfo = require(Shared.ProductInfo)
 
 local CalculateUnitXP = GameInfo.XPData.CalculateUnitXP
 local CalculatePlayerXP = GameInfo.XPData.CalculatePlayerXP
@@ -61,6 +62,9 @@ type PlayerDataData<T> = {
 	UnitRemoved: Signal.Signal<Template.UnitData>,
 	AutoRollChanged: Signal.Signal<boolean>,
 
+	ProductChanged: Signal.Signal<string, Template.ProductData>,
+	ResourceChanged: Signal.Signal<string, Template.ResourceData>,
+
 	StageChanged: Signal.Signal<StageParamData>,
 
 	Rolled: Signal.Signal<any>,
@@ -92,6 +96,15 @@ type PlayerDataImpl = {
 	GetUnitFromId: (self: PlayerData, UniqueId: string) -> Template.UnitData?,
 
 	SetAutoRoll: (self: PlayerData, AutoRoll: boolean) -> (),
+
+	RedeemGamepass: (self: PlayerData, GamepassId: number) -> (),
+	HasRedeemedGamepass: (self: PlayerData, GamepassId: number) -> boolean,
+
+	AddProduct: (self: PlayerData, ProductId: number, Count: number?) -> (),
+	RemoveProduct: (self: PlayerData, ProductId: number, Count: number?) -> (),
+
+	AddResource: (self: PlayerData, Resource: string, Count: number?) -> (),
+	RemoveResource: (self: PlayerData, Resource: string, Count: number?) -> (),
 
 	SetGold: (self: PlayerData, Gold: number) -> (),
 	AddGold: (self: PlayerData, Gold: number) -> (),
@@ -173,13 +186,18 @@ local function Len(Table: { [any]: any } & {})
 	return Count
 end
 
-local function SyncIds(Table: { [string]: any })
+local function SyncIds(Table: { [string]: any }, Func: ((OldId: string, NewId: string) -> ())?)
 	for UniqueId, Data in pairs(Table) do
 		if GenerateId.IdIsTaken(UniqueId) then
 			local NewId = GenerateId.GenerateId()
 			Table[UniqueId] = nil
 			Table[NewId] = Data
 			Data.UniqueId = NewId
+			if Func then
+				Func(UniqueId, NewId)
+			end
+		else
+			GenerateId.AddId(UniqueId)
 		end
 	end
 end
@@ -198,6 +216,9 @@ function PlayerData.new(Player: Player)
 	self.SettingChanged = self._Trove:Construct(Signal)
 	self.Rolled = self._Trove:Construct(Signal)
 	self.AutoRollChanged = self._Trove:Construct(Signal)
+
+	self.ProductChanged = self._Trove:Construct(Signal)
+	self.ResourceChanged = self._Trove:Construct(Signal)
 
 	self.XPChanged = self._Trove:Construct(Signal)
 	self.LeveledUp = self._Trove:Construct(Signal)
@@ -235,10 +256,19 @@ function PlayerData.new(Player: Player)
 				if Index then
 					Data.EquippedUnits[Index] = NewId
 				end
+			else
+				GenerateId.AddId(UniqueId)
 			end
 		end
 
-		SyncIds(Data.Gamepasses)
+		SyncIds(Data.Units, function(OldId: string, NewId: string)
+			local Index = table.find(Data.EquippedUnits, OldId)
+			if Index then
+				Data.EquippedUnits[Index] = NewId
+			end
+		end)
+
+		SyncIds(Data.Products)
 		SyncIds(Data.Resources)
 
 		self.Profile.OnSessionEnd:Connect(function()
@@ -387,6 +417,137 @@ end
 function PlayerData:SetAutoRoll(AutoRoll: boolean)
 	self.Profile.Data.AutoRoll = AutoRoll
 	self.AutoRollChanged:Fire(AutoRoll)
+end
+
+function PlayerData:RedeemGamepass(GamepassId: number)
+	if not table.find(self.Profile.Data.Gamepasses, GamepassId) then
+		table.insert(self.Profile.Data.Gamepasses, GamepassId)
+	end
+end
+
+function PlayerData:HasRedeemedGamepass(GamepassId: number)
+	if table.find(self.Profile.Data.Gamepasses, GamepassId) then
+		return true
+	else
+		return false
+	end
+end
+
+function PlayerData:AddProduct(ProductId: number, CountInput: number?)
+	local Products = self.Profile.Data.Products
+	local FoundId = nil
+	local Count = CountInput or 1
+
+	for _, ProductData in pairs(Products) do
+		if ProductData.ProductId == ProductId then
+			FoundId = ProductData.UniqueId
+			break
+		end
+	end
+
+	if FoundId then
+		local Data = Products[FoundId]
+		Products[FoundId].Count += Count
+		self.ProductChanged:Fire("Changed", Data)
+	else
+		if ProductInfo.ProductInfo[ProductId] then
+			local Id = GenerateId.GenerateId()
+			local Data = {
+				IsGamepass = false,
+				ProductId = ProductId,
+				Name = ProductInfo.ProductInfo[ProductId].Name,
+				UniqueId = Id,
+				Count = Count,
+			}
+			Products[Id] = Data
+			self.ProductChanged:Fire("Added", Data)
+		elseif ProductInfo.GamepassInfo[ProductId] then
+			local Id = GenerateId.GenerateId()
+			local Data = {
+				IsGamepass = true,
+				ProductId = ProductId,
+				Name = ProductInfo.GamepassInfo[ProductId].Name,
+				UniqueId = Id,
+				Count = Count,
+			}
+			Products[Id] = Data
+			self.ProductChanged:Fire("Added", Data)
+		end
+	end
+end
+
+function PlayerData:RemoveProduct(ProductId: number, CountInput: number?)
+	local Products = self.Profile.Data.Products
+	local FoundId = nil
+
+	for _, ProductData in pairs(Products) do
+		if ProductData.ProductId == ProductId then
+			FoundId = ProductData.UniqueId
+			break
+		end
+	end
+
+	if FoundId then
+		local TotalProductCount = Products[FoundId].Count
+
+		if CountInput and TotalProductCount > CountInput then
+			local Data = Products[FoundId]
+			Data.Count -= CountInput
+			self.ProductChanged:Fire("Changed", Data)
+		else
+			self.ProductChanged:Fire("Removed", Products[FoundId])
+			Products[FoundId] = nil
+		end
+	end
+end
+
+function PlayerData:AddResource(Resource: string, CountInput: number?)
+	local Resources = self.Profile.Data.Resources
+	local FoundId = nil
+	local Count = CountInput or 1
+
+	for _, ResourceData in pairs(Resources) do
+		if ResourceData.Resource == Resource then
+			FoundId = ResourceData.UniqueId
+			break
+		end
+	end
+
+	if FoundId then
+		local Data = Resources[FoundId]
+		Data.Count += Count
+		self.ResourceChanged:Fire("Added", Data)
+	elseif GameInfo.RewardInfo[Resource] then
+		local UniqueId = GenerateId.GenerateId()
+		local Data = { Resource = Resource, UniqueId = UniqueId, Count = Count }
+		Resources[UniqueId] = { Resource = Resource, UniqueId = UniqueId, Count = Count }
+		self.ResourceChanged:Fire("Changed", Data)
+	end
+end
+
+function PlayerData:RemoveResource(Resource: string, CountInput: number?)
+	local Resources = self.Profile.Data.Resources
+	local FoundId = nil
+
+	for _, ResourceData in pairs(Resources) do
+		if ResourceData.Resource == Resource then
+			FoundId = ResourceData.UniqueId
+			break
+		end
+	end
+
+	if FoundId then
+		local TotalResourceCount = Resources[FoundId].Count
+
+		if CountInput and TotalResourceCount > CountInput then
+			local Data = Resources[FoundId]
+			Data.Count -= CountInput
+			self.ResourceChanged:Fire("Changed", Data)
+		else
+			self.ResourceChanged:Fire("Removed", Resources[FoundId])
+			Resources[FoundId] = nil
+		end
+	end
 end
 
 function PlayerData:SetGold(Gold: number)

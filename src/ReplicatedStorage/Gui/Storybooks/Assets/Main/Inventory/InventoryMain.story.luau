@@ -37,6 +37,8 @@ local Sample = {
 			Unit = "Minigunner",
 		},
 	},
+	Products = {},
+	Resources = {},
 }
 
 local Story = {

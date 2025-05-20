@@ -26,10 +26,18 @@ local CurrentInventory: {
 	Units: {
 		[string]: Types.VisualUnitData,
 	},
-} = {
-	Units = {},
-	--Gamepasses = {};
-}
+	Products: {
+		[string]: Types.ProductData,
+	},
+	Resources: {
+		[string]: Types.ResourceData,
+	},
+} =
+	{
+		Units = {},
+		Products = {},
+		Resources = {},
+	}
 local Synced = Signal.new()
 local UnitAdded = Signal.new()
 local UnitChanged = Signal.new()
@@ -37,9 +45,13 @@ local UnitRemoved = Signal.new()
 
 local UnitEquipChanged = Signal.new()
 
-local GamepassAdded = Signal.new()
-local GamepassChanged = Signal.new()
-local GamepassRemoved = Signal.new()
+local ProductAdded = Signal.new()
+local ProductChanged = Signal.new()
+local ProductRemoved = Signal.new()
+
+local ResourceAdded = Signal.new()
+local ResourceChanged = Signal.new()
+local ResourceRemoved = Signal.new()
 
 local LevelChanged = Signal.new()
 local XPChanged = Signal.new()
@@ -58,11 +70,19 @@ ItemChanged.OnClientEvent:Connect(function(Type: string, UniqueId: string, Data:
 		end
 	elseif Type == "Gamepasses" then
 		if Data == nil then
-			GamepassRemoved:Fire(UniqueId)
+			ProductRemoved:Fire(UniqueId)
 		elseif not CurrentInventory[Type][UniqueId] then
-			GamepassAdded:Fire(Data)
+			ProductAdded:Fire(Data)
 		else
-			GamepassChanged:Fire(Data)
+			ProductChanged:Fire(Data)
+		end
+	elseif Type == "Resources" then
+		if Data == nil then
+			ResourceRemoved:Fire(UniqueId)
+		elseif not CurrentInventory[Type][UniqueId] then
+			ResourceAdded:Fire(Data)
+		else
+			ResourceChanged:Fire(Data)
 		end
 	end
 end)
@@ -77,9 +97,13 @@ Data.UnitChanged = UnitChanged
 
 Data.UnitEquipChanged = UnitEquipChanged
 
-Data.GamepassAdded = GamepassAdded
-Data.GamepassRemoved = GamepassRemoved
-Data.GamepassChanged = GamepassChanged
+Data.ProductAdded = ProductAdded
+Data.ProductRemoved = ProductRemoved
+Data.ProductChanged = ProductChanged
+
+Data.ResourceAdded = ResourceAdded
+Data.ResourceRemoved = ResourceRemoved
+Data.ResourceChanged = ResourceChanged
 
 Data.LevelChanged = LevelChanged
 Data.XPChanged = XPChanged

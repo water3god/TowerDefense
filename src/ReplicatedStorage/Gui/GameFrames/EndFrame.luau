@@ -43,6 +43,7 @@ local CloseButton = require(CoreGame.CloseButton)
 
 local Inventory = Gui.Inventory
 local UnitFrame = require(Inventory.UnitFrame)
+local ResourceFrame = require(Inventory.ResourceFrame)
 
 local Client = ReplicatedStorage.Client
 local GlobalClient = Client.GlobalClient
@@ -91,25 +92,6 @@ local Default = {
 }
 
 type UnitXP = { Level: number, XP: number, NeededXP: number }
-
-local function CreateResourceFrame(props: ResourceProps)
-	local ResourceData = React.useMemo(function()
-		return GameInfo.RewardInfo[props.Name] or Default
-	end, {})
-
-	return e(BaseFrame, {
-		LeftText = "",
-		RightText = string.format("%ux", props.Value),
-		Name = props.Name,
-		MainImage = ResourceData.Image,
-
-		BackgroundColor = ResourceData.BackgroundColor,
-		NameColor = ResourceData.RewardColor,
-		NameStrokeColor = ColorSequence.new(Color3.new()),
-		RightStrokeColor = ColorSequence.new(Color3.new()),
-		native = props.native,
-	}, props.children)
-end
 
 local function CreateMainXPFrame(props: MainXPProps)
 	local Styles, API = ReactSpring.useSpring(function()
@@ -395,7 +377,7 @@ local function CreateVoteFrame(Props: Props)
 		end
 
 		for _, Data in ipairs(Props.EndData.Resources) do
-			Frames["Resource" .. Data.Resource] = e(CreateResourceFrame, {
+			Frames["Resource" .. Data.Resource] = e(ResourceFrame, {
 				Name = Data.Resource,
 				Value = Data.Count,
 				native = {

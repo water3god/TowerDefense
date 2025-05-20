@@ -26,6 +26,7 @@ local function OnDataAdded(Data: PlayerData.PlayerData)
 	InventorySync:FireClient(Player, {
 		Units = GivenData.Units,
 		Gamepasses = GivenData.Gamepasses,
+		Products = GivenData.Products,
 		Resources = GivenData.Resources,
 	}, GivenData.EquippedUnits, { Level = GivenData.Level, XP = GivenData.XP, NeededXP = Data.NeededXP })
 
@@ -47,6 +48,16 @@ local function OnDataAdded(Data: PlayerData.PlayerData)
 
 	Data.UnitRemoved:Connect(function(Unit)
 		ItemChanged:FireClient(Player, "Units", Unit.UniqueId, nil)
+	end)
+
+	Data.ProductChanged:Connect(function(Type, Data)
+		local IsNil = Type == "Removed"
+		ItemChanged:FireClient(Player, "Products", Data.UniqueId, not IsNil and Data)
+	end)
+
+	Data.ResourceChanged:Connect(function(Type, Data)
+		local IsNil = Type == "Removed"
+		ItemChanged:FireClient(Player, "Resources", Data.UniqueId, not IsNil and Data)
 	end)
 end
 

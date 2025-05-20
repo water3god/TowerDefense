@@ -32,6 +32,20 @@ export type VisualUnitData = {
 	NeededXP: number,
 }
 
+export type ProductData = {
+	ProductId: number,
+	Name: string,
+	IsGamepass: boolean,
+	Count: number,
+	UniqueId: string,
+}
+
+export type ResourceData = {
+	Resource: string,
+	Count: number,
+	UniqueId: string,
+}
+
 export type RawUnitData = {
 	Unit: string,
 	Level: number,

@@ -16,6 +16,8 @@ local InventoryService = require(ReplicatedStorage.Client.GlobalClient.Inventory
 
 local InventoryContext = React.createContext({
 	Units = {},
+	Products = {},
+	Resources = {},
 })
 
 export type props = {
@@ -25,28 +27,55 @@ export type props = {
 local function ContextProvider(props)
 	local Inventory, SetInventory = React.useState({
 		Units = {},
+		Products = {},
+		Resources = {},
 	})
 
 	React.useEffect(function()
 		local Trove = Trove.new()
+		local Inventory = InventoryService:GetInventory()
 
 		Trove:Add(task.spawn(function()
 			if not InventoryService.IsSynced then
 				InventoryService.Synced:Wait()
 			end
-			SetInventory(InventoryService:GetInventory())
+			SetInventory(Inventory)
 		end))
 
 		Trove:Connect(InventoryService.UnitAdded, function()
-			SetInventory(table.clone(InventoryService:GetInventory()))
+			SetInventory(table.clone(Inventory))
 		end)
 
 		Trove:Connect(InventoryService.UnitRemoved, function()
-			SetInventory(table.clone(InventoryService:GetInventory()))
+			SetInventory(table.clone(Inventory))
 		end)
 
 		Trove:Connect(InventoryService.UnitChanged, function()
-			SetInventory(table.clone(InventoryService:GetInventory()))
+			SetInventory(table.clone(Inventory))
+		end)
+
+		Trove:Connect(InventoryService.ProductAdded, function()
+			SetInventory(table.clone(Inventory))
+		end)
+
+		Trove:Connect(InventoryService.ProductChanged, function()
+			SetInventory(table.clone(Inventory))
+		end)
+
+		Trove:Connect(InventoryService.ProductRemoved, function()
+			SetInventory(table.clone(Inventory))
+		end)
+
+		Trove:Connect(InventoryService.ResourceAdded, function()
+			SetInventory(table.clone(Inventory))
+		end)
+
+		Trove:Connect(InventoryService.ResourceChanged, function()
+			SetInventory(table.clone(Inventory))
+		end)
+
+		Trove:Connect(InventoryService.ResourceRemoved, function()
+			SetInventory(table.clone(Inventory))
 		end)
 
 		return Trove:WrapClean()
