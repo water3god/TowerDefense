@@ -14,14 +14,16 @@ local PlayerData = require(GlobalModules.PlayerData)
 
 local Remotes = ReplicatedStorage.Remotes
 
--- Inventory --
-
 local InventoryEvents = Remotes.Inventory
 local ItemChanged = InventoryEvents.ItemChanged
 local InventorySync = InventoryEvents.InventorySync
 local UnitEquipped = InventoryEvents.UnitEquipped
 local EquipUnit = InventoryEvents.EquipUnit
 local SellUnit = InventoryEvents.SellUnit
+
+local Shared = ReplicatedStorage.Shared
+local UnitInfo = require(Shared.UnitInfo)
+local RarityInfo = require(Shared.RarityInfo)
 
 EquipUnit.OnServerEvent:Connect(function(Player: Player, Data: { UniqueId: string, Equip: boolean })
 	if typeof(Data) ~= "table" then
@@ -64,11 +66,19 @@ SellUnit.OnServerEvent:Connect(function(Player: Player, Data: { string })
 		if PlayerData.CurrentWave then
 			return
 		end
+		local TotalCost = 0
 		for _, UniqueId in ipairs(Data) do
 			if typeof(UniqueId) ~= "string" then
 				continue
 			end
+			local Unit = PlayerData.Profile.Data.Units[UniqueId]
+			if not Unit then
+				continue
+			end
+			local Rarity = UnitInfo.UnitInfo[Unit.Unit].Rarity
+			TotalCost += RarityInfo[Rarity :: any].Value
 			PlayerData:DeleteUnit(UniqueId)
 		end
+		PlayerData:AddGold(TotalCost)
 	end
 end)

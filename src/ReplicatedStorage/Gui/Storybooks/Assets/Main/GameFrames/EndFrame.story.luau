@@ -32,6 +32,7 @@ local function Container(props: any)
 		Enabled = Enabled,
 		Success = props.controls.Success,
 		PlayerData = PlayerData,
+		MainXPData = { OldXP = 10, NewXP = 20, OldLevel = 2, NewLevel = 5 },
 		EndData = {
 			Units = {
 				"Scout",

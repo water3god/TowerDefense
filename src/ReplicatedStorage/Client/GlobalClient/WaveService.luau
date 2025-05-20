@@ -40,14 +40,22 @@ export type VoteData = {
 	NeededCount: number,
 }
 
+export type MainXPData = {
+	OldXP: number,
+	NewXP: number,
+	OldLevel: number,
+	NewLevel: number,
+}
+
 local Module: {
 	Added: Signal.Signal<WaveData>,
 	HealthChanged: Signal.Signal<number, number>,
 	Passed: Signal.Signal<number>,
 	TimeChanged: Signal.Signal<number, number>,
-	Ended: Signal.Signal<boolean, GameInfo.ResourceData>,
+	Ended: Signal.Signal<boolean, GameInfo.ResourceData, any>,
 	Win: boolean?,
 	EndData: GameInfo.ResourceData?,
+	MainXPData: MainXPData?,
 
 	VoteData: {
 		VoteStarted: Signal.Signal<VoteData>,
@@ -113,11 +121,12 @@ TimeChanged.OnClientEvent:Connect(function(Data: { Time: number, StartTime: numb
 	end
 end)
 
-WaveEnded.OnClientEvent:Connect(function(Win: boolean, Data: GameInfo.ResourceData)
+WaveEnded.OnClientEvent:Connect(function(Win: boolean, Data: GameInfo.ResourceData, OtherData)
 	Module.Win = Win
 	Module.EndData = Data
+	Module.MainXPData = OtherData
 	if WaveData then
-		Module.Ended:Fire(Win, Data)
+		Module.Ended:Fire(Win, Data, OtherData)
 		WaveData = nil
 	end
 end)

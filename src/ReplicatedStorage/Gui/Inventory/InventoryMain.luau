@@ -41,21 +41,61 @@ export type Properties = {
 	native: { [any]: any }?,
 }
 
+local Filters = { "Rarity", "Level", "Name" }
+
+local FilterFunctions = {}
+
+type FData = Types.VisualUnitData
+
+do
+	local Data = UnitInfo.UnitInfo
+	@native
+	function FilterFunctions.Rarity(a: FData, b: FData)
+		local RarityA = Data[a.Unit].Rarity
+		local RarityB = Data[b.Unit].Rarity
+		local PriorityA = RarityInfo[RarityA :: any].Priority
+		local PriorityB = RarityInfo[RarityB :: any].Priority
+
+		if PriorityA == PriorityB then
+			return a.Unit < b.Unit
+		else
+			return PriorityA > PriorityB
+		end
+	end
+
+	@native
+	function FilterFunctions.Level(a: FData, b: FData)
+		if a.Level == b.Level then
+			return a.Unit < b.Unit
+		else
+			return a.Level > b.Level
+		end
+	end
+
+	@native
+	function FilterFunctions.Name(a: FData, b: FData)
+		if a.Unit == b.Unit then
+			return a.Level > b.Level
+		else
+			return a.Unit < b.Unit
+		end
+	end
+end
+
 local function Sell(UniqueIds: { string })
 	InventoryService.SellUnits(UniqueIds)
 end
 
 local function CreateBaseButton(Properties: {
-	Position: UDim2,
 	Text: string,
 	OnClick: () -> (),
+	native: { [any]: any }?,
 })
 	return React.createElement(Main.Animateables.ImageButton, {
-		native = {
-			Position = Properties.Position,
-			Size = UDim2.fromScale(0.175, 0.14),
+		native = JoinDicts({
+			Size = UDim2.fromScale(0.2, 1),
 			Image = "rbxassetid://90225038866735",
-		},
+		}, Properties.native),
 	}, {
 		TextLabel = React.createElement(Main.TextLabel, {
 			native = {
@@ -67,20 +107,73 @@ local function CreateBaseButton(Properties: {
 	})
 end
 
+export type UnitData = {
+	Data: Types.VisualUnitData,
+	SmallFrameClick: (
+		{ Data: { CurrentUnit: Types.VisualUnitData, Rarity: string, RarityData: any }, UniqueId: string }
+	) -> (),
+	HoveredId: string?,
+	UniqueId: string,
+	XVisible: boolean,
+	native: { [any]: any }?,
+	children: { [any]: any }?,
+}
+
+local function HandleUnit(Data: UnitData)
+	local UnitData = React.useMemo(function()
+		return UnitInfo.UnitInfo[Data.Data.Unit]
+	end, { Data })
+
+	local RarityData = React.useMemo(function()
+		return RarityInfo[UnitData.Rarity]
+	end, { UnitData })
+
+	return e(UnitFrame.CreateUnitFrame, {
+		UnitName = Data.Data.Unit,
+		Level = Data.Data.Level,
+		Cost = UnitData.UnitData[0].Cost,
+
+		OnClick = function()
+			Data.SmallFrameClick({
+				Data = {
+					CurrentUnit = Data.Data,
+					Rarity = UnitData.Rarity,
+					RarityData = RarityData,
+				},
+				UniqueId = Data.Data.UniqueId,
+			})
+		end,
+
+		Hovered = Data.HoveredId == Data.UniqueId,
+		native = Data.native,
+	}, {
+		BeingSoldFrame = e(Main.ImageLabel, {
+			native = {
+				Visible = Data.XVisible,
+				Size = UDim2.fromScale(0.9, 0.9),
+				Image = "rbxassetid://84303396250595",
+				ImageColor3 = Color3.fromRGB(255, 6, 0),
+				ZIndex = 3,
+			},
+		}),
+	}, Data.children)
+end
+
+export type ClickedUnitData = {
+	CurrentUnit: Types.VisualUnitData,
+	Rarity: string,
+	RarityData: typeof(RarityInfo["Common" :: RarityInfo.Rarity]),
+}?
+
 local CreateInventory = React.forwardRef(function(Properties, ref)
 	local InventoryData = React.useContext(InventoryContext.Context)
 	local EquippedUnits = React.useContext(EquippedUnitsContext.Context)
 
-	local Units, SetUnits = React.useState({} :: { [string]: any })
 	local SellingUnits, SetSellingUnits = React.useState({} :: { string })
 	local HoveredId: string?, SetHovered = React.useState(nil :: string?)
 	local InSell, ToggleSell = React.useState(false)
 
-	local ClickedUnitData, SetClickedUnitData = React.useState(nil :: {
-		CurrentUnit: Types.VisualUnitData?,
-		Rarity: string,
-		RarityData: typeof(RarityInfo["Common" :: RarityInfo.Rarity]),
-	}?)
+	local ClickedUnitData: ClickedUnitData, SetClickedUnitData = React.useState(nil :: ClickedUnitData)
 
 	local OpenFrame: string, SetOpenFrame = React.useState("Unit")
 
@@ -94,13 +187,26 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		if not HoveredId then
 			SetIndEnabled(false)
 		end
-	end, { InSell, HoveredId :: any, Units :: any })
+	end, { InSell, HoveredId :: any })
 
 	React.useEffect(function()
 		if not HoveredId then
 			SetClickedUnitData(nil)
 		end
 	end, { HoveredId })
+
+	React.useEffect(function()
+		local SellingUnitsCloned = table.clone(SellingUnits)
+		for i = #SellingUnitsCloned, 1, -1 do
+			local Id = SellingUnitsCloned[i]
+			if not InventoryData.Units[Id] then
+				table.remove(SellingUnitsCloned, i)
+			end
+		end
+		if #SellingUnits ~= #SellingUnitsCloned then
+			SetSellingUnits(SellingUnitsCloned)
+		end
+	end, { InventoryData })
 
 	local SmallFrameClick = React.useCallback(function(Data: { Data: any, UniqueId: string })
 		if (HoveredId ~= Data.UniqueId) and not InSell then
@@ -205,54 +311,63 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		SetIndEnabled(false)
 	end, { SellingUnits, InSell :: any })
 
-	React.useEffect(function()
-		local function HandleUnit(Data: Types.VisualUnitData)
-			local UnitData = UnitInfo.UnitInfo[Data.Unit]
-			local RarityData = RarityInfo[UnitData.Rarity]
+	local Filter, SetFilter = React.useState("")
+	local FilterMethod, SetFilterMethod = React.useState(Filters[1])
 
-			return e(UnitFrame.CreateUnitFrame, {
-				UnitName = Data.Unit,
-				Level = Data.Level,
-				Cost = UnitData.UnitData[0].Cost,
-
-				OnClick = function()
-					SmallFrameClick({
-						Data = {
-							CurrentUnit = Data,
-							Rarity = UnitData.Rarity,
-							RarityData = RarityData,
-						},
-						UniqueId = Data.UniqueId,
-					})
-				end,
-
-				Hovered = if HoveredId and HoveredId == Data.UniqueId then true else false,
-			}, {
-				BeingSoldFrame = e(Main.ImageLabel, {
-					native = {
-						Visible = if table.find(SellingUnits, Data.UniqueId) then true else false,
-						Size = UDim2.fromScale(0.9, 0.9),
-						Image = "rbxassetid://84303396250595",
-						ImageColor3 = Color3.fromRGB(255, 6, 0),
-						ZIndex = 3,
-					},
-				}),
-			})
-		end
-		local UsedId = false
-		local Table = {}
+	local SortData = React.useMemo(function()
+		local Sorts = {}
 		for _, Data in pairs(InventoryData.Units) do
+			table.insert(Sorts, Data)
+		end
+		table.sort(Sorts, FilterFunctions[FilterMethod])
+
+		return Sorts
+	end, { InventoryData, FilterMethod :: any })
+
+	local Units = React.useMemo(function()
+		local UsedId = false
+		local Table: { [string]: React.Node } = {}
+
+		@native
+		local function Handle(Data: Types.VisualUnitData)
+			if Filter ~= "" then
+				if not string.lower(Data.Unit):match(string.lower(Filter)) then
+					return
+				end
+			end
+
 			if Data.UniqueId == HoveredId then
 				UsedId = true
 			end
-			local Unit = HandleUnit(Data)
+
+			local Unit = e(HandleUnit, {
+				Data = Data,
+				HoveredId = HoveredId,
+				SmallFrameClick = SmallFrameClick,
+				UniqueId = Data.UniqueId,
+				XVisible = if table.find(SellingUnits, Data.UniqueId) then true else false,
+				native = {
+					LayoutOrder = table.find(SortData, Data) or 1,
+				},
+			})
 			Table[Data.UniqueId] = Unit
 		end
-		if not UsedId then
+
+		for _, Data in pairs(InventoryData.Units) do
+			Handle(Data)
+		end
+		if not UsedId and HoveredId ~= nil then
 			SetHovered(nil)
 		end
-		SetUnits(Table)
-	end, { InSell :: any, SellingUnits :: any, HoveredId :: any, InventoryData :: any })
+		return Table
+	end, {
+		InSell :: any,
+		SellingUnits :: any,
+		HoveredId :: any,
+		InventoryData :: any,
+		Filter :: any,
+		FilterMethod :: any,
+	})
 
 	local function IsEquipped(Id: string)
 		for _, Data in ipairs(EquippedUnits.Units) do
@@ -264,6 +379,44 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		return false
 	end
 
+	local FilterMethodCallback = React.useCallback(function()
+		local Index = table.find(Filters, FilterMethod) :: number
+		local NewFilter = Filters[Index + 1] or Filters[1]
+
+		SetFilterMethod(NewFilter)
+	end, { FilterMethod })
+
+	local SearchCallback = React.useCallback(function(rbx: TextBox)
+		SetFilter(rbx.Text)
+	end, {})
+
+	local IndConfirmDescription = React.useMemo(function()
+		if ClickedUnitData then
+			local UnitName = ClickedUnitData.CurrentUnit.Unit
+			local Rarity = UnitInfo.UnitInfo[UnitName].Rarity
+			local Cost = RarityInfo[Rarity :: any].Value
+			return string.format("Are you sure you want to Sell %s for %u Gold?", UnitName, Cost)
+		else
+			return ""
+		end
+	end, { ClickedUnitData })
+
+	local BulkConfirmDescription = React.useMemo(function()
+		if SellingUnits then
+			local TotalCost = 0
+
+			for _, Id in ipairs(SellingUnits) do
+				local UnitData: Types.VisualUnitData = InventoryData.Units[Id]
+				local Rarity = UnitInfo.UnitInfo[UnitData.Unit].Rarity
+				TotalCost += RarityInfo[Rarity :: any].Value
+			end
+
+			return string.format("Are you sure you want to Sell %u Units for %u Gold?", #SellingUnits, TotalCost)
+		else
+			return ""
+		end
+	end, { SellingUnits })
+
 	return e(Main.ImageLabel, {
 		native = JoinDicts({
 			Size = UDim2.fromScale(0.55, 0.5),
@@ -272,16 +425,13 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 	}, {
 		IndConfirm = e(Confirm, {
 			Title = "Selling Unit",
-			Description = ClickedUnitData and ClickedUnitData.CurrentUnit and string.format(
-				"Are you sure you want to Sell %s",
-				ClickedUnitData.CurrentUnit.Unit
-			) or "",
+			Description = IndConfirmDescription,
 			Enabled = IndEnabled,
 			Handler = IndividualSell,
 		}),
 		BulkConfirm = e(Confirm, {
 			Title = "Selling Units",
-			Description = string.format("Are yo sure you want to Sell %u Units", #SellingUnits),
+			Description = BulkConfirmDescription,
 			Enabled = BulkEnabled,
 			Handler = BulkSell,
 		}),
@@ -317,8 +467,8 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		CheckButton = e(Main.Animateables.ImageButton, {
 			native = {
 				Visible = if InSell then true else false,
-				Position = UDim2.fromScale(0.64, 0.175),
-				Size = UDim2.fromScale(0.05, 0.1),
+				Position = UDim2.fromScale(0.875, 0.175),
+				Size = UDim2.fromScale(0.04, 0.08),
 				Image = "rbxassetid://78742556758797",
 				ImageColor3 = Color3.fromRGB(34, 255, 0),
 				[React.Event.MouseButton1Click] = OnCheckPressed,
@@ -331,8 +481,8 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		}),
 		SellButton = e(Main.Animateables.ImageButton, {
 			native = {
-				Position = UDim2.fromScale(0.7, 0.175),
-				Size = UDim2.fromScale(0.05, 0.1),
+				Position = UDim2.fromScale(0.93, 0.175),
+				Size = UDim2.fromScale(0.04, 0.08),
 				Image = "rbxassetid://135893657768702",
 				ImageColor3 = Color3.fromRGB(255, 0, 4),
 				[React.Event.MouseButton1Click] = OnSellPressed,
@@ -343,6 +493,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			Visible = if HoveredId and ClickedUnitData then true else false,
 
 			Type = OpenFrame,
+			Data = ClickedUnitData and ClickedUnitData.CurrentUnit,
 			Name = ClickedUnitData and ClickedUnitData.CurrentUnit.Unit,
 			Rarity = ClickedUnitData and ClickedUnitData.Rarity :: any,
 			RarityInfo = ClickedUnitData and ClickedUnitData.RarityData :: any,
@@ -351,17 +502,93 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			OnEquipClick = OnEquip,
 			OnSellClick = IndSellClick,
 		}),
-		UnitsButton = e(CreateBaseButton, {
-			Position = UDim2.fromScale(0.14, 0.175),
-			Text = "Units",
-			OnClick = function()
-				SetOpenFrame("Units")
-			end,
+		Buttons = e(Main.Frame, {
+			native = {
+				Size = UDim2.fromScale(0.6, 0.09),
+				Position = UDim2.fromScale(0.35, 0.175),
+			},
+		}, {
+			UIListLayout = e("UIListLayout", {
+				Padding = UDim.new(0.05, 0),
+				FillDirection = Enum.FillDirection.Horizontal,
+				SortOrder = Enum.SortOrder.LayoutOrder,
+				VerticalAlignment = Enum.VerticalAlignment.Center,
+			}),
+			UnitsButton = e(CreateBaseButton, {
+				Text = "Units",
+				OnClick = function()
+					SetOpenFrame("Units")
+				end,
+				native = {
+					LayoutOrder = 1,
+				},
+			}),
+			GamepassesButton = e(CreateBaseButton, {
+				Text = "Gamepasses",
+				OnClick = function() end,
+				native = {
+					LayoutOrder = 2,
+				},
+			}),
+			ResourcesButton = e(CreateBaseButton, {
+				Text = "Resources",
+				OnClick = function() end,
+				native = {
+					LayoutOrder = 3,
+				},
+			}),
 		}),
-		GamepassesButton = e(CreateBaseButton, {
-			Position = UDim2.fromScale(0.33, 0.175),
-			Text = "Gamepasses",
-			OnClick = function() end,
+		Search = e(Main.Frame, {
+			native = {
+				BackgroundTransparency = 0,
+				BackgroundColor3 = Color3.new(0.447059, 0.447059, 0.447059),
+				Size = UDim2.fromScale(0.2, 0.08),
+				Position = UDim2.fromScale(0.63, 0.175),
+			},
+		}, {
+			Box = e(Main.TextBox, {
+				native = {
+					Size = UDim2.fromScale(0.9, 0.7),
+					TextXAlignment = Enum.TextXAlignment.Left,
+					PlaceholderText = "Search...",
+					Text = "",
+					[React.Change.Text] = SearchCallback,
+				},
+			}),
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.3, 0),
+			}),
+			Icon = e(Main.ImageLabel, {
+				native = {
+					Position = UDim2.fromScale(-0.15, 0.5),
+					Size = UDim2.fromScale(0.3, 0.9),
+					Image = "rbxassetid://109198874827438",
+				},
+			}, {
+				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+					AspectRatio = 1,
+				}),
+			}),
+		}),
+		SortButton = e(Main.Animateables.TextButton, {
+			native = {
+				BackgroundTransparency = 0,
+				BackgroundColor3 = Color3.new(0.137255, 0.796078, 0.223529),
+				Size = UDim2.fromScale(0.08, 0.08),
+				Position = UDim2.fromScale(0.79, 0.175),
+				Text = "",
+				[React.Event.MouseButton1Click] = FilterMethodCallback,
+			},
+		}, {
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.3, 0),
+			}),
+			Label = e(Main.TextLabel, {
+				native = {
+					Size = UDim2.fromScale(0.8, 0.6),
+					Text = FilterMethod,
+				},
+			}),
 		}),
 		Title = e(Title, {
 			Title = "INVENTORY",

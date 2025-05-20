@@ -58,6 +58,7 @@ export type Props = {
 	SetVisible: ((Visible: boolean) -> ())?,
 	PlayerData: React.Binding<{ Votes: number, Total: number }>,
 	EndData: GameInfo.ResourceData,
+	MainXPData: WaveService.MainXPData,
 
 	native: { [any]: any }?,
 	children: { [any]: any }?,
@@ -72,6 +73,12 @@ export type ResourceProps = {
 
 export type UnitXPProps = {
 	Data: { Name: string, OldLevel: number, NewLevel: number, OldXP: number, NewXP: number },
+	native: { [any]: any }?,
+	children: { [any]: any }?,
+}
+
+export type MainXPProps = {
+	MainXPData: WaveService.MainXPData,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
@@ -101,6 +108,98 @@ local function CreateResourceFrame(props: ResourceProps)
 		NameStrokeColor = ColorSequence.new(Color3.new()),
 		RightStrokeColor = ColorSequence.new(Color3.new()),
 		native = props.native,
+	}, props.children)
+end
+
+local function CreateMainXPFrame(props: MainXPProps)
+	local Styles, API = ReactSpring.useSpring(function()
+		return {
+			alpha = 0,
+		}
+	end)
+
+	local BindingData = React.useRef(1)
+
+	local XPInfo: React.Binding<UnitXP> = Styles.alpha:map(function(alpha: number)
+		local Level: number = nil
+		local XP: number = nil
+		local NeededXP: number = nil
+
+		local LerpGain = math.lerp(0, BindingData.current, alpha)
+		local total = 0
+
+		for i = props.MainXPData.OldLevel, props.MainXPData.NewLevel, 1 do
+			local Goal = XPData.CalculatePlayerXP(i)
+			total += Goal
+
+			if LerpGain <= total then
+				Level = i
+				XP = (LerpGain + XPData.CalculatePlayerXP(i + 1)) - total
+				NeededXP = Goal
+				break
+			end
+		end
+
+		return {
+			Level = Level,
+			XP = XP,
+			NeededXP = NeededXP,
+		}
+	end)
+
+	React.useEffect(function()
+		local XPGain = 0
+		for i = props.MainXPData.OldLevel, props.MainXPData.NewLevel - 1, 1 do
+			local Gain = XPData.CalculatePlayerXP(i)
+			XPGain += Gain
+		end
+
+		XPGain -= props.MainXPData.OldXP
+		XPGain += props.MainXPData.NewXP
+
+		BindingData.current = XPGain
+		API.start({
+			alpha = 1,
+		})
+	end, {})
+
+	return e(Main.CanvasGroup, {
+		native = Join({
+			BackgroundColor3 = Color3.new(0.180392, 0.180392, 0.180392),
+			BackgroundTransparency = 0,
+			Size = UDim2.fromScale(0.4, 0.08),
+			Position = UDim2.fromScale(0.3, 0.775),
+		}, props.native),
+	}, {
+		UICorner = e("UICorner", {
+			CornerRadius = UDim.new(0.4, 0),
+		}),
+		XPLabel = e(Main.TextLabel, {
+			native = {
+				Size = UDim2.fromScale(0.9, 0.8),
+				Position = UDim2.fromScale(0.5, 0.5),
+				Text = XPInfo:map(function(data: UnitXP)
+					return string.format("Level %u (%u / %u)", data.Level, data.XP, data.NeededXP)
+				end),
+				ZIndex = 3,
+			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.02,
+			}),
+		}),
+		Bar = e(Main.Frame, {
+			native = {
+				BackgroundColor3 = Color3.new(0.211765, 0.756863, 0.090196),
+				BackgroundTransparency = 0,
+				Size = XPInfo:map(function(data: UnitXP)
+					return UDim2.fromScale(math.clamp(data.XP / data.NeededXP, 0, 1), 1)
+				end),
+				Position = UDim2.fromScale(0, 0.5),
+				AnchorPoint = Vector2.new(0, 0.5),
+				ZIndex = 2,
+			},
+		}),
 	}, props.children)
 end
 
@@ -366,8 +465,8 @@ local function CreateVoteFrame(Props: Props)
 			native = {
 				BackgroundTransparency = 0,
 				BackgroundColor3 = Color3.fromRGB(117, 119, 115),
-				Position = UDim2.fromScale(0.25, 0.9),
-				Size = UDim2.fromScale(0.2, 0.1),
+				Position = UDim2.fromScale(0.3, 0.9),
+				Size = UDim2.fromScale(0.2, 0.08),
 				Text = "",
 				[React.Event.MouseButton1Click] = RestartClick,
 			},
@@ -375,21 +474,14 @@ local function CreateVoteFrame(Props: Props)
 			UICorner = e("UICorner", {
 				CornerRadius = UDim.new(0.4, 0),
 			}),
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.01,
-				native = {
-					Color = Color3.fromRGB(73, 71, 69),
-					LineJoinMode = Enum.LineJoinMode.Round,
-				},
-			}),
 			Label = e(Main.TextLabel, {
 				native = {
 					Size = UDim2.fromScale(0.9, 0.8),
 					Text = "Restart",
 				},
 				children = {
-					UIStroke = e(UIStroke.UIStrokeBasic, {
-						Stroke = 0.004,
+					UIStroke = e(UIStroke.UIStrokeAdvanced, {
+						Stroke = 0.04,
 					}),
 				},
 			}),
@@ -398,8 +490,8 @@ local function CreateVoteFrame(Props: Props)
 			native = {
 				BackgroundTransparency = 0,
 				BackgroundColor3 = Color3.fromRGB(117, 119, 115),
-				Position = UDim2.fromScale(0.75, 0.9),
-				Size = UDim2.fromScale(0.2, 0.1),
+				Position = UDim2.fromScale(0.7, 0.9),
+				Size = UDim2.fromScale(0.2, 0.08),
 				Text = "",
 				[React.Event.MouseButton1Click] = ReturnClick,
 			},
@@ -407,28 +499,21 @@ local function CreateVoteFrame(Props: Props)
 			UICorner = e("UICorner", {
 				CornerRadius = UDim.new(0.4, 0),
 			}),
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.01,
-				native = {
-					Color = Color3.fromRGB(73, 71, 69),
-					LineJoinMode = Enum.LineJoinMode.Round,
-				},
-			}),
 			Label = e(Main.TextLabel, {
 				native = {
 					Size = UDim2.fromScale(0.9, 0.8),
 					Text = "Return",
 				},
 			}, {
-				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.004,
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.04,
 				}),
 			}),
 		}),
 		Players = e(Main.TextLabel, {
 			native = {
 				Size = UDim2.fromScale(0.5, 0.08),
-				Position = UDim2.fromScale(0.3, 0.3),
+				Position = UDim2.fromScale(0.3, 0.275),
 				Text = Props.PlayerData:map(function(Data)
 					return string.format("Play Again: %u/%u", Data.Votes, Data.Total)
 				end),
@@ -469,7 +554,7 @@ local function CreateVoteFrame(Props: Props)
 			native = {
 				BackgroundColor3 = Color3.new(0.243137, 0.054902, 0.368627),
 				BackgroundTransparency = 0,
-				Position = UDim2.fromScale(0.3, 0.6),
+				Position = UDim2.fromScale(0.3, 0.55),
 				Size = UDim2.fromScale(0.4, 0.3),
 			},
 		}, {
@@ -497,6 +582,9 @@ local function CreateVoteFrame(Props: Props)
 					SortOrder = Enum.SortOrder.LayoutOrder,
 				}),
 			}, RewardFrames),
+		}),
+		MainXPFrame = e(CreateMainXPFrame, {
+			MainXPData = Props.MainXPData,
 		}),
 		BackgroundFrame1 = e(Main.Frame, {
 			native = {
@@ -566,6 +654,7 @@ local function VoteConnected(props)
 	})
 
 	local EndData, SetEndData = React.useState({ Units = {}, Resources = {}, ExistingUnits = {} })
+	local MainXPData, SetMainXPData = React.useState({ OldXP = 1, NewXP = 1, OldLevel = 1, NewLevel = 1 })
 
 	React.useEffect(function()
 		if not WaveService.GetWaveData() and WaveService.Win ~= nil and WaveService.EndData ~= nil then
@@ -606,9 +695,10 @@ local function VoteConnected(props)
 		}) :: any)
 	end, {})
 
-	Hooks.useEventConnection(WaveService.Ended, function(_, Data)
+	Hooks.useEventConnection(WaveService.Ended, function(_, Data, OtherData)
 		SetEndData(Data)
-	end, { EndData })
+		SetMainXPData(OtherData)
+	end, { EndData, MainXPData })
 
 	return e(React.Fragment, nil, {
 		EndFrame = e(CreateVoteFrame, {
@@ -617,6 +707,7 @@ local function VoteConnected(props)
 			Success = Success,
 			PlayerData = PlayerData,
 			EndData = EndData,
+			MainXPData = MainXPData,
 			native = props.native,
 		}, props.children),
 		EndButton = e(CreateEndFrameButton, {

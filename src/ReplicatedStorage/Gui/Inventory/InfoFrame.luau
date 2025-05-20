@@ -26,12 +26,9 @@ local UnitModels = ReplicatedStorage.ModelStorage.Units
 local UnitAnimations = ReplicatedStorage.Animations.Units
 export type InfoType = "Unit" | "Gamepass"
 
-export type UnitData = {
-	UnitData: Types.VisualUnitData,
-	UnitInfo: UnitInfo.UnitInfo,
-}
+export type UnitData = Types.VisualUnitData
 
-export type Data = UnitData | {}
+export type Data = UnitData
 
 export type Properties = {
 	Visible: boolean,
@@ -48,22 +45,6 @@ export type Properties = {
 	OnSellClick: () -> ()?,
 }
 
-local function InitViewport(Viewport: ViewportFrame, Data: UnitData)
-	local UnitName = Data.UnitData.Unit
-	local Model = UnitModels:FindFirstChild(UnitName):Clone()
-	local Humanoid = Model:FindFirstChildWhichIsA("Humanoid")
-	local Animator = Humanoid:FindFirstChildWhichIsA("Animator")
-	local Animation = UnitAnimations:FindFirstChild(UnitName):FindFirstChild("Idle")
-
-	HelperFunctions.DisableHumanoid(Humanoid)
-	local Track = Animator:LoadAnimation(Animation)
-	Track:Play()
-
-	return function()
-		Model:Destroy()
-	end
-end
-
 local function CreateInfoFrame(Properties: Properties)
 	local IsUnit = React.useMemo(function()
 		return Properties.Type == "Unit"
@@ -77,32 +58,28 @@ local function CreateInfoFrame(Properties: Properties)
 		end
 	end, { Properties.Data })
 
-	local UnitData = React.useMemo(function()
-		return Properties.Data :: UnitData
-	end, { Properties.Data })
-
 	local RotationCFrame = React.useBinding(CFrame.Angles(math.rad(20), 0, 0))
 
 	local BarSize = React.useMemo(function()
-		if IsUnit and HasValue then
-			return UDim2.fromScale(UnitData.UnitData.XP / UnitData.UnitData.NeededXP, 0.9)
+		if IsUnit and Properties.Data then
+			return UDim2.fromScale(Properties.Data.XP / Properties.Data.NeededXP, 0.9)
 		else
 			return UDim2.fromScale(0, 0)
 		end
-	end, { IsUnit, HasValue, UnitData :: any })
+	end, { IsUnit, HasValue })
 
 	local XPText = React.useMemo(function()
-		if IsUnit and HasValue then
-			return string.format("%u/%u", UnitData.UnitData.XP, UnitData.UnitData.NeededXP)
+		if IsUnit and Properties.Data then
+			return string.format("%u/%u", Properties.Data.XP, Properties.Data.NeededXP)
 		else
 			return ""
 		end
-	end, { IsUnit, HasValue, UnitData :: any })
+	end, { IsUnit, HasValue })
 
 	return e(Main.ImageLabel, {
 		native = {
-			Position = UDim2.fromScale(0.85, 0.525),
-			Size = UDim2.fromScale(0.2, 0.85),
+			Position = UDim2.fromScale(0.85, 0.6),
+			Size = UDim2.fromScale(0.2, 0.7),
 			Image = "rbxassetid://75971006528952",
 			Visible = Properties.Visible,
 		},
@@ -114,7 +91,7 @@ local function CreateInfoFrame(Properties: Properties)
 			Offset = Vector3.new(0, -1, 0),
 			native = {
 				Position = UDim2.fromScale(0.5, 0.5),
-				Size = UDim2.fromScale(0.9, 0.425),
+				Size = UDim2.fromScale(0.9, 0.45),
 			},
 		}, {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
@@ -127,7 +104,7 @@ local function CreateInfoFrame(Properties: Properties)
 		EquipButton = e(Main.Animateables.ImageButton, {
 			native = {
 				Position = UDim2.fromScale(0.5, 0.92),
-				Size = UDim2.fromScale(0.9, 0.125),
+				Size = UDim2.fromScale(0.8, 0.125),
 				Image = "rbxassetid://72606508098140",
 				[React.Event.MouseButton1Click] = Properties.OnEquipClick,
 			},
@@ -155,7 +132,7 @@ local function CreateInfoFrame(Properties: Properties)
 		SellButton = e(Main.Animateables.ImageButton, {
 			native = {
 				Position = UDim2.fromScale(0.5, 0.79),
-				Size = UDim2.fromScale(0.9, 0.125),
+				Size = UDim2.fromScale(0.8, 0.125),
 				Image = "rbxassetid://135833754402129",
 				ImageColor3 = Color3.fromRGB(255, 43, 47),
 				[React.Event.MouseButton1Click] = Properties.OnSellClick,
@@ -170,11 +147,12 @@ local function CreateInfoFrame(Properties: Properties)
 				},
 			}),
 		}),
-		Bar = e(Main.ImageLabel, {
+		Bar = e(Main.CanvasGroup, {
 			native = {
-				Position = UDim2.fromScale(0.5, 0.26),
+				BackgroundColor3 = Color3.new(0.588235, 0.109804, 0.843137),
+				BackgroundTransparency = 0,
+				Position = UDim2.fromScale(0.5, 0.28),
 				Size = UDim2.fromScale(0.7, 0.055),
-				Image = "rbxassetid://125478192482439",
 				Visible = IsUnit,
 			},
 		}, {
@@ -188,7 +166,8 @@ local function CreateInfoFrame(Properties: Properties)
 					native = {
 						BackgroundTransparency = 0,
 						BackgroundColor3 = Color3.fromRGB(255, 0, 201),
-						Position = UDim2.fromScale(0, 0.05),
+						AnchorPoint = Vector2.new(0, 0.5),
+						Position = UDim2.fromScale(0, 0.5),
 						Size = BarSize,
 					},
 				}, {
@@ -202,7 +181,11 @@ local function CreateInfoFrame(Properties: Properties)
 					Position = UDim2.fromScale(0.5, 0.5),
 					Size = UDim2.fromScale(0.99, 0.9),
 					Text = XPText,
+					ZIndex = 2,
 				},
+			}),
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(1, 0),
 			}),
 		}),
 		NameLabel = e(Main.TextLabel, {

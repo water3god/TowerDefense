@@ -182,14 +182,12 @@ local function CreateUpgradeFrame(Properties: Properties)
 		SetSell(false)
 	end, { UpgradeData })
 
-	local UpgradeFrames, SetUpgradeFrames = React.useState({})
-
-	React.useEffect(function()
+	local UpgradeFrames = React.useMemo(function()
 		local LevelData = UpgradeData.UpgradeData[UpgradeData.Level]
 		local AboveData = UpgradeData.UpgradeData[UpgradeData.Level + 1]
 
 		if AboveData then
-			local Frames = {}
+			local Frames: { [string]: React.Node } = {}
 
 			for Property, Data in pairs(LevelData) do
 				if table.find(Stats.StatProperties, Property) then
@@ -212,9 +210,9 @@ local function CreateUpgradeFrame(Properties: Properties)
 					})
 				end
 			end
-			SetUpgradeFrames(Frames)
+			return Frames
 		else
-			SetUpgradeFrames({})
+			return {}
 		end
 	end, { UpgradeData.UpgradeData :: any, UpgradeData.Level :: any })
 
@@ -309,8 +307,8 @@ local function CreateUpgradeFrame(Properties: Properties)
 			UIGradient = e("UIGradient", {
 				Color = RarityData.Color,
 			}),
-			UIStroke = e(UIStroke.UIStroke, {
-				Stroke = 0.001,
+			UIStroke = e(UIStroke.UIStrokeGradient, {
+				Stroke = 0.01,
 				GradColor = RarityData.StrokeColor,
 				native = {
 					LineJoinMode = Enum.LineJoinMode.Miter,
@@ -327,8 +325,8 @@ local function CreateUpgradeFrame(Properties: Properties)
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 				AspectRatio = 1,
 			}),
-			UIStroke = e(UIStroke.UIStroke, {
-				Stroke = 0.001,
+			UIStroke = e(UIStroke.UIStrokeGradient, {
+				Stroke = 0.005,
 				GradColor = RarityData.BackgroundColor,
 				native = {
 					LineJoinMode = Enum.LineJoinMode.Round,
@@ -354,8 +352,8 @@ local function CreateUpgradeFrame(Properties: Properties)
 					Text = SellText,
 				},
 			}, {
-				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.002,
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.04,
 					Color = Color3.new(0, 0, 0),
 					native = {
 						LineJoinMode = Enum.LineJoinMode.Round,
@@ -383,8 +381,8 @@ local function CreateUpgradeFrame(Properties: Properties)
 					Text = UpgradeData.Priority,
 				},
 			}, {
-				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.002,
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.04,
 					Color = Color3.new(0, 0, 0),
 					native = {
 						ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual,
@@ -411,8 +409,8 @@ local function CreateUpgradeFrame(Properties: Properties)
 					Text = "Upgrade",
 				},
 			}, {
-				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.002,
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.04,
 					Color = Color3.new(0, 0, 0),
 					native = {
 						LineJoinMode = Enum.LineJoinMode.Bevel,
@@ -483,8 +481,8 @@ local function CreateUpgradeFrame(Properties: Properties)
 				BarSize = 0.002,
 				native = {
 					AnchorPoint = Vector2.new(),
-					Size = UDim2.fromScale(0.8, 0.7),
-					Position = UDim2.fromScale(0.1, 0.275),
+					Size = UDim2.fromScale(0.8, 0.75),
+					Position = UDim2.fromScale(0.1, 0.25),
 				},
 			}, {
 				UIListLayout = e("UIListLayout", {

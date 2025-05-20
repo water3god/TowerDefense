@@ -83,6 +83,7 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 		for _, Player in ipairs(Players:GetPlayers()) do
 			local PlayerData = PlayerData.GetPlayerData(Player)
 			local SendData = { Units = {}, Resources = {}, ExistingUnits = {} }
+			local OtherSendData = {}
 
 			if PlayerData then
 				for _, Unit in ipairs(Wave.RewardInfo.Units) do
@@ -106,11 +107,18 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 					PlayerData:AddUnitXP(EquippedUnit, TotalXP)
 					Data.NewLevel = OldData.Level
 					Data.NewXP = OldData.XP
-					print(Data)
 					table.insert(SendData.ExistingUnits, Data)
 				end
 
-				WaveEnded:FireClient(Player, Win, SendData)
+				OtherSendData.OldXP = PlayerData.Profile.Data.XP
+				OtherSendData.OldLevel = PlayerData.Profile.Data.Level
+
+				PlayerData:AddXP(TotalXP / 9)
+
+				OtherSendData.NewXP = PlayerData.Profile.Data.XP
+				OtherSendData.NewLevel = PlayerData.Profile.Data.Level
+
+				WaveEnded:FireClient(Player, Win, SendData, OtherSendData)
 			end
 		end
 	end)
