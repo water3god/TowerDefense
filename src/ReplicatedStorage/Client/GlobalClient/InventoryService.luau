@@ -13,7 +13,7 @@ local InventorySync = InventoryEvents.InventorySync
 local ItemChanged = InventoryEvents.ItemChanged
 local UnitEquipped = InventoryEvents.UnitEquipped
 local EquipUnit = InventoryEvents.EquipUnit
-local SellUnits = InventoryEvents.SellUnit
+local Sell = InventoryEvents.Sell
 
 local LevelEvents = Remotes.Level
 local LevelChangedEvent = LevelEvents.LevelChanged
@@ -158,7 +158,15 @@ function Data.EquipUnit(Id: string, Equip: boolean)
 end
 
 function Data.SellUnits(Ids: { string })
-	SellUnits:FireServer(Ids)
+	Sell:FireServer("Unit", Ids)
+end
+
+function Data.SellProducts(Ids: { string })
+	Sell:FireServer("Product", Ids)
+end
+
+function Data.SellResources(Ids: { string })
+	Sell:FireServer("Resource", Ids)
 end
 
 function Data.RequestForItem(Type: string?)

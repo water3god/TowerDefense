@@ -88,19 +88,34 @@ do
 	end
 end
 
-local function Sell(UniqueIds: { string })
-	InventoryService.SellUnits(UniqueIds)
+local function Sell(UniqueIds: { string }, Type: string)
+	if Type == "Unit" then
+		InventoryService.SellUnits(UniqueIds)
+	elseif Type == "Product" then
+		InventoryService.SellProducts(UniqueIds)
+	elseif Type == "Resource" then
+		InventoryService.SellResources(UniqueIds)
+	end
 end
 
 local function CreateBaseButton(Properties: {
 	Text: string,
 	OnClick: () -> (),
+	Highlighted: boolean,
 	native: { [any]: any }?,
 })
+	local Image = React.useMemo(function()
+		if Properties.Highlighted then
+			return "rbxassetid://140162476120723"
+		else
+			return "rbxassetid://90225038866735"
+		end
+	end, { Properties.Highlighted })
+
 	return React.createElement(Main.Animateables.ImageButton, {
 		native = JoinDicts({
 			Size = UDim2.fromScale(0.2, 1),
-			Image = "rbxassetid://90225038866735",
+			Image = Image,
 			[React.Event.MouseButton1Click] = Properties.OnClick,
 		}, Properties.native),
 	}, {
@@ -272,7 +287,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 	local InventoryData = React.useContext(InventoryContext.Context)
 	local EquippedUnits = React.useContext(EquippedUnitsContext.Context)
 
-	local SellingItems, SetSellingUnits = React.useState({} :: { string })
+	local SellingItems, SetSellingItems = React.useState({} :: { string })
 	local HoveredId: string?, SetHovered = React.useState(nil :: string?)
 	local InSell, ToggleSell = React.useState(false)
 
@@ -286,6 +301,10 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 	local IndEnabled, SetIndEnabled = React.useState(false)
 
 	React.useEffect(function()
+		SetBulkEnabled(false)
+		SetIndEnabled(false)
+		SetSellingItems({})
+		ToggleSell(false)
 		if OpenFrame == "Unit" then
 			SetClickedProductData(nil)
 			SetClickedResourceData(nil)
@@ -317,12 +336,23 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		local SellingUnitsCloned = table.clone(SellingItems)
 		for i = #SellingUnitsCloned, 1, -1 do
 			local Id = SellingUnitsCloned[i]
-			if not InventoryData.Units[Id] then
-				table.remove(SellingUnitsCloned, i)
+
+			if OpenFrame == "Unit" then
+				if not InventoryData.Units[Id] then
+					table.remove(SellingUnitsCloned, i)
+				end
+			elseif OpenFrame == "Product" then
+				if not InventoryData.Products[Id] then
+					table.remove(SellingUnitsCloned, i)
+				end
+			elseif OpenFrame == "Resource" then
+				if not InventoryData.Resources[Id] then
+					table.remove(SellingUnitsCloned, i)
+				end
 			end
 		end
 		if #SellingItems ~= #SellingUnitsCloned then
-			SetSellingUnits(SellingUnitsCloned)
+			SetSellingItems(SellingUnitsCloned)
 		end
 	end, { InventoryData })
 
@@ -349,7 +379,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			else
 				table.insert(NewTable, Data.UniqueId)
 			end
-			SetSellingUnits(NewTable)
+			SetSellingItems(NewTable)
 		else
 			if HoveredId == Data.UniqueId then
 				SetClickedUnitData(nil)
@@ -401,16 +431,16 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 	local IndividualSell = React.useCallback(function(Input: boolean?)
 		if HoveredId then
 			if Input == true then
-				Sell({ HoveredId })
+				Sell({ HoveredId }, OpenFrame)
 			end
 		end
 
 		SetIndEnabled(false)
-	end, { HoveredId, IndEnabled :: any })
+	end, { HoveredId, IndEnabled :: any, OpenFrame :: any })
 
 	local OnSellPressed = React.useCallback(function()
 		SetHovered(nil :: any)
-		SetSellingUnits({})
+		SetSellingItems({})
 		ToggleSell(not InSell)
 	end, { InSell, HoveredId :: any, SellingItems :: any })
 
@@ -427,17 +457,17 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 
 		if Input == true then
 			if #SellingItems > 0 then
-				Sell(SellingItems)
+				Sell(SellingItems, OpenFrame)
 			end
 
 			ToggleSell(false)
 		elseif Input == false then
-			SetSellingUnits({})
+			SetSellingItems({})
 			ToggleSell(false)
 		end
 
 		SetIndEnabled(false)
-	end, { SellingItems, InSell :: any })
+	end, { SellingItems, InSell :: any, OpenFrame :: any })
 
 	local Filter, SetFilter = React.useState("")
 	local FilterMethod, SetFilterMethod = React.useState(Filters[1])
@@ -782,6 +812,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 				OnClick = function()
 					SetOpenFrame("Unit")
 				end,
+				Highlighted = OpenFrame == "Unit",
 				native = {
 					LayoutOrder = 1,
 				},
@@ -791,6 +822,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 				OnClick = function()
 					SetOpenFrame("Product")
 				end,
+				Highlighted = OpenFrame == "Product",
 				native = {
 					LayoutOrder = 2,
 				},
@@ -800,6 +832,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 				OnClick = function()
 					SetOpenFrame("Resource")
 				end,
+				Highlighted = OpenFrame == "Resource",
 				native = {
 					LayoutOrder = 3,
 				},

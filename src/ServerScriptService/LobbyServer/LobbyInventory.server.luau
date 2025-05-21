@@ -19,7 +19,7 @@ local ItemChanged = InventoryEvents.ItemChanged
 local InventorySync = InventoryEvents.InventorySync
 local UnitEquipped = InventoryEvents.UnitEquipped
 local EquipUnit = InventoryEvents.EquipUnit
-local SellUnit = InventoryEvents.SellUnit
+local Sell = InventoryEvents.Sell
 
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
@@ -51,7 +51,7 @@ EquipUnit.OnServerEvent:Connect(function(Player: Player, Data: { UniqueId: strin
 	end
 end)
 
-SellUnit.OnServerEvent:Connect(function(Player: Player, Data: { string })
+Sell.OnServerEvent:Connect(function(Player: Player, Type: string, Data: { string })
 	if typeof(Data) ~= "table" then
 		return
 	end
@@ -67,18 +67,51 @@ SellUnit.OnServerEvent:Connect(function(Player: Player, Data: { string })
 			return
 		end
 		local TotalCost = 0
-		for _, UniqueId in ipairs(Data) do
-			if typeof(UniqueId) ~= "string" then
-				continue
+		if Type == "Unit" then
+			local PlayerUnits = PlayerData.Profile.Data.Units
+			for _, UniqueId in ipairs(Data) do
+				if typeof(UniqueId) ~= "string" then
+					continue
+				end
+				local Unit = PlayerUnits[UniqueId]
+				if not Unit then
+					continue
+				end
+				local Rarity = UnitInfo.UnitInfo[Unit.Unit].Rarity
+				TotalCost += RarityInfo[Rarity :: any].Value
+				PlayerData:DeleteUnit(UniqueId)
 			end
-			local Unit = PlayerData.Profile.Data.Units[UniqueId]
-			if not Unit then
-				continue
+		elseif Type == "Product" then
+			local PlayerProducts = PlayerData.Profile.Data.Products
+			for _, UniqueId in ipairs(Data) do
+				if typeof(UniqueId) ~= "string" then
+					continue
+				end
+				local Product = PlayerProducts[UniqueId]
+				if not Product then
+					continue
+				end
+				local Rarity = UnitInfo.UnitInfo[Product.UniqueId].Rarity
+				TotalCost += RarityInfo[Rarity :: any].Value
+				PlayerData:DeleteUnit(UniqueId)
 			end
-			local Rarity = UnitInfo.UnitInfo[Unit.Unit].Rarity
-			TotalCost += RarityInfo[Rarity :: any].Value
-			PlayerData:DeleteUnit(UniqueId)
+		elseif Type == "Resource" then
+			local PlayerResources = PlayerData.Profile.Data.Resources
+			for _, UniqueId in ipairs(Data) do
+				if typeof(UniqueId) ~= "string" then
+					continue
+				end
+
+				local Product = PlayerResources.Products[UniqueId]
+				if not Product then
+					continue
+				end
+				local Rarity = UnitInfo.UnitInfo[Product.UniqueId].Rarity
+				TotalCost += RarityInfo[Rarity :: any].Value
+				PlayerData:DeleteUnit(UniqueId)
+			end
 		end
+
 		PlayerData:AddGold(TotalCost)
 	end
 end)
