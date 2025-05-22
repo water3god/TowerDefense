@@ -59,12 +59,14 @@ local Destroy = Events.DestroyEvent
 local OnPlacement = Events.PlacementEvent
 local OnUpgrade = Events.Upgrade
 local PriorityChanged = Events.PriorityChanged
+local AbilityEvent = Events.AbilityEvent
 
 local OtherEvents = ReplicatedStorage.Remotes.UnitClient
 local PlaceUnit = OtherEvents.Placement
 local SellUnit = OtherEvents.Sell
 local Upgrade = OtherEvents.Upgrade
 local ChangePriority = OtherEvents.ChangePriority
+local UseAbility = OtherEvents.UseAbility
 
 export type Unit = Types.Unit
 export type UnitModule = Types.UnitModule
@@ -212,6 +214,7 @@ local function NewUnit(Input: Types.UnitInput)
 
 	self.Attacked = self.Trove:Construct(Signal)
 	self.Upgraded = self.Trove:Construct(Signal)
+	self.AbilityUsed = self.Trove:Construct(Signal)
 	self.CharacterClicked = self.Trove:Construct(Signal)
 	self.PriorityChanged = self.Trove:Construct(Signal)
 	self.PropertyChanged = self.Trove:Construct(Signal)
@@ -313,6 +316,15 @@ local function NewUnit(Input: Types.UnitInput)
 		if BasePart:IsA("BasePart") then
 			BasePart.CollisionGroup = "PlacedCharacters"
 		end
+	end
+
+	do
+		local Table = {}
+		for i = 1, #self.UnitData.Abilties, 1 do
+			local OtherData = self.UnitData.Abilties[i]
+			Table[i] = HelperFunctions.joinDicts(OtherData, { LastUsed = Input.Abilities[i] })
+		end
+		self.Abilities = Table :: any
 	end
 
 	self.Animations = {}
@@ -441,6 +453,10 @@ function UnitModule:OnAttack(Input: Types.UnitAttackInput)
 	end
 
 	self.Attacked:Fire()
+end
+
+function UnitModule:UseAbility(Index: number)
+	UseAbility:FireServer(self.UniqueId, Index)
 end
 
 function UnitModule:Sell()
@@ -802,6 +818,15 @@ OnUpgrade.OnClientEvent:Connect(function(Data: { UniqueId: string, Level: number
 
 	if Unit then
 		Unit:OnUpgrade(Data.Level)
+	end
+end)
+
+AbilityEvent.OnClientEvent:Connect(function(UniqueId: string, Index: number, TimeUsed: number)
+	local Unit = UnitModule.GetUnit(UniqueId)
+
+	if Unit then
+		Unit.Abilities[Index].LastUsed = TimeUsed
+		Unit.AbilityUsed:Fire(Index, TimeUsed)
 	end
 end)
 

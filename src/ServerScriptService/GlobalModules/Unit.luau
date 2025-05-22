@@ -16,6 +16,7 @@ local PlacementEvent = UnitEvents.PlacementEvent
 local DestroyEvent = UnitEvents.DestroyEvent
 local UpgradeEvent = UnitEvents.Upgrade
 local PriorityChanged = UnitEvents.PriorityChanged
+local AbilityEvent = UnitEvents.AbilityEvent
 
 local Packages = ReplicatedStorage.Packages
 local Trove = require(Packages.Trove)
@@ -62,9 +63,9 @@ export type UnitInput = {
 	UnitName: string,
 
 	-- Array of AttackFuncs per Level; --
-	AttackFuncs: { [number]: { (self: Unit, Damage: number) -> () } },
+	AttackFuncs: { { (self: Unit, Damage: number) -> () } },
 
-	Abilities: {},
+	Abilities: { (self: Unit) -> () },
 }
 
 type UnitData = {
@@ -96,11 +97,12 @@ type UnitData = {
 	Owner: Player?,
 	OwnerId: number?,
 
-	Attacked: Signal.Signal<>,
-	Destroying: Signal.Signal<>,
-
-	Abilities: {},
+	Abilities: { { LastUsed: number, Name: string, Length: number, Cooldown: number, Func: (self: Unit) -> () } },
 	CollisionRadius: number,
+
+	Attacked: Signal.Signal<>,
+	AbilityUsed: Signal.Signal<number, number>, -- First is Index, Second is Fire Time
+	Destroying: Signal.Signal<>,
 }
 
 type UnitImpl = {
@@ -110,6 +112,7 @@ type UnitImpl = {
 	ChangePriority: (self: Unit) -> (),
 	UpdateEnemy: (self: Unit) -> (),
 	Upgrade: (self: Unit) -> (),
+	UseAbility: (self: Unit, Index: number) -> (),
 
 	Watch: (self: Unit, Time: number, Funcs: { { Func: () -> (), TimeRatio: number } }) -> (),
 
@@ -133,6 +136,14 @@ type UnitImpl = {
 
 export type Unit = typeof(setmetatable({} :: UnitData, {} :: UnitImpl))
 
+local function ConvertAbilityData(Table: any)
+	local NewTable = {}
+	for Index, Data in ipairs(Table) do
+		NewTable[Index] = Data.LastUsed
+	end
+	return NewTable
+end
+
 local function SendInfo(Units: { [string]: Unit }, Players: { Player })
 	local Data: { [string]: any } = {}
 	for Id, Unit in pairs(Units) do
@@ -143,6 +154,7 @@ local function SendInfo(Units: { [string]: Unit }, Players: { Player })
 			OwnerId = Unit.OwnerId,
 			AttackPriority = Unit.AttackPriority,
 			Level = Unit.Level,
+			Abilities = ConvertAbilityData(ConvertAbilityData(Unit.Abilities)),
 
 			SpeedRatio = Unit.SpeedRatio,
 		}
@@ -166,15 +178,19 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 	self.AttackTrove = self._Trove:Extend()
 	self.EnemyTrove = self._Trove:Extend()
 
-	self.Attacked = self._Trove:Add(Signal.new(), "DisconnectAll")
-	self.Destroying = self._Trove:Add(Signal.new(), "DisconnectAll")
+	self.Attacked = self._Trove:Construct(Signal)
+	self.Destroying = self._Trove:Construct(Signal)
+	self.AbilityUsed = self._Trove:Construct(Signal)
+
 	self.CFrame = UserInput.CFrame
 	self.OwnerId = UserInput.OwnerId
 	if UserInput.OwnerId then
 		self.Owner = Players:GetPlayerByUserId(UserInput.OwnerId)
 	end
 
-	self.UnitData = UnitInfo.UnitInfo[Data.UnitName]
+	local SharedUnitData = UnitInfo.UnitInfo[self.UnitName]
+
+	self.UnitData = SharedUnitData
 
 	local AttackFuncs = table.clone(Data.AttackFuncs)
 	local HighestLevel = 0
@@ -197,9 +213,22 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 
 	self.AttackFuncs = Data.AttackFuncs
 
+	if #SharedUnitData.Abilties ~= #Data.Abilities then
+		warn("Incorrect Ability Configuration for: " .. self.UnitName)
+	end
+
+	do
+		local Table = {}
+		for i = 1, #SharedUnitData.Abilties, 1 do
+			local Func = Data.Abilities[i]
+			local OtherData = SharedUnitData.Abilties[i]
+			Table[i] = HelperFunctions.joinDicts(OtherData, { LastUsed = 0, Func = Func })
+		end
+		self.Abilities = Table :: any
+	end
+
 	self.UnitName = Data.UnitName
 	self.ModelReference = UnitModels[self.UnitName]
-	self.Abilities = Data.Abilities
 	self.LastFired = 0
 	self.Level = UserInput.Level
 	self.MaxLevel = #self.UnitData.UnitData
@@ -214,6 +243,10 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 	self.TotalCost = UnitInfo.CalculateTotalCost(self.UnitData.UnitData, self.Level)
 
 	SendInfo({ [self.UniqueId] = self }, self.ReplicateTo)
+
+	self.AbilityUsed:Connect(function(Index: number, TimeUsed: number)
+		HelperFunctions.FireClients(AbilityEvent, self.ReplicateTo, self.UniqueId, Index, TimeUsed)
+	end)
 
 	self._Trove:Connect(RunService.PostSimulation, function(Delta: number)
 		self:UpdateEnemy()
@@ -326,6 +359,16 @@ function Unit:Upgrade()
 	}
 
 	HelperFunctions.FireClients(UpgradeEvent, self.ReplicateTo, Data)
+end
+
+function Unit:UseAbility(Index: number)
+	local Data = self.Abilities[Index]
+	if Data.LastUsed - workspace:GetServerTimeNow() >= Data.Cooldown then
+		local TimeUsed = workspace:GetServerTimeNow()
+		Data.LastUsed = TimeUsed
+		Data.Func(self)
+		self.AbilityUsed:Fire(Index, TimeUsed)
+	end
 end
 
 function Unit:Watch(Time: number, Funcs: { { Func: () -> (), TimeRatio: number } })

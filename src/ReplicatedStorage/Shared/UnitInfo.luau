@@ -25,6 +25,7 @@ export type UnitInfo = {
 	Vector3Offset: Vector3?,
 	ViewportOffset: CFrame?,
 	CollisionRadius: number,
+	Abilties: { { Name: string, Length: number, Cooldown: number } },
 }
 
 local Data = {}
@@ -44,6 +45,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 			},
 		},
 		CollisionRadius = 3,
+		Abilties = {},
 	},
 	["Scout"] = {
 		Rarity = "Common",
@@ -60,6 +62,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 			},
 		},
 		CollisionRadius = 3,
+		Abilties = {},
 	},
 	["Shocker"] = {
 		Rarity = "Common",
@@ -76,6 +79,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 			},
 		},
 		CollisionRadius = 3,
+		Abilties = {},
 	},
 	["Sniper"] = {
 		Rarity = "Rare",
@@ -92,6 +96,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 			},
 		},
 		CollisionRadius = 3,
+		Abilties = {},
 	},
 	["Shotgunner"] = {
 		Rarity = "Epic",
@@ -108,6 +113,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 			},
 		},
 		CollisionRadius = 3,
+		Abilties = {},
 	},
 	["Minigunner"] = {
 		Rarity = "Legendary",
@@ -124,6 +130,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 			},
 		},
 		CollisionRadius = 3,
+		Abilties = {},
 	},
 }
 

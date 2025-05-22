@@ -21,6 +21,7 @@ local UnitClient = Remotes.UnitClient
 local ChangePriority = UnitClient.ChangePriority
 local Placement = UnitClient.Placement
 local Upgrade = UnitClient.Upgrade
+local UseAbility = UnitClient.UseAbility
 local Sell = UnitClient.Sell
 
 local GlobalModules = ServerScriptService.GlobalModules
@@ -173,6 +174,18 @@ Upgrade.OnServerEvent:Connect(function(Player: Player, UniqueId: string)
 
 	if CurrentUnit and CurrentUnit.Owner == Player then
 		CurrentUnit:Upgrade()
+	end
+end)
+
+UseAbility.OnServerEvent:Connect(function(Player: Player, UniqueId: string, Index: number)
+	if typeof(UniqueId) ~= "string" or typeof(Index) ~= "number" then
+		return
+	end
+
+	local CurrentUnit = Unit.GetUnit(UniqueId)
+
+	if CurrentUnit and CurrentUnit.Owner == Player then
+		CurrentUnit:UseAbility(Index)
 	end
 end)
 

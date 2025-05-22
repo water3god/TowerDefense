@@ -23,8 +23,6 @@ local SafePlayerAdded = require(SafePlayer.SafePlayerAdded)
 local Enemy = require(script.Parent)
 local Enemies = Enemy.GetEnemies()
 
-local Count = 0
-
 local function AddInfoToSpawn(Data: any, NewEnemy: Enemy.Enemy)
 	Data.UniqueId = NewEnemy.UniqueId
 	Data.ModelName = NewEnemy.ModelName

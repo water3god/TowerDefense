@@ -149,6 +149,7 @@ export type UnitInput = {
 	Level: number,
 	CollisionRadius: number,
 	SpeedRatio: number,
+	Abilities: { number },
 }
 
 type UnitData = {
@@ -182,6 +183,7 @@ type UnitData = {
 	SizeRatio: number,
 
 	UnitAttacks: { [number]: { (Unit: Unit, AttackInput: UnitAttackInput, Enemy: EnemyClient?, Delay: number) -> () } },
+	Abilities: { { LastUsed: number, Name: string, Length: number, Cooldown: number } },
 	Animations: { [string]: AnimationTrack },
 
 	IsClicked: boolean,
@@ -189,6 +191,7 @@ type UnitData = {
 	Attacked: Signal.Signal<>,
 	CharacterClicked: Signal.Signal<boolean>,
 	Upgraded: Signal.Signal<number>,
+	AbilityUsed: Signal.Signal<number, number>, -- First Index, Second TimeUsed --
 	PriorityChanged: Signal.Signal<UnitInfo.SortType | string>,
 	PropertyChanged: Signal.Signal<string>, -- Does not fire on Upgrade --
 	Destroying: Signal.Signal<>,
@@ -219,6 +222,7 @@ export type UnitModule = {
 	LevelUp: (self: Unit) -> (),
 	OnUpgrade: (self: Unit, Level: number) -> (),
 	OnAttack: (self: Unit, Input: UnitAttackInput) -> (),
+	UseAbility: (self: Unit, Index: number) -> (),
 	Sell: (self: Unit) -> (),
 
 	GetProperties: (self: Unit) -> { [UnitInfo.StatProperty]: number },
