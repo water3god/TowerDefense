@@ -2,7 +2,7 @@
 
 -- By Wa1er_God --
 
-export type Rarity = "BLANK" | "Common" | "Rare" | "Epic" | "Legendary" | "Mythic"
+export type Rarity = "BLANK" | "Common" | "Rare" | "Epic" | "Legendary" | "Mythic" | "Godly"
 
 export type RarityInfo = {
 	Priority: number,
@@ -56,6 +56,13 @@ local RarityInfo: { [Rarity]: RarityInfo } = {
 		Color = ColorSequence.new(Color3.new(1, 0, 0.941604)),
 		StrokeColor = ColorSequence.new(Color3.new(1, 0.335546, 0.85005)),
 		BackgroundColor = ColorSequence.new(Color3.new(255, 0, 0), Color3.new(1, 1, 1)),
+	},
+	Godly = {
+		Priority = 6,
+		Value = 400,
+		Color = ColorSequence.new(Color3.new(1, 0.952941, 0.082353)),
+		StrokeColor = ColorSequence.new(Color3.new(0.513725, 0.462745, 0.07451)),
+		BackgroundColor = ColorSequence.new(Color3.new(0.901961, 0.835294, 0.117647), Color3.new(1, 1, 1)),
 	},
 }
 

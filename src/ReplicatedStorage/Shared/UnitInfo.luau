@@ -47,7 +47,24 @@ local UnitInfo: { [string]: UnitInfo } = {
 		CollisionRadius = 3,
 		Abilties = {},
 	},
-	["Scout"] = {
+	["Julius Caesar"] = {
+		Rarity = "Legendary",
+		Description = "A Scout",
+
+		UnitData = {
+			[0] = {
+				Damage = { 5 },
+				FireRate = 1,
+				Range = 50,
+				Animations = {},
+				Armor = "JuliusCaesarArmor",
+				Cost = 100,
+			},
+		},
+		CollisionRadius = 3,
+		Abilties = {},
+	},
+	["Pompey"] = {
 		Rarity = "Common",
 		Description = "A Scout",
 
@@ -57,16 +74,16 @@ local UnitInfo: { [string]: UnitInfo } = {
 				FireRate = 1,
 				Range = 50,
 				Animations = {},
-				Armor = "Armor",
+				Armor = "PompeyArmor",
 				Cost = 100,
 			},
 		},
 		CollisionRadius = 3,
 		Abilties = {},
 	},
-	["Shocker"] = {
-		Rarity = "Common",
-		Description = "A Shocker",
+	["Trajan"] = {
+		Rarity = "Godly",
+		Description = "A Scout",
 
 		UnitData = {
 			[0] = {
@@ -74,16 +91,16 @@ local UnitInfo: { [string]: UnitInfo } = {
 				FireRate = 1,
 				Range = 50,
 				Animations = {},
-				Armor = "Armor",
+				Armor = "TrajanArmor",
 				Cost = 100,
 			},
 		},
 		CollisionRadius = 3,
 		Abilties = {},
 	},
-	["Sniper"] = {
+	["Spartacus"] = {
 		Rarity = "Rare",
-		Description = "A Damage dealer Sniper",
+		Description = "A Scout",
 
 		UnitData = {
 			[0] = {
@@ -91,16 +108,16 @@ local UnitInfo: { [string]: UnitInfo } = {
 				FireRate = 1,
 				Range = 50,
 				Animations = {},
-				Armor = "Armor",
+				Armor = "SpartacusArmor",
 				Cost = 100,
 			},
 		},
 		CollisionRadius = 3,
 		Abilties = {},
 	},
-	["Shotgunner"] = {
+	["Cicero"] = {
 		Rarity = "Epic",
-		Description = "A DamageDealer",
+		Description = "A Scout",
 
 		UnitData = {
 			[0] = {
@@ -108,16 +125,15 @@ local UnitInfo: { [string]: UnitInfo } = {
 				FireRate = 1,
 				Range = 50,
 				Animations = {},
-				Armor = "Armor",
 				Cost = 100,
 			},
 		},
 		CollisionRadius = 3,
 		Abilties = {},
 	},
-	["Minigunner"] = {
-		Rarity = "Legendary",
-		Description = "A Minigunner from the depths",
+	["Augustus"] = {
+		Rarity = "Mythic",
+		Description = "A Scout",
 
 		UnitData = {
 			[0] = {
@@ -125,7 +141,6 @@ local UnitInfo: { [string]: UnitInfo } = {
 				FireRate = 1,
 				Range = 50,
 				Animations = {},
-				Armor = "Armor",
 				Cost = 100,
 			},
 		},

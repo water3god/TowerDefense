@@ -28,7 +28,7 @@ local Units = {
 	Units = {
 		[1] = {
 			UniqueId = "Hello",
-			Unit = "Minigunner",
+			Unit = "Trajan",
 			Level = 7,
 		},
 	},

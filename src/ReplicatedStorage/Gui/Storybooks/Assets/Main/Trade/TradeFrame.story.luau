@@ -24,7 +24,10 @@ local Story = {
 	reactRoblox = ReactRoblox,
 	controls = controls,
 	story = function(Properties)
-		local Frame = e(TradeFrame, {})
+		local Frame = e(TradeFrame, {
+			Toggle = function() end,
+			native = {},
+		})
 		return Frame
 	end,
 }

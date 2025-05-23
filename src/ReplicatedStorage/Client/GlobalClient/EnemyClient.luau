@@ -26,6 +26,7 @@ local Constants = require(Shared.Constants)
 
 local AnimationFolder = ReplicatedStorage.Animations
 local EnemiesAnimations = AnimationFolder.Enemies
+local Default = EnemiesAnimations.Default
 
 local ModelStorage = ReplicatedStorage.ModelStorage
 local Rig = ModelStorage.Extra.Rig
@@ -168,6 +169,9 @@ local function NewEnemy(Input: Types.EnemyInput, SpectateFire: boolean)
 	if CoreInfo then
 		for _, Animation in pairs(CoreInfo:GetChildren()) do
 			self.Animations[Animation.Name] = self.Animator:LoadAnimation(Animation)
+		end
+		if not self.Animations["Walk"] then
+			self.Animations["Walk"] = self.Animator:LoadAnimation(Default)
 		end
 	end
 

@@ -1,11 +1,12 @@
 local ChanceData: {
 	[string]: number,
 } = {
-	Scout = 10,
-	Shocker = 5,
-	Sniper = 1,
-	Shotgunner = 0.1,
-	Minigunner = 0.05,
+	Pompey = 10,
+	Spartacus = 5,
+	Cicero = 1,
+	["Julius Caesar"] = 0.1,
+	Augustus = 0.05,
+	Trajan = 0.01,
 }
 
 return ChanceData

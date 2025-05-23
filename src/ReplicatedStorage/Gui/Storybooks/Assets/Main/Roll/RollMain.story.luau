@@ -28,7 +28,7 @@ local Story = {
 	story = function(Properties)
 		local Roll = e(RollContext.Context.Provider, {
 			value = {
-				Units = { "Scout", "Scout", "Scout" },
+				Units = { "Augustus", "Trajan", "Julius Caesar" },
 				TimeStart = workspace:GetServerTimeNow(),
 				TotalTime = workspace:GetServerTimeNow() + 30,
 			},

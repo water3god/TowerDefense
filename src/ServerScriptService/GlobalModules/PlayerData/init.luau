@@ -140,7 +140,7 @@ export type PlayerData = typeof(setmetatable({} :: PlayerDataData<any>, {} :: Pl
 local PlayerData: PlayerDataImpl = {} :: PlayerDataImpl
 PlayerData.__index = PlayerData
 
-local MainDatastore = ProfileStore.New("MainDataStorev0.01", Template)
+local MainDatastore = ProfileStore.New("MainDataStorev0.03", Template)
 
 local PlayerDatas: { [Player]: PlayerData } = {}
 
@@ -244,22 +244,6 @@ function PlayerData.new(Player: Player)
 		Reconcile(self.Profile.Data.Units, "Units")
 
 		local Data = self.Profile.Data
-
-		for UniqueId, UnitData in pairs(Data.Units) do
-			if GenerateId.IdIsTaken(UniqueId) then
-				local NewId = GenerateId.GenerateId()
-				Data.Units[UniqueId] = nil
-				Data.Units[NewId] = UnitData
-				UnitData.UniqueId = NewId
-
-				local Index = table.find(Data.EquippedUnits, UniqueId)
-				if Index then
-					Data.EquippedUnits[Index] = NewId
-				end
-			else
-				GenerateId.AddId(UniqueId)
-			end
-		end
 
 		SyncIds(Data.Units, function(OldId: string, NewId: string)
 			local Index = table.find(Data.EquippedUnits, OldId)

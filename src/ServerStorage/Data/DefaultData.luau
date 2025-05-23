@@ -73,7 +73,7 @@ local Data: Data = {
 	Level = 1,
 	XP = 0,
 	RollCount = 0,
-	Gold = 0,
+	Gold = 80,
 }
 
 return Data

@@ -82,6 +82,12 @@
       },
       "Remotes": {
         "$path": "Models/Remotes.rbxm"
+      },
+      "Animations": {
+        "$path": "Models/Animations.rbxm"
+      },
+      "ModelStorage": {
+        "$path": "Models/ModelStorage.rbxm"
       }
     },
     "ServerScriptService": {

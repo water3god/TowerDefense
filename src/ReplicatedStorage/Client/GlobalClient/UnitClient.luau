@@ -11,6 +11,7 @@ local TweenService = game:GetService("TweenService")
 
 local ModelStorage = ReplicatedStorage.ModelStorage
 local UnitsAnimations = ReplicatedStorage.Animations.Units
+local Default = UnitsAnimations.Default
 
 local GlobalWorkspace = workspace.GlobalWorkspace
 local UnitsFolder = GlobalWorkspace.Units
@@ -96,6 +97,7 @@ local function WeldParts(Character: typeof(ModelStorage.Extra.Rig), Adornment: M
 		if not CharLimb then
 			continue
 		end
+		Limb:ScaleTo(0.6)
 
 		local Bases: { [BasePart]: CFrame } = {}
 
@@ -333,6 +335,9 @@ local function NewUnit(Input: Types.UnitInput)
 		for _, Animation in ipairs(AnimFolder:GetChildren()) do
 			self.Animations[Animation.Name] = self.Animator:LoadAnimation(Animation)
 		end
+		if not self.Animations["Idle"] then
+			self.Animations["Idle"] = self.Animator:LoadAnimation(Default)
+		end
 	end
 
 	Units[self.UniqueId] = self
@@ -513,7 +518,7 @@ local function GetIdle(Unit: string)
 		end
 	end
 
-	return
+	return Default
 end
 
 local DefaultCFrame = CFrame.new(0, -0.4, -2) * CFrame.Angles(0, math.rad(-180), 0)

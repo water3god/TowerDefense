@@ -61,19 +61,19 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 3, UniqueId = "" },
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 3, UniqueId = "" },
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 3, UniqueId = "" },
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
 						},
 					},
 				},

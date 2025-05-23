@@ -30,11 +30,12 @@ export type Data = {
 	Level: number,
 	Priority: UnitInfo.SortType | string,
 	Enabled: boolean,
+	Abilities: { { LastUsed: number, Name: string, Length: number, Cooldown: number } },
 }
 
 local DefaultValue: Data = {
 	UniqueId = "IOD97208U43RI47U6RJE9i",
-	UnitName = "Minigunner",
+	UnitName = "Pompey",
 	UpgradeData = {
 		[0] = {
 			Cost = 10,
@@ -47,6 +48,7 @@ local DefaultValue: Data = {
 	Level = 0,
 	TotalCost = 10,
 	Enabled = false,
+	Abilities = {},
 }
 
 local UpgradeContext = React.createContext(DefaultValue)
@@ -77,6 +79,7 @@ local function UpgradeProvider(props: Props)
 					Level = Unit.Level,
 					Enabled = Enabled ~= nil or true,
 					Priority = Unit.AttackPriority,
+					Abilities = Unit.Abilities,
 				})
 			end
 
@@ -84,6 +87,7 @@ local function UpgradeProvider(props: Props)
 
 			Trove:Connect(Unit.Upgraded, Set)
 			Trove:Connect(Unit.PriorityChanged, Set)
+			Trove:Connect(Unit.AbilityUsed, Set)
 
 			Trove:Connect(Unit.Destroying, function()
 				Set(false)

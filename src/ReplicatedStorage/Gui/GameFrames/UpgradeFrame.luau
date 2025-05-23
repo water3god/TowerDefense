@@ -216,6 +216,12 @@ local function CreateUpgradeFrame(Properties: Properties)
 		end
 	end, { UpgradeData.UpgradeData :: any, UpgradeData.Level :: any })
 
+	local AbilityFrames = React.useMemo(function()
+		local Frames = {}
+
+		return Frames
+	end, {})
+
 	local PriorityClick = React.useCallback(function()
 		local Unit = UnitClient.GetUnit(UpgradeData.UniqueId)
 

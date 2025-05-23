@@ -27,7 +27,7 @@ export type RollData = {
 }
 
 local Default: RollData = {
-	Units = { "Scout", "Scout", "Scout" },
+	Units = { "Augustus", "Trajan", "Julius Caesar" },
 	TimeStart = 0,
 	TotalTime = 30,
 }
