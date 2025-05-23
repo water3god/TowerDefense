@@ -97,7 +97,6 @@ local function OnAdded(GlobalWave: GlobalWave.GlobalWave)
 
 	GlobalWave.OnSkipPrompt:Connect(function()
 		local TimeLeft = math.floor((GlobalWave.StartTime + GlobalWave.Time) - workspace:GetServerTimeNow())
-		print(TimeLeft)
 
 		if TimeLeft > 5 then
 			FireClientInfo({ StartTime = workspace:GetServerTimeNow(), Time = TimeLeft })

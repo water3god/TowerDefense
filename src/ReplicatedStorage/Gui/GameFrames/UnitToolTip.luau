@@ -126,7 +126,7 @@ local function CreateUnitToolTip(Props: Props)
 			native = {
 				Position = UDim2.fromScale(0.5, 0.275),
 				Size = UDim2.fromScale(0.9, 0.25),
-				Text = "Minigunner",
+				Text = Props.UnitName,
 			},
 		}),
 		Bar = e(Main.Frame, {

@@ -182,6 +182,9 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 	self.Destroying = self._Trove:Construct(Signal)
 	self.AbilityUsed = self._Trove:Construct(Signal)
 
+	self.UnitName = Data.UnitName
+	self.ModelReference = UnitModels[self.UnitName]
+
 	self.CFrame = UserInput.CFrame
 	self.OwnerId = UserInput.OwnerId
 	if UserInput.OwnerId then
@@ -213,22 +216,6 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 
 	self.AttackFuncs = Data.AttackFuncs
 
-	if #SharedUnitData.Abilties ~= #Data.Abilities then
-		warn("Incorrect Ability Configuration for: " .. self.UnitName)
-	end
-
-	do
-		local Table = {}
-		for i = 1, #SharedUnitData.Abilties, 1 do
-			local Func = Data.Abilities[i]
-			local OtherData = SharedUnitData.Abilties[i]
-			Table[i] = HelperFunctions.joinDicts(OtherData, { LastUsed = 0, Func = Func })
-		end
-		self.Abilities = Table :: any
-	end
-
-	self.UnitName = Data.UnitName
-	self.ModelReference = UnitModels[self.UnitName]
 	self.LastFired = 0
 	self.Level = UserInput.Level
 	self.MaxLevel = #self.UnitData.UnitData
@@ -241,6 +228,20 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 	self.ReplicateTo = UserInput.ReplicateTo or Players:GetPlayers()
 
 	self.TotalCost = UnitInfo.CalculateTotalCost(self.UnitData.UnitData, self.Level)
+
+	if #SharedUnitData.Abilities ~= #Data.Abilities then
+		warn("Incorrect Ability Configuration for: " .. self.UnitName)
+	end
+
+	do
+		local Table = {}
+		for i = 1, #SharedUnitData.Abilities, 1 do
+			local Func = Data.Abilities[i]
+			local OtherData = SharedUnitData.Abilities[i]
+			Table[i] = HelperFunctions.joinDicts(OtherData, { LastUsed = 0, Func = Func })
+		end
+		self.Abilities = Table :: any
+	end
 
 	SendInfo({ [self.UniqueId] = self }, self.ReplicateTo)
 

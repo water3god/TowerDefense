@@ -322,8 +322,8 @@ local function NewUnit(Input: Types.UnitInput)
 
 	do
 		local Table = {}
-		for i = 1, #self.UnitData.Abilties, 1 do
-			local OtherData = self.UnitData.Abilties[i]
+		for i = 1, #self.UnitData.Abilities, 1 do
+			local OtherData = self.UnitData.Abilities[i]
 			Table[i] = HelperFunctions.joinDicts(OtherData, { LastUsed = Input.Abilities[i] })
 		end
 		self.Abilities = Table :: any
@@ -335,9 +335,9 @@ local function NewUnit(Input: Types.UnitInput)
 		for _, Animation in ipairs(AnimFolder:GetChildren()) do
 			self.Animations[Animation.Name] = self.Animator:LoadAnimation(Animation)
 		end
-		if not self.Animations["Idle"] then
-			self.Animations["Idle"] = self.Animator:LoadAnimation(Default)
-		end
+	end
+	if not self.Animations["Idle"] then
+		self.Animations["Idle"] = self.Animator:LoadAnimation(Default)
 	end
 
 	Units[self.UniqueId] = self

@@ -25,7 +25,7 @@ export type UnitInfo = {
 	Vector3Offset: Vector3?,
 	ViewportOffset: CFrame?,
 	CollisionRadius: number,
-	Abilties: { { Name: string, Length: number, Cooldown: number } },
+	Abilities: { { Name: string, Length: number, Cooldown: number } },
 }
 
 local Data = {}
@@ -45,11 +45,12 @@ local UnitInfo: { [string]: UnitInfo } = {
 			},
 		},
 		CollisionRadius = 3,
-		Abilties = {},
+		Abilities = {},
 	},
 	["Julius Caesar"] = {
 		Rarity = "Legendary",
 		Description = "A Scout",
+		Image = "rbxassetid://121449132209175",
 
 		UnitData = {
 			[0] = {
@@ -62,11 +63,12 @@ local UnitInfo: { [string]: UnitInfo } = {
 			},
 		},
 		CollisionRadius = 3,
-		Abilties = {},
+		Abilities = {},
 	},
 	["Pompey"] = {
 		Rarity = "Common",
 		Description = "A Scout",
+		Image = "rbxassetid://135071065213924",
 
 		UnitData = {
 			[0] = {
@@ -79,11 +81,12 @@ local UnitInfo: { [string]: UnitInfo } = {
 			},
 		},
 		CollisionRadius = 3,
-		Abilties = {},
+		Abilities = {},
 	},
 	["Trajan"] = {
 		Rarity = "Godly",
 		Description = "A Scout",
+		Image = "rbxassetid://71882576147189",
 
 		UnitData = {
 			[0] = {
@@ -96,11 +99,12 @@ local UnitInfo: { [string]: UnitInfo } = {
 			},
 		},
 		CollisionRadius = 3,
-		Abilties = {},
+		Abilities = {},
 	},
 	["Spartacus"] = {
 		Rarity = "Rare",
 		Description = "A Scout",
+		Image = "rbxassetid://98986641918249",
 
 		UnitData = {
 			[0] = {
@@ -113,11 +117,12 @@ local UnitInfo: { [string]: UnitInfo } = {
 			},
 		},
 		CollisionRadius = 3,
-		Abilties = {},
+		Abilities = {},
 	},
 	["Cicero"] = {
 		Rarity = "Epic",
 		Description = "A Scout",
+		Image = "rbxassetid://117293946766765",
 
 		UnitData = {
 			[0] = {
@@ -129,11 +134,12 @@ local UnitInfo: { [string]: UnitInfo } = {
 			},
 		},
 		CollisionRadius = 3,
-		Abilties = {},
+		Abilities = {},
 	},
 	["Augustus"] = {
 		Rarity = "Mythic",
 		Description = "A Scout",
+		Image = "rbxassetid://73951067640481",
 
 		UnitData = {
 			[0] = {
@@ -145,7 +151,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 			},
 		},
 		CollisionRadius = 3,
-		Abilties = {},
+		Abilities = {},
 	},
 }
 

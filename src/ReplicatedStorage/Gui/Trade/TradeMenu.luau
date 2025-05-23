@@ -58,7 +58,7 @@ local function CreatePlayerFrame(Properties: PlayerFrameProps)
 			Container = e(Main.Frame, {
 				native = {
 					BackgroundTransparency = 0,
-					BackgroundColor = Color3.fromRGB(50, 8, 66),
+					BackgroundColor3 = Color3.fromRGB(50, 8, 66),
 					Size = UDim2.fromScale(1, 0.9),
 				},
 				children = {
