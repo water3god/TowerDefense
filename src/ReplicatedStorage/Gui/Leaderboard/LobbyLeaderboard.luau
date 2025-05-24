@@ -258,7 +258,10 @@ local function LeaderboardConnected(props: ConnectedProps)
 	return e(CreateLobbyLeaderboard, {
 		Type = props.Type,
 		Data = Data,
-		native = Join({}, props.native),
+		native = Join({
+			Position = UDim2.fromScale(0.5, 0.508),
+			Size = UDim2.fromScale(0.965, 0.98),
+		}, props.native),
 	}, {}, props.children)
 end
 

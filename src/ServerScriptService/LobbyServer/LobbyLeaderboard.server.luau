@@ -20,6 +20,6 @@ local LobbyLeaderboard = require(LeaderboardFolder.LobbyLeaderboard)
 for _, SurfaceGui in ipairs(CollectionService:GetTagged(Tag)) do
 	local Root = ReactRoblox.createRoot(SurfaceGui)
 	Root:render(e(LobbyLeaderboard.Connected, {
-		Type = Gui.Name,
+		Type = SurfaceGui.Name,
 	}))
 end
