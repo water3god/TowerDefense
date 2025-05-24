@@ -202,6 +202,7 @@ local function CreateVoteFrame(Props: Props)
 				Text = PlayerData:map(function(Data)
 					return string.format("%u/%u", Data.Votes, Data.Total)
 				end),
+				AutoLocalize = false,
 			},
 		}),
 		TimeLabel = e(Main.TextLabel, {

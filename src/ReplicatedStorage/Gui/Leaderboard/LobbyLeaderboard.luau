@@ -92,6 +92,7 @@ local function CreatePlayerFrame(props: PlayerProps)
 					Position = UDim2.fromScale(0.075, 0.5),
 					Size = UDim2.fromScale(0.1, 0.5),
 					Text = tostring(props.Rank),
+					AutoLocalize = false,
 				},
 			}),
 			Icon = e(Main.ImageLabel, {
@@ -110,6 +111,7 @@ local function CreatePlayerFrame(props: PlayerProps)
 					Position = UDim2.fromScale(0.5, 0.5),
 					Size = UDim2.fromScale(0.4, 0.5),
 					Text = Name,
+					AutoLocalize = false,
 					TextXAlignment = Enum.TextXAlignment.Left,
 				},
 			}),
@@ -118,6 +120,7 @@ local function CreatePlayerFrame(props: PlayerProps)
 					Position = UDim2.fromScale(0.825, 0.5),
 					Size = UDim2.fromScale(0.25, 0.5),
 					Text = props.Value,
+					AutoLocalize = false,
 					TextXAlignment = Enum.TextXAlignment.Right,
 				},
 			}),
@@ -170,25 +173,28 @@ local function CreateLobbyLeaderboard(props: Props)
 		}, {
 			RankLabel = e(Main.TextLabel, {
 				native = {
-					Position = UDim2.fromScale(0.11, 0.5),
-					Size = UDim2.fromScale(0.3, 0.6),
+					Position = UDim2.fromScale(0.17, 0.5),
+					Size = UDim2.fromScale(0.25, 0.6),
 					Text = "Rank",
+					TextXAlignment = Enum.TextXAlignment.Left,
 					ZIndex = 2,
 				},
 			}),
 			UserNameLabel = e(Main.TextLabel, {
 				native = {
-					Position = UDim2.fromScale(0.4, 0.5),
-					Size = UDim2.fromScale(0.4, 0.6),
+					Position = UDim2.fromScale(0.45, 0.5),
+					Size = UDim2.fromScale(0.3, 0.6),
 					Text = "Player",
+					TextXAlignment = Enum.TextXAlignment.Left,
 					ZIndex = 2,
 				},
 			}),
 			ValueLabel = e(Main.TextLabel, {
 				native = {
-					Position = UDim2.fromScale(0.85, 0.5),
-					Size = UDim2.fromScale(0.4, 0.6),
+					Position = UDim2.fromScale(0.78, 0.5),
+					Size = UDim2.fromScale(0.3, 0.6),
 					Text = LeaderboardData.ValueName,
+					TextXAlignment = Enum.TextXAlignment.Right,
 					ZIndex = 2,
 				},
 			}),

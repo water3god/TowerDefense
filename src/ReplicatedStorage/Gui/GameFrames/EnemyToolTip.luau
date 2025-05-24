@@ -98,6 +98,7 @@ local function CreateEnemyToolTip(Props: Props)
 				native = {
 					Size = UDim2.fromScale(0.9, 0.6),
 					Text = string.format("%u / %u", Props.Health, Props.MaxHealth),
+					AutoLocalize = false,
 					ZIndex = 2,
 				},
 			}, {

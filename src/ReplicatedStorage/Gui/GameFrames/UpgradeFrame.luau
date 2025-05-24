@@ -85,6 +85,7 @@ local function CreatePropertyFrame(Props: PropertyProperties)
 			native = {
 				Size = UDim2.fromScale(0.2, 1),
 				Text = if IsSpecial then Props.Other else HelperFunctions.NumberScaler.ShortenNumber(Props.Inital),
+				AutoLocalize = false,
 				TextColor3 = Color,
 				LayoutOrder = Order(),
 			},
@@ -112,6 +113,7 @@ local function CreatePropertyFrame(Props: PropertyProperties)
 			native = {
 				Size = UDim2.fromScale(0.3, 1),
 				Text = HelperFunctions.NumberScaler.ShortenNumber(Props.Final),
+				AutoLocalize = false,
 				TextColor3 = Color,
 				LayoutOrder = Order(),
 				Visible = not IsSpecial,

@@ -29,7 +29,7 @@ local Story = {
 	story = function(Properties)
 		local Units = {}
 		for _ = 1, Properties.controls.Count, 1 do
-			table.insert(Units, "Minigunner")
+			table.insert(Units, "Spartacus")
 		end
 		local Frame = e(InRoll.Create, {
 			UnitNames = Units,

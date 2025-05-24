@@ -234,6 +234,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 			Label = e(Main.TextLabel, {
 				native = {
 					Text = CurrencyValue,
+					AutoLocalize = false,
 					TextXAlignment = Enum.TextXAlignment.Left,
 					Size = UDim2.fromScale(0.6, 1),
 				},

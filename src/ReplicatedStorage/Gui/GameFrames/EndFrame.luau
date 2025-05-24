@@ -313,6 +313,7 @@ local function CreateUnitXPFrame(props: UnitXPProps)
 					Text = XPInfo:map(function(data: UnitXP)
 						return string.format("%u / %u", data.XP, data.NeededXP)
 					end),
+					AutoLocalize = false,
 					ZIndex = 3,
 				},
 			}, {

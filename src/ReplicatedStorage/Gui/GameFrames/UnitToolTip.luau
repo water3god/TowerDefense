@@ -87,6 +87,7 @@ local function CreateStatFrame(Props: StatProps)
 				Position = UDim2.fromScale(0.7, 0.5),
 				Size = UDim2.fromScale(0.5, 0.4),
 				Text = HelperFunctions.NumberScaler.ShortenNumber(Props.Value),
+				AutoLocalize = false,
 				TextColor3 = Stats.Colors[Props.Type],
 			},
 		}),

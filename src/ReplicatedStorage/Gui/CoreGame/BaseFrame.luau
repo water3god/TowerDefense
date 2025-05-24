@@ -148,6 +148,7 @@ local function CreateBaseFrame(Properties: Properties)
 					Size = UDim2.fromScale(0.8, 0.15),
 					TextXAlignment = Enum.TextXAlignment.Left,
 					Text = Properties.LeftText,
+					AutoLocalize = false,
 					ZIndex = 2,
 				},
 			}, {
@@ -169,6 +170,7 @@ local function CreateBaseFrame(Properties: Properties)
 					Size = UDim2.fromScale(0.8, 0.15),
 					TextXAlignment = Enum.TextXAlignment.Right,
 					Text = Properties.RightText,
+					AutoLocalize = false,
 					ZIndex = 2,
 				},
 			}, {

@@ -34,7 +34,7 @@ local Sample = {
 			UniqueId = "Hello",
 			NeededXP = 10,
 			XP = 5,
-			Unit = "Minigunner",
+			Unit = "Trajan",
 		},
 	},
 	Products = {},

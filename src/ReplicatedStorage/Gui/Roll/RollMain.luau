@@ -241,14 +241,14 @@ local function CreateRollMain(props: Properties)
 		SummonButton = e(Main.Animateables.ImageButton, {
 			native = {
 				Image = "rbxassetid://80739823452825",
-				Size = UDim2.fromScale(0.4, 0.2),
-				Position = UDim2.fromScale(0.5, 0.85),
+				Size = UDim2.fromScale(0.45, 0.16),
+				Position = UDim2.fromScale(0.5, 0.87),
 				ImageColor3 = Color3.fromRGB(135, 1, 203),
 				[React.Event.MouseButton1Click] = SummonClick,
 			},
 		}, {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 3.16,
+				AspectRatio = 3.2,
 			}),
 			Label = e(Main.TextLabel, {
 				native = {
@@ -264,10 +264,11 @@ local function CreateRollMain(props: Properties)
 		}),
 		SummonCountButton = e(Main.Animateables.TextButton, {
 			native = {
-				Size = UDim2.fromScale(0.15, 0.15),
+				Size = UDim2.fromScale(0.15, 0.125),
 				Position = UDim2.fromScale(0.9, 0.7),
 				BackgroundTransparency = 0,
 				Text = "",
+				AutoLocalize = false,
 				BackgroundColor3 = Color3.new(0.376471, 0.066667, 0.564706),
 				[React.Event.MouseButton1Click] = OnMultiplierClick,
 			},

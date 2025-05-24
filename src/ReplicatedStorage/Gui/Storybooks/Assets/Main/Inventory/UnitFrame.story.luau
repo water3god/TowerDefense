@@ -22,7 +22,7 @@ local UnitFrame = require(Inventory.UnitFrame)
 -- Controls --
 
 local controls = {
-	UnitName = "Minigunner",
+	UnitName = "Trajan",
 	Level = 5,
 }
 
