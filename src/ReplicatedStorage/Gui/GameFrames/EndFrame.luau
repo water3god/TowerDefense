@@ -116,7 +116,7 @@ local function CreateMainXPFrame(props: MainXPProps)
 
 			if LerpGain <= total then
 				Level = i
-				XP = (LerpGain + XPData.CalculatePlayerXP(i + 1)) - total
+				XP = (Goal - (total - LerpGain))
 				NeededXP = Goal
 				break
 			end
@@ -136,14 +136,24 @@ local function CreateMainXPFrame(props: MainXPProps)
 			XPGain += Gain
 		end
 
-		XPGain -= props.MainXPData.OldXP
 		XPGain += props.MainXPData.NewXP
 
 		BindingData.current = XPGain
-		API.start({
-			alpha = 1,
-		})
-	end, {})
+		if Styles.alpha:getValue() == 1 then
+			API.start({
+				config = { precision = 1 },
+				alpha = 0,
+			}):andThen(function()
+				API.start({
+					alpha = 1,
+				})
+			end)
+		else
+			API.start({
+				alpha = 1,
+			})
+		end
+	end, { props.MainXPData })
 
 	return e(Main.CanvasGroup, {
 		native = Join({
@@ -209,7 +219,7 @@ local function CreateUnitXPFrame(props: UnitXPProps)
 
 			if LerpGain <= total then
 				Level = i
-				XP = (LerpGain + XPData.CalculateUnitXP(i + 1)) - total
+				XP = (Goal - (total - LerpGain))
 				NeededXP = Goal
 				break
 			end
@@ -226,18 +236,27 @@ local function CreateUnitXPFrame(props: UnitXPProps)
 		local XPGain = 0
 		local Data = props.Data
 		for i = Data.OldLevel, Data.NewLevel - 1, 1 do
-			local Gain = XPData.CalculateUnitXP(i)
-			XPGain += Gain
+			XPGain += XPData.CalculateUnitXP(i)
 		end
 
-		XPGain -= Data.OldXP
 		XPGain += Data.NewXP
 
 		BindingData.current = XPGain
-		API.start({
-			alpha = 1,
-		})
-	end, {})
+		if Styles.alpha:getValue() == 1 then
+			API.start({
+				config = { precision = 1 },
+				alpha = 0,
+			}):andThen(function()
+				API.start({
+					alpha = 1,
+				})
+			end)
+		else
+			API.start({
+				alpha = 1,
+			})
+		end
+	end, { props.Data })
 
 	return e(Main.Frame, {
 		native = Join({

@@ -19,6 +19,7 @@ local EndFrame = require(GameFrames.EndFrame)
 -- Controls --
 local controls = {
 	Success = true,
+	OldXP = 40,
 }
 
 local function Container(props: any)
@@ -35,13 +36,14 @@ local function Container(props: any)
 		MainXPData = { OldXP = 10, NewXP = 20, OldLevel = 2, NewLevel = 5 },
 		EndData = {
 			Units = {
-				"Scout",
+				"Augustus",
 			},
 			Resources = {
 				{ Resource = "Gold", Count = 10 },
 			},
 			ExistingUnits = {
-				{ Name = "Scout", OldXP = 10, OldLevel = 1, NewXP = 50, NewLevel = 100 },
+				{ Name = "Trajan", OldXP = 0, OldLevel = 1, NewXP = 20, NewLevel = 10 },
+				{ Name = "Spartacus", OldXP = 10, OldLevel = 1, NewXP = 30, NewLevel = 10 },
 			},
 		},
 		--[[native = {
