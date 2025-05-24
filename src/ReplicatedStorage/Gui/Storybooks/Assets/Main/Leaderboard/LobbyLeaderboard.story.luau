@@ -23,11 +23,18 @@ local controls = {}
 local Story = {
 	react = React,
 	reactRoblox = ReactRoblox,
-	controls = controls,
+	--controls = controls,
 	story = function(Properties)
 		local Frame = e(LobbyLeaderboard.Create, {
 			Type = "TotalGoldStore",
-			Data = { [1] = { UserId = 1, Value = 10 } },
+			Data = { { UserId = 1, Value = 10 }, { UserId = 2, Value = 5 } },
+			native = {
+				Size = UDim2.fromScale(0.7, 0.9),
+			},
+		}, {
+			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+				AspectRatio = 0.61,
+			}),
 		})
 		return Frame
 	end,

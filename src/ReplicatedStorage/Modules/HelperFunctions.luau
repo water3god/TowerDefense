@@ -434,6 +434,21 @@ function Funcs.GetThumbnailAsync(Player: Player)
 	end
 end
 
+local IdThumbnails: { [number]: string } = {}
+
+function Funcs.GetThumbnailIdAsync(UserId: number)
+	if IdThumbnails[UserId] then
+		return IdThumbnails[UserId], true
+	else
+		local Thumbnail, Available =
+			Players:GetUserThumbnailAsync(UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size180x180)
+
+		IdThumbnails[UserId] = Thumbnail
+
+		return Thumbnail, Available
+	end
+end
+
 function Funcs.GetSmallestNumber(Data: { [number]: any }, Target: number)
 	local LargestNumber: number = 0
 	for Number, _ in pairs(Data) do

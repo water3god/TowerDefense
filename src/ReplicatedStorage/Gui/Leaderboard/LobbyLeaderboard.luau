@@ -5,6 +5,7 @@
 -- Services --
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataStoreService = game:GetService("DataStoreService")
+local Players = game:GetService("Players")
 
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
@@ -58,10 +59,73 @@ export type ConnectedProps = {
 	children: { [any]: any }?,
 }
 
+local CachedNames: { [number]: string } = {}
+
 local function CreatePlayerFrame(props: PlayerProps)
+	local Name = React.useMemo(function()
+		if CachedNames[props.UserId] then
+			return CachedNames[props.UserId]
+		else
+			CachedNames[props.UserId] = Players:GetNameFromUserIdAsync(props.UserId)
+			return CachedNames[props.UserId]
+		end
+	end, { props.UserId })
+
+	local Icon = React.useMemo(function()
+		return HelperFunctions.GetThumbnailIdAsync(props.UserId)
+	end, { props.UserId })
+
 	return e(Main.Frame, {
-		native = Join({}, props.native),
-	}, {}, props.children)
+		native = Join({
+			Size = UDim2.fromScale(1, 0.1),
+		}, props.native),
+	}, {
+		Main = e(Main.Frame, {
+			native = {
+				BackgroundColor3 = Color3.new(0.282353, 0.133333, 0.403922),
+				BackgroundTransparency = 0,
+				Size = UDim2.fromScale(1, 0.9),
+			},
+		}, {
+			Rank = e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.075, 0.5),
+					Size = UDim2.fromScale(0.1, 0.5),
+					Text = tostring(props.Rank),
+				},
+			}),
+			Icon = e(Main.ImageLabel, {
+				native = {
+					Position = UDim2.fromScale(0.2, 0.5),
+					Size = UDim2.fromScale(0.2, 0.8),
+					Image = Icon,
+				},
+			}, {
+				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+					AspectRatio = 1,
+				}),
+			}),
+			Name = e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.5, 0.5),
+					Size = UDim2.fromScale(0.4, 0.5),
+					Text = Name,
+					TextXAlignment = Enum.TextXAlignment.Left,
+				},
+			}),
+			Value = e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.825, 0.5),
+					Size = UDim2.fromScale(0.25, 0.5),
+					Text = props.Value,
+					TextXAlignment = Enum.TextXAlignment.Right,
+				},
+			}),
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.2, 0),
+			}),
+		}),
+	}, props.children)
 end
 
 local function CreateLobbyLeaderboard(props: Props)
@@ -70,10 +134,10 @@ local function CreateLobbyLeaderboard(props: Props)
 	end, { props.Type })
 
 	local PlayerFrames = React.useMemo(function()
-		local Frames = {}
+		local Frames: { [string]: React.Node } = {}
 
 		for Index, Data in ipairs(props.Data) do
-			Frames[Index] = e(CreatePlayerFrame, {
+			Frames["Rank" .. Index] = e(CreatePlayerFrame, {
 				Rank = Index,
 				UserId = Data.UserId,
 				Value = Data.Value,
@@ -84,8 +148,81 @@ local function CreateLobbyLeaderboard(props: Props)
 	end, { props.Data })
 
 	return e(Main.Frame, {
-		native = Join({}, props.native),
-	}, {}, props.children)
+		native = Join({
+			BackgroundColor3 = Color3.new(0.282353, 0.133333, 0.403922),
+			BackgroundTransparency = 0,
+		}, props.native),
+	}, {
+		Title = e(Main.TextLabel, {
+			native = {
+				Size = UDim2.fromScale(0.9, 0.06),
+				Position = UDim2.fromScale(0.5, 0.05),
+				Text = LeaderboardData.Title,
+			},
+		}),
+		TopFrame = e(Main.Frame, {
+			native = {
+				Position = UDim2.fromScale(0.5, 0.13),
+				Size = UDim2.fromScale(0.9, 0.06),
+				BackgroundColor3 = Color3.new(0.396078, 0.168627, 0.529412),
+				BackgroundTransparency = 0,
+			},
+		}, {
+			RankLabel = e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.11, 0.5),
+					Size = UDim2.fromScale(0.3, 0.6),
+					Text = "Rank",
+					ZIndex = 2,
+				},
+			}),
+			UserNameLabel = e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.4, 0.5),
+					Size = UDim2.fromScale(0.4, 0.6),
+					Text = "Player",
+					ZIndex = 2,
+				},
+			}),
+			ValueLabel = e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.85, 0.5),
+					Size = UDim2.fromScale(0.4, 0.6),
+					Text = LeaderboardData.ValueName,
+					ZIndex = 2,
+				},
+			}),
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.18, 0),
+			}),
+		}),
+
+		LeaderboardContainer = e(Main.Frame, {
+			native = {
+				Size = UDim2.fromScale(0.9, 0.75),
+				Position = UDim2.fromScale(0.5, 0.55),
+				BackgroundColor3 = Color3.new(0.396078, 0.168627, 0.529412),
+				BackgroundTransparency = 0,
+			},
+		}, {
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.02, 0),
+			}),
+			Leaderboard = e(Main.ScrollingFrame, {
+				BarSize = 0.01,
+				native = {
+					Size = UDim2.fromScale(0.95, 0.95),
+				},
+			}, {
+				UIListLayout = e("UIListLayout", {
+					Padding = UDim.new(0, 0),
+					FillDirection = Enum.FillDirection.Vertical,
+					HorizontalAlignment = Enum.HorizontalAlignment.Center,
+					SortOrder = Enum.SortOrder.LayoutOrder,
+				}),
+			}, PlayerFrames),
+		}),
+	}, props.children)
 end
 
 local function LeaderboardConnected(props: ConnectedProps)
