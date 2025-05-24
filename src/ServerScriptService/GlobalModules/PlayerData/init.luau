@@ -75,6 +75,8 @@ type PlayerDataData<T> = {
 	LeveledUp: Signal.Signal<number>,
 
 	GoldChanged: Signal.Signal<number>,
+	RobuxSpent: Signal.Signal<number>,
+	TotalGoldGained: Signal.Signal<number>,
 
 	Destroying: Signal.Signal<>,
 }
@@ -109,6 +111,8 @@ type PlayerDataImpl = {
 	SetGold: (self: PlayerData, Gold: number) -> (),
 	AddGold: (self: PlayerData, Gold: number) -> (),
 	SubtractGold: (self: PlayerData, Gold: number) -> (),
+
+	AddRobuxSpent: (self: PlayerData, Robux: number) -> (),
 
 	OwnsStage: (self: PlayerData, Data: GetStageData) -> boolean,
 	AddStage: (self: PlayerData, Data: StageParamData) -> (),
@@ -224,6 +228,8 @@ function PlayerData.new(Player: Player)
 	self.LeveledUp = self._Trove:Construct(Signal)
 
 	self.GoldChanged = self._Trove:Construct(Signal)
+	self.RobuxSpent = self._Trove:Construct(Signal)
+	self.TotalGoldGained = self._Trove:Construct(Signal)
 	self.StageChanged = self._Trove:Construct(Signal)
 
 	self.Destroying = self._Trove:Construct(Signal)
@@ -535,9 +541,15 @@ function PlayerData:RemoveResource(Resource: string, CountInput: number?)
 end
 
 function PlayerData:SetGold(Gold: number)
+	local Data = self.Profile.Data
 	local GoldCount = math.max(Gold, 0)
-	self.Profile.Data.Gold = GoldCount
+	local OldCount = Data.Gold
+	Data.Gold = GoldCount
 	self.GoldChanged:Fire(GoldCount)
+	if Gold > OldCount then
+		Data.TotalGoldGained += (Gold - OldCount)
+		self.TotalGoldGained:Fire(Data.TotalGoldGained)
+	end
 end
 
 function PlayerData:AddGold(Gold: number)
@@ -548,6 +560,12 @@ end
 function PlayerData:SubtractGold(Gold: number)
 	local CurrentGold = self.Profile.Data.Gold
 	self:SetGold(CurrentGold - Gold)
+end
+
+function PlayerData:AddRobuxSpent(RobuxSpent: number)
+	local Data = self.Profile.Data
+	Data.RobuxSpent += RobuxSpent
+	self.RobuxSpent:Fire(Data.RobuxSpent)
 end
 
 function PlayerData:OwnsStage(ParamData: GetStageData)

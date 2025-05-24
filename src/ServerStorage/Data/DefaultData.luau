@@ -47,7 +47,9 @@ export type Data = {
 	XP: number,
 	RollCount: number,
 	Settings: { [Settings.Setting]: any },
+	RobuxSpent: number,
 	Gold: number,
+	TotalGoldGained: number,
 }
 
 local Data: Data = {
@@ -73,7 +75,9 @@ local Data: Data = {
 	Level = 1,
 	XP = 0,
 	RollCount = 0,
+	RobuxSpent = 0,
 	Gold = 80,
+	TotalGoldGained = 80,
 }
 
 return Data

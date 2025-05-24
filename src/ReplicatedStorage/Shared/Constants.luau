@@ -12,6 +12,10 @@ local Constants = {
 
 	INFORMATIONHASHMAP = "TOWERDEFENCEHASHMAP",
 
+	LevelXPStore = "LevelXPStorev0.01",
+	TotalGoldStore = "TotalGoldv0.01",
+	RobuxSpentStore = "RobuxSpentStorev0.01",
+
 	ROLLDELAYTIME = 3,
 	STARTCOINS = 500,
 	ROLLCOSTS = { MAIN = 40 },
