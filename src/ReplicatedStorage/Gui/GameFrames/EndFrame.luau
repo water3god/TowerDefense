@@ -84,13 +84,6 @@ export type MainXPProps = {
 	children: { [any]: any }?,
 }
 
-local Default = {
-	BackgroundColor = ColorSequence.new(Color3.new()),
-	Image = "",
-	RewardColor = ColorSequence.new(Color3.new()),
-	StrokeColor = ColorSequence.new(Color3.new()),
-}
-
 type UnitXP = { Level: number, XP: number, NeededXP: number }
 
 local function CreateMainXPFrame(props: MainXPProps)
