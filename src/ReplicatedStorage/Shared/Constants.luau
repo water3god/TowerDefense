@@ -12,6 +12,7 @@ local Constants = {
 
 	INFORMATIONHASHMAP = "TOWERDEFENCEHASHMAP",
 
+	UpdateDelay = 100,
 	LevelXPStore = "LevelXPStorev0.01",
 	TotalGoldStore = "TotalGoldv0.01",
 	RobuxSpentStore = "RobuxSpentStorev0.01",

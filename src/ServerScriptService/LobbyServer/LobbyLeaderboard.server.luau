@@ -2,26 +2,24 @@
 
 -- By Wa1er_God --
 
--- Services --
+local Tag = "LobbyLeaderboard"
 
+-- Services --
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local ServerScriptService = game:GetService("ServerScriptService")
-local DataStoreService = game:GetService("DataStoreService")
+local CollectionService = game:GetService("CollectionService")
 
 local Packages = ReplicatedStorage.Packages
-local Timer = require(Packages.Timer)
+local ReactRoblox = require(Packages.ReactRoblox)
+local React = require(Packages.React)
+local e = React.createElement
 
-local Shared = ReplicatedStorage.Shared
-local Constants = require(Shared.Constants)
+local Gui = ReplicatedStorage.Gui
+local LeaderboardFolder = Gui.Leaderboard
+local LobbyLeaderboard = require(LeaderboardFolder.LobbyLeaderboard)
 
-local LevelXPStore = DataStoreService:GetOrderedDataStore(Constants.LevelXPStore)
-local TotalGoldStore = DataStoreService:GetOrderedDataStore(Constants.TotalGoldStore)
-local RobuxSpentStore = DataStoreService:GetOrderedDataStore(Constants.RobuxSpentStore)
-
-local DataTimer = Timer.new(100)
-DataTimer:Start()
-
-local function OnTick() end
-
-OnTick()
-DataTimer.Tick:Connect(OnTick)
+for _, SurfaceGui in ipairs(CollectionService:GetTagged(Tag)) do
+	local Root = ReactRoblox.createRoot(SurfaceGui)
+	Root:render(e(LobbyLeaderboard.Connected, {
+		Type = Gui.Name,
+	}))
+end
