@@ -54,6 +54,9 @@ local Roll = Gui.Roll
 local InRoll = require(Roll.InRoll)
 local RollMain = require(Roll.RollMain)
 
+local WarningFolder = Gui.Warning
+local Warning = require(WarningFolder.Warning)
+
 -- Contexts --
 local InventoryContext = require(Inventory.InventoryContext)
 local TradeMenuContext = require(Trade.TradeContext)
@@ -63,6 +66,7 @@ local UpgradeContext = require(GameFrames.UpgradeContext)
 local CurrencyContext = require(GameFrames.Currency)
 local StoryContext = require(Story.StoryContext)
 local RollContext = require(Roll.RollContext)
+local WarningContext = require(WarningFolder.WarningContext)
 
 local IsRunning = RunService:IsRunning()
 
@@ -459,7 +463,12 @@ local function Render()
 		})
 	end, { VisibleFrame })
 
-	return e(React.Fragment, nil, {
+	return e(Hooks.ContextStack, {
+		providers = {
+			WarningContext.Provider,
+			CurrencyContext.Provider,
+		},
+	}, {
 		GuiBlur = IsRunning and ReactRoblox.createPortal(
 			e("BlurEffect", {
 				Size = Styles.Size,
@@ -565,7 +574,6 @@ local function Render()
 			BottomFrame = e(Hooks.ContextStack, {
 				providers = {
 					EquippedUnitsContext.Provider,
-					CurrencyContext.Provider,
 				},
 			}, {
 				BottomFrame = e(Bottom, {
@@ -642,6 +650,7 @@ local function Render()
 				end,
 			}),
 		}),
+		Warnings = e(Warning),
 	})
 end
 

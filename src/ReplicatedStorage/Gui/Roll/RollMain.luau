@@ -26,6 +26,12 @@ local Hooks = require(CoreGame.Hooks)
 local Roll = Gui.Roll
 local RollContext = require(Roll.RollContext)
 
+local Warning = Gui.Warning
+local WarningContext = require(Warning.WarningContext)
+
+local GameFrames = Gui.GameFrames
+local CurrencyContext = require(GameFrames.Currency)
+
 local Client = ReplicatedStorage.Client
 local LobbyClient = Client.LobbyClient
 local RollService = require(LobbyClient.RollService)
@@ -121,6 +127,8 @@ end
 
 local function CreateRollMain(props: Properties)
 	local RollData = React.useContext(RollContext.Context)
+	local WarningData = React.useContext(WarningContext.Context)
+	local CurrencyContext = React.useContext(CurrencyContext.Context)
 
 	local RollMultiplier, SetRollMultiplier = React.useState(1)
 
@@ -159,18 +167,26 @@ local function CreateRollMain(props: Properties)
 
 	local InAutoSell, SetAutoSell = React.useState(false)
 
-	local SummonClick = React.useCallback(function()
-		RollService.Roll(RollMultiplier)
+	local Cost = React.useMemo(function()
+		return Constants.ROLLCOSTS.MAIN * RollMultiplier
 	end, { RollMultiplier })
+
+	local SummonClick = React.useCallback(function()
+		if CurrencyContext.Value >= Constants.ROLLCOSTS.MAIN * RollMultiplier then
+			RollService.Roll(RollMultiplier)
+		else
+			WarningData.Add(string.format("You are missing %u Gold!", Cost - CurrencyContext.Value))
+		end
+	end, { RollMultiplier, WarningData.Warnings :: any, CurrencyContext.Value })
 
 	local OnAutoClick = React.useCallback(function()
 		SetAutoSell(not InAutoSell)
 	end, { InAutoSell })
 
 	local SummonText = React.useMemo(function()
-		local CostString = HelperFunctions.NumberScaler.ShortenNumber(Constants.ROLLCOSTS.MAIN * RollMultiplier)
+		local CostString = HelperFunctions.NumberScaler.ShortenNumber(Cost)
 		return string.format("Summon: %s Gold", CostString)
-	end, { RollMultiplier })
+	end, { Cost })
 
 	return e(Main.ImageLabel, {
 		native = Join({

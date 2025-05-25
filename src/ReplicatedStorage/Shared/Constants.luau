@@ -17,6 +17,8 @@ local Constants = {
 	TotalGoldStore = "TotalGoldv0.01",
 	RobuxSpentStore = "RobuxSpentStorev0.01",
 
+	WarningTime = 3,
+
 	ROLLDELAYTIME = 3,
 	STARTCOINS = 500,
 	ROLLCOSTS = { MAIN = 40 },
