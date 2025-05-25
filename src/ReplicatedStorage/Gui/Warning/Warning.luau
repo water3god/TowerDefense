@@ -84,7 +84,7 @@ local function CreateMainFrame(props: any)
 			Frames[Id] = e(CreateWarning, {
 				Text = Data.Text,
 				LayoutOrder = Data.StartTime,
-				Delay = Data.StartTime - tick() + (Constants.WarningTime * 0.6),
+				Delay = Data.StartTime - tick() + (Constants.WarningTime * 0.8),
 			})
 		end
 

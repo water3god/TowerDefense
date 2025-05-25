@@ -53,7 +53,8 @@ local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local Lerps = require(Modules.Lerps)
 
-local Events = ReplicatedStorage.Remotes.Unit
+local Remotes = ReplicatedStorage.Remotes
+local Events = Remotes.Unit
 
 local Attack = Events.Attack
 local Destroy = Events.DestroyEvent
@@ -68,6 +69,9 @@ local SellUnit = OtherEvents.Sell
 local Upgrade = OtherEvents.Upgrade
 local ChangePriority = OtherEvents.ChangePriority
 local UseAbility = OtherEvents.UseAbility
+
+local WarningEvents = Remotes.Core.Warning
+local WarningBindable = WarningEvents.WarningBindable
 
 export type Unit = Types.Unit
 export type UnitModule = Types.UnitModule
@@ -771,6 +775,8 @@ function UnitModule.InitPlacement(Unit: string)
 			})
 			Data.Clicked:Fire()
 			InitTrove:Destroy()
+		else
+			WarningBindable:Fire(string.format("Invalid Placement!"))
 		end
 	end
 

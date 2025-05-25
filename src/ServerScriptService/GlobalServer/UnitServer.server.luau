@@ -24,6 +24,9 @@ local Upgrade = UnitClient.Upgrade
 local UseAbility = UnitClient.UseAbility
 local Sell = UnitClient.Sell
 
+local WarningEvents = Remotes.Core.Warning
+local SendWarning = WarningEvents.SendWarning
+
 local GlobalModules = ServerScriptService.GlobalModules
 local Unit = require(GlobalModules.Unit)
 local Enemy = require(GlobalModules.Enemy)
@@ -118,6 +121,7 @@ local function PlaceUnit(Player: Player, Wave: GlobalWave.GlobalWave, Data: Plac
 
 	if UnitData then
 		local Cost = UnitInfo.UnitData[0].Cost
+		local PlayerCoins = Wave.Coins[Player.UserId]
 
 		if Wave:HasEnoughCoins(Player.UserId, Cost) then
 			local Result = CheckPlacement(InputCFrame, UnitInfo)
@@ -129,6 +133,8 @@ local function PlaceUnit(Player: Player, Wave: GlobalWave.GlobalWave, Data: Plac
 				}, UnitData)
 				Wave:SubtractCoinsFromUser(Player.UserId, Cost)
 			end
+		else
+			SendWarning:FireClient(Player, string.format("You are missing %u Coins!", Cost - PlayerCoins))
 		end
 	end
 end

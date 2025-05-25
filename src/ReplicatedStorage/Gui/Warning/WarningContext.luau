@@ -9,7 +9,6 @@ local RunService = game:GetService("RunService")
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
-local ReactRoblox = require(Packages.ReactRoblox)
 local e = React.createElement
 
 local Modules = ReplicatedStorage.Modules
@@ -17,10 +16,14 @@ local GenerateId = require(Modules.GenerateId)
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
 
+local Remotes = ReplicatedStorage.Remotes
+local WarningEvents = Remotes.Core.Warning
+local SendWarning = WarningEvents.SendWarning
+local WarningBindable = WarningEvents.WarningBindable
+
 -- Reference UI --
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
-local Main = require(CoreGame.Main)
 local Hooks = require(CoreGame.Hooks)
 
 local Shared = ReplicatedStorage.Shared
@@ -54,6 +57,14 @@ local function WarningProvider(props)
 		if Changed then
 			SetValue(NewTable)
 		end
+	end, { Value })
+
+	Hooks.useEventConnection(SendWarning.OnClientEvent, function(Text: string)
+		Add(Text)
+	end, { Value })
+
+	Hooks.useEventConnection(WarningBindable.Event, function(Text: string)
+		Add(Text)
 	end, { Value })
 
 	return e(WarningContext.Provider, {
