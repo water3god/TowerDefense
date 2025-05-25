@@ -1,7 +1,7 @@
 --!strict
 
 local MapData = {
-	BattleOfHastings = 74813140484079;
-};
+	BattleOfHastings = 83987369304152,
+}
 
-return MapData;
+return MapData

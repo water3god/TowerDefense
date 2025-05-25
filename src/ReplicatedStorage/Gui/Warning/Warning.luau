@@ -59,6 +59,7 @@ local function CreateWarning(props: Props)
 				Text = props.Text,
 				TextColor3 = Color3.new(1, 0.043137, 0.043137),
 				TextTransparency = FadeStyles.Transparency,
+				ZIndex = 100,
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {

@@ -104,7 +104,7 @@ local function CreateWaitingFrame(Props: Properties)
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.002,
+					Stroke = 0.001,
 				}),
 			}),
 		}),
@@ -156,7 +156,7 @@ local function CreateWaitingFrame(Props: Properties)
 					CornerRadius = UDim.new(0.3, 0),
 				}),
 				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.005,
+					Stroke = 0.002,
 					native = {
 						LineJoinMode = Enum.LineJoinMode.Round,
 					},
@@ -182,7 +182,7 @@ local function CreateWaitingFrame(Props: Properties)
 					},
 				}, {
 					UIStroke = e(UIStroke.UIStrokeBasic, {
-						Stroke = 0.003,
+						Stroke = 0.002,
 					}),
 				}),
 			},

@@ -99,7 +99,7 @@ local function CreateUnitViewport(props: ViewportProps)
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStroke, {
-				Stroke = 0.002,
+				Stroke = 0.0015,
 				GradColor = Data.RarityData and Data.RarityData.StrokeColor,
 			}),
 			UIGradient = e("UIGradient", {
@@ -115,7 +115,7 @@ local function CreateUnitViewport(props: ViewportProps)
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStroke, {
-				Stroke = 0.002,
+				Stroke = 0.0015,
 				GradColor = Data.RarityData and Data.RarityData.StrokeColor,
 			}),
 			UIGradient = e("UIGradient", {

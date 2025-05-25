@@ -248,7 +248,7 @@ local function CreateInfoFrame(Properties: Properties)
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStroke, {
-				Stroke = 0.002,
+				Stroke = 0.001,
 				GradColor = Properties.RarityInfo and Properties.RarityInfo.StrokeColor,
 			}),
 			UIGradient = e("UIGradient", {
@@ -264,7 +264,7 @@ local function CreateInfoFrame(Properties: Properties)
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStroke, {
-				Stroke = 0.002,
+				Stroke = 0.0008,
 				GradColor = Properties.RarityInfo and Properties.RarityInfo.StrokeColor,
 			}),
 			UIGradient = e("UIGradient", {
