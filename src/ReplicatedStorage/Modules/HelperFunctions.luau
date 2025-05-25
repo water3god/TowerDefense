@@ -15,6 +15,7 @@ local DelayHandler = require(script.Parent.DelayHandler)
 local Camera = workspace.CurrentCamera
 
 local Random = Random.new()
+local IsStudio = RunService:IsStudio()
 
 local Funcs = {}
 
@@ -254,6 +255,10 @@ end
 function Funcs.SafeTeleport(func: () -> TeleportAsyncResult, MaxCount: number): TeleportAsyncResult?
 	local Success, Returned = pcall(func)
 	local Count = 1
+
+	if not Success then
+		print(Returned)
+	end
 
 	if not Returned then
 		repeat

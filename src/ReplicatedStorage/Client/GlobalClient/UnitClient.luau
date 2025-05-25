@@ -292,10 +292,7 @@ local function NewUnit(Input: Types.UnitInput)
 	end
 
 	local function OnClose()
-		local Prom = Animate(GetRange(), false)
-		Prom:andThen(function()
-			RangePart.Parent = nil
-		end)
+		RangePart.Parent = nil
 	end
 
 	if self.IsClicked then
