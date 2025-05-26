@@ -9,6 +9,102 @@ local GlobalModules = ServerScriptService.GlobalModules
 local Unit = require(GlobalModules.Unit)
 
 local Data: { [string]: Unit.UnitInput } = {
+	["Alexander The Great"] = {
+		UnitName = "Alexander The Great",
+
+		AttackFuncs = {
+			[0] = {
+				function(Unit: Unit.Unit, Damage: number)
+					local CurrentEnemy = Unit.CurrentEnemy
+
+					if CurrentEnemy then
+						CurrentEnemy:Damage(Damage)
+					end
+				end,
+			},
+		},
+		Abilities = {},
+	},
+	["Leonidas"] = {
+		UnitName = "Leonidas",
+
+		AttackFuncs = {
+			[0] = {
+				function(Unit: Unit.Unit, Damage: number)
+					local CurrentEnemy = Unit.CurrentEnemy
+
+					if CurrentEnemy then
+						CurrentEnemy:Damage(Damage)
+					end
+				end,
+			},
+		},
+		Abilities = {},
+	},
+	["Pericles"] = {
+		UnitName = "Pericles",
+
+		AttackFuncs = {
+			[0] = {
+				function(Unit: Unit.Unit, Damage: number)
+					local CurrentEnemy = Unit.CurrentEnemy
+
+					if CurrentEnemy then
+						CurrentEnemy:Damage(Damage)
+					end
+				end,
+			},
+		},
+		Abilities = {},
+	},
+	["Pyrrhus"] = {
+		UnitName = "Pyrrhus",
+
+		AttackFuncs = {
+			[0] = {
+				function(Unit: Unit.Unit, Damage: number)
+					local CurrentEnemy = Unit.CurrentEnemy
+
+					if CurrentEnemy then
+						CurrentEnemy:Damage(Damage)
+					end
+				end,
+			},
+		},
+		Abilities = {},
+	},
+	["Socrates"] = {
+		UnitName = "Socrates",
+
+		AttackFuncs = {
+			[0] = {
+				function(Unit: Unit.Unit, Damage: number)
+					local CurrentEnemy = Unit.CurrentEnemy
+
+					if CurrentEnemy then
+						CurrentEnemy:Damage(Damage)
+					end
+				end,
+			},
+		},
+		Abilities = {},
+	},
+	["Themistocles"] = {
+		UnitName = "Themistocles",
+
+		AttackFuncs = {
+			[0] = {
+				function(Unit: Unit.Unit, Damage: number)
+					local CurrentEnemy = Unit.CurrentEnemy
+
+					if CurrentEnemy then
+						CurrentEnemy:Damage(Damage)
+					end
+				end,
+			},
+		},
+		Abilities = {},
+	},
 	["Julius Caesar"] = {
 		UnitName = "Julius Caesar",
 

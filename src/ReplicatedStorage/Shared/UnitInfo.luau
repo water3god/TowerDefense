@@ -40,7 +40,113 @@ local UnitInfo: { [string]: UnitInfo } = {
 				FireRate = 1,
 				Range = 50,
 				Animations = {},
-				Armor = "Armor",
+				Cost = 100,
+			},
+		},
+		CollisionRadius = 3,
+		Abilities = {},
+	},
+	["Alexander The Great"] = {
+		Rarity = "Mythic",
+		Description = "A Scout",
+		Image = "rbxassetid://135071065213924",
+
+		UnitData = {
+			[0] = {
+				Damage = { 5 },
+				FireRate = 1,
+				Range = 50,
+				Animations = {},
+				Armor = "AlexanderArmor",
+				Cost = 100,
+			},
+		},
+		CollisionRadius = 3,
+		Abilities = {},
+	},
+	["Leonidas"] = {
+		Rarity = "Godly",
+		Description = "A Scout",
+		Image = "rbxassetid://135071065213924",
+
+		UnitData = {
+			[0] = {
+				Damage = { 5 },
+				FireRate = 1,
+				Range = 50,
+				Animations = {},
+				Armor = "LeonidasArmor",
+				Cost = 100,
+			},
+		},
+		CollisionRadius = 3,
+		Abilities = {},
+	},
+	["Pericles"] = {
+		Rarity = "Epic",
+		Description = "A Scout",
+		Image = "rbxassetid://135071065213924",
+
+		UnitData = {
+			[0] = {
+				Damage = { 5 },
+				FireRate = 1,
+				Range = 50,
+				Animations = {},
+				Armor = "PericlesArmor",
+				Cost = 100,
+			},
+		},
+		CollisionRadius = 3,
+		Abilities = {},
+	},
+	["Pyrrhus"] = {
+		Rarity = "Common",
+		Description = "A Scout",
+		Image = "rbxassetid://135071065213924",
+
+		UnitData = {
+			[0] = {
+				Damage = { 5 },
+				FireRate = 1,
+				Range = 50,
+				Animations = {},
+				Armor = "PyrrhusArmor",
+				Cost = 100,
+			},
+		},
+		CollisionRadius = 3,
+		Abilities = {},
+	},
+	["Socrates"] = {
+		Rarity = "Rare",
+		Description = "A Scout",
+		Image = "rbxassetid://135071065213924",
+
+		UnitData = {
+			[0] = {
+				Damage = { 5 },
+				FireRate = 1,
+				Range = 50,
+				Animations = {},
+				Cost = 100,
+			},
+		},
+		CollisionRadius = 3,
+		Abilities = {},
+	},
+	["Themistocles"] = {
+		Rarity = "Legendary",
+		Description = "A Scout",
+		Image = "rbxassetid://135071065213924",
+
+		UnitData = {
+			[0] = {
+				Damage = { 5 },
+				FireRate = 1,
+				Range = 50,
+				Animations = {},
+				Armor = "ThemistoclesArmor",
 				Cost = 100,
 			},
 		},

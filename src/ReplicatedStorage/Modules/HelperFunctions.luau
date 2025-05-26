@@ -494,6 +494,12 @@ function Funcs.InstanceAddkey(Table: { [any]: any }, Index: Instance, Value: any
 end
 
 function Funcs.DisableHumanoid(Humanoid: Humanoid)
+	Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+	Humanoid.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOff
+	Humanoid.EvaluateStateMachine = false
+	Humanoid.AutomaticScalingEnabled = true
+	Humanoid.AutoJumpEnabled = false
+
 	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, false)
 	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Freefall, false)
 	Humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
