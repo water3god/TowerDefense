@@ -671,7 +671,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			if not Data then
 				return Default
 			end
-			local IsEquipped = if OpenFrame == "" and HoveredId and IsEquipped(HoveredId) then true else false
+			local IsEquipped = if OpenFrame == "Unit" and HoveredId and IsEquipped(HoveredId) then true else false
 
 			local FirstClick = nil
 			local SecondClick = nil
@@ -720,7 +720,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		end
 
 		return Default
-	end, { OpenFrame :: any, ClickedProductData, ClickedResourceData, ClickedUnitData })
+	end, { OpenFrame :: any, ClickedProductData, ClickedResourceData, ClickedUnitData, EquippedUnits })
 
 	return e(Main.ImageLabel, {
 		native = JoinDicts({

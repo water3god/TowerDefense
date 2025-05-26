@@ -239,8 +239,24 @@ end
 local PlayCFrame = CFrame.new(145.5, 7.834, 143.5) * CFrame.Angles(0, math.rad(25), 0)
 local SummonCFrame = CFrame.new(-170, 10, -215)
 
+local VisibleFrames = {
+	[Constants.INVENTORY_FRAME] = { "Bottom" },
+	[Constants.IN_ROLL] = { "Bottom" },
+	[Constants.ROLL_FRAME] = { "Bottom" },
+	[Constants.STORY_FRAME] = {},
+	[Constants.TRADE_MENU] = {},
+	[Constants.TRADE_FRAME] = {},
+}
+
 local function Render()
 	local VisibleFrame: string?, SetVisibleFrame = React.useState(nil :: string?)
+	local TransitionFrame: string?, SetTransitionFrame = React.useState(nil :: string?)
+
+	React.useEffect(function()
+		if VisibleFrame then
+			SetTransitionFrame(VisibleFrame)
+		end
+	end, { VisibleFrame })
 
 	local Styles, API = ReactSpring.useSpring(function()
 		return {
@@ -455,6 +471,14 @@ local function Render()
 		end, {})
 	end
 
+	local VisibleFrames = React.useMemo(function()
+		if TransitionFrame then
+			return VisibleFrames[TransitionFrame]
+		else
+			return {}
+		end
+	end, { TransitionFrame })
+
 	React.useEffect(function()
 		API.stop()
 		API.start({
@@ -584,9 +608,9 @@ local function Render()
 						SetVisibleInternal(Constants.INVENTORY_FRAME, Visible)
 					end,
 					native = {
-						Position = Styles.Inverted:map(function(Size: number)
+						Position = VisibleFrames[1] ~= "Bottom" and Styles.Inverted:map(function(Size: number)
 							return UDim2.fromScale(0.5, 0.9):Lerp(UDim2.fromScale(0.5, 1.2), Size)
-						end),
+						end) or UDim2.fromScale(0.5, 0.9),
 					},
 				}),
 			}),
