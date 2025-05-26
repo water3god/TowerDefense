@@ -3,6 +3,5 @@
 
 # To add a new tool, add an entry to this table.
 [tools]
-rojo = "rojo-rbx/rojo@7.4.4"
-# rojo = "rojo-rbx/rojo@6.2.0"
-ReactSpring = "chriscerie/react-spring@2.0.0"
+rojo = "rojo-rbx/rojo@7.5.1"
+# rojo = "rojo-rbx/rojo@7.5.1"
