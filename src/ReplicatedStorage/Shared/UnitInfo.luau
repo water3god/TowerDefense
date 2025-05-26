@@ -49,7 +49,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Alexander The Great"] = {
 		Rarity = "Mythic",
 		Description = "A Scout",
-		Image = "rbxassetid://135071065213924",
+		Image = "rbxassetid://76818408729348",
 
 		UnitData = {
 			[0] = {
@@ -67,7 +67,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Leonidas"] = {
 		Rarity = "Godly",
 		Description = "A Scout",
-		Image = "rbxassetid://135071065213924",
+		Image = "rbxassetid://128751657366626",
 
 		UnitData = {
 			[0] = {
@@ -85,7 +85,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Pericles"] = {
 		Rarity = "Epic",
 		Description = "A Scout",
-		Image = "rbxassetid://135071065213924",
+		Image = "rbxassetid://111308279380468",
 
 		UnitData = {
 			[0] = {
@@ -103,7 +103,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Pyrrhus"] = {
 		Rarity = "Common",
 		Description = "A Scout",
-		Image = "rbxassetid://135071065213924",
+		Image = "rbxassetid://100404690417654",
 
 		UnitData = {
 			[0] = {
@@ -121,7 +121,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Socrates"] = {
 		Rarity = "Rare",
 		Description = "A Scout",
-		Image = "rbxassetid://135071065213924",
+		Image = "rbxassetid://131020680622418",
 
 		UnitData = {
 			[0] = {
@@ -138,7 +138,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Themistocles"] = {
 		Rarity = "Legendary",
 		Description = "A Scout",
-		Image = "rbxassetid://135071065213924",
+		Image = "rbxassetid://110018750391246",
 
 		UnitData = {
 			[0] = {
