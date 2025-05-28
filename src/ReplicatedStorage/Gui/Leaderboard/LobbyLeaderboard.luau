@@ -82,6 +82,7 @@ local function CreatePlayerFrame(props: PlayerProps)
 	return e(Main.Frame, {
 		native = Join({
 			Size = UDim2.fromScale(1, 0.1),
+			LayoutOrder = props.Rank,
 		}, props.native),
 	}, {
 		Main = e(Main.Frame, {
@@ -89,7 +90,6 @@ local function CreatePlayerFrame(props: PlayerProps)
 				BackgroundColor3 = Color3.new(0.282353, 0.133333, 0.403922),
 				BackgroundTransparency = 0,
 				Size = UDim2.fromScale(1, 0.9),
-				LayoutOrder = props.Rank,
 			},
 		}, {
 			Rank = e(Main.TextLabel, {
