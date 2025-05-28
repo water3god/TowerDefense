@@ -15,6 +15,7 @@ local Signal = require(Packages.Signal)
 local Modules = ReplicatedStorage.Modules
 local BezierPath = require(Modules.BezierPath)
 local GenerateId = require(Modules.GenerateId)
+local HelperFunctions = require(Modules.HelperFunctions)
 
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
@@ -293,7 +294,7 @@ function Enemy.GetSortedEnemy(EnemiesInput: { Enemy }, SortType: UnitInfo.SortTy
 	if SortType == "First" then
 		ClosestValue = 0
 		for _, Enemy in ipairs(EnemiesInput) do
-			if ClosestValue < ClosestEnemy.TimePosition then
+			if ClosestValue < Enemy.TimePosition then
 				ClosestEnemy = Enemy
 				ClosestValue = Enemy.TimePosition
 			end
@@ -301,7 +302,7 @@ function Enemy.GetSortedEnemy(EnemiesInput: { Enemy }, SortType: UnitInfo.SortTy
 	elseif SortType == "Last" then
 		ClosestValue = 1
 		for _, Enemy in ipairs(EnemiesInput) do
-			if ClosestValue > ClosestEnemy.TimePosition then
+			if ClosestValue > Enemy.TimePosition then
 				ClosestEnemy = Enemy
 				ClosestValue = Enemy.TimePosition
 			end
@@ -309,7 +310,7 @@ function Enemy.GetSortedEnemy(EnemiesInput: { Enemy }, SortType: UnitInfo.SortTy
 	elseif SortType == "Strongest" then
 		ClosestValue = 0
 		for _, Enemy in ipairs(EnemiesInput) do
-			if ClosestValue < ClosestEnemy.Health then
+			if ClosestValue < Enemy.Health then
 				ClosestEnemy = Enemy
 				ClosestValue = Enemy.Health
 			end
@@ -317,7 +318,7 @@ function Enemy.GetSortedEnemy(EnemiesInput: { Enemy }, SortType: UnitInfo.SortTy
 	elseif SortType == "Weakest" then
 		ClosestValue = math.huge
 		for _, Enemy in ipairs(EnemiesInput) do
-			if ClosestValue > ClosestEnemy.Health then
+			if ClosestValue > Enemy.Health then
 				ClosestEnemy = Enemy
 				ClosestValue = Enemy.Health
 			end
