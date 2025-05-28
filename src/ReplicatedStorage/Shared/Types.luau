@@ -7,6 +7,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Packages = ReplicatedStorage.Packages
 local Trove = require(Packages.Trove)
 local Signal = require(Packages.Signal)
+local Promise = require(Packages.Promise)
 
 local Modules = ReplicatedStorage.Modules
 local BezierPath = require(Modules.BezierPath)
@@ -186,7 +187,11 @@ type UnitData = {
 	Abilities: { { LastUsed: number, Name: string, Length: number, Cooldown: number } },
 	Animations: { [string]: AnimationTrack },
 
+	Promises: { [string]: Promise.Promise },
+
 	IsClicked: boolean,
+
+	AnimationPlayed: Signal.Signal<string>,
 
 	Attacked: Signal.Signal<>,
 	CharacterClicked: Signal.Signal<boolean>,
@@ -204,7 +209,8 @@ export type UnitModule = {
 		AnimationName: string,
 		SecondsAfter: number?,
 		SpeedRatio: number?,
-		FadeTime: number?
+		FadeTime: number?,
+		Length: number?
 	) -> AnimationTrack?,
 	Watch: (
 		self: Unit,
@@ -215,6 +221,9 @@ export type UnitModule = {
 	RotateTo: (self: Unit, Degree: number) -> (),
 	PartIsDescendantOf: (self: Unit, Part: BasePart) -> boolean,
 	ClickCharacter: (self: Unit, Enabled: boolean) -> (),
+
+	AddPromise: (self: Unit, Promise: Promise.Promise, PromiseName: string) -> (),
+	CancelPromise: (self: Unit, PromiseName: string) -> (),
 
 	ApplyDetail: (self: Unit) -> (),
 

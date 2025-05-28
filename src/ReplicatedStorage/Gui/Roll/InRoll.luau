@@ -46,7 +46,7 @@ export type Properties = {
 	CloseClick: () -> ()?,
 	LastFiredTime: number,
 	AutoRoll: boolean,
-	UnitNames: { { Name: string, UniqueId: string } },
+	UnitNames: { { Name: string, Id: string } },
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
@@ -104,7 +104,7 @@ local function CreateUnitFrame(props: UnitProperties)
 		if IsSold then
 			InventoryService.SellUnits({ props.UniqueId })
 		end
-	end, { IsSold })
+	end, { IsSold, props.UniqueId :: any })
 
 	return e(Main.Frame, {
 		native = Join({}, props.native),
@@ -198,7 +198,7 @@ local function CreateInRoll(props: Properties)
 				if UnitData then
 					UnitFrames["UnitFrame" .. Index] = e(CreateUnitFrame, {
 						UnitName = UnitData.Name,
-						UniqueId = UnitData.UniqueId,
+						UniqueId = UnitData.Id,
 						native = {
 							LayoutOrder = j,
 						},

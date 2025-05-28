@@ -17,10 +17,12 @@ local DestroyEvent = UnitEvents.DestroyEvent
 local UpgradeEvent = UnitEvents.Upgrade
 local PriorityChanged = UnitEvents.PriorityChanged
 local AbilityEvent = UnitEvents.AbilityEvent
+local AnimationEvent = UnitEvents.AnimationEvent
 
 local Packages = ReplicatedStorage.Packages
 local Trove = require(Packages.Trove)
 local Signal = require(Packages.Signal)
+local Promise = require(Packages.Promise)
 
 local Modules = ReplicatedStorage.Modules
 local GenerateId = require(Modules.GenerateId)
@@ -97,8 +99,12 @@ type UnitData = {
 	Owner: Player?,
 	OwnerId: number?,
 
+	Disabled: boolean,
+
 	Abilities: { { LastUsed: number, Name: string, Length: number, Cooldown: number, Func: (self: Unit) -> () } },
 	CollisionRadius: number,
+
+	Promises: { [string]: Promise.Promise },
 
 	Attacked: Signal.Signal<>,
 	AbilityUsed: Signal.Signal<number, number>, -- First is Index, Second is Fire Time
@@ -113,6 +119,23 @@ type UnitImpl = {
 	UpdateEnemy: (self: Unit) -> (),
 	Upgrade: (self: Unit) -> (),
 	UseAbility: (self: Unit, Index: number) -> (),
+
+	PlayAnimation: (
+		self: Unit,
+		AnimationName: string,
+		SecondsAfter: number?,
+		SpeedRatio: number?,
+		FadeTime: number?,
+		Length: number?
+	) -> (),
+
+	DisableAttack: (self: Unit, Length: number) -> (),
+	EnableAttack: (self: Unit) -> (),
+
+	Stun: (self: Unit, Length: number) -> (),
+
+	AddPromise: (self: Unit, Promise: Promise.Promise, PromiseName: string) -> (),
+	CancelPromise: (self: Unit, PromiseName: string) -> (),
 
 	Watch: (self: Unit, Time: number, Funcs: { { Func: () -> (), TimeRatio: number } }) -> (),
 
@@ -223,6 +246,8 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 	self.AttackPriority = UnitInfo.SortTypes[1]
 	self.SpeedRatio = 1
 	self.CollisionRadius = self.UnitData.CollisionRadius
+
+	self.Promises = {}
 
 	self.IsGlobal = if UserInput.ReplicateTo then false else true
 	self.ReplicateTo = UserInput.ReplicateTo or Players:GetPlayers()
@@ -369,6 +394,64 @@ function Unit:UseAbility(Index: number)
 		Data.LastUsed = TimeUsed
 		Data.Func(self)
 		self.AbilityUsed:Fire(Index, TimeUsed)
+	end
+end
+
+function Unit:PlayAnimation(
+	AnimationName: string,
+	SecondsAfter: number?,
+	SpeedRatio: number?,
+	FadeTime: number?,
+	Length: number?
+)
+	HelperFunctions.FireClients(AnimationEvent, self.ReplicateTo, {
+		UniqueId = self.UniqueId,
+		AnimationName = AnimationName,
+		SecondsAfter = SecondsAfter,
+		SpeedRatio = SpeedRatio,
+		FadeTime = FadeTime,
+		Length = Length,
+		SentTime = workspace:GetServerTimeNow(),
+	})
+end
+
+function Unit:DisableAttack(Length: number)
+	self:CancelPromise("DisablePromise")
+	self.Disabled = true
+	self:AddPromise(
+		Promise.delay(Length):andThen(function()
+			self.Disabled = false
+		end),
+		"DisablePromise"
+	)
+end
+
+function Unit:EnableAttack()
+	self:CancelPromise("DisablePromise")
+	self.Disabled = false
+end
+
+function Unit:Stun(Length: number)
+	self:DisableAttack(Length)
+	self:PlayAnimation("Stun", nil, nil, nil, Length)
+end
+
+function Unit:AddPromise(Promise: Promise.Promise, PromiseName: string)
+	self:CancelPromise(PromiseName)
+	self.Promises[PromiseName] = Promise
+
+	self._Trove:AddPromise(Promise :: any)
+
+	Promise:finally(function()
+		self.Promises[PromiseName] = nil
+	end)
+end
+
+function Unit:CancelPromise(PromiseName: string)
+	local Promise = self.Promises[PromiseName]
+	if Promise then
+		Promise:cancel()
+		self.Promises[PromiseName] = nil
 	end
 end
 

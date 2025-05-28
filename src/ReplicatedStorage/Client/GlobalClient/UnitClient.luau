@@ -12,6 +12,7 @@ local TweenService = game:GetService("TweenService")
 local ModelStorage = ReplicatedStorage.ModelStorage
 local UnitsAnimations = ReplicatedStorage.Animations.Units
 local Default = UnitsAnimations.Default
+local Global = UnitsAnimations.Global
 
 local GlobalWorkspace = workspace.GlobalWorkspace
 local UnitsFolder = GlobalWorkspace.Units
@@ -63,6 +64,7 @@ local OnPlacement = Events.PlacementEvent
 local OnUpgrade = Events.Upgrade
 local PriorityChanged = Events.PriorityChanged
 local AbilityEvent = Events.AbilityEvent
+local AnimationEvent = Events.AnimationEvent
 
 local OtherEvents = ReplicatedStorage.Remotes.UnitClient
 local PlaceUnit = OtherEvents.Placement
@@ -225,6 +227,7 @@ local function NewUnit(Input: Types.UnitInput)
 	self.CharacterClicked = self.Trove:Construct(Signal)
 	self.PriorityChanged = self.Trove:Construct(Signal)
 	self.PropertyChanged = self.Trove:Construct(Signal)
+	self.AnimationPlayed = self.Trove:Construct(Signal)
 	self.Destroying = self.Trove:Construct(Signal)
 
 	self.UnitName = Input.UnitName
@@ -338,6 +341,9 @@ local function NewUnit(Input: Types.UnitInput)
 			self.Animations[Animation.Name] = self.Animator:LoadAnimation(Animation)
 		end
 	end
+	for _, Animation in ipairs(Global:GetChildren()) do
+		self.Animations[Animation.Name] = self.Animator:LoadAnimation(Animation)
+	end
 	if not self.Animations["Idle"] then
 		self.Animations["Idle"] = self.Animator:LoadAnimation(Default)
 	end
@@ -361,10 +367,18 @@ function UnitModule:TPToRootPosition()
 	self.CenterPart.CFrame = self.VisualCFrame
 end
 
-function UnitModule:PlayAnimation(AnimationName: string, SecondsAfter: number?, SpeedRatio: number?, FadeTime: number?)
+function UnitModule:PlayAnimation(
+	AnimationName: string,
+	SecondsAfter: number?,
+	SpeedRatio: number?,
+	FadeTime: number?,
+	Length: number?
+)
 	local Anim = self.Animations[AnimationName]
 
 	if Anim then
+		local Name = "AnimationEvent" .. AnimationName
+		self:CancelPromise(Name)
 		Anim:Play(FadeTime)
 		if SpeedRatio then
 			Anim:AdjustSpeed(SpeedRatio)
@@ -372,6 +386,15 @@ function UnitModule:PlayAnimation(AnimationName: string, SecondsAfter: number?, 
 		if SecondsAfter then
 			Anim.TimePosition = SecondsAfter
 		end
+		if Length then
+			self:AddPromise(
+				Promise.delay(Length):andThen(function()
+					Anim:Stop()
+				end),
+				Name
+			)
+		end
+		self.AnimationPlayed:Fire(AnimationName)
 
 		return Anim
 	end
@@ -427,6 +450,25 @@ function UnitModule:ApplyDetail()
 
 	if typeof(AdornmentName) == "string" then
 		self.Armor = SetAdornment(self.Character, AdornmentName)
+	end
+end
+
+function UnitModule:AddPromise(Promise: Promise.Promise, PromiseName: string)
+	self:CancelPromise(PromiseName)
+	self.Promises[PromiseName] = Promise
+
+	self.Trove:AddPromise(Promise :: any)
+
+	Promise:finally(function()
+		self.Promises[PromiseName] = nil
+	end)
+end
+
+function UnitModule:CancelPromise(PromiseName: string)
+	local Promise = self.Promises[PromiseName]
+	if Promise then
+		Promise:cancel()
+		self.Promises[PromiseName] = nil
 	end
 end
 
@@ -822,6 +864,23 @@ PriorityChanged.OnClientEvent:Connect(function(Data: { UniqueId: string, Priorit
 			Unit.AttackPriority = Data.Priority
 			Unit.PriorityChanged:Fire(Data.Priority)
 		end
+	end
+end)
+
+AnimationEvent.OnClientEvent:Connect(function(Data: {
+	UniqueId: string,
+	AnimationName: string,
+	SecondsAfter: number?,
+	SpeedRatio: number?,
+	FadeTime: number?,
+	Length: number?,
+	SentTime: number,
+})
+	local Unit = UnitModule.GetUnit(Data.UniqueId)
+
+	if Unit then
+		local Length = Data.Length and (Data.SentTime - workspace:GetServerTimeNow()) + Data.Length
+		Unit:PlayAnimation(Data.AnimationName, Data.SecondsAfter, Data.SpeedRatio, Data.FadeTime, Length)
 	end
 end)
 
