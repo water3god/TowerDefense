@@ -27,6 +27,10 @@ local Sell = UnitClient.Sell
 local WarningEvents = Remotes.Core.Warning
 local SendWarning = WarningEvents.SendWarning
 
+local Shared = ReplicatedStorage.Shared
+local UnitInfo = require(Shared.UnitInfo)
+local Constants = require(Shared.Constants)
+
 local GlobalModules = ServerScriptService.GlobalModules
 local Unit = require(GlobalModules.Unit)
 local Enemy = require(GlobalModules.Enemy)
@@ -35,7 +39,6 @@ local GlobalWave = require(GlobalModules.GlobalWave)
 local PlayerData = require(GlobalModules.PlayerData)
 
 local UnitData = require(ServerStorage.Data.UnitData)
-local UnitInfo = require(ReplicatedStorage.Shared.UnitInfo)
 
 local CylinderCast = ReplicatedStorage.ModelStorage.Extra.CylinderCast
 
@@ -201,8 +204,10 @@ Sell.OnServerEvent:Connect(function(Player: Player, UniqueId: string)
 	end
 
 	local CurrentUnit = Unit.GetUnit(UniqueId)
+	local GlobalWave = GlobalWave.GetWave()
 
-	if CurrentUnit and CurrentUnit:IsOwnedBy(Player) then
+	if GlobalWave and CurrentUnit and CurrentUnit:IsOwnedBy(Player) then
+		GlobalWave:AddCoinsToUser(Player.UserId, CurrentUnit.TotalCost / Constants.CostDivider)
 		CurrentUnit:Delete()
 	end
 end)

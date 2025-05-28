@@ -75,6 +75,10 @@ local function CreatePlayerFrame(props: PlayerProps)
 		return HelperFunctions.GetThumbnailIdAsync(props.UserId)
 	end, { props.UserId })
 
+	local Value = React.useMemo(function()
+		return HelperFunctions.NumberScaler.ShortenNumber(props.Value)
+	end, { props.Value })
+
 	return e(Main.Frame, {
 		native = Join({
 			Size = UDim2.fromScale(1, 0.1),
@@ -119,7 +123,7 @@ local function CreatePlayerFrame(props: PlayerProps)
 				native = {
 					Position = UDim2.fromScale(0.825, 0.5),
 					Size = UDim2.fromScale(0.25, 0.5),
-					Text = props.Value,
+					Text = Value,
 					AutoLocalize = false,
 					TextXAlignment = Enum.TextXAlignment.Right,
 				},

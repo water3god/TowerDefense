@@ -23,6 +23,10 @@ local SendSettings = SettingsEvents.SendSettings
 local SettingSync = SettingsEvents.SettingSync
 
 ChangeSetting.OnServerEvent:Connect(function(Player: Player, Setting: string, Value: any)
+	if typeof(Setting) ~= "string" then
+		return
+	end
+
 	local PlayerData = PlayerData.GetPlayerDataAsync(Player)
 
 	if PlayerData then

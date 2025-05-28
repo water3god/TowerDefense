@@ -18,6 +18,7 @@ local Constants = {
 	RobuxSpentStore = "RobuxSpentStorev0.01",
 
 	WarningTime = 3,
+	CostDivider = 3,
 
 	ROLLDELAYTIME = 3,
 	STARTCOINS = 500,

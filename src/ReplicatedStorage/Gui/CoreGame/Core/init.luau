@@ -81,6 +81,7 @@ local EnemyClient = require(GlobalClient.EnemyClient)
 
 local Shared = ReplicatedStorage.Shared
 local IsLobby = require(Shared.IsLobby)
+local Variables = require(Shared.Variables)
 
 local Constants = require(script.Constants)
 local OriginalPositions = require(script.OriginalPositions)
@@ -402,7 +403,7 @@ local function Render()
 				if Result and Result.Instance then
 					if Result.Instance:IsDescendantOf(GlobalWorkspace) then
 						for _, Unit in pairs(UnitClient.GetUnits()) do
-							if Unit:PartIsDescendantOf(Result.Instance) then
+							if Unit:PartIsDescendantOf(Result.Instance) and not Variables.InPlacement then
 								SetUnitId(Unit.UniqueId)
 								return
 							end

@@ -43,6 +43,7 @@ local Shared = ReplicatedStorage.Shared
 local UnitAttacks = require(Shared.UnitAttacks)
 local UnitInfo = require(Shared.UnitInfo)
 local Types = require(Shared.Types)
+local Variables = require(Shared.Variables)
 
 local Packages = ReplicatedStorage.Packages
 local Trove = require(Packages.Trove)
@@ -653,6 +654,7 @@ function UnitModule.InitPlacement(Unit: string)
 
 	RangePart.Anchored = true
 	RangePart.Parent = workspace
+	Variables.InPlacement = true
 
 	InitTrove:Add(task.defer(function()
 		for Id, Unit in pairs(Units) do
@@ -661,6 +663,7 @@ function UnitModule.InitPlacement(Unit: string)
 	end))
 
 	InitTrove:Add(function()
+		Variables.InPlacement = false
 		for Id, Unit in pairs(Units) do
 			TweenTransparency(Unit.RadiusPart, 1)
 		end

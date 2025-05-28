@@ -32,6 +32,7 @@ local Shared = ReplicatedStorage.Shared
 local IsLobby = require(Shared.IsLobby)
 local UnitInfo = require(Shared.UnitInfo)
 local RarityInfo = require(Shared.RarityInfo)
+local Constants = require(Shared.Constants)
 local Stats = UnitInfo.Stats
 
 local Client = ReplicatedStorage.Client
@@ -156,11 +157,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 			})
 		else
 			API.stop()
-			API.start({
-				Scale = 0.9,
-			}):andThen(function()
-				SetTrueVisible(false)
-			end)
+			SetTrueVisible(false)
 		end
 	end, { Visible })
 
@@ -260,7 +257,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 		if InSell then
 			return "CONFIRM"
 		else
-			return string.format("Sell: %u", math.floor(UpgradeData.TotalCost / 3))
+			return string.format("Sell: %u", math.floor(UpgradeData.TotalCost / Constants.CostDivider))
 		end
 	end, { UpgradeData.TotalCost, InSell :: any })
 
