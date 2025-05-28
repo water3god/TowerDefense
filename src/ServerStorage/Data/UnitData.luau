@@ -18,7 +18,9 @@ local Data: { [string]: Unit.UnitInput } = {
 					local CurrentEnemy = Unit.CurrentEnemy
 
 					if CurrentEnemy then
-						CurrentEnemy:Damage(Damage)
+						task.delay(0.65 * Unit.SpeedRatio, function()
+							CurrentEnemy:Damage(Damage)
+						end)
 					end
 				end,
 			},
