@@ -31,6 +31,7 @@ local OnEnd = GameEndEvents.OnEnd
 local Vote = GameEndEvents.Vote
 
 local TPGuiSet = Remotes.Booth.ClientOnly.TPGuiSet
+local TeleportBack = Remotes.Core.TeleportBack
 
 -- Reference UI --
 local Gui = ReplicatedStorage.Gui
@@ -369,9 +370,7 @@ local function CreateVoteFrame(Props: Props)
 	local ReturnClick = React.useCallback(function()
 		TPGuiSet:Fire({ MapName = "Lobby", ImageId = "rbxasseid://1" })
 		Promise.delay(3):andThen(function()
-			HelperFunctions.SafeTeleport(function()
-				return TeleportService:TeleportAsync(133996430724424, { Player })
-			end, 10)
+			TeleportBack:FireServer(true)
 		end)
 	end, {})
 
