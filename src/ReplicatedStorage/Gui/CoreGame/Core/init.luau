@@ -57,6 +57,9 @@ local RollMain = require(Roll.RollMain)
 local WarningFolder = Gui.Warning
 local Warning = require(WarningFolder.Warning)
 
+local SettingFolder = Gui.Settings
+local Settings = require(SettingFolder.Settings)
+
 -- Contexts --
 local InventoryContext = require(Inventory.InventoryContext)
 local TradeMenuContext = require(Trade.TradeContext)
@@ -67,6 +70,7 @@ local CurrencyContext = require(GameFrames.Currency)
 local StoryContext = require(Story.StoryContext)
 local RollContext = require(Roll.RollContext)
 local WarningContext = require(WarningFolder.WarningContext)
+local SettingContext = require(SettingFolder.SettingsContext)
 
 local IsRunning = RunService:IsRunning()
 
@@ -236,6 +240,23 @@ local function RenderRollFrame(Props: any)
 	})
 end
 
+local function RenderSettings(Props)
+	local Position, Visiblity = AnimateWrapper({
+		Visible = Props.Visible,
+		Name = Constants.SETTINGS,
+	})
+
+	return e(SettingContext.Provider, {}, {
+		MainStory = e(Settings.Create, {
+			CloseClick = Props.CloseClick,
+			native = {
+				Position = Position,
+				Visible = Visiblity,
+			},
+		}),
+	})
+end
+
 local PlayCFrame = CFrame.new(145.5, 7.834, 143.5) * CFrame.Angles(0, math.rad(25), 0)
 local SummonCFrame = CFrame.new(-170, 10, -215)
 
@@ -246,6 +267,7 @@ local VisibleFrames = {
 	[Constants.STORY_FRAME] = {},
 	[Constants.TRADE_MENU] = {},
 	[Constants.TRADE_FRAME] = {},
+	[Constants.SETTINGS] = {},
 }
 
 local function Render()
@@ -548,6 +570,12 @@ local function Render()
 						SetVisibleInternal(Constants.ROLL_FRAME, true)
 					end,
 				}) :: any,
+				[Constants.SETTINGS] = e(RenderSettings, {
+					Visible = if VisibleFrame == Constants.SETTINGS then true else false,
+					CloseClick = function()
+						OnCloseClick(Constants.SETTINGS)
+					end,
+				}) :: any,
 			} :: any
 		),
 		OtherGui = e("Folder", {}, {
@@ -673,6 +701,15 @@ local function Render()
 					OnMainButtonClick(Constants.TRADE_MENU)
 				end,
 			}),
+		}),
+		SettingButton = e(MainButtonFrame, {
+			Position = UDim2.fromScale(0.9, 0.1),
+			Size = UDim2.fromScale(0.1, 0.08),
+			Name = "Settings",
+			Icon = "rbxassetid://133964081103849",
+			OnClick = function()
+				OnMainButtonClick(Constants.SETTINGS)
+			end,
 		}),
 		Warnings = e(Warning),
 	})

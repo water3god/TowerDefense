@@ -13,10 +13,18 @@ local ChangeSetting = SettingsEvents.ChangeSetting
 local SettingSync = SettingsEvents.SettingSync
 local SendSettings = SettingsEvents.SendSettings
 
+local Shared = ReplicatedStorage.Shared
+local SettingsData = require(Shared.Settings)
+
 local SettingChangedSignals: { [string]: Signal.Signal<any> } = {}
-local PlayerSettings: { [string]: any } = {}
+local PlayerSettings: { [string]: any } = SettingsData.PreSync
 
 local SettingService = {}
+
+function SettingService.GetPlayerSettings()
+	return PlayerSettings
+end
+
 local SettingCache: { string } = {}
 
 local SettingChanged = Signal.new()

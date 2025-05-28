@@ -9,6 +9,7 @@ local Constants = {
 	STORY_FRAME = "StoryFrame",
 	ROLL_FRAME = "RollFrame",
 	IN_ROLL = "InRoll",
+	SETTINGS = "Settings",
 }
 
 return Constants

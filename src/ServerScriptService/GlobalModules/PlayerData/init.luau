@@ -206,6 +206,14 @@ local function SyncIds(Table: { [string]: any }, Func: ((OldId: string, NewId: s
 	end
 end
 
+local function RemoveOld(Keys: { string }, Table: { [string]: any })
+	for Key, _ in pairs(Table) do
+		if not table.find(Keys, Key) then
+			Table[Key] = nil
+		end
+	end
+end
+
 function PlayerData.new(Player: Player)
 	local self = setmetatable({}, PlayerData) :: PlayerData
 
@@ -260,6 +268,7 @@ function PlayerData.new(Player: Player)
 
 		SyncIds(Data.Products)
 		SyncIds(Data.Resources)
+		RemoveOld(SettingData.SettingIndexes, Data.Settings :: any)
 
 		self.Profile.OnSessionEnd:Connect(function()
 			self:Delete()
