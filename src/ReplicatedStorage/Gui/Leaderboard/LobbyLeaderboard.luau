@@ -89,6 +89,7 @@ local function CreatePlayerFrame(props: PlayerProps)
 				BackgroundColor3 = Color3.new(0.282353, 0.133333, 0.403922),
 				BackgroundTransparency = 0,
 				Size = UDim2.fromScale(1, 0.9),
+				LayoutOrder = props.Rank,
 			},
 		}, {
 			Rank = e(Main.TextLabel, {
