@@ -41,7 +41,6 @@ export type Data = {
 	Resources: {
 		[string]: ResourceData,
 	},
-	AutoRoll: boolean,
 	CompletedMaps: { [string]: { [number]: { [string]: StageData } } },
 	Level: number,
 	XP: number,
@@ -59,7 +58,6 @@ local Data: Data = {
 	Products = {},
 	Resources = {},
 	Settings = Settings.Default,
-	AutoRoll = false,
 	CompletedMaps = {},
 	Level = 1,
 	XP = 0,

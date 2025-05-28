@@ -33,7 +33,7 @@ export type Properties = {
 	children: { [any]: any }?,
 }
 
-local function SettingsProvider(props: Properties)
+local function SettingsProvider(props: any)
 	local Settings, SetSettings = React.useState(SettingsData.PreSync)
 
 	React.useEffect(function()

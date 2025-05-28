@@ -97,8 +97,6 @@ type PlayerDataImpl = {
 	DeleteUnit: (self: PlayerData, UniqueId: string) -> (),
 	GetUnitFromId: (self: PlayerData, UniqueId: string) -> Template.UnitData?,
 
-	SetAutoRoll: (self: PlayerData, AutoRoll: boolean) -> (),
-
 	RedeemGamepass: (self: PlayerData, GamepassId: number) -> (),
 	HasRedeemedGamepass: (self: PlayerData, GamepassId: number) -> boolean,
 
@@ -412,11 +410,6 @@ function PlayerData:GetUnitFromId(UniqueId: string)
 	local Data = self.Profile.Data
 
 	return Data.Units[UniqueId]
-end
-
-function PlayerData:SetAutoRoll(AutoRoll: boolean)
-	self.Profile.Data.AutoRoll = AutoRoll
-	self.AutoRollChanged:Fire(AutoRoll)
 end
 
 function PlayerData:RedeemGamepass(GamepassId: number)

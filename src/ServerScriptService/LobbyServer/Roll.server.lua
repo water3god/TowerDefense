@@ -39,16 +39,14 @@ if not IsLobby then
 	return
 end
 
+local InAutoRolls: { [Player]: boolean } = {}
+
 AutoRoll.OnServerEvent:Connect(function(Player: Player, Enabled: boolean)
 	if typeof(Enabled) ~= "boolean" then
 		return
 	end
 
-	local PlayerData = PlayerData.GetPlayerData(Player)
-
-	if PlayerData then
-		PlayerData.Profile.Data.AutoRoll = Enabled
-	end
+	InAutoRolls[Player] = Enabled
 end)
 
 local Counts = { 1, 3, 10 }
@@ -62,8 +60,13 @@ local function Roll(Data: PlayerData.PlayerData, Count: number, Auto: boolean)
 
 	for i = 1, Count, 1 do
 		local UnitName = RandomGenerate(ChanceData) :: string
-		Data:AddUnit(UnitName)
-		table.insert(SendData, UnitName)
+		local UnitData = Data:AddUnit(UnitName)
+
+		if UnitData then
+			table.insert(SendData, { Name = UnitName, Id = UnitData.UniqueId })
+		else
+			warn("NO Unit Available for " .. UnitName)
+		end
 	end
 
 	if #SendData > 0 then
@@ -81,6 +84,7 @@ local function InitTimer(Data: PlayerData.PlayerData, Count: number)
 	Time.AllowDrift = false
 
 	Time.Tick:Connect(function()
+		Data:SubtractGold(Constants.ROLLCOSTS.MAIN * Count)
 		Roll(Data, Count, true)
 	end)
 
@@ -91,10 +95,12 @@ local function InitTimer(Data: PlayerData.PlayerData, Count: number)
 	end)
 
 	if Delays[Data.Player].Timer then
-		Time:Destroy()
+		Delays[Data.Player].Timer:Destroy()
 	end
 
-	Delays[Data.Player].Timer = Time
+	Time:Start()
+
+	Delays[Data.Player].Timer = Trove
 
 	return Time
 end
@@ -112,8 +118,14 @@ RollEvent.OnServerEvent:Connect(function(Player: Player, Count: number)
 	if PlayerData and PlayerData.Profile.Data.Gold >= Constants.ROLLCOSTS.MAIN * Count then
 		if Delays[Player].MinimumTime <= tick() then
 			PlayerData:SubtractGold(Constants.ROLLCOSTS.MAIN * Count)
-			Roll(PlayerData, Count, PlayerData.Profile.Data.AutoRoll)
-			if PlayerData.Profile.Data.AutoRoll then
+
+			local AutoRoll = PlayerData:GetSetting("AutoRoll")
+
+			InAutoRolls[Player] = AutoRoll
+
+			local InAutoRoll = InAutoRolls[Player]
+			Roll(PlayerData, Count, InAutoRoll)
+			if InAutoRoll then
 				InitTimer(PlayerData, Count)
 			end
 		end
@@ -125,6 +137,7 @@ StopAutoRoll.OnServerEvent:Connect(function(Player)
 
 	if PlayerData and Delays[Player].Timer then
 		Delays[Player].Timer:Destroy()
+		InAutoRolls[Player] = false
 		StopAutoRoll:FireClient(Player)
 	end
 end)

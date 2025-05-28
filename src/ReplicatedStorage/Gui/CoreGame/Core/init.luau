@@ -513,6 +513,7 @@ local function Render()
 		providers = {
 			WarningContext.Provider,
 			CurrencyContext.Provider,
+			SettingContext.Provider,
 		},
 	}, {
 		GuiBlur = IsRunning and ReactRoblox.createPortal(
@@ -568,12 +569,6 @@ local function Render()
 					end,
 					CloseClick = function()
 						SetVisibleInternal(Constants.ROLL_FRAME, true)
-					end,
-				}) :: any,
-				[Constants.SETTINGS] = e(RenderSettings, {
-					Visible = if VisibleFrame == Constants.SETTINGS then true else false,
-					CloseClick = function()
-						OnCloseClick(Constants.SETTINGS)
 					end,
 				}) :: any,
 			} :: any
@@ -711,6 +706,12 @@ local function Render()
 				OnMainButtonClick(Constants.SETTINGS)
 			end,
 		}),
+		[Constants.SETTINGS] = e(RenderSettings, {
+			Visible = if VisibleFrame == Constants.SETTINGS then true else false,
+			CloseClick = function()
+				OnCloseClick(Constants.SETTINGS)
+			end,
+		}) :: any,
 		Warnings = e(Warning),
 	})
 end

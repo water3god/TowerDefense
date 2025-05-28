@@ -36,6 +36,8 @@ local Client = ReplicatedStorage.Client
 local LobbyClient = Client.LobbyClient
 local RollService = require(LobbyClient.RollService)
 
+local SettingService = require(Client.GlobalClient.SettingsService)
+
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
 local RarityInfo = require(Shared.RarityInfo)
@@ -167,6 +169,20 @@ local function CreateRollMain(props: Properties)
 
 	local InAutoSell, SetAutoSell = React.useState(false)
 
+	React.useEffect(function()
+		SetAutoSell(SettingService.GetSetting("AutoRoll"))
+	end, {})
+
+	Hooks.useEventConnection(SettingService.Synced, function()
+		SetAutoSell(SettingService.GetSetting("AutoRoll"))
+	end, {})
+
+	Hooks.useEventConnection(SettingService.GetSettingChangedSignal("AutoRoll"), function(AutoRoll: boolean)
+		if AutoRoll then
+			SetAutoSell(AutoRoll)
+		end
+	end, {})
+
 	local Cost = React.useMemo(function()
 		return Constants.ROLLCOSTS.MAIN * RollMultiplier
 	end, { RollMultiplier })
@@ -180,7 +196,9 @@ local function CreateRollMain(props: Properties)
 	end, { RollMultiplier, WarningData.Warnings :: any, CurrencyContext.Value })
 
 	local OnAutoClick = React.useCallback(function()
-		SetAutoSell(not InAutoSell)
+		local Value = not InAutoSell
+		SettingService.ChangeSetting("AutoRoll", Value)
+		SetAutoSell(Value)
 	end, { InAutoSell })
 
 	local SummonText = React.useMemo(function()
@@ -245,7 +263,7 @@ local function CreateRollMain(props: Properties)
 			Label = e(Main.TextLabel, {
 				native = {
 					Size = UDim2.fromScale(0.8, 0.6),
-					Text = string.format("Auto Sell: %s", if InAutoSell then "On" else "Off"),
+					Text = string.format("Auto Roll: %s", if InAutoSell then "On" else "Off"),
 				},
 				children = {
 					UIStroke = e(UIStroke.UIStrokeBasic, {

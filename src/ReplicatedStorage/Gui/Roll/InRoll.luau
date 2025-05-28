@@ -28,9 +28,13 @@ local UnitView = require(CoreGame.UnitView)
 local UIStroke = require(CoreGame.UIStroke)
 local Hooks = require(CoreGame.Hooks)
 
+local SettingsContext = require(Gui.Settings.SettingsContext)
+
 local Client = ReplicatedStorage.Client
 local LobbyClient = Client.LobbyClient
 local RollService = require(LobbyClient.RollService)
+
+local InventoryService = require(Client.GlobalClient.InventoryService)
 
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
@@ -42,12 +46,13 @@ export type Properties = {
 	CloseClick: () -> ()?,
 	LastFiredTime: number,
 	AutoRoll: boolean,
-	UnitNames: { string },
+	UnitNames: { { Name: string, UniqueId: string } },
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
 
 export type UnitProperties = {
+	UniqueId: string,
 	UnitName: string,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
@@ -67,6 +72,8 @@ local function CreateUnitFrame(props: UnitProperties)
 		}
 	end)
 
+	local SettingsData = React.useContext(SettingsContext.Context)
+
 	local Data = React.useMemo(function()
 		if props.UnitName then
 			local UnitData = UnitInfo.UnitInfo[props.UnitName]
@@ -83,6 +90,21 @@ local function CreateUnitFrame(props: UnitProperties)
 	end, { props.UnitName })
 
 	local RotationCFrame = React.useBinding(CFrame.Angles(math.rad(20), 0, 0))
+
+	local IsSold = React.useMemo(function()
+		if Data.Rarity ~= "BLANK" and Data.Rarity ~= "Godly" then
+			local Setting = SettingsData[Data.Rarity .. "Skip"] :: boolean
+			return Setting
+		else
+			return false
+		end
+	end, { SettingsData, Data :: any })
+
+	React.useEffect(function()
+		if IsSold then
+			InventoryService.SellUnits({ props.UniqueId })
+		end
+	end, { IsSold })
 
 	return e(Main.Frame, {
 		native = Join({}, props.native),
@@ -137,6 +159,14 @@ local function CreateUnitFrame(props: UnitProperties)
 					Color = Data.RarityData and Data.RarityData.Color,
 				}),
 			}),
+			SoldFrame = e(Main.TextLabel, {
+				native = {
+					Size = UDim2.fromScale(0.7, 0.15),
+					Position = UDim2.fromScale(0.5, 1.05),
+					Visible = IsSold,
+					Text = "Sold",
+				},
+			}),
 		}),
 	}, props.children)
 end
@@ -163,11 +193,12 @@ local function CreateInRoll(props: Properties)
 
 			for j = 1, MaxPerRow, 1 do
 				local Index = MaxPerRow * (i - 1) + j
-				local UnitName = props.UnitNames[Index]
+				local UnitData = props.UnitNames[Index]
 
-				if UnitName then
+				if UnitData then
 					UnitFrames["UnitFrame" .. Index] = e(CreateUnitFrame, {
-						UnitName = UnitName,
+						UnitName = UnitData.Name,
+						UniqueId = UnitData.UniqueId,
 						native = {
 							LayoutOrder = j,
 						},
@@ -197,7 +228,7 @@ local function CreateInRoll(props: Properties)
 		end
 
 		local TimeDifference = workspace:GetServerTimeNow() - props.LastFiredTime
-		local DelayTime = Constants.ROLLDELAYTIME * 0.7 - TimeDifference
+		local DelayTime = Constants.ROLLDELAYTIME * 0.9 - TimeDifference
 		if props.AutoRoll then
 			local Promise = Promise.delay(DelayTime):andThen(function()
 				SetVisible(false)
@@ -275,7 +306,7 @@ local function CreateInRoll(props: Properties)
 	}, {
 		StopAutoButton = e(Main.Animateables.ImageButton, {
 			native = {
-				Position = UDim2.fromScale(0.5, 1.2),
+				Position = UDim2.fromScale(0.5, 1),
 				Size = UDim2.fromScale(0.5, 0.2),
 				Image = "rbxassetid://80739823452825",
 				ImageColor3 = Color3.new(1.000000, 0.125490, 0.125490),
