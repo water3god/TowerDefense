@@ -131,17 +131,17 @@ function Enemy.new(Input: EnemyInput)
 	self.UniqueId = GenerateId.GenerateId()
 	self.Trove = Trove.new()
 
-	self.SpectatorAdded = self.Trove:Add(Signal.new(), "DisconnectAll")
-	self.SpectatorRemoving = self.Trove:Add(Signal.new(), "DisconnectAll")
+	self.SpectatorAdded = self.Trove:Construct(Signal)
+	self.SpectatorRemoving = self.Trove:Construct(Signal)
 
-	self.Damaged = self.Trove:Add(Signal.new(), "DisconnectAll")
-	self.Healed = self.Trove:Add(Signal.new(), "DisconnectAll")
+	self.Damaged = self.Trove:Construct(Signal)
+	self.Healed = self.Trove:Construct(Signal)
 
-	self.HealthChanged = self.Trove:Add(Signal.new(), "DisconnectAll")
-	self.MaxHealthChanged = self.Trove:Add(Signal.new(), "DisconnectAll")
-	self.SpeedChanged = self.Trove:Add(Signal.new(), "DisconnectAll")
-	self.ReachedEnd = self.Trove:Add(Signal.new(), "DisconnectAll")
-	self.Destroying = self.Trove:Add(Signal.new(), "DisconnectAll")
+	self.HealthChanged = self.Trove:Construct(Signal)
+	self.MaxHealthChanged = self.Trove:Construct(Signal)
+	self.SpeedChanged = self.Trove:Construct(Signal)
+	self.ReachedEnd = self.Trove:Construct(Signal)
+	self.Destroying = self.Trove:Construct(Signal)
 
 	self.ModelName = Input.EnemyInfo.ModelName
 	self.Health = Input.EnemyInfo.Health

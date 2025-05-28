@@ -17,11 +17,11 @@ local Data: { [string]: Unit.UnitInput } = {
 				function(Unit: Unit.Unit, Damage: number)
 					local CurrentEnemy = Unit.CurrentEnemy
 
-					if CurrentEnemy then
-						task.delay(0.65 * Unit.SpeedRatio, function()
+					task.delay(0.65 * Unit.SpeedRatio, function()
+						if CurrentEnemy and CurrentEnemy.Damage then
 							CurrentEnemy:Damage(Damage)
-						end)
-					end
+						end
+					end)
 				end,
 			},
 		},

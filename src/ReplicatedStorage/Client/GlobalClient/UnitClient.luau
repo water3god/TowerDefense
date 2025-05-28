@@ -401,6 +401,7 @@ end
 function UnitModule:RotateTo(Degree: number)
 	self.CFrame = CFrame.new(self.CFrame.Position) * CFrame.Angles(0, math.rad(Degree), 0)
 	self.VisualCFrame = self.CFrame + self.VectorOffset
+	self:TPToRootPosition()
 end
 
 function UnitModule:PartIsDescendantOf(Part: BasePart)

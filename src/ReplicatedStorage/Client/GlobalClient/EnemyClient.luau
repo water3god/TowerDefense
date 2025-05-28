@@ -170,9 +170,10 @@ local function NewEnemy(Input: Types.EnemyInput, SpectateFire: boolean)
 		for _, Animation in pairs(CoreInfo:GetChildren()) do
 			self.Animations[Animation.Name] = self.Animator:LoadAnimation(Animation)
 		end
-		if not self.Animations["Walk"] then
-			self.Animations["Walk"] = self.Animator:LoadAnimation(Default)
-		end
+	end
+
+	if not self.Animations["Walk"] then
+		self.Animations["Walk"] = self.Animator:LoadAnimation(Default)
 	end
 
 	local WalkAnim = self.Animations["Walk"]

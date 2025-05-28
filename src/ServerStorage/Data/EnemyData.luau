@@ -2,21 +2,21 @@
 
 -- By Wa1er_God --
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage");
-local ServerScriptService = game:GetService("ServerScriptService");
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
 
-local GlobalModules = ServerScriptService.GlobalModules;
-local Enemy = require(GlobalModules.Enemy);
+local GlobalModules = ServerScriptService.GlobalModules
+local Enemy = require(GlobalModules.Enemy)
 
-local Data: {[string]: Enemy.EnemyInfo} = {
+local Data: { [string]: Enemy.EnemyInfo } = {
 	["Zombie"] = {
-		ModelName = "Zombie";
-		Health = 10;
-		Speed = 10;
-		Reverse = false;
-		IsBoss = false;
-		Ally = false;
-	};
-};
+		ModelName = "Zombie",
+		Health = 10,
+		Speed = 2,
+		Reverse = false,
+		IsBoss = false,
+		Ally = false,
+	},
+}
 
 return Data
