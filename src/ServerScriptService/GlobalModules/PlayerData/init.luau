@@ -288,6 +288,7 @@ function PlayerData.new(Player: Player)
 	end
 
 	self.NeededXP = CalculatePlayerXP(self.Profile.Data.Level)
+	self:AddUnit("Alexander The Great")
 
 	self.DataAdded:Fire(self)
 
