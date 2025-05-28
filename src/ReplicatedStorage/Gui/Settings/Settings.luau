@@ -4,13 +4,11 @@
 
 -- Services --
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
-local ReactRoblox = require(Packages.ReactRoblox)
 local e = React.createElement
 
 local Input = require(Packages.Input)
@@ -33,6 +31,9 @@ local CloseButton = require(CoreGame.CloseButton)
 
 local SettingsFolder = Gui.Settings
 local SettingsContext = require(SettingsFolder.SettingsContext)
+
+local Shared = ReplicatedStorage.Shared
+local SettingsModule = require(Shared.Settings)
 
 export type Properties = {
 	CloseClick: (() -> ())?,
@@ -70,7 +71,7 @@ local function CreateBoolean(props: { Setting: string, Value: boolean })
 
 	local BarPosition = React.useMemo(function()
 		if Value then
-			return UDim2.fromScale(0.7, 0.5)
+			return UDim2.fromScale(0.8, 0.5)
 		else
 			return UDim2.fromScale(0.2, 0.5)
 		end
@@ -98,7 +99,7 @@ local function CreateBoolean(props: { Setting: string, Value: boolean })
 		Bar = e(Main.Frame, {
 			native = {
 				Position = BarPosition,
-				Size = UDim2.fromScale(0.4, 0.9),
+				Size = UDim2.fromScale(0.4, 1),
 				BackgroundTransparency = 0,
 				BackgroundColor3 = Color,
 			},
@@ -195,9 +196,9 @@ local function CreateNumber(props: { Setting: string, Value: number })
 					return UDim2.fromScale(Number, 0.5)
 				end),
 				AnchorPoint = Vector2.new(0, 0.5),
-				Size = UDim2.fromScale(0.05, 2),
+				Size = UDim2.fromScale(0.05, 3),
 				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.new(0.886275, 0.090196, 0.090196),
+				BackgroundColor3 = Color3.new(0.584314, 0.584314, 0.584314),
 			},
 		}, {
 			UICorner = e("UICorner", {
@@ -224,6 +225,10 @@ local function CreateSetting(props: SettingProps)
 		end
 	end, { props.Type, props.SettingName, props.Value })
 
+	local Name = React.useMemo(function()
+		return SettingsModule.Displays[props.SettingName] or props.SettingName
+	end, { props.SettingName })
+
 	return e(Main.Frame, {
 		native = Join({
 			Size = UDim2.fromScale(0.9, 0.15),
@@ -233,14 +238,14 @@ local function CreateSetting(props: SettingProps)
 			native = {
 				Size = UDim2.fromScale(0.9, 0.9),
 				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.new(0.490196, 0.490196, 0.490196),
+				BackgroundColor3 = Color3.new(0.298039, 0.094118, 0.470588),
 			},
 		}, {
 			NameLabel = e(Main.TextLabel, {
 				native = {
-					Position = UDim2.fromScale(0.3, 0.5),
-					Size = UDim2.fromScale(0.5, 0.4),
-					Text = props.SettingName,
+					Position = UDim2.fromScale(0.325, 0.5),
+					Size = UDim2.fromScale(0.575, 0.4),
+					Text = Name,
 					TextXAlignment = Enum.TextXAlignment.Left,
 				},
 			}),
@@ -263,6 +268,9 @@ local function CreateSettingsFrame(props: Properties)
 				SettingName = Setting,
 				Type = typeof(Value),
 				Value = Value,
+				native = {
+					LayoutOrder = table.find(SettingsModule.SettingIndexes, Setting),
+				},
 			})
 		end
 

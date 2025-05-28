@@ -43,6 +43,16 @@ Settings.SettingIndexes = {
 	"MythicSkip",
 	"CanTrade",
 }
+
+Settings.Displays = {
+	MusicVolume = "Music Volume",
+	CommonSkip = "Common Sell",
+	RareSkip = "Rare AutoSell",
+	EpicSkip = "Epic AutoSell",
+	LegendarySkip = "Legendary AutoSell",
+	MythicSkip = "Mythic AutoSell",
+}
+
 Settings.SettingTypes = {
 	Music = "boolean",
 	MusicVolume = "number",
