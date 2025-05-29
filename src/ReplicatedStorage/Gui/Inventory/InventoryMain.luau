@@ -305,6 +305,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		SetIndEnabled(false)
 		SetSellingItems({})
 		ToggleSell(false)
+		SetHovered(nil)
 		if OpenFrame == "Unit" then
 			SetClickedProductData(nil)
 			SetClickedResourceData(nil)
@@ -325,12 +326,6 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			SetIndEnabled(false)
 		end
 	end, { InSell, HoveredId :: any })
-
-	React.useEffect(function()
-		if not HoveredId then
-			SetClickedUnitData(nil)
-		end
-	end, { HoveredId })
 
 	React.useEffect(function()
 		local SellingUnitsCloned = table.clone(SellingItems)
@@ -439,7 +434,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 	end, { HoveredId, IndEnabled :: any, OpenFrame :: any })
 
 	local OnSellPressed = React.useCallback(function()
-		SetHovered(nil :: any)
+		SetHovered(nil)
 		SetSellingItems({})
 		ToggleSell(not InSell)
 	end, { InSell, HoveredId :: any, SellingItems :: any })
@@ -499,6 +494,22 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 
 		return Sorts
 	end, { InventoryData, FilterMethod :: any, OpenFrame :: any })
+
+	React.useEffect(function()
+		if OpenFrame == "Unit" then
+			if not InventoryData.Units[HoveredId] then
+				SetHovered(nil)
+			end
+		elseif OpenFrame == "Product" then
+			if not InventoryData.Products[HoveredId] then
+				SetHovered(nil)
+			end
+		elseif OpenFrame == "Resource" then
+			if not InventoryData.Resources[HoveredId] then
+				SetHovered(nil)
+			end
+		end
+	end, { InventoryData })
 
 	local InventoryNodes = React.useMemo(function()
 		local Table: { [string]: React.Node } = {}
@@ -570,22 +581,13 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			for _, Data in pairs(InventoryData.Units) do
 				HandleUnitData(Data)
 			end
-			if HoveredId and not InventoryData.Units[HoveredId] then
-				SetHovered(nil)
-			end
 		elseif OpenFrame == "Product" then
 			for _, Data in pairs(InventoryData.Products) do
 				HandleProductData(Data)
 			end
-			if HoveredId and not InventoryData.Products[HoveredId] then
-				SetHovered(nil)
-			end
 		elseif OpenFrame == "Resource" then
 			for _, Data in pairs(InventoryData.Resources) do
 				HandleResourceData(Data)
-			end
-			if HoveredId and not InventoryData.Resources[HoveredId] then
-				SetHovered(nil)
 			end
 		end
 		return Table

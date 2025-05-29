@@ -130,7 +130,7 @@ local function CreateInfoFrame(Properties: Properties)
 			RotationCFrame = RotationCFrame,
 			Offset = Vector3.new(0, -1, 0),
 			native = {
-				Position = UDim2.fromScale(0.5, 0.5),
+				Position = UDim2.fromScale(0.5, 0.525),
 				Size = UDim2.fromScale(0.9, 0.45),
 				Visible = IsUnit,
 			},
@@ -141,7 +141,7 @@ local function CreateInfoFrame(Properties: Properties)
 		}),
 		IconFrame = e(Main.ImageLabel, {
 			native = {
-				Position = UDim2.fromScale(0.5, 0.5),
+				Position = UDim2.fromScale(0.5, 0.525),
 				Size = UDim2.fromScale(0.9, 0.45),
 				Image = Icon,
 			},
