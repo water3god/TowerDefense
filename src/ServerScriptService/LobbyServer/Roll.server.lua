@@ -93,6 +93,12 @@ local function InitTimer(Data: PlayerData.PlayerData, Count: number)
 		end
 	end)
 
+	Trove:Add(function()
+		if InAutoRolls[Data.Player] then
+			InAutoRolls[Data.Player] = false
+		end
+	end)
+
 	Trove:Connect(Data.Player.Destroying, function()
 		Delays[Data.Player].Timer:Destroy()
 	end)
