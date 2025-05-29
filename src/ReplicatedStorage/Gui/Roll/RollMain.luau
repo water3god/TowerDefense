@@ -134,7 +134,7 @@ local function CreateRollMain(props: Properties)
 	local RollData = React.useContext(RollContext.Context)
 	local WarningData = React.useContext(WarningContext.Context)
 	local CurrencyContext = React.useContext(CurrencyContext.Context)
-	local InventoryContext = React.useContext(InventoryContext.Context)
+	local InventoryData = React.useContext(InventoryContext.Context)
 
 	local RollMultiplier, SetRollMultiplier = React.useState(1)
 
@@ -199,13 +199,13 @@ local function CreateRollMain(props: Properties)
 			return
 		end
 
-		if HelperFunctions.Len(InventoryContext.Units) >= InventoryContext.MaxUnitCount then
+		if HelperFunctions.Len(InventoryData.Units) >= InventoryData.MaxUnitCount then
 			WarningData.Add("Your Inventory is Full!")
 			return
 		end
 
 		RollService.Roll(RollMultiplier)
-	end, { RollMultiplier, WarningData.Warnings :: any, CurrencyContext.Value, InventoryContext :: any })
+	end, { RollMultiplier, WarningData.Warnings :: any, CurrencyContext.Value, InventoryData :: any })
 
 	local OnAutoClick = React.useCallback(function()
 		local Value = not InAutoSell

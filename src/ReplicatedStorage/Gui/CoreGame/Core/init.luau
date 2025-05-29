@@ -156,20 +156,13 @@ local RenderInventory = React.forwardRef(function(Props: InventoryProps, ref)
 		Name = Constants.INVENTORY_FRAME,
 	})
 
-	return e(Hooks.ContextStack, {
-		providers = {
-			InventoryContext.Provider,
-			EquippedUnitsContext.Provider,
+	return e(InventoryMain, {
+		CloseClick = Props.CloseClick,
+		ref = ref,
+		native = {
+			Position = Position,
+			Visible = Visiblity,
 		},
-	}, {
-		InventoryMain = e(InventoryMain, {
-			CloseClick = Props.CloseClick,
-			ref = ref,
-			native = {
-				Position = Position,
-				Visible = Visiblity,
-			},
-		}),
 	})
 end)
 
@@ -515,6 +508,8 @@ local function Render()
 			WarningContext.Provider,
 			CurrencyContext.Provider,
 			SettingContext.Provider,
+			InventoryContext.Provider,
+			EquippedUnitsContext.Provider,
 		},
 	}, {
 		GuiBlur = IsRunning and ReactRoblox.createPortal(
