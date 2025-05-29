@@ -7,6 +7,14 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local GlobalModules = ServerScriptService.GlobalModules
 local Unit = require(GlobalModules.Unit)
+local GlobalWave = require(GlobalModules.GlobalWave)
+
+local function AddAlly(Unit: string)
+	local Wave = GlobalWave.GetWave()
+
+	if Wave then
+	end
+end
 
 local Data: { [string]: Unit.UnitInput } = {
 	["Alexander The Great"] = {

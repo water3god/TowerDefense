@@ -131,6 +131,27 @@ local function OnFrame()
 			Enemy.ReachedEnd:Fire()
 		end
 	end
+
+	for _, Ally in pairs(Enemies) do
+		if Ally.Reverse then
+			for _, Enemy in pairs(Enemies) do
+				if not Enemy.Reverse then
+					if Ally.TimePosition <= Enemy.TimePosition then
+						if Ally.Health == Enemy.Health then
+							Enemy:Destroy()
+							Ally:Destroy()
+						elseif Ally.Health < Enemy.Health then
+							Enemy:Damage(Ally.Health)
+							Ally:Destroy()
+						elseif Ally.Health > Enemy.Health then
+							Ally:Damage(Enemy.Health)
+							Enemy:Destroy()
+						end
+					end
+				end
+			end
+		end
+	end
 end
 
 RunService.PostSimulation:Connect(OnFrame)

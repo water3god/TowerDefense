@@ -190,12 +190,16 @@ local function CreateUpgradeFrame(Properties: Properties)
 
 			for Property, Data in pairs(LevelData) do
 				if table.find(Stats.StatProperties, Property) then
-					local function GetValue(Data, Property: string)
+					local function GetValue(Data: number & { number }, Property: string): number
 						if Property == "Damage" then
-							return Data[1]
+							return (Data :: any)[1] :: number
 						else
-							return Data
+							return Data :: number
 						end
+					end
+
+					if GetValue(Data, Property) == 0 then
+						continue
 					end
 
 					Frames[Property] = CreatePropertyFrame({

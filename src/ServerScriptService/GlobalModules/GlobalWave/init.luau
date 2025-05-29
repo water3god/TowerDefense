@@ -6,7 +6,6 @@ local StartTime = 30
 local WaveTweenTime = 6
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Players = game:GetService("Players")
 local ServerScriptService = game:GetService("ServerScriptService")
 local ServerStorage = game:GetService("ServerStorage")
 
@@ -103,6 +102,8 @@ type Impl = {
 	Damage: (self: GlobalWave, Damage: number) -> (),
 	Heal: (self: GlobalWave, Healing: number) -> (),
 	SetHealth: (self: GlobalWave, Health: number) -> (),
+
+	AddAlly: (self: GlobalWave, Ally: string) -> (),
 
 	End: (self: GlobalWave, Win: boolean) -> (),
 
@@ -393,6 +394,13 @@ function GlobalWave:SetHealth(Health: number)
 	elseif Old < self.BaseHealth then
 		self.Healed:Fire(self.BaseHealth - Old)
 	end
+end
+
+function GlobalWave:AddAlly(Ally: string)
+	self.Trove:Construct(Enemy, {
+		EnemyInfo = EnemyData[Ally],
+		BezierId = self.BezierId,
+	})
 end
 
 function GlobalWave:End(Win: boolean)

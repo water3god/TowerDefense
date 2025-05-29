@@ -30,6 +30,8 @@ export type EnemyInfo = {
 	IsBoss: boolean,
 	Ally: boolean,
 	AdornmentName: string?,
+	PlayFunc: ((Enemy: Enemy) -> ())?,
+	DestroyFunc: ((Enemy: Enemy) -> ())?,
 }
 
 export type EnemyInput = {
@@ -60,6 +62,9 @@ type EnemyData = {
 
 	ReplicateTo: { Player },
 	IsGlobal: boolean,
+
+	PlayFunc: ((Enemy: Enemy) -> ())?,
+	DestroyFunc: ((Enemy: Enemy) -> ())?,
 
 	AdornmentName: string?,
 	OriginalSpeed: number,
@@ -157,6 +162,9 @@ function Enemy.new(Input: EnemyInput)
 
 	self.AdornmentName = Input.EnemyInfo.AdornmentName
 
+	self.PlayFunc = Input.EnemyInfo.PlayFunc
+	self.DestroyFunc = Input.EnemyInfo.DestroyFunc
+
 	if self.Reverse then
 		self.TimePosition = 1
 	else
@@ -201,6 +209,12 @@ function Enemy.new(Input: EnemyInput)
 		end
 	end)
 
+	self.Destroying:Connect(function()
+		if self.DestroyFunc then
+			self.DestroyFunc(self)
+		end
+	end)
+
 	if self.IsGlobal then
 		self.Trove:Connect(Players.PlayerAdded, function(Player: Player)
 			if self.ReplicateTo then
@@ -220,6 +234,10 @@ function Enemy.new(Input: EnemyInput)
 	end
 
 	self.Spawned:Fire(self)
+
+	if self.PlayFunc then
+		self.PlayFunc(self)
+	end
 
 	Enemies[self.UniqueId] = self
 
