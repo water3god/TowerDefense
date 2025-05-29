@@ -84,14 +84,17 @@ local function InitTimer(Data: PlayerData.PlayerData, Count: number)
 	Time.AllowDrift = false
 
 	Time.Tick:Connect(function()
-		Data:SubtractGold(Constants.ROLLCOSTS.MAIN * Count)
-		Roll(Data, Count, true)
+		local Price = Constants.ROLLCOSTS.MAIN * Count
+		if Data.Profile.Data.Gold >= Price then
+			Data:SubtractGold(Constants.ROLLCOSTS.MAIN * Count)
+			Roll(Data, Count, true)
+		else
+			Delays[Data.Player].Timer:Destroy()
+		end
 	end)
 
 	Trove:Connect(Data.Player.Destroying, function()
-		if Time.Tick then
-			Time:Destroy()
-		end
+		Delays[Data.Player].Timer:Destroy()
 	end)
 
 	if Delays[Data.Player].Timer then
