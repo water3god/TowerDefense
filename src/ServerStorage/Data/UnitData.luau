@@ -49,11 +49,7 @@ local Data: { [string]: Unit.UnitInput } = {
 		AttackFuncs = {
 			[0] = {
 				function(Unit: Unit.Unit, Damage: number)
-					local CurrentEnemy = Unit.CurrentEnemy
-
-					if CurrentEnemy then
-						CurrentEnemy:Damage(Damage)
-					end
+					DelayAttack(Unit, Damage, 0.65)
 				end,
 			},
 		},
@@ -63,17 +59,7 @@ local Data: { [string]: Unit.UnitInput } = {
 	["Pericles"] = {
 		UnitName = "Pericles",
 
-		AttackFuncs = {
-			[0] = {
-				function(Unit: Unit.Unit, Damage: number)
-					local CurrentEnemy = Unit.CurrentEnemy
-
-					if CurrentEnemy then
-						CurrentEnemy:Damage(Damage)
-					end
-				end,
-			},
-		},
+		AttackFuncs = {},
 		DefaultRuns = {},
 		Abilities = {},
 	},
@@ -83,11 +69,7 @@ local Data: { [string]: Unit.UnitInput } = {
 		AttackFuncs = {
 			[0] = {
 				function(Unit: Unit.Unit, Damage: number)
-					local CurrentEnemy = Unit.CurrentEnemy
-
-					if CurrentEnemy then
-						CurrentEnemy:Damage(Damage)
-					end
+					DelayAttack(Unit, Damage, 0.35)
 				end,
 			},
 		},
@@ -97,34 +79,14 @@ local Data: { [string]: Unit.UnitInput } = {
 	["Socrates"] = {
 		UnitName = "Socrates",
 
-		AttackFuncs = {
-			[0] = {
-				function(Unit: Unit.Unit, Damage: number)
-					local CurrentEnemy = Unit.CurrentEnemy
-
-					if CurrentEnemy then
-						CurrentEnemy:Damage(Damage)
-					end
-				end,
-			},
-		},
+		AttackFuncs = {},
 		DefaultRuns = {},
 		Abilities = {},
 	},
 	["Themistocles"] = {
 		UnitName = "Themistocles",
 
-		AttackFuncs = {
-			[0] = {
-				function(Unit: Unit.Unit, Damage: number)
-					local CurrentEnemy = Unit.CurrentEnemy
-
-					if CurrentEnemy then
-						CurrentEnemy:Damage(Damage)
-					end
-				end,
-			},
-		},
+		AttackFuncs = {},
 		DefaultRuns = {},
 		Abilities = {},
 	},
@@ -181,7 +143,7 @@ local Data: { [string]: Unit.UnitInput } = {
 					"SpartacusRage"
 				)
 
-				Unit:ChangeSpeedRatio("SpartacusRage", 0.5, Data.Length)
+				Unit:ChangeSpeedRatio("SpartacusRage", 0.7, Data.Length)
 			end,
 		},
 	},

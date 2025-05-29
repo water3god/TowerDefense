@@ -384,7 +384,7 @@ function Unit:Attack()
 	local LevelData = UpgradeData[self.Level]
 	local AttackFuncs = self.AttackFuncs[self.Level]
 
-	if self.AttackIndex > #AttackFuncs then
+	if AttackFuncs and self.AttackIndex > #AttackFuncs then
 		self.AttackIndex = 1
 	end
 
@@ -408,10 +408,11 @@ function Unit:Attack()
 
 	HelperFunctions.FireClients(AttackEvent, self.ReplicateTo, Data)
 
-	AttackFuncs[self.AttackIndex](self, Damage)
-	self.Attacked:Fire()
-
-	self.AttackIndex += 1
+	if AttackFuncs then
+		AttackFuncs[self.AttackIndex](self, Damage)
+		self.Attacked:Fire()
+		self.AttackIndex += 1
+	end
 end
 
 function Unit:Upgrade()
