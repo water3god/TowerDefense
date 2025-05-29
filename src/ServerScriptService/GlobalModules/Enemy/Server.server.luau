@@ -29,8 +29,8 @@ local function AddInfoToSpawn(Data: any, NewEnemy: Enemy.Enemy)
 	Data.Health = NewEnemy.Health
 	Data.MaxHealth = NewEnemy.MaxHealth
 	Data.Speed = NewEnemy.Speed
-	Data.Reverse = NewEnemy.Reverse
 	Data.IsBoss = NewEnemy.IsBoss
+	Data.Ally = NewEnemy.Ally
 	Data.OriginalSpeed = NewEnemy.OriginalSpeed
 	Data.VectorOffset = NewEnemy.VectorOffset
 	Data.BezierId = NewEnemy.BezierId
@@ -111,7 +111,7 @@ local function CalculateTimePosition(Enemy: Enemy.Enemy)
 	end
 
 	NewTime = math.clamp(NewTime, 0, 1)
-	if Enemy.Reverse then
+	if Enemy.Ally then
 		NewTime = math.abs(NewTime - 1)
 	end
 
@@ -133,9 +133,9 @@ local function OnFrame()
 	end
 
 	for _, Ally in pairs(Enemies) do
-		if Ally.Reverse then
+		if Ally.Ally then
 			for _, Enemy in pairs(Enemies) do
-				if not Enemy.Reverse then
+				if not Enemy.Ally then
 					if Ally.TimePosition <= Enemy.TimePosition then
 						if Ally.Health == Enemy.Health then
 							Enemy:Destroy()

@@ -128,8 +128,8 @@ local function NewEnemy(Input: Types.EnemyInput, SpectateFire: boolean)
 	self.Health = Input.Health
 	self.MaxHealth = Input.MaxHealth
 	self.Speed = Input.Speed
-	self.Reverse = Input.Reverse
 	self.IsBoss = Input.IsBoss
+	self.Ally = Input.Ally
 	self.TimePosition = Input.TimePosition
 	self.SpeedChanges = Input.SpeedChanges
 
@@ -285,7 +285,7 @@ local function CalculateTimePosition(Enemy: Types.EnemyClient)
 	end
 
 	NewTime = math.clamp(NewTime, 0, 1)
-	if Enemy.Reverse then
+	if Enemy.Ally then
 		NewTime = math.abs(NewTime - 1)
 	end
 

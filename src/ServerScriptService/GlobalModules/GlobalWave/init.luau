@@ -103,7 +103,7 @@ type Impl = {
 	Heal: (self: GlobalWave, Healing: number) -> (),
 	SetHealth: (self: GlobalWave, Health: number) -> (),
 
-	AddAlly: (self: GlobalWave, Ally: string) -> (),
+	AddAlly: (self: GlobalWave, Ally: string, ExtraData: {}?) -> (),
 
 	End: (self: GlobalWave, Win: boolean) -> (),
 
@@ -396,9 +396,9 @@ function GlobalWave:SetHealth(Health: number)
 	end
 end
 
-function GlobalWave:AddAlly(Ally: string)
+function GlobalWave:AddAlly(Ally: string, ExtraData: {}?)
 	self.Trove:Construct(Enemy, {
-		EnemyInfo = EnemyData[Ally],
+		EnemyInfo = HelperFunctions.joinDicts(EnemyData[Ally], ExtraData) :: any,
 		BezierId = self.BezierId,
 	})
 end

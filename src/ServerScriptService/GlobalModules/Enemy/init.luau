@@ -26,7 +26,6 @@ export type EnemyInfo = {
 	ModelName: string,
 	Health: number,
 	Speed: number,
-	Reverse: boolean,
 	IsBoss: boolean,
 	Ally: boolean,
 	AdornmentName: string?,
@@ -56,7 +55,6 @@ type EnemyData = {
 	Health: number,
 	MaxHealth: number,
 	Speed: number,
-	Reverse: boolean,
 	IsBoss: boolean,
 	Ally: boolean,
 
@@ -153,7 +151,6 @@ function Enemy.new(Input: EnemyInput)
 	self.Health = Input.EnemyInfo.Health
 	self.MaxHealth = self.Health
 	self.Speed = Input.EnemyInfo.Speed
-	self.Reverse = Input.EnemyInfo.Reverse
 	self.IsBoss = Input.EnemyInfo.IsBoss
 	self.Ally = Input.EnemyInfo.Ally
 

@@ -13,7 +13,6 @@ local Data: { [string]: Enemy.EnemyInfo } = {
 		ModelName = "Zombie",
 		Health = 10,
 		Speed = 2,
-		Reverse = false,
 		IsBoss = false,
 		Ally = false,
 	},
