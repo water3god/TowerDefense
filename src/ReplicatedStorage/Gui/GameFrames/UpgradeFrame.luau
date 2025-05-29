@@ -30,7 +30,6 @@ local GameFrames = Gui.GameFrames
 local UpgradeContext = require(GameFrames.UpgradeContext)
 
 local Shared = ReplicatedStorage.Shared
-local IsLobby = require(Shared.IsLobby)
 local UnitInfo = require(Shared.UnitInfo)
 local RarityInfo = require(Shared.RarityInfo)
 local Constants = require(Shared.Constants)
@@ -39,8 +38,6 @@ local Stats = UnitInfo.Stats
 local Client = ReplicatedStorage.Client
 local GlobalClient = Client.GlobalClient
 local UnitClient = require(GlobalClient.UnitClient)
-local InventoryService = require(GlobalClient.InventoryService)
-local WaveService = require(GlobalClient.WaveService)
 
 export type Properties = {
 	IsVisible: boolean,
@@ -160,14 +157,14 @@ local function CreateAbilityFrame(props: AbilityProps)
 	return e(BaseFrame, {
 		LeftText = "",
 		Name = props.Name,
-		RightText = React.joinBindings({ Time, TotalTime, InAbility }):map(function(Time: any)
-			if Time[3] then
-				return tostring(math.floor(math.clamp(Time[1] - Time[2] + props.Length, 0, props.Length)))
+		RightText = React.joinBindings({ Time, TotalTime, InAbility }):map(function(Times: any)
+			if Times[3] then
+				return tostring(math.floor(math.clamp(Times[1] - Times[2] + props.Length, 0, props.Length)))
 			else
-				if Time[1] == 0 then
+				if Times[1] == 0 then
 					return ""
 				else
-					return tostring(math.floor(Time[1]))
+					return tostring(math.floor(Times[1]))
 				end
 			end
 		end),
