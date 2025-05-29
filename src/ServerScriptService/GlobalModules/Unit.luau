@@ -113,6 +113,7 @@ type UnitData = {
 			LastUsed: number,
 			Name: string,
 			Icon: string,
+			BackgroundColor: ColorSequence,
 			Length: number,
 			Cooldown: number,
 			Func: (self: Unit, AbilityParam: AbilityParam) -> (),

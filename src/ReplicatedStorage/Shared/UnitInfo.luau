@@ -214,7 +214,14 @@ local UnitInfo: { [string]: UnitInfo } = {
 		},
 		CollisionRadius = 3,
 		Abilities = {
-			{ MinimumLevel = 0, Cooldown = 30, Icon = "", Length = 10, Name = "Rage" },
+			{
+				MinimumLevel = 0,
+				BackgroundColor = ColorSequence.new(Color3.new(0.803922, 0.133333, 0.133333)),
+				Cooldown = 30,
+				Icon = "",
+				Length = 10,
+				Name = "Rage",
+			},
 		},
 	},
 	["Cicero"] = {

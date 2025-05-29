@@ -82,6 +82,7 @@ export type UnitModule = Types.UnitModule
 export type UnitInput = Types.UnitInput
 export type UnitData = UnitInfo.UnitData
 export type TotalUnitData = UnitInfo.TotalUnitData
+export type AbilityData = Types.AbilityData
 
 local Units: { [string]: Types.Unit } = {}
 

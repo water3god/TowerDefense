@@ -62,6 +62,7 @@ export type AbilityProps = {
 	Index: number,
 	Name: string,
 	Icon: string,
+	BackgroundColor: ColorSequence,
 	LastUsed: number,
 	Length: number,
 	Cooldown: number,
@@ -170,6 +171,8 @@ local function CreateAbilityFrame(props: AbilityProps)
 				end
 			end
 		end),
+		BackgroundColor = props.BackgroundColor,
+		Hovered = true,
 		Icon = props.Icon,
 		OnClick = Click,
 		native = Join({}, props.native),
@@ -295,6 +298,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 			Frames["Ability" .. Index] = e(CreateAbilityFrame, {
 				UniqueId = UpgradeData.UniqueId,
 				Index = Index,
+				BackgroundColor = AbilityData.BackgroundColor,
 				Name = AbilityData.Name,
 				Icon = AbilityData.Icon,
 				LastUsed = AbilityData.LastUsed,
@@ -581,20 +585,20 @@ local function CreateUpgradeFrame(Properties: Properties)
 					Padding = UDim.new(0, 0),
 				}),
 			}, UpgradeFrames),
-			AbilityFrames = e(Main.ScrollingFrame, {
-				BarSize = 0.01,
-				native = {
-					Size = UDim2.fromScale(0.3, 1),
-					Position = UDim2.fromScale(1.3, 0.5),
-				},
-			}, {
-				UIListLayout = e("UIListLayout", {
-					FillDirection = Enum.FillDirection.Vertical,
-					SortOrder = Enum.SortOrder.LayoutOrder,
-					Padding = UDim.new(0, 0),
-				}),
-			}, AbilityFrames),
 		}),
+		AbilityFrames = e(Main.ScrollingFrame, {
+			BarSize = 0.01,
+			native = {
+				Size = UDim2.fromScale(0.2, 0.9),
+				Position = UDim2.fromScale(1.15, 0.5),
+			},
+		}, {
+			UIListLayout = e("UIListLayout", {
+				FillDirection = Enum.FillDirection.Vertical,
+				SortOrder = Enum.SortOrder.LayoutOrder,
+				Padding = UDim.new(0, 0),
+			}),
+		}, AbilityFrames),
 		UIScale = e("UIScale", {
 			Scale = Styles.Scale,
 		}),

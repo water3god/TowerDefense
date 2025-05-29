@@ -153,6 +153,21 @@ export type UnitInput = {
 	Abilities: { number },
 }
 
+export type AbilityData = {
+	MinimumLevel: number,
+	LastUsed: number,
+	Name: string,
+	Icon: string,
+	Length: number,
+	Cooldown: number,
+	BackgroundColor: ColorSequence,
+	Func: (Unit: Unit, Data: {
+		LastUsed: number,
+		Length: number,
+		Cooldown: number,
+	}) -> (),
+}
+
 type UnitData = {
 	UniqueId: string,
 	Trove: Trove.Trove,
@@ -189,21 +204,7 @@ type UnitData = {
 		[number]: { (Unit: Unit, AttackInput: UnitAttackInput, Enemy: EnemyClient?, Delay: number) -> () },
 	},
 	DefaultRuns: { [number]: (Unit: Unit) -> () },
-	Abilities: {
-		{
-			MinimumLevel: number,
-			LastUsed: number,
-			Name: string,
-			Icon: string,
-			Length: number,
-			Cooldown: number,
-			Func: (Unit: Unit, Data: {
-				LastUsed: number,
-				Length: number,
-				Cooldown: number,
-			}) -> (),
-		}
-	},
+	Abilities: { AbilityData },
 	Animations: { [string]: AnimationTrack },
 
 	Promises: { [string]: Promise.Promise },

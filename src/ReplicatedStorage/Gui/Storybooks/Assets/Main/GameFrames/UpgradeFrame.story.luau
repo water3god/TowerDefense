@@ -47,6 +47,18 @@ local Story = {
 				Level = 0,
 				TotalCost = 10,
 				Enabled = true,
+				Abilities = {
+					{
+						MinimumLevel = 0,
+						LastUsed = 0,
+						Name = "Rage",
+						Icon = "",
+						Length = 10,
+						Cooldown = 30,
+						BackgroundColor = ColorSequence.new(Color3.new()),
+						Func = function() end,
+					},
+				},
 			},
 		}, {
 			UpgradeFrame = e(UpgradeFrame, {
