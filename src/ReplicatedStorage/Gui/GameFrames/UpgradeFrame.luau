@@ -58,6 +58,8 @@ export type PropertyProperties = {
 }
 
 export type AbilityProps = {
+	UniqueId: string,
+	Index: number,
 	Name: string,
 	Icon: string,
 	LastUsed: number,
@@ -146,6 +148,14 @@ local function CreateAbilityFrame(props: AbilityProps)
 		SetTime(props.LastUsed + props.Cooldown, props.LastUsed)
 	end, { props.LastUsed, props.Cooldown })
 
+	local Click = React.useCallback(function()
+		local Unit = UnitClient.GetUnit(props.UniqueId)
+
+		if Unit then
+			Unit:UseAbility(props.Index)
+		end
+	end, { props.UniqueId, props.Index :: any })
+
 	return e(BaseFrame, {
 		LeftText = "",
 		Name = props.Name,
@@ -161,6 +171,7 @@ local function CreateAbilityFrame(props: AbilityProps)
 			end
 		end),
 		Icon = props.Icon,
+		OnClick = Click,
 		native = Join({}, props.native),
 	}, {
 		BgFrame = e(Main.Frame, {
@@ -281,6 +292,8 @@ local function CreateUpgradeFrame(Properties: Properties)
 
 		for Index, AbilityData in ipairs(UpgradeData.Abilities) do
 			Frames["Ability" .. Index] = e(CreateAbilityFrame, {
+				UniqueId = UpgradeData.UniqueId,
+				Index = Index,
 				Name = AbilityData.Name,
 				Icon = AbilityData.Icon,
 				LastUsed = AbilityData.LastUsed,
