@@ -6,6 +6,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local ServerScriptService = game:GetService("ServerScriptService")
 
+local HelperFunctions = require(ReplicatedStorage.Modules.HelperFunctions)
+
 local WaveEvents = ReplicatedStorage.Remotes.Waves
 local HealthChanged = WaveEvents.HealthChanged
 local TimeChanged = WaveEvents.TimeChanged
@@ -87,15 +89,19 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 
 			if PlayerData then
 				for _, Unit in ipairs(Wave.RewardInfo.Units) do
-					PlayerData:AddUnit(Unit)
-					table.insert(SendData, Unit)
+					local Data = PlayerData.Profile.Data
+
+					if HelperFunctions.Len(Data.Units) < Data.MaxUnitCount then
+						PlayerData:AddUnit(Unit)
+						table.insert(SendData, Unit)
+					end
 				end
 
 				for _, Resource in ipairs(Wave.RewardInfo.Resources) do
 					if Resource.Resource == "Gold" then
 						PlayerData:AddGold(Resource.Count)
 					else
-						-- Add Artifact --
+						PlayerData:AddResource(Resource.Resource, Resource.Count)
 					end
 					table.insert(SendData.Resources, Resource)
 				end

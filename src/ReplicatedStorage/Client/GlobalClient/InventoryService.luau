@@ -113,22 +113,27 @@ Data.GetItemRequest = Signal.new()
 Data.IsSynced = IsSynced
 
 Data.EquippedUnits = {} :: { string }
+Data.MaxUnitCount = 100
 
 UnitEquipped.OnClientEvent:Connect(function(SentData: { UniqueId: string, Index: number, Equip: boolean })
 	Data.EquippedUnits[SentData.Index] = if SentData.Equip then SentData.UniqueId else nil :: any
 	UnitEquipChanged:Fire(SentData)
 end)
 
-InventorySync.OnClientEvent:Connect(function(SentData: any, EquippedUnits: { string }, LevelData: any)
-	Data.IsSynced = true
-	CurrentInventory = SentData
-	Data.EquippedUnits = EquippedUnits
+InventorySync.OnClientEvent:Connect(
+	function(SentData: any, EquippedUnits: { string }, LevelData: any, MaxUnitCount: number)
+		Data.IsSynced = true
+		CurrentInventory = SentData
+		Data.EquippedUnits = EquippedUnits
 
-	Data.Level = LevelData.Level
-	Data.XP = LevelData.XP
-	Data.NeededXP = LevelData.NeededXP
-	Synced:Fire()
-end)
+		Data.Level = LevelData.Level
+		Data.XP = LevelData.XP
+		Data.NeededXP = LevelData.NeededXP
+
+		Data.MaxUnitCount = MaxUnitCount
+		Synced:Fire()
+	end
+)
 
 LevelChangedEvent.OnClientEvent:Connect(function(Level: number)
 	Data.Level = Level

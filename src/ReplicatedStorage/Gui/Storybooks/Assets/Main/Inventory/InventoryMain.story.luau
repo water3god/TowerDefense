@@ -39,6 +39,7 @@ local Sample = {
 	},
 	Products = {},
 	Resources = {},
+	MaxUnitCount = 100,
 }
 
 local Story = {

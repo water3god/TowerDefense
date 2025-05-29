@@ -18,6 +18,7 @@ local InventoryContext = React.createContext({
 	Units = {},
 	Products = {},
 	Resources = {},
+	MaxUnitCount = 100,
 })
 
 export type props = {
@@ -29,13 +30,16 @@ local function ContextProvider(props)
 		Units = {},
 		Products = {},
 		Resources = {},
+		MaxUnitCount = 100,
 	})
 
 	React.useEffect(function()
 		local Trove = Trove.new()
 
 		local function Update()
-			SetInventory(table.clone(InventoryService:GetInventory()))
+			local Inventory = table.clone(InventoryService:GetInventory()) :: any
+			Inventory.MaxUnitCount = InventoryService.MaxUnitCount
+			SetInventory(Inventory)
 		end
 
 		Trove:Add(task.spawn(function()

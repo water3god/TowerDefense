@@ -23,12 +23,18 @@ local UnitData = require(ServerStorage.Data.UnitData)
 local function OnDataAdded(Data: PlayerData.PlayerData)
 	local Player = Data.Player
 	local GivenData = Data.Profile.Data
-	InventorySync:FireClient(Player, {
-		Units = GivenData.Units,
-		Gamepasses = GivenData.Gamepasses,
-		Products = GivenData.Products,
-		Resources = GivenData.Resources,
-	}, GivenData.EquippedUnits, { Level = GivenData.Level, XP = GivenData.XP, NeededXP = Data.NeededXP })
+	InventorySync:FireClient(
+		Player,
+		{
+			Units = GivenData.Units,
+			Gamepasses = GivenData.Gamepasses,
+			Products = GivenData.Products,
+			Resources = GivenData.Resources,
+		},
+		GivenData.EquippedUnits,
+		{ Level = GivenData.Level, XP = GivenData.XP, NeededXP = Data.NeededXP },
+		GivenData.MaxUnitCount
+	)
 
 	Data.UnitEquipped:Connect(function(Unit: string, Index: number)
 		UnitEquipped:FireClient(Player, { UniqueId = Unit, Index = Index, Equip = true })

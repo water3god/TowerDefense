@@ -49,6 +49,7 @@ export type Data = {
 	RobuxSpent: number,
 	Gold: number,
 	TotalGoldGained: number,
+	MaxUnitCount: number,
 }
 
 local Data: Data = {
@@ -65,6 +66,7 @@ local Data: Data = {
 	RobuxSpent = 0,
 	Gold = 80,
 	TotalGoldGained = 80,
+	MaxUnitCount = 50,
 }
 
 return Data

@@ -114,7 +114,7 @@ local function CreateBaseButton(Properties: {
 
 	return React.createElement(Main.Animateables.ImageButton, {
 		native = JoinDicts({
-			Size = UDim2.fromScale(0.2, 1),
+			Size = UDim2.fromScale(0.125, 0.09),
 			Image = Image,
 			[React.Event.MouseButton1Click] = Properties.OnClick,
 		}, Properties.native),
@@ -646,6 +646,14 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		end
 	end, { SellingItems })
 
+	local UnitCountText = React.useMemo(function()
+		if OpenFrame == "Unit" then
+			return string.format("%u / %u", HelperFunctions.Len(InventoryData.Units), InventoryData.MaxUnitCount)
+		else
+			return ""
+		end
+	end, { OpenFrame, InventoryData :: any })
+
 	local InfoFrameData = React.useMemo(function()
 		local Default = {
 			Data = nil,
@@ -750,8 +758,8 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			native = {
 				AnchorPoint = Vector2.new(0.5, 0.5),
 				BackgroundTransparency = 1,
-				Position = UDim2.fromScale(0.385, 0.6),
-				Size = UDim2.fromScale(0.675, 0.65),
+				Position = UDim2.fromScale(0.375, 0.55),
+				Size = UDim2.fromScale(0.65, 0.6),
 				CanvasSize = UDim2.fromScale(0, 0),
 				AutomaticCanvasSize = Enum.AutomaticSize.Y,
 				ScrollBarImageColor3 = Color3.fromRGB(68, 11, 93),
@@ -795,50 +803,36 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 				[React.Event.MouseButton1Click] = OnSellPressed,
 			},
 		}),
-
 		InfoFrame = e(InfoFrame, InfoFrameData),
-		Buttons = e(Main.Frame, {
+		UnitsButton = e(CreateBaseButton, {
+			Text = "Units",
+			OnClick = function()
+				SetOpenFrame("Unit")
+			end,
+			Highlighted = OpenFrame == "Unit",
 			native = {
-				Size = UDim2.fromScale(0.6, 0.09),
-				Position = UDim2.fromScale(0.35, 0.175),
+				Position = UDim2.fromScale(0.12, 0.175),
 			},
-		}, {
-			UIListLayout = e("UIListLayout", {
-				Padding = UDim.new(0.05, 0),
-				FillDirection = Enum.FillDirection.Horizontal,
-				SortOrder = Enum.SortOrder.LayoutOrder,
-				VerticalAlignment = Enum.VerticalAlignment.Center,
-			}),
-			UnitsButton = e(CreateBaseButton, {
-				Text = "Units",
-				OnClick = function()
-					SetOpenFrame("Unit")
-				end,
-				Highlighted = OpenFrame == "Unit",
-				native = {
-					LayoutOrder = 1,
-				},
-			}),
-			GamepassesButton = e(CreateBaseButton, {
-				Text = "Products",
-				OnClick = function()
-					SetOpenFrame("Product")
-				end,
-				Highlighted = OpenFrame == "Product",
-				native = {
-					LayoutOrder = 2,
-				},
-			}),
-			ResourcesButton = e(CreateBaseButton, {
-				Text = "Resources",
-				OnClick = function()
-					SetOpenFrame("Resource")
-				end,
-				Highlighted = OpenFrame == "Resource",
-				native = {
-					LayoutOrder = 3,
-				},
-			}),
+		}),
+		GamepassesButton = e(CreateBaseButton, {
+			Text = "Products",
+			OnClick = function()
+				SetOpenFrame("Product")
+			end,
+			Highlighted = OpenFrame == "Product",
+			native = {
+				Position = UDim2.fromScale(0.26, 0.175),
+			},
+		}),
+		ResourcesButton = e(CreateBaseButton, {
+			Text = "Resources",
+			OnClick = function()
+				SetOpenFrame("Resource")
+			end,
+			Highlighted = OpenFrame == "Resource",
+			native = {
+				Position = UDim2.fromScale(0.40, 0.175),
+			},
 		}),
 		Search = e(Main.Frame, {
 			native = {
@@ -896,6 +890,14 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			Title = "INVENTORY",
 			Position = UDim2.fromScale(0.15, -0.03),
 			Size = UDim2.fromScale(0.5, 0.5),
+		}),
+		MaxUnitsCount = e(Main.TextLabel, {
+			native = {
+				Position = UDim2.fromScale(0.7, 0.9),
+				Size = UDim2.fromScale(0.2, 0.05),
+				Text = UnitCountText,
+				ZIndex = 5,
+			},
 		}),
 	})
 end)

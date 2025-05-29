@@ -23,6 +23,9 @@ local UIStroke = require(CoreGame.UIStroke)
 local UnitView = require(CoreGame.UnitView)
 local Hooks = require(CoreGame.Hooks)
 
+local Inventory = Gui.Inventory
+local InventoryContext = require(Inventory.InventoryContext)
+
 local Roll = Gui.Roll
 local RollContext = require(Roll.RollContext)
 
@@ -131,6 +134,7 @@ local function CreateRollMain(props: Properties)
 	local RollData = React.useContext(RollContext.Context)
 	local WarningData = React.useContext(WarningContext.Context)
 	local CurrencyContext = React.useContext(CurrencyContext.Context)
+	local InventoryContext = React.useContext(InventoryContext.Context)
 
 	local RollMultiplier, SetRollMultiplier = React.useState(1)
 
@@ -188,12 +192,20 @@ local function CreateRollMain(props: Properties)
 	end, { RollMultiplier })
 
 	local SummonClick = React.useCallback(function()
-		if CurrencyContext.Value >= Constants.ROLLCOSTS.MAIN * RollMultiplier then
-			RollService.Roll(RollMultiplier)
-		else
+		local Cost = Constants.ROLLCOSTS.MAIN * RollMultiplier
+
+		if CurrencyContext.Value < Cost then
 			WarningData.Add(string.format("You are missing %u Gold!", Cost - CurrencyContext.Value))
+			return
 		end
-	end, { RollMultiplier, WarningData.Warnings :: any, CurrencyContext.Value })
+
+		if HelperFunctions.Len(InventoryContext.Units) >= InventoryContext.MaxUnitCount then
+			WarningData.Add("Your Inventory is Full!")
+			return
+		end
+
+		RollService.Roll(RollMultiplier)
+	end, { RollMultiplier, WarningData.Warnings :: any, CurrencyContext.Value, InventoryContext :: any })
 
 	local OnAutoClick = React.useCallback(function()
 		local Value = not InAutoSell

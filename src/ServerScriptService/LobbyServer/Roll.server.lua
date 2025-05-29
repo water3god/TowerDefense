@@ -12,6 +12,7 @@ local Trove = require(Packages.Trove)
 
 local Modules = ReplicatedStorage.Modules
 local RandomGenerate = require(Modules.RandomGenerate)
+local HelperFunctions = require(Modules.HelperFunctions)
 
 local Remotes = ReplicatedStorage.Remotes
 
@@ -78,6 +79,12 @@ local function Roll(Data: PlayerData.PlayerData, Count: number, Auto: boolean)
 	end
 end
 
+local function LessThanMaxUnits(Data: PlayerData.PlayerData)
+	local Given = Data.Profile.Data
+	local Difference = Given.MaxUnitCount - HelperFunctions.Len(Given.Units)
+	return Difference > 0, Difference
+end
+
 local function InitTimer(Data: PlayerData.PlayerData, Count: number)
 	local Trove = Trove.new()
 	local Time = Trove:Add(Timer.new(RollDelayTime))
@@ -85,9 +92,10 @@ local function InitTimer(Data: PlayerData.PlayerData, Count: number)
 
 	Time.Tick:Connect(function()
 		local Price = Constants.ROLLCOSTS.MAIN * Count
-		if Data.Profile.Data.Gold >= Price then
+		local LessThan, Difference = LessThanMaxUnits(Data)
+		if Data.Profile.Data.Gold >= Price and LessThan then
 			Data:SubtractGold(Constants.ROLLCOSTS.MAIN * Count)
-			Roll(Data, Count, true)
+			Roll(Data, math.min(Difference, Count), true)
 		else
 			Delays[Data.Player].Timer:Destroy()
 		end
@@ -97,6 +105,7 @@ local function InitTimer(Data: PlayerData.PlayerData, Count: number)
 		if InAutoRolls[Data.Player] then
 			InAutoRolls[Data.Player] = false
 		end
+		StopAutoRoll:FireClient(Data.Player)
 	end)
 
 	Trove:Connect(Data.Player.Destroying, function()
@@ -124,18 +133,22 @@ RollEvent.OnServerEvent:Connect(function(Player: Player, Count: number)
 
 	local PlayerData = PlayerData.GetPlayerData(Player)
 
-	if PlayerData and PlayerData.Profile.Data.Gold >= Constants.ROLLCOSTS.MAIN * Count then
-		if Delays[Player].MinimumTime <= tick() then
-			PlayerData:SubtractGold(Constants.ROLLCOSTS.MAIN * Count)
+	if PlayerData then
+		local GivenData = PlayerData.Profile.Data
+		if GivenData.Gold >= Constants.ROLLCOSTS.MAIN * Count then
+			local LessThan, Difference = LessThanMaxUnits(PlayerData)
+			if Delays[Player].MinimumTime <= tick() and LessThan then
+				PlayerData:SubtractGold(Constants.ROLLCOSTS.MAIN * Count)
 
-			local AutoRoll = PlayerData:GetSetting("AutoRoll")
+				local AutoRoll = PlayerData:GetSetting("AutoRoll")
 
-			InAutoRolls[Player] = AutoRoll
+				InAutoRolls[Player] = AutoRoll
 
-			local InAutoRoll = InAutoRolls[Player]
-			Roll(PlayerData, Count, InAutoRoll)
-			if InAutoRoll then
-				InitTimer(PlayerData, Count)
+				local InAutoRoll = InAutoRolls[Player]
+				Roll(PlayerData, math.min(Difference, Count), InAutoRoll)
+				if InAutoRoll then
+					InitTimer(PlayerData, Count)
+				end
 			end
 		end
 	end
