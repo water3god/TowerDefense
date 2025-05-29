@@ -69,7 +69,7 @@ export type UnitInput = {
 
 	-- Array of AttackFuncs per Level; --
 	AttackFuncs: { { (self: Unit, Damage: number) -> () } },
-	DefaultRuns: { [number]: (self: Unit) -> () },
+	DefaultRuns: { [number]: (self: Unit, Damage: number) -> () },
 
 	Abilities: { (self: Unit, Data: AbilityParam) -> () },
 }
@@ -94,7 +94,7 @@ type UnitData = {
 
 	UnitData: UnitInfo.UnitInfo,
 
-	DefaultRuns: { [number]: (self: Unit) -> () },
+	DefaultRuns: { [number]: (self: Unit, Damage: number) -> () },
 	AttackFuncs: { [number]: { (self: Unit, Damage: number) -> () } },
 	AttackIndex: number,
 
@@ -306,7 +306,7 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 	local function OnLevel(Level: number)
 		local Func = self.DefaultRuns[Level]
 		if Func then
-			Func(self)
+			Func(self, self.UnitData.UnitData[Level].Damage[1])
 		end
 
 		if self.UnitData.UnitData[self.Level].FireRate ~= 0 then

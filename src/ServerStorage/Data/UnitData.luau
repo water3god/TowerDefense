@@ -5,6 +5,9 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
+local Packages = ReplicatedStorage.Packages
+local Promise = require(Packages.Promise)
+
 local GlobalModules = ServerScriptService.GlobalModules
 local Unit = require(GlobalModules.Unit)
 local GlobalWave = require(GlobalModules.GlobalWave)
@@ -16,6 +19,16 @@ local function AddAlly(Ally: string, Data: {}?)
 	end
 end
 
+local function DelayAttack(Unit: Unit.Unit, Damage: number, Delay: number)
+	local CurrentEnemy = Unit.CurrentEnemy
+
+	task.delay(Delay * Unit.SpeedRatio, function()
+		if CurrentEnemy and CurrentEnemy.Damage then
+			CurrentEnemy:Damage(Damage)
+		end
+	end)
+end
+
 local Data: { [string]: Unit.UnitInput } = {
 	["Alexander The Great"] = {
 		UnitName = "Alexander The Great",
@@ -23,13 +36,7 @@ local Data: { [string]: Unit.UnitInput } = {
 		AttackFuncs = {
 			[0] = {
 				function(Unit: Unit.Unit, Damage: number)
-					local CurrentEnemy = Unit.CurrentEnemy
-
-					task.delay(0.65 * Unit.SpeedRatio, function()
-						if CurrentEnemy and CurrentEnemy.Damage then
-							CurrentEnemy:Damage(Damage)
-						end
-					end)
+					DelayAttack(Unit, Damage, 0.65)
 				end,
 			},
 		},
@@ -127,11 +134,7 @@ local Data: { [string]: Unit.UnitInput } = {
 		AttackFuncs = {
 			[0] = {
 				function(Unit: Unit.Unit, Damage: number)
-					local CurrentEnemy = Unit.CurrentEnemy
-
-					if CurrentEnemy then
-						CurrentEnemy:Damage(Damage)
-					end
+					DelayAttack(Unit, Damage, 0.25)
 				end,
 			},
 		},
@@ -161,17 +164,25 @@ local Data: { [string]: Unit.UnitInput } = {
 		AttackFuncs = {
 			[0] = {
 				function(Unit: Unit.Unit, Damage: number)
-					local CurrentEnemy = Unit.CurrentEnemy
-
-					if CurrentEnemy then
-						CurrentEnemy:Damage(Damage)
-					end
+					DelayAttack(Unit, Damage, 0.55)
 				end,
 			},
 		},
 		DefaultRuns = {},
 		Abilities = {
-			function(Unit, Data) end,
+			function(Unit, Data)
+				Unit:DisableAttack(1.8)
+				Unit:PlayAnimation("Rage")
+
+				Unit:AddPromise(
+					Promise.delay(1.8):andThen(function()
+						Unit:EnableAttack()
+					end),
+					"SpartacusRage"
+				)
+
+				Unit:ChangeSpeedRatio("SpartacusRage", 0.5, Data.Length)
+			end,
 		},
 	},
 	["Cicero"] = {
@@ -179,13 +190,7 @@ local Data: { [string]: Unit.UnitInput } = {
 
 		AttackFuncs = {
 			[0] = {
-				function(Unit: Unit.Unit, Damage: number)
-					local CurrentEnemy = Unit.CurrentEnemy
-
-					if CurrentEnemy then
-						CurrentEnemy:Damage(Damage)
-					end
-				end,
+				function() end,
 			},
 		},
 		DefaultRuns = {},
@@ -195,23 +200,19 @@ local Data: { [string]: Unit.UnitInput } = {
 		UnitName = "Trajan",
 
 		AttackFuncs = {},
-		DefaultRuns = {},
+		DefaultRuns = {
+			--[[[0] = function(Unit, Damage: number)
+				AddAlly("Ally", {
+					Health = Damage,
+				})
+			end,]]
+		},
 		Abilities = {},
 	},
 	["Augustus"] = {
 		UnitName = "Augustus",
 
-		AttackFuncs = {
-			[0] = {
-				function(Unit: Unit.Unit, Damage: number)
-					local CurrentEnemy = Unit.CurrentEnemy
-
-					if CurrentEnemy then
-						CurrentEnemy:Damage(Damage)
-					end
-				end,
-			},
-		},
+		AttackFuncs = {},
 		DefaultRuns = {},
 		Abilities = {},
 	},

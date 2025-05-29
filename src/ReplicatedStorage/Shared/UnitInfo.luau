@@ -54,7 +54,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 		UnitData = {
 			[0] = {
 				Damage = { 5 },
-				FireRate = 3,
+				FireRate = 2,
 				Range = 10,
 				Armor = "AlexanderArmor",
 				Cost = 100,
@@ -70,9 +70,9 @@ local UnitInfo: { [string]: UnitInfo } = {
 
 		UnitData = {
 			[0] = {
-				Damage = { 5 },
+				Damage = { 20 },
 				FireRate = 1,
-				Range = 50,
+				Range = 20,
 				Armor = "LeonidasArmor",
 				Cost = 100,
 			},
@@ -87,9 +87,9 @@ local UnitInfo: { [string]: UnitInfo } = {
 
 		UnitData = {
 			[0] = {
-				Damage = { 5 },
-				FireRate = 1,
-				Range = 50,
+				Damage = { 0 },
+				FireRate = 0,
+				Range = 5,
 				Armor = "PericlesArmor",
 				Cost = 100,
 			},
@@ -106,7 +106,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 			[0] = {
 				Damage = { 5 },
 				FireRate = 1,
-				Range = 50,
+				Range = 10,
 				Armor = "PyrrhusArmor",
 				Cost = 100,
 			},
@@ -121,9 +121,9 @@ local UnitInfo: { [string]: UnitInfo } = {
 
 		UnitData = {
 			[0] = {
-				Damage = { 5 },
-				FireRate = 1,
-				Range = 50,
+				Damage = { 0 },
+				FireRate = 0,
+				Range = 5,
 				Cost = 100,
 			},
 		},
@@ -137,9 +137,9 @@ local UnitInfo: { [string]: UnitInfo } = {
 
 		UnitData = {
 			[0] = {
-				Damage = { 5 },
-				FireRate = 1,
-				Range = 50,
+				Damage = { 0 },
+				FireRate = 0,
+				Range = 5,
 				Armor = "ThemistoclesArmor",
 				Cost = 100,
 			},
@@ -207,7 +207,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 			[0] = {
 				Damage = { 5 },
 				FireRate = 1,
-				Range = 50,
+				Range = 8,
 				Armor = "SpartacusArmor",
 				Cost = 100,
 			},
@@ -224,9 +224,9 @@ local UnitInfo: { [string]: UnitInfo } = {
 
 		UnitData = {
 			[0] = {
-				Damage = { 5 },
-				FireRate = 1,
-				Range = 50,
+				Damage = { 0 },
+				FireRate = 0,
+				Range = 5,
 				Cost = 100,
 			},
 		},
@@ -240,9 +240,9 @@ local UnitInfo: { [string]: UnitInfo } = {
 
 		UnitData = {
 			[0] = {
-				Damage = { 5 },
-				FireRate = 1,
-				Range = 50,
+				Damage = { 0 },
+				FireRate = 0,
+				Range = 5,
 				Cost = 100,
 			},
 		},

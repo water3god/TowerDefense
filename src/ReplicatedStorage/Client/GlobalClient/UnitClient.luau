@@ -946,8 +946,9 @@ AnimationEvent.OnClientEvent:Connect(function(Data: {
 	local Unit = UnitModule.GetUnit(Data.UniqueId)
 
 	if Unit then
-		local Length = Data.Length and (Data.SentTime - workspace:GetServerTimeNow()) + Data.Length
-		Unit:PlayAnimation(Data.AnimationName, Data.SecondsAfter, Data.SpeedRatio, Data.FadeTime, Length)
+		local SecondsAfter = Data.SecondsAfter or 0
+		local NewTime = SecondsAfter + (workspace:GetServerTimeNow() - Data.SentTime)
+		Unit:PlayAnimation(Data.AnimationName, NewTime, Data.SpeedRatio, Data.FadeTime, Data.Length)
 	end
 end)
 
