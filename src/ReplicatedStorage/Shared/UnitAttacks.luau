@@ -70,7 +70,10 @@ local DefaultRuns: { [string]: { [number]: (Unit: Types.Unit) -> () } } = {
 	},
 }
 
+local Abilities: { [string]: { [number]: (Unit: Types.Unit) -> () } } = {}
+
 return {
 	UnitAttacks = UnitAttacks,
 	DefaultRuns = DefaultRuns,
+	Abilities = Abilities,
 }

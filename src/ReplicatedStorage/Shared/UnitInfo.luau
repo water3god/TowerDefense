@@ -213,7 +213,9 @@ local UnitInfo: { [string]: UnitInfo } = {
 			},
 		},
 		CollisionRadius = 3,
-		Abilities = {},
+		Abilities = {
+			{ Cooldown = 30, Icon = "", Length = 10, Name = "Rage" },
+		},
 	},
 	["Cicero"] = {
 		Rarity = "Epic",

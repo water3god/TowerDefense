@@ -65,6 +65,7 @@ local OnUpgrade = Events.Upgrade
 local PriorityChanged = Events.PriorityChanged
 local AbilityEvent = Events.AbilityEvent
 local AnimationEvent = Events.AnimationEvent
+local SpeedRatioEvent = Events.SpeedRatioEvent
 
 local OtherEvents = ReplicatedStorage.Remotes.UnitClient
 local PlaceUnit = OtherEvents.Placement
@@ -250,6 +251,7 @@ local function NewUnit(Input: Types.UnitInput)
 	self.PriorityChanged = self.Trove:Construct(Signal)
 	self.PropertyChanged = self.Trove:Construct(Signal)
 	self.AnimationPlayed = self.Trove:Construct(Signal)
+	self.SpeedRatioChanged = self.Trove:Construct(Signal)
 	self.Destroying = self.Trove:Construct(Signal)
 
 	self.UnitName = Input.UnitName
@@ -257,6 +259,8 @@ local function NewUnit(Input: Types.UnitInput)
 	self.OwnerId = Input.OwnerId
 	self.AttackPriority = Input.AttackPriority
 	self.Level = Input.Level
+
+	self.SpeedRatioData = {}
 	self.SpeedRatio = Input.SpeedRatio
 
 	self.UnitData = UnitInfo.UnitInfo[self.UnitName]
@@ -356,9 +360,21 @@ local function NewUnit(Input: Types.UnitInput)
 		local Table = {}
 		for i = 1, #self.UnitData.Abilities, 1 do
 			local OtherData = self.UnitData.Abilities[i]
-			Table[i] = HelperFunctions.joinDicts(OtherData, { LastUsed = Input.Abilities[i] })
+			local Funcs = UnitAttacks.Abilities[self.UnitName]
+			local Func = if Funcs then Funcs[i] else nil
+			Table[i] = HelperFunctions.joinDicts(OtherData, { LastUsed = Input.Abilities[i], Func = Func })
 		end
 		self.Abilities = Table :: any
+	end
+
+	for _, AbilityData in ipairs(self.Abilities) do
+		if workspace:GetServerTimeNow() - AbilityData.LastUsed < AbilityData.Length then
+			AbilityData.Func(self, {
+				LastUsed = AbilityData.LastUsed,
+				Cooldown = AbilityData.Cooldown,
+				Length = AbilityData.Length,
+			})
+		end
 	end
 
 	self.Animations = {}
@@ -487,6 +503,20 @@ function UnitModule:ApplyDetail()
 
 	if typeof(AdornmentName) == "string" then
 		self.Armor = SetAdornment(self.Character, AdornmentName)
+	end
+end
+
+function UnitModule:_CalculateSpeedRatio()
+	local OldRatio = self.SpeedRatio
+	local SpeedRatio = 1
+
+	for Name, Data in pairs(self.SpeedRatioData) do
+		SpeedRatio *= Data.SpeedRatio
+	end
+
+	if OldRatio ~= SpeedRatio then
+		self.SpeedRatio = SpeedRatio
+		self.SpeedRatioChanged:Fire(self.SpeedRatio)
 	end
 end
 
@@ -921,6 +951,32 @@ AnimationEvent.OnClientEvent:Connect(function(Data: {
 	end
 end)
 
+SpeedRatioEvent.OnClientEvent:Connect(
+	function(UniqueId: string, Name: string, Data: { SpeedRatio: number, EndTime: number })
+		local Unit = UnitModule.GetUnit(UniqueId)
+
+		if Unit then
+			local PromiseName = "SpeedRatio" .. Name
+			Unit:CancelPromise(PromiseName)
+			Unit.SpeedRatioData[Name] = Data
+
+			Unit:_CalculateSpeedRatio()
+
+			local Difference = Data.EndTime - workspace:GetServerTimeNow()
+
+			if Difference > 0 then
+				Unit:AddPromise(
+					Promise.delay(Data.EndTime - workspace:GetServerTimeNow()):andThen(function()
+						Unit.SpeedRatioData[Name] = nil
+						Unit:_CalculateSpeedRatio()
+					end),
+					PromiseName
+				)
+			end
+		end
+	end
+)
+
 OnUpgrade.OnClientEvent:Connect(function(Data: { UniqueId: string, Level: number })
 	local Unit = UnitModule.GetUnit(Data.UniqueId)
 
@@ -933,7 +989,15 @@ AbilityEvent.OnClientEvent:Connect(function(UniqueId: string, Index: number, Tim
 	local Unit = UnitModule.GetUnit(UniqueId)
 
 	if Unit then
-		Unit.Abilities[Index].LastUsed = TimeUsed
+		local Data = Unit.Abilities[Index]
+		Data.LastUsed = TimeUsed
+		if Data.Func then
+			Data.Func(Unit, {
+				Cooldown = Data.Cooldown,
+				LastUsed = Data.LastUsed,
+				Length = Data.Length,
+			})
+		end
 		Unit.AbilityUsed:Fire(Index, TimeUsed)
 	end
 end)

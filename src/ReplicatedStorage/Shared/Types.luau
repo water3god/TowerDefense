@@ -153,67 +153,74 @@ export type UnitInput = {
 	Abilities: { number },
 }
 
-type UnitData =
-	{
-		UniqueId: string,
-		Trove: Trove.Trove,
+type UnitData = {
+	UniqueId: string,
+	Trove: Trove.Trove,
 
-		AttackTrove: Trove.Trove,
+	AttackTrove: Trove.Trove,
 
-		Character: typeof(Rig),
-		Armor: Model?,
-		Root: typeof(Rig.HumanoidRootPart),
-		CenterPart: BasePart,
-		Humanoid: typeof(Rig.Humanoid),
-		Animator: typeof(Rig.Humanoid.Animator),
-		RadiusPart: typeof(CollisionRadius),
-		RangePart: BasePart,
+	Character: typeof(Rig),
+	Armor: Model?,
+	Root: typeof(Rig.HumanoidRootPart),
+	CenterPart: BasePart,
+	Humanoid: typeof(Rig.Humanoid),
+	Animator: typeof(Rig.Humanoid.Animator),
+	RadiusPart: typeof(CollisionRadius),
+	RangePart: BasePart,
 
-		VisualCFrame: CFrame,
-		VectorOffset: Vector3,
+	VisualCFrame: CFrame,
+	VectorOffset: Vector3,
 
-		UnitName: string,
-		CFrame: CFrame,
-		OwnerId: number?,
-		AttackPriority: UnitInfo.SortType | string,
-		Level: number,
-		TotalCost: number,
-		CollisionRadius: number,
-		UnitData: UnitInfo.UnitInfo,
+	UnitName: string,
+	CFrame: CFrame,
+	OwnerId: number?,
+	AttackPriority: UnitInfo.SortType | string,
+	Level: number,
+	TotalCost: number,
+	CollisionRadius: number,
+	UnitData: UnitInfo.UnitInfo,
 
-		SpeedRatio: number,
-		SizeRatio: number,
+	SpeedRatioData: { [string]: { SpeedRatio: number, EndTime: number } },
+	SpeedRatio: number,
 
-		UnitAttacks: {
-			[number]: { (Unit: Unit, AttackInput: UnitAttackInput, Enemy: EnemyClient?, Delay: number) -> () },
-		},
-		DefaultRuns: { [number]: (Unit: Unit) -> () },
-		Abilities: {
-			{
-				MinimumLevel: number,
+	SizeRatio: number,
+
+	UnitAttacks: {
+		[number]: { (Unit: Unit, AttackInput: UnitAttackInput, Enemy: EnemyClient?, Delay: number) -> () },
+	},
+	DefaultRuns: { [number]: (Unit: Unit) -> () },
+	Abilities: {
+		{
+			MinimumLevel: number,
+			LastUsed: number,
+			Name: string,
+			Icon: string,
+			Length: number,
+			Cooldown: number,
+			Func: (Unit: Unit, Data: {
 				LastUsed: number,
-				Name: string,
-				Icon: string,
 				Length: number,
 				Cooldown: number,
-			}
-		},
-		Animations: { [string]: AnimationTrack },
+			}) -> (),
+		}
+	},
+	Animations: { [string]: AnimationTrack },
 
-		Promises: { [string]: Promise.Promise },
+	Promises: { [string]: Promise.Promise },
 
-		IsClicked: boolean,
+	IsClicked: boolean,
 
-		AnimationPlayed: Signal.Signal<string>,
+	AnimationPlayed: Signal.Signal<string>,
 
-		Attacked: Signal.Signal<>,
-		CharacterClicked: Signal.Signal<boolean>,
-		Upgraded: Signal.Signal<number>,
-		AbilityUsed: Signal.Signal<number, number>, -- First Index, Second TimeUsed --
-		PriorityChanged: Signal.Signal<UnitInfo.SortType | string>,
-		PropertyChanged: Signal.Signal<string>, -- Does not fire on Upgrade --
-		Destroying: Signal.Signal<>,
-	}
+	Attacked: Signal.Signal<>,
+	CharacterClicked: Signal.Signal<boolean>,
+	Upgraded: Signal.Signal<number>,
+	AbilityUsed: Signal.Signal<number, number>, -- First Index, Second TimeUsed --
+	SpeedRatioChanged: Signal.Signal<number>,
+	PriorityChanged: Signal.Signal<UnitInfo.SortType | string>,
+	PropertyChanged: Signal.Signal<string>, -- Does not fire on Upgrade --
+	Destroying: Signal.Signal<>,
+}
 
 export type UnitModule = {
 	TPToRootPosition: (self: Unit) -> (),
@@ -234,6 +241,8 @@ export type UnitModule = {
 	RotateTo: (self: Unit, Degree: number) -> (),
 	PartIsDescendantOf: (self: Unit, Part: BasePart) -> boolean,
 	ClickCharacter: (self: Unit, Enabled: boolean) -> (),
+
+	_CalculateSpeedRatio: (self: Unit) -> (),
 
 	AddPromise: (self: Unit, Promise: Promise.Promise, PromiseName: string) -> (),
 	CancelPromise: (self: Unit, PromiseName: string) -> (),

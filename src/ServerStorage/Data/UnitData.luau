@@ -170,7 +170,9 @@ local Data: { [string]: Unit.UnitInput } = {
 			},
 		},
 		DefaultRuns = {},
-		Abilities = {},
+		Abilities = {
+			function(Unit, Data) end,
+		},
 	},
 	["Cicero"] = {
 		UnitName = "Cicero",

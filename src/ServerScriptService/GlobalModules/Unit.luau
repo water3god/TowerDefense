@@ -18,6 +18,7 @@ local UpgradeEvent = UnitEvents.Upgrade
 local PriorityChanged = UnitEvents.PriorityChanged
 local AbilityEvent = UnitEvents.AbilityEvent
 local AnimationEvent = UnitEvents.AnimationEvent
+local SpeedRatioEvent = UnitEvents.SpeedRatioEvent
 
 local Packages = ReplicatedStorage.Packages
 local Trove = require(Packages.Trove)
@@ -61,6 +62,8 @@ export type UserInput = {
 	--Price: number?;
 }
 
+export type AbilityParam = { Length: number, Cooldown: number }
+
 export type UnitInput = {
 	UnitName: string,
 
@@ -68,7 +71,7 @@ export type UnitInput = {
 	AttackFuncs: { { (self: Unit, Damage: number) -> () } },
 	DefaultRuns: { [number]: (self: Unit) -> () },
 
-	Abilities: { (self: Unit) -> () },
+	Abilities: { (self: Unit, Data: AbilityParam) -> () },
 }
 
 type UnitData = {
@@ -86,6 +89,7 @@ type UnitData = {
 	TotalCost: number,
 
 	CFrame: CFrame,
+	SpeedRatioData: { [string]: { SpeedRatio: number, EndTime: number } },
 	SpeedRatio: number,
 
 	UnitData: UnitInfo.UnitInfo,
@@ -111,7 +115,7 @@ type UnitData = {
 			Icon: string,
 			Length: number,
 			Cooldown: number,
-			Func: (self: Unit) -> (),
+			Func: (self: Unit, AbilityParam: AbilityParam) -> (),
 		}
 	},
 	CollisionRadius: number,
@@ -121,6 +125,7 @@ type UnitData = {
 	Attacked: Signal.Signal<>,
 	Upgraded: Signal.Signal<number>,
 	AbilityUsed: Signal.Signal<number, number>, -- First is Index, Second is Fire Time
+	SpeedRatioChanged: Signal.Signal<number>,
 	Destroying: Signal.Signal<>,
 }
 
@@ -146,6 +151,9 @@ type UnitImpl = {
 	EnableAttack: (self: Unit) -> (),
 
 	Stun: (self: Unit, Length: number) -> (),
+
+	_CalculateSpeedRatio: (self: Unit) -> (),
+	ChangeSpeedRatio: (self: Unit, Name: string, SpeedRatio: number, Duration: number) -> (),
 
 	AddPromise: (self: Unit, Promise: Promise.Promise, PromiseName: string) -> (),
 	CancelPromise: (self: Unit, PromiseName: string) -> (),
@@ -238,8 +246,9 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 
 	self.Attacked = self._Trove:Construct(Signal)
 	self.Upgraded = self._Trove:Construct(Signal)
-	self.Destroying = self._Trove:Construct(Signal)
 	self.AbilityUsed = self._Trove:Construct(Signal)
+	self.SpeedRatioChanged = self._Trove:Construct(Signal)
+	self.Destroying = self._Trove:Construct(Signal)
 
 	self.UnitName = Data.UnitName
 	self.ModelReference = UnitModels[self.UnitName]
@@ -262,8 +271,10 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 	self.MaxLevel = #self.UnitData.UnitData
 	self.AttackIndex = 1
 	self.AttackPriority = UnitInfo.SortTypes[1]
-	self.SpeedRatio = 1
 	self.CollisionRadius = self.UnitData.CollisionRadius
+
+	self.SpeedRatioData = {}
+	self.SpeedRatio = 1
 
 	self.Promises = {}
 
@@ -431,7 +442,10 @@ function Unit:UseAbility(Index: number)
 	if Data.LastUsed - workspace:GetServerTimeNow() >= Data.Cooldown then
 		local TimeUsed = workspace:GetServerTimeNow()
 		Data.LastUsed = TimeUsed
-		Data.Func(self)
+		Data.Func(self, {
+			Cooldown = Data.Cooldown,
+			Length = Data.Length,
+		})
 		self.AbilityUsed:Fire(Index, TimeUsed)
 	end
 end
@@ -473,6 +487,36 @@ end
 function Unit:Stun(Length: number)
 	self:DisableAttack(Length)
 	self:PlayAnimation("Stun", nil, nil, nil, Length)
+end
+
+function Unit:_CalculateSpeedRatio()
+	local OldRatio = self.SpeedRatio
+	local SpeedRatio = 1
+
+	for Name, Data in pairs(self.SpeedRatioData) do
+		SpeedRatio *= Data.SpeedRatio
+	end
+
+	if OldRatio ~= SpeedRatio then
+		self.SpeedRatio = SpeedRatio
+		self.SpeedRatioChanged:Fire(self.SpeedRatio)
+	end
+end
+
+function Unit:ChangeSpeedRatio(Name: string, SpeedRatio: number, Duration: number)
+	local PromiseName = "SpeedRatio" .. Name
+	self:CancelPromise(PromiseName)
+	self.SpeedRatioData[Name] = { SpeedRatio = SpeedRatio, EndTime = workspace:GetServerTimeNow() + Duration }
+	HelperFunctions.FireClients(SpeedRatioEvent, self.ReplicateTo, self.UniqueId, Name, self.SpeedRatioData[Name])
+	self:_CalculateSpeedRatio()
+	self:AddPromise(
+		Promise.delay(Duration):andThen(function()
+			self.SpeedRatioData[Name] = nil
+			HelperFunctions.FireClients(SpeedRatioEvent, self.ReplicateTo, self.UniqueId, Name, nil)
+			self:_CalculateSpeedRatio()
+		end),
+		PromiseName
+	)
 end
 
 function Unit:AddPromise(Promise: Promise.Promise, PromiseName: string)
