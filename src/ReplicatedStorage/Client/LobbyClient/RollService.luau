@@ -4,6 +4,7 @@
 
 -- Services --
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
 
 local Packages = ReplicatedStorage.Packages
 local Signal = require(Packages.Signal)
@@ -17,6 +18,8 @@ local RollRemotes = Remotes.Roll
 local AutoRoll = RollRemotes.AutoRoll
 local RollEvent = RollRemotes.RollEvent
 local StopAutoRollEvent = RollRemotes.StopAutoRoll
+
+local Player = Players.LocalPlayer
 
 export type RollData = {
 	SentTime: number,
@@ -74,9 +77,9 @@ RollEvent.OnClientEvent:Connect(HandleRoll)
 ObserveTag.ObserveTag("RollBooth", function(BasePart: Instance)
 	if BasePart:IsA("BasePart") then
 		local Connection = BasePart.Touched:Connect(function(OtherPart)
-			local Player = HelperFunctions.GetPlayerFromPart(OtherPart)
+			local OtherPlayer = HelperFunctions.GetPlayerFromPart(OtherPart)
 
-			if Player then
+			if Player == OtherPlayer then
 				Module.Touched:Fire()
 			end
 		end)

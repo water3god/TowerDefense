@@ -141,7 +141,7 @@ local function CreateAbilityFrame(props: AbilityProps)
 	local Time, TotalTime, SetTime = Hooks.UseTime()
 
 	local InAbility = React.joinBindings({ Time, TotalTime }):map(function(Times: { number })
-		return props.Length >= Time[2] - Time[1]
+		return props.Length >= Times[2] - Times[1]
 	end)
 
 	React.useEffect(function()
@@ -161,12 +161,12 @@ local function CreateAbilityFrame(props: AbilityProps)
 		Name = props.Name,
 		RightText = React.joinBindings({ Time, TotalTime, InAbility }):map(function(Time: any)
 			if Time[3] then
-				return tostring(math.clamp(Time[1] - Time[2] + props.Length, 0, props.Length))
+				return tostring(math.floor(math.clamp(Time[1] - Time[2] + props.Length, 0, props.Length)))
 			else
 				if Time[1] == 0 then
 					return ""
 				else
-					return tostring(math.floor(Time))
+					return tostring(math.floor(Time[1]))
 				end
 			end
 		end),
@@ -180,6 +180,7 @@ local function CreateAbilityFrame(props: AbilityProps)
 				BackgroundColor3 = Color3.new(),
 				AnchorPoint = Vector2.new(0.5, 1),
 				Position = UDim2.fromScale(0.5, 1),
+				ZIndex = 5,
 				Size = React.joinBindings({ Time, TotalTime, InAbility }):map(function(Times: any)
 					if Times[3] then
 						return UDim2.fromScale(0, 0)
@@ -303,7 +304,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 		end
 
 		return Frames
-	end, {})
+	end, { UpgradeData })
 
 	local PriorityClick = React.useCallback(function()
 		local Unit = UnitClient.GetUnit(UpgradeData.UniqueId)

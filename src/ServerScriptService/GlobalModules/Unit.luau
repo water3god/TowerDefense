@@ -198,7 +198,7 @@ local function SendInfo(Units: { [string]: Unit }, Players: { Player })
 			OwnerId = Unit.OwnerId,
 			AttackPriority = Unit.AttackPriority,
 			Level = Unit.Level,
-			Abilities = ConvertAbilityData(ConvertAbilityData(Unit.Abilities)),
+			Abilities = ConvertAbilityData(Unit.Abilities),
 
 			SpeedRatio = Unit.SpeedRatio,
 		}
@@ -439,7 +439,7 @@ function Unit:UseAbility(Index: number)
 	if self.Level < Data.MinimumLevel then
 		return
 	end
-	if Data.LastUsed - workspace:GetServerTimeNow() >= Data.Cooldown then
+	if workspace:GetServerTimeNow() - Data.LastUsed >= Data.Cooldown then
 		local TimeUsed = workspace:GetServerTimeNow()
 		Data.LastUsed = TimeUsed
 		Data.Func(self, {
@@ -506,13 +506,13 @@ end
 function Unit:ChangeSpeedRatio(Name: string, SpeedRatio: number, Duration: number)
 	local PromiseName = "SpeedRatio" .. Name
 	self:CancelPromise(PromiseName)
-	self.SpeedRatioData[Name] = { SpeedRatio = SpeedRatio, EndTime = workspace:GetServerTimeNow() + Duration }
-	HelperFunctions.FireClients(SpeedRatioEvent, self.ReplicateTo, self.UniqueId, Name, self.SpeedRatioData[Name])
+	local Data = { SpeedRatio = SpeedRatio, EndTime = workspace:GetServerTimeNow() + Duration }
+	self.SpeedRatioData[Name] = Data
+	HelperFunctions.FireClients(SpeedRatioEvent, self.ReplicateTo, self.UniqueId, Name, Data)
 	self:_CalculateSpeedRatio()
 	self:AddPromise(
 		Promise.delay(Duration):andThen(function()
 			self.SpeedRatioData[Name] = nil
-			HelperFunctions.FireClients(SpeedRatioEvent, self.ReplicateTo, self.UniqueId, Name, nil)
 			self:_CalculateSpeedRatio()
 		end),
 		PromiseName

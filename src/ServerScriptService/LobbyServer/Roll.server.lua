@@ -85,6 +85,14 @@ local function LessThanMaxUnits(Data: PlayerData.PlayerData)
 	return Difference > 0, Difference
 end
 
+local function LessThanGold(Data: PlayerData.PlayerData)
+	local Price = Constants.ROLLCOSTS.MAIN
+	local Given = Data.Profile.Data
+	local LessThan = Given.Gold / Price
+
+	return LessThan >= 1, math.floor(LessThan)
+end
+
 local function InitTimer(Data: PlayerData.PlayerData, Count: number)
 	local Trove = Trove.new()
 	local Time = Trove:Add(Timer.new(RollDelayTime))
@@ -93,9 +101,10 @@ local function InitTimer(Data: PlayerData.PlayerData, Count: number)
 	Time.Tick:Connect(function()
 		local Price = Constants.ROLLCOSTS.MAIN * Count
 		local LessThan, Difference = LessThanMaxUnits(Data)
-		if Data.Profile.Data.Gold >= Price and LessThan then
-			Data:SubtractGold(Constants.ROLLCOSTS.MAIN * Count)
-			Roll(Data, math.min(Difference, Count), true)
+		local LessThanGold, GoldDifference = LessThanGold(Data)
+		if LessThanGold and LessThan then
+			Data:SubtractGold(Price)
+			Roll(Data, math.min(Difference, Count, GoldDifference), true)
 		else
 			Delays[Data.Player].Timer:Destroy()
 		end
@@ -137,7 +146,8 @@ RollEvent.OnServerEvent:Connect(function(Player: Player, Count: number)
 		local GivenData = PlayerData.Profile.Data
 		if GivenData.Gold >= Constants.ROLLCOSTS.MAIN * Count then
 			local LessThan, Difference = LessThanMaxUnits(PlayerData)
-			if Delays[Player].MinimumTime <= tick() and LessThan then
+			local LessThanGold, GoldDifference = LessThanGold(PlayerData)
+			if Delays[Player].MinimumTime <= tick() and LessThan and LessThanGold then
 				PlayerData:SubtractGold(Constants.ROLLCOSTS.MAIN * Count)
 
 				local AutoRoll = PlayerData:GetSetting("AutoRoll")
@@ -145,7 +155,7 @@ RollEvent.OnServerEvent:Connect(function(Player: Player, Count: number)
 				InAutoRolls[Player] = AutoRoll
 
 				local InAutoRoll = InAutoRolls[Player]
-				Roll(PlayerData, math.min(Difference, Count), InAutoRoll)
+				Roll(PlayerData, math.min(Difference, Count, GoldDifference), InAutoRoll)
 				if InAutoRoll then
 					InitTimer(PlayerData, Count)
 				end

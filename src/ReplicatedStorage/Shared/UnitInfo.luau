@@ -26,7 +26,7 @@ export type UnitInfo = {
 	Vector3Offset: Vector3?,
 	ViewportOffset: CFrame?,
 	CollisionRadius: number,
-	Abilities: { { Name: string, Icon: string, Length: number, Cooldown: number } },
+	Abilities: { { MinimumLevel: number, Name: string, Icon: string, Length: number, Cooldown: number } },
 }
 
 local Data = {}
@@ -214,7 +214,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 		},
 		CollisionRadius = 3,
 		Abilities = {
-			{ Cooldown = 30, Icon = "", Length = 10, Name = "Rage" },
+			{ MinimumLevel = 0, Cooldown = 30, Icon = "", Length = 10, Name = "Rage" },
 		},
 	},
 	["Cicero"] = {

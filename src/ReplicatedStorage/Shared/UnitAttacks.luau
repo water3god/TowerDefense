@@ -12,7 +12,7 @@ local function DefaultAttack(Unit, AttackInput, Enemy, Delay)
 		Unit:RotateToEnemy(Enemy)
 	end
 
-	Unit:PlayAnimation("Attack", Delay, AttackInput.SpeedRatio, nil)
+	Unit:PlayAnimation("Attack", Delay, 1 / AttackInput.SpeedRatio, nil)
 end
 
 local UnitAttacks: {

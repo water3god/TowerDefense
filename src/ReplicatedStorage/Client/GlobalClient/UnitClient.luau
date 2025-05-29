@@ -260,6 +260,8 @@ local function NewUnit(Input: Types.UnitInput)
 	self.AttackPriority = Input.AttackPriority
 	self.Level = Input.Level
 
+	self.Promises = {}
+
 	self.SpeedRatioData = {}
 	self.SpeedRatio = Input.SpeedRatio
 
@@ -271,7 +273,7 @@ local function NewUnit(Input: Types.UnitInput)
 	local Attacks = UnitAttacks.UnitAttacks[self.UnitName]
 
 	self.DefaultRuns = Runs and SyncFuncs(Runs) or {}
-	self.UnitAttacks = Attacks and SyncFuncs(Attack) or {}
+	self.UnitAttacks = Attacks and SyncFuncs(Attacks) or {}
 
 	self.Character = self.Trove:Clone(UnitModels[self.UnitName])
 	self.Root = self.Character.HumanoidRootPart
@@ -384,9 +386,9 @@ local function NewUnit(Input: Types.UnitInput)
 			self.Animations[Animation.Name] = self.Animator:LoadAnimation(Animation)
 		end
 	end
-	for _, Animation in ipairs(Global:GetChildren()) do
+	--[[for _, Animation in ipairs(Global:GetChildren()) do
 		self.Animations[Animation.Name] = self.Animator:LoadAnimation(Animation)
-	end
+	end]]
 	if not self.Animations["Idle"] then
 		self.Animations["Idle"] = self.Animator:LoadAnimation(Default)
 	end
@@ -958,6 +960,7 @@ SpeedRatioEvent.OnClientEvent:Connect(
 
 		if Unit then
 			local PromiseName = "SpeedRatio" .. Name
+
 			Unit:CancelPromise(PromiseName)
 			Unit.SpeedRatioData[Name] = Data
 
