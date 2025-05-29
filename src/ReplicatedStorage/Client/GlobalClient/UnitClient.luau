@@ -213,6 +213,28 @@ local function CastCylinder(Position: Vector3, Params: OverlapParams?)
 	return workspace:GetPartsInPart(Cast, Params)
 end
 
+local function SyncFuncs(Table: { [number]: any })
+	local HighestLevel = 0
+
+	for Level, _ in ipairs(Table) do
+		if Level > HighestLevel then
+			HighestLevel = Level
+		end
+	end
+
+	local Closest = 0
+	local NewTable = {}
+
+	for i = 0, HighestLevel, 1 do
+		if Table[i] then
+			Closest = i
+		end
+		NewTable[i] = Table[Closest]
+	end
+
+	return NewTable
+end
+
 local function NewUnit(Input: Types.UnitInput)
 	local self = setmetatable({}, UnitModule) :: Types.Unit
 
@@ -240,7 +262,12 @@ local function NewUnit(Input: Types.UnitInput)
 	self.UnitData = UnitInfo.UnitInfo[self.UnitName]
 	self.CollisionRadius = self.UnitData.CollisionRadius
 	self.TotalCost = UnitInfo.CalculateTotalCost(self.UnitData.UnitData, self.Level)
-	self.UnitAttacks = UnitAttacks[self.UnitName] :: any
+
+	local Runs = UnitAttacks.DefaultRuns[self.UnitName]
+	local Attacks = UnitAttacks.UnitAttacks[self.UnitName]
+
+	self.DefaultRuns = Runs and SyncFuncs(Runs) or {}
+	self.UnitAttacks = Attacks and SyncFuncs(Attack) or {}
 
 	self.Character = self.Trove:Clone(UnitModels[self.UnitName])
 	self.Root = self.Character.HumanoidRootPart
@@ -351,6 +378,16 @@ local function NewUnit(Input: Types.UnitInput)
 	Units[self.UniqueId] = self
 
 	self:PlayAnimation("Idle", nil, nil, 0)
+
+	local function OnLevel(Level: number)
+		local Func = self.DefaultRuns[Level]
+		if Func then
+			Func(self)
+		end
+	end
+
+	OnLevel(self.Level)
+	self.Upgraded:Connect(OnLevel)
 
 	self.NewUnit:Fire(self)
 end

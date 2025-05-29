@@ -7,6 +7,14 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Shared = ReplicatedStorage.Shared
 local Types = require(Shared.Types)
 
+local function DefaultAttack(Unit, AttackInput, Enemy, Delay)
+	if Enemy then
+		Unit:RotateToEnemy(Enemy)
+	end
+
+	Unit:PlayAnimation("Attack", Delay, AttackInput.SpeedRatio, nil)
+end
+
 local UnitAttacks: {
 	[string]: {
 		[number --[[Level]]]: {
@@ -39,24 +47,30 @@ local UnitAttacks: {
 		},]]
 		["Alexander The Great"] = {
 			[0] = {
-				function(Unit, AttackInput, Enemy, Delay)
-					if Enemy then
-						Unit:RotateToEnemy(Enemy)
-					end
-
-					local AttackAnim = Unit:PlayAnimation("Attack", Delay, AttackInput.SpeedRatio, nil)
-					if AttackAnim then
-						--[[Unit:Watch(AttackAnim, {
-							Func = function()
-								print("Hello")
-							end,
-							PlayAfter = false,
-							TimeRatio = 0.5,
-						})]]
-					end
-				end,
+				DefaultAttack,
+			},
+		},
+		["Julius Caesar"] = {
+			[0] = {
+				DefaultAttack,
+			},
+		},
+		["Spartacus"] = {
+			[0] = {
+				DefaultAttack,
 			},
 		},
 	}
 
-return UnitAttacks
+local DefaultRuns: { [string]: { [number]: (Unit: Types.Unit) -> () } } = {
+	["Trajan"] = {
+		[0] = function(Unit)
+			Unit:PlayAnimation("Ability")
+		end,
+	},
+}
+
+return {
+	UnitAttacks = UnitAttacks,
+	DefaultRuns = DefaultRuns,
+}

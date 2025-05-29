@@ -66,6 +66,7 @@ export type UnitInput = {
 
 	-- Array of AttackFuncs per Level; --
 	AttackFuncs: { { (self: Unit, Damage: number) -> () } },
+	DefaultRuns: { [number]: (self: Unit) -> () },
 
 	Abilities: { (self: Unit) -> () },
 }
@@ -89,6 +90,7 @@ type UnitData = {
 
 	UnitData: UnitInfo.UnitInfo,
 
+	DefaultRuns: { [number]: (self: Unit) -> () },
 	AttackFuncs: { [number]: { (self: Unit, Damage: number) -> () } },
 	AttackIndex: number,
 
@@ -101,12 +103,22 @@ type UnitData = {
 
 	Disabled: boolean,
 
-	Abilities: { { LastUsed: number, Name: string, Length: number, Cooldown: number, Func: (self: Unit) -> () } },
+	Abilities: {
+		{
+			MinimumLevel: number,
+			LastUsed: number,
+			Name: string,
+			Length: number,
+			Cooldown: number,
+			Func: (self: Unit) -> (),
+		}
+	},
 	CollisionRadius: number,
 
 	Promises: { [string]: Promise.Promise },
 
 	Attacked: Signal.Signal<>,
+	Upgraded: Signal.Signal<number>,
 	AbilityUsed: Signal.Signal<number, number>, -- First is Index, Second is Fire Time
 	Destroying: Signal.Signal<>,
 }
@@ -186,6 +198,28 @@ local function SendInfo(Units: { [string]: Unit }, Players: { Player })
 	HelperFunctions.FireClients(PlacementEvent, Players, Data)
 end
 
+local function SyncFuncs(Table: { [number]: any })
+	local HighestLevel = 0
+
+	for Level, _ in ipairs(Table) do
+		if Level > HighestLevel then
+			HighestLevel = Level
+		end
+	end
+
+	local Closest = 0
+	local NewTable = {}
+
+	for i = 0, HighestLevel, 1 do
+		if Table[i] then
+			Closest = i
+		end
+		NewTable[i] = Table[Closest]
+	end
+
+	return NewTable
+end
+
 local Unit: UnitImpl = {} :: UnitImpl
 Unit.__index = Unit
 
@@ -202,6 +236,7 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 	self.EnemyTrove = self._Trove:Extend()
 
 	self.Attacked = self._Trove:Construct(Signal)
+	self.Upgraded = self._Trove:Construct(Signal)
 	self.Destroying = self._Trove:Construct(Signal)
 	self.AbilityUsed = self._Trove:Construct(Signal)
 
@@ -218,26 +253,8 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 
 	self.UnitData = SharedUnitData
 
-	local AttackFuncs = table.clone(Data.AttackFuncs)
-	local HighestLevel = 0
-
-	for Level, Funcs in ipairs(AttackFuncs) do
-		if Level > HighestLevel then
-			HighestLevel = Level
-		end
-	end
-
-	local HighestData = 0
-
-	for i = 1, HighestLevel, 1 do
-		if Data.AttackFuncs[i] then
-			HighestData = i
-		else
-			AttackFuncs[i] = AttackFuncs[HighestData]
-		end
-	end
-
-	self.AttackFuncs = Data.AttackFuncs
+	self.DefaultRuns = SyncFuncs(Data.DefaultRuns)
+	self.AttackFuncs = SyncFuncs(Data.AttackFuncs)
 
 	self.LastFired = 0
 	self.Level = UserInput.Level
@@ -277,6 +294,16 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 	self._Trove:Connect(RunService.PostSimulation, function(Delta: number)
 		self:UpdateEnemy()
 	end)
+
+	local function OnLevel(Level: number)
+		local Func = self.DefaultRuns[Level]
+		if Func then
+			Func(self)
+		end
+	end
+
+	OnLevel(self.Level)
+	self.Upgraded:Connect(OnLevel)
 
 	Units[self.UniqueId] = self
 
@@ -379,6 +406,8 @@ function Unit:Upgrade()
 	self.AttackIndex = 1
 	self.TotalCost = UnitInfo.CalculateTotalCost(self.UnitData.UnitData, self.Level)
 
+	self.Upgraded:Fire(self.Level)
+
 	local Data = {
 		UniqueId = self.UniqueId,
 		Level = self.Level,
@@ -389,6 +418,9 @@ end
 
 function Unit:UseAbility(Index: number)
 	local Data = self.Abilities[Index]
+	if self.Level < Data.MinimumLevel then
+		return
+	end
 	if Data.LastUsed - workspace:GetServerTimeNow() >= Data.Cooldown then
 		local TimeUsed = workspace:GetServerTimeNow()
 		Data.LastUsed = TimeUsed

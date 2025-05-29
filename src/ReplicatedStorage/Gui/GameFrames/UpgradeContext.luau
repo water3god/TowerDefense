@@ -30,7 +30,7 @@ export type Data = {
 	Level: number,
 	Priority: UnitInfo.SortType | string,
 	Enabled: boolean,
-	Abilities: { { LastUsed: number, Name: string, Length: number, Cooldown: number } },
+	Abilities: { { MinimumLevel: number, LastUsed: number, Name: string, Length: number, Cooldown: number } },
 }
 
 local DefaultValue: Data = {

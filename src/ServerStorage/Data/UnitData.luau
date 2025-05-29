@@ -25,6 +25,7 @@ local Data: { [string]: Unit.UnitInput } = {
 				end,
 			},
 		},
+		DefaultRuns = {},
 		Abilities = {},
 	},
 	["Leonidas"] = {
@@ -41,6 +42,7 @@ local Data: { [string]: Unit.UnitInput } = {
 				end,
 			},
 		},
+		DefaultRuns = {},
 		Abilities = {},
 	},
 	["Pericles"] = {
@@ -57,6 +59,7 @@ local Data: { [string]: Unit.UnitInput } = {
 				end,
 			},
 		},
+		DefaultRuns = {},
 		Abilities = {},
 	},
 	["Pyrrhus"] = {
@@ -73,6 +76,7 @@ local Data: { [string]: Unit.UnitInput } = {
 				end,
 			},
 		},
+		DefaultRuns = {},
 		Abilities = {},
 	},
 	["Socrates"] = {
@@ -89,6 +93,7 @@ local Data: { [string]: Unit.UnitInput } = {
 				end,
 			},
 		},
+		DefaultRuns = {},
 		Abilities = {},
 	},
 	["Themistocles"] = {
@@ -105,6 +110,7 @@ local Data: { [string]: Unit.UnitInput } = {
 				end,
 			},
 		},
+		DefaultRuns = {},
 		Abilities = {},
 	},
 	["Julius Caesar"] = {
@@ -121,6 +127,7 @@ local Data: { [string]: Unit.UnitInput } = {
 				end,
 			},
 		},
+		DefaultRuns = {},
 		Abilities = {},
 	},
 	["Pompey"] = {
@@ -137,6 +144,7 @@ local Data: { [string]: Unit.UnitInput } = {
 				end,
 			},
 		},
+		DefaultRuns = {},
 		Abilities = {},
 	},
 	["Spartacus"] = {
@@ -153,6 +161,7 @@ local Data: { [string]: Unit.UnitInput } = {
 				end,
 			},
 		},
+		DefaultRuns = {},
 		Abilities = {},
 	},
 	["Cicero"] = {
@@ -169,6 +178,7 @@ local Data: { [string]: Unit.UnitInput } = {
 				end,
 			},
 		},
+		DefaultRuns = {},
 		Abilities = {},
 	},
 	["Trajan"] = {
@@ -185,6 +195,7 @@ local Data: { [string]: Unit.UnitInput } = {
 				end,
 			},
 		},
+		DefaultRuns = {},
 		Abilities = {},
 	},
 	["Augustus"] = {
@@ -201,6 +212,7 @@ local Data: { [string]: Unit.UnitInput } = {
 				end,
 			},
 		},
+		DefaultRuns = {},
 		Abilities = {},
 	},
 }

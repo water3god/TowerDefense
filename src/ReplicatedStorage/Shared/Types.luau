@@ -184,7 +184,8 @@ type UnitData = {
 	SizeRatio: number,
 
 	UnitAttacks: { [number]: { (Unit: Unit, AttackInput: UnitAttackInput, Enemy: EnemyClient?, Delay: number) -> () } },
-	Abilities: { { LastUsed: number, Name: string, Length: number, Cooldown: number } },
+	DefaultRuns: { [number]: (Unit: Unit) -> () },
+	Abilities: { { MinimumLevel: number, LastUsed: number, Name: string, Length: number, Cooldown: number } },
 	Animations: { [string]: AnimationTrack },
 
 	Promises: { [string]: Promise.Promise },
