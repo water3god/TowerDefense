@@ -24,6 +24,7 @@ local CloseButton = require(CoreGame.CloseButton)
 local UIStroke = require(CoreGame.UIStroke)
 local Hooks = require(CoreGame.Hooks)
 local UnitView = require(CoreGame.UnitView)
+local BaseFrame = require(CoreGame.BaseFrame)
 
 local GameFrames = Gui.GameFrames
 local UpgradeContext = require(GameFrames.UpgradeContext)
@@ -52,6 +53,16 @@ export type PropertyProperties = {
 	Inital: number,
 	Final: number,
 	Other: string,
+	native: { [any]: any }?,
+	children: { [any]: any }?,
+}
+
+export type AbilityProps = {
+	Name: string,
+	Icon: string,
+	LastUsed: number,
+	Length: number,
+	Cooldown: number,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
@@ -122,6 +133,52 @@ local function CreatePropertyFrame(Props: PropertyProperties)
 			},
 		}),
 	}, Props.children)
+end
+
+local function CreateAbilityFrame(props: AbilityProps)
+	local Time, TotalTime, SetTime = Hooks.UseTime()
+
+	local InAbility = React.joinBindings({ Time, TotalTime }):map(function(Times: { number })
+		return props.Length >= Time[2] - Time[1]
+	end)
+
+	React.useEffect(function()
+		SetTime(props.LastUsed + props.Cooldown, props.LastUsed)
+	end, { props.LastUsed, props.Cooldown })
+
+	return e(BaseFrame, {
+		LeftText = "",
+		Name = props.Name,
+		RightText = React.joinBindings({ Time, TotalTime, InAbility }):map(function(Time: any)
+			if Time[3] then
+				return tostring(math.clamp(Time[1] - Time[2] + props.Length, 0, props.Length))
+			else
+				if Time[1] == 0 then
+					return ""
+				else
+					return tostring(math.floor(Time))
+				end
+			end
+		end),
+		Icon = props.Icon,
+		native = Join({}, props.native),
+	}, {
+		BgFrame = e(Main.Frame, {
+			native = {
+				BackgroundTransparency = 0.8,
+				BackgroundColor3 = Color3.new(),
+				AnchorPoint = Vector2.new(0.5, 1),
+				Position = UDim2.fromScale(0.5, 1),
+				Size = React.joinBindings({ Time, TotalTime, InAbility }):map(function(Times: any)
+					if Times[3] then
+						return UDim2.fromScale(0, 0)
+					else
+						return UDim2.fromScale(1, math.clamp(Times[1] / Times[2], 0, 1))
+					end
+				end),
+			},
+		}),
+	}, props.children)
 end
 
 local function CreateUpgradeFrame(Properties: Properties)
@@ -220,7 +277,17 @@ local function CreateUpgradeFrame(Properties: Properties)
 	end, { UpgradeData.UpgradeData :: any, UpgradeData.Level :: any })
 
 	local AbilityFrames = React.useMemo(function()
-		local Frames = {}
+		local Frames: { [string]: React.Node } = {}
+
+		for Index, AbilityData in ipairs(UpgradeData.Abilities) do
+			Frames["Ability" .. Index] = e(CreateAbilityFrame, {
+				Name = AbilityData.Name,
+				Icon = AbilityData.Icon,
+				LastUsed = AbilityData.LastUsed,
+				Length = AbilityData.Length,
+				Cooldown = AbilityData.Cooldown,
+			})
+		end
 
 		return Frames
 	end, {})
@@ -487,7 +554,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 			}),
 
 			UnitInfo = e(Main.ScrollingFrame, {
-				BarSize = 0.002,
+				BarSize = 0.01,
 				native = {
 					AnchorPoint = Vector2.new(),
 					Size = UDim2.fromScale(0.8, 0.75),
@@ -500,6 +567,19 @@ local function CreateUpgradeFrame(Properties: Properties)
 					Padding = UDim.new(0, 0),
 				}),
 			}, UpgradeFrames),
+			AbilityFrames = e(Main.ScrollingFrame, {
+				BarSize = 0.01,
+				native = {
+					Size = UDim2.fromScale(0.3, 1),
+					Position = UDim2.fromScale(1.3, 0.5),
+				},
+			}, {
+				UIListLayout = e("UIListLayout", {
+					FillDirection = Enum.FillDirection.Vertical,
+					SortOrder = Enum.SortOrder.LayoutOrder,
+					Padding = UDim.new(0, 0),
+				}),
+			}, AbilityFrames),
 		}),
 		UIScale = e("UIScale", {
 			Scale = Styles.Scale,

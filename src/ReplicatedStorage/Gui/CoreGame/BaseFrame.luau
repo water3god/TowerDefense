@@ -27,7 +27,7 @@ export type Properties = {
 
 	Name: string,
 	LeftText: string,
-	RightText: string,
+	RightText: any,
 	MainImage: string?,
 	Hovered: boolean?,
 	Disabled: boolean?,

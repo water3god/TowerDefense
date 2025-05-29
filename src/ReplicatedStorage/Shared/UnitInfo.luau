@@ -26,7 +26,7 @@ export type UnitInfo = {
 	Vector3Offset: Vector3?,
 	ViewportOffset: CFrame?,
 	CollisionRadius: number,
-	Abilities: { { Name: string, Length: number, Cooldown: number } },
+	Abilities: { { Name: string, Icon: string, Length: number, Cooldown: number } },
 }
 
 local Data = {}
@@ -189,8 +189,8 @@ local UnitInfo: { [string]: UnitInfo } = {
 		UnitData = {
 			[0] = {
 				Damage = { 5 },
-				FireRate = 1,
-				Range = 50,
+				FireRate = 0,
+				Range = 0,
 				Armor = "TrajanArmor",
 				Cost = 100,
 			},

@@ -9,10 +9,10 @@ local GlobalModules = ServerScriptService.GlobalModules
 local Unit = require(GlobalModules.Unit)
 local GlobalWave = require(GlobalModules.GlobalWave)
 
-local function AddAlly(Unit: string)
+local function AddAlly(Ally: string, Data: {}?)
 	local Wave = GlobalWave.GetWave()
-
 	if Wave then
+		Wave:AddAlly(Ally, Data)
 	end
 end
 
@@ -192,17 +192,7 @@ local Data: { [string]: Unit.UnitInput } = {
 	["Trajan"] = {
 		UnitName = "Trajan",
 
-		AttackFuncs = {
-			[0] = {
-				function(Unit: Unit.Unit, Damage: number)
-					local CurrentEnemy = Unit.CurrentEnemy
-
-					if CurrentEnemy then
-						CurrentEnemy:Damage(Damage)
-					end
-				end,
-			},
-		},
+		AttackFuncs = {},
 		DefaultRuns = {},
 		Abilities = {},
 	},

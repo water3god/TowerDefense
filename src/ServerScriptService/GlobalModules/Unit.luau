@@ -108,6 +108,7 @@ type UnitData = {
 			MinimumLevel: number,
 			LastUsed: number,
 			Name: string,
+			Icon: string,
 			Length: number,
 			Cooldown: number,
 			Func: (self: Unit) -> (),
@@ -291,14 +292,20 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 		HelperFunctions.FireClients(AbilityEvent, self.ReplicateTo, self.UniqueId, Index, TimeUsed)
 	end)
 
-	self._Trove:Connect(RunService.PostSimulation, function(Delta: number)
-		self:UpdateEnemy()
-	end)
-
 	local function OnLevel(Level: number)
 		local Func = self.DefaultRuns[Level]
 		if Func then
 			Func(self)
+		end
+
+		if self.UnitData.UnitData[self.Level].FireRate ~= 0 then
+			local Connection = self._Trove:Connect(RunService.PostSimulation, function(Delta: number)
+				self:UpdateEnemy()
+			end)
+
+			self.Upgraded:Once(function()
+				Connection:Disconnect()
+			end)
 		end
 	end
 

@@ -22,16 +22,26 @@ local UnitClient = require(GlobalClient.UnitClient)
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
 
-export type Data = {
-	UniqueId: string,
-	UnitName: string,
-	UpgradeData: UnitClient.TotalUnitData,
-	TotalCost: number,
-	Level: number,
-	Priority: UnitInfo.SortType | string,
-	Enabled: boolean,
-	Abilities: { { MinimumLevel: number, LastUsed: number, Name: string, Length: number, Cooldown: number } },
-}
+export type Data =
+	{
+		UniqueId: string,
+		UnitName: string,
+		UpgradeData: UnitClient.TotalUnitData,
+		TotalCost: number,
+		Level: number,
+		Priority: UnitInfo.SortType | string,
+		Enabled: boolean,
+		Abilities: {
+			{
+				MinimumLevel: number,
+				Icon: string,
+				LastUsed: number,
+				Name: string,
+				Length: number,
+				Cooldown: number,
+			}
+		},
+	}
 
 local DefaultValue: Data = {
 	UniqueId = "IOD97208U43RI47U6RJE9i",
