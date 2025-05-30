@@ -70,8 +70,8 @@ local UnitInfo: { [string]: UnitInfo } = {
 
 		UnitData = {
 			[0] = {
-				Damage = { 20 },
-				FireRate = 1,
+				Damage = { 100 },
+				FireRate = 0.6,
 				Range = 20,
 				Armor = "LeonidasArmor",
 				Cost = 100,

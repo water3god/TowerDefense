@@ -64,7 +64,7 @@ ChangePriority.OnServerEvent:Connect(function(Player: Player, UniqueId: string)
 	local CurrentUnit = Unit.GetUnit(UniqueId)
 
 	if CurrentUnit then
-		if CurrentUnit.Owner == Player then
+		if CurrentUnit:IsOwnedBy(Player) then
 			CurrentUnit:ChangePriority()
 		end
 	end
@@ -178,7 +178,7 @@ Upgrade.OnServerEvent:Connect(function(Player: Player, UniqueId: string)
 
 	local CurrentUnit = Unit.GetUnit(UniqueId)
 
-	if CurrentUnit and CurrentUnit.Owner == Player then
+	if CurrentUnit and CurrentUnit:IsOwnedBy(Player) then
 		CurrentUnit:Upgrade()
 	end
 end)
@@ -190,7 +190,7 @@ UseAbility.OnServerEvent:Connect(function(Player: Player, UniqueId: string, Inde
 
 	local CurrentUnit = Unit.GetUnit(UniqueId)
 
-	if CurrentUnit and CurrentUnit.Owner == Player then
+	if CurrentUnit and CurrentUnit:IsOwnedBy(Player) then
 		CurrentUnit:UseAbility(Index)
 	end
 end)
