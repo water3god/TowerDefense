@@ -83,6 +83,10 @@ local function CreateVoteFrame(Props: Props)
 		SetVisible(false)
 	end, {})
 
+	Hooks.useEventConnection(WaveService.Ended, function()
+		SetVisible(false)
+	end, {})
+
 	local Visiblity, SetVisibility = React.useState(false)
 	local Promise = React.useRef(nil :: Promise.Promise?)
 
