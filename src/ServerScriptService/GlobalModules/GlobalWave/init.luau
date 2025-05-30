@@ -207,6 +207,10 @@ function GlobalWave.new(Input: Input)
 		self:AddCoins(Input.Data.Data[Wave].CoinBonus)
 	end)
 
+	self.EnemyDestroying:Connect(function(Enemy)
+		self:AddCoins(Enemy.MaxHealth / 5)
+	end)
+
 	CurrentWave = self
 	self.Added:Fire(self)
 	return self
