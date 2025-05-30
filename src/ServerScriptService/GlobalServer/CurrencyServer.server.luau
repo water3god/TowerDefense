@@ -44,7 +44,7 @@ else
 		end
 	end
 
-	GlobalWave.Added:Connect(function(GlobalWave: GlobalWave.GlobalWave)
+	local function OnGlobalWave(GlobalWave: GlobalWave.GlobalWave)
 		for _, Player in ipairs(Players:GetPlayers()) do
 			if GlobalWave.Coins[Player.UserId] then
 				SendPlayerData(GlobalWave, Player)
@@ -58,7 +58,15 @@ else
 				CurrencyChanged:FireClient(Player, Coins)
 			end
 		end)
-	end)
+	end
+
+	local Wave = GlobalWave.GetWave()
+
+	if Wave then
+		OnGlobalWave(Wave)
+	end
+
+	GlobalWave.Added:Connect(OnGlobalWave)
 
 	SafePlayerAdded:Connect(function(Player: Player)
 		local Wave = GlobalWave.GetWave()
