@@ -394,6 +394,9 @@ local function NewUnit(Input: Types.UnitInput)
 		self.Animations["Idle"] = self.Animator:LoadAnimation(Default)
 	end
 
+	self.Animations.Idle.Looped = true
+	self.Animations.Attack.Looped = false
+
 	Units[self.UniqueId] = self
 
 	self:PlayAnimation("Idle", nil, nil, 0)
@@ -452,6 +455,19 @@ function UnitModule:PlayAnimation(
 		end
 		self.AnimationPlayed:Fire(AnimationName)
 
+		return Anim
+	end
+
+	return
+end
+
+function UnitModule:StopAnimation(AnimationName: string, FadeTime: number?)
+	local Anim = self.Animations[AnimationName]
+
+	if Anim then
+		local Name = "AnimationEvent" .. AnimationName
+		self:CancelPromise(Name)
+		Anim:Stop(FadeTime)
 		return Anim
 	end
 
@@ -937,21 +953,28 @@ PriorityChanged.OnClientEvent:Connect(function(Data: { UniqueId: string, Priorit
 	end
 end)
 
-AnimationEvent.OnClientEvent:Connect(function(Data: {
-	UniqueId: string,
-	AnimationName: string,
-	SecondsAfter: number?,
-	SpeedRatio: number?,
-	FadeTime: number?,
-	Length: number?,
-	SentTime: number,
-})
+AnimationEvent.OnClientEvent:Connect(function(
+	Data: {
+		UniqueId: string,
+		AnimationName: string,
+		SecondsAfter: number?,
+		SpeedRatio: number?,
+		FadeTime: number?,
+		Length: number?,
+		SentTime: number,
+	},
+	Enabled: boolean
+)
 	local Unit = UnitModule.GetUnit(Data.UniqueId)
 
 	if Unit then
-		local SecondsAfter = Data.SecondsAfter or 0
-		local NewTime = SecondsAfter + (workspace:GetServerTimeNow() - Data.SentTime)
-		Unit:PlayAnimation(Data.AnimationName, NewTime, Data.SpeedRatio, Data.FadeTime, Data.Length)
+		if Enabled then
+			local SecondsAfter = Data.SecondsAfter or 0
+			local NewTime = SecondsAfter + (workspace:GetServerTimeNow() - Data.SentTime)
+			Unit:PlayAnimation(Data.AnimationName, NewTime, Data.SpeedRatio, Data.FadeTime, Data.Length)
+		else
+			Unit:StopAnimation(Data.AnimationName, Data.FadeTime)
+		end
 	end
 end)
 

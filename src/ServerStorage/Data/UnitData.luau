@@ -22,11 +22,16 @@ end
 local function DelayAttack(Unit: Unit.Unit, Damage: number, Delay: number)
 	local CurrentEnemy = Unit.CurrentEnemy
 
-	task.delay(Delay * Unit.SpeedRatio, function()
-		if CurrentEnemy and CurrentEnemy.Damage then
-			CurrentEnemy:Damage(Damage)
-		end
-	end)
+	if CurrentEnemy then
+		Unit:AddAttackPromise(
+			Promise.delay(Delay * Unit.SpeedRatio):andThen(function()
+				if CurrentEnemy and CurrentEnemy.Damage then
+					CurrentEnemy:Damage(Damage)
+				end
+			end),
+			"DelayAttack"
+		)
+	end
 end
 
 local Data: { [string]: Unit.UnitInput } = {
@@ -137,7 +142,7 @@ local Data: { [string]: Unit.UnitInput } = {
 				Unit:PlayAnimation("Rage")
 
 				Unit:AddPromise(
-					Promise.delay(1.8):andThen(function()
+					Promise.delay(1.6):andThen(function()
 						Unit:EnableAttack()
 					end),
 					"SpartacusRage"

@@ -147,6 +147,7 @@ type UnitImpl = {
 		FadeTime: number?,
 		Length: number?
 	) -> (),
+	StopAnimation: (self: Unit, AnimationName: string, FadeTime: number?) -> (),
 
 	DisableAttack: (self: Unit, Length: number) -> (),
 	EnableAttack: (self: Unit) -> (),
@@ -157,6 +158,7 @@ type UnitImpl = {
 	ChangeSpeedRatio: (self: Unit, Name: string, SpeedRatio: number, Duration: number) -> (),
 
 	AddPromise: (self: Unit, Promise: Promise.Promise, PromiseName: string) -> (),
+	AddAttackPromise: (self: Unit, Promise: Promise.Promise, PromiseName: string) -> (),
 	CancelPromise: (self: Unit, PromiseName: string) -> (),
 
 	Watch: (self: Unit, Time: number, Funcs: { { Func: () -> (), TimeRatio: number } }) -> (),
@@ -356,6 +358,10 @@ function Unit:UpdateEnemy()
 		return
 	end
 
+	if self.Disabled then
+		return
+	end
+
 	local TimeDef = workspace:GetServerTimeNow() - self.LastFired
 
 	if TimeDef >= FireRate * self.SpeedRatio then
@@ -467,15 +473,26 @@ function Unit:PlayAnimation(
 		FadeTime = FadeTime,
 		Length = Length,
 		SentTime = workspace:GetServerTimeNow(),
-	})
+	}, true)
+end
+
+function Unit:StopAnimation(AnimationName: string, FadeTime: number?)
+	HelperFunctions.FireClients(AnimationEvent, self.ReplicateTo, {
+		UniqueId = self.UniqueId,
+		AnimationName = AnimationName,
+		SentTime = workspace:GetServerTimeNow(),
+	}, false)
 end
 
 function Unit:DisableAttack(Length: number)
 	self:CancelPromise("DisablePromise")
 	self.Disabled = true
+	self:StopAnimation("Attack")
+	self.AttackTrove:Destroy()
 	self:AddPromise(
 		Promise.delay(Length):andThen(function()
 			self.Disabled = false
+			self.LastFired = workspace:GetServerTimeNow()
 		end),
 		"DisablePromise"
 	)
@@ -526,6 +543,17 @@ function Unit:AddPromise(Promise: Promise.Promise, PromiseName: string)
 	self.Promises[PromiseName] = Promise
 
 	self._Trove:AddPromise(Promise :: any)
+
+	Promise:finally(function()
+		self.Promises[PromiseName] = nil
+	end)
+end
+
+function Unit:AddAttackPromise(Promise: Promise.Promise, PromiseName: string)
+	self:CancelPromise(PromiseName)
+	self.Promises[PromiseName] = Promise
+
+	self.AttackTrove:AddPromise(Promise :: any)
 
 	Promise:finally(function()
 		self.Promises[PromiseName] = nil

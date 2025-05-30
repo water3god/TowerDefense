@@ -233,6 +233,7 @@ export type UnitModule = {
 		FadeTime: number?,
 		Length: number?
 	) -> AnimationTrack?,
+	StopAnimation: (self: Unit, AnimationName: string, FadeTime: number?) -> AnimationTrack?,
 	Watch: (
 		self: Unit,
 		Anim: AnimationTrack,

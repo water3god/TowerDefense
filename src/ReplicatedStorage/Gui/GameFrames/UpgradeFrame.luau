@@ -164,7 +164,7 @@ local function CreateAbilityFrame(props: AbilityProps)
 				if Times[1] == 0 then
 					return ""
 				else
-					return tostring(math.floor(Times[1]))
+					return tostring(math.floor(math.clamp(Times[1] - Times[2] + props.Cooldown, 0, props.Cooldown)))
 				end
 			end
 		end),
