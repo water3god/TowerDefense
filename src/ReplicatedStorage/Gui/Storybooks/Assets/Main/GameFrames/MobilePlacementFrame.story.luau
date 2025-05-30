@@ -17,16 +17,10 @@ local Join = HelperFunctions.joinDicts
 
 -- Reference UI --
 local Gui = ReplicatedStorage.Gui
-local Roll = Gui.Roll
-local InRoll = require(Roll.InRoll)
-local SettingsContext = require(Gui.Settings.SettingsContext)
-
-local SettingsData = require(ReplicatedStorage.Shared.Settings)
+local MobilePlacementFrame = require(Gui.GameFrames.MobilePlacementFrame)
 
 -- Controls --
-local controls = {
-	Count = 1,
-}
+local controls = {}
 
 -- Story --
 local Story = {
@@ -34,18 +28,14 @@ local Story = {
 	reactRoblox = ReactRoblox,
 	controls = controls,
 	story = function(Properties)
-		local Units = {}
-		for _ = 1, Properties.controls.Count, 1 do
-			table.insert(Units, { Name = "Spartacus", Id = "@498)(*)&(" })
-		end
-		local Frame = e(SettingsContext.Context.Provider, {
-			value = Join(SettingsData.Default, { ["RareSkip"] = true }),
-		}, {
-			Frame = e(InRoll.Create, {
-				UnitNames = Units,
-				LastFiredTime = workspace:GetServerTimeNow(),
-				AutoRoll = false,
-			}),
+		local Frame = e(MobilePlacementFrame, {
+			native = {},
+			Place = function()
+				print("Placed")
+			end,
+			Cancel = function()
+				print("Canceled")
+			end,
 		})
 		return Frame
 	end,

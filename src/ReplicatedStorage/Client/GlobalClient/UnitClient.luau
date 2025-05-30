@@ -5,9 +5,12 @@
 local UnableToPlaceColor = Color3.new(1, 0.140795, 0)
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
+
+local Player = Players.LocalPlayer
 
 local ModelStorage = ReplicatedStorage.ModelStorage
 local UnitsAnimations = ReplicatedStorage.Animations.Units
@@ -50,6 +53,11 @@ local Packages = ReplicatedStorage.Packages
 local Trove = require(Packages.Trove)
 local Signal = require(Packages.Signal)
 local Promise = require(Packages.Promise)
+local Input = require(Packages.Input)
+local React = require(Packages.React)
+local ReactRoblox = require(Packages.ReactRoblox)
+
+local MobilePlacementFrame = require(ReplicatedStorage.Gui.GameFrames.MobilePlacementFrame)
 
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
@@ -324,9 +332,14 @@ local function NewUnit(Input: Types.UnitInput)
 	end
 
 	local function OnClick()
-		RangePart.Parent = self.Character
-
 		Animate(GetRange(), true)
+
+		self:AddPromise(
+			Promise.delay(0.01):andThen(function()
+				RangePart.Parent = self.Character
+			end),
+			"RangeAnimatePromise"
+		)
 	end
 
 	local function OnClose()
@@ -737,12 +750,11 @@ function UnitModule.InitPlacement(Unit: string)
 		end
 	end
 
+	local Ratio = UnitModel.Humanoid.BodyHeightScale.Value
+
 	local Root = CharacterData.CenterPart
 
-	local Pos, Size = UnitModel:GetBoundingBox()
-	local BottomPosition = Pos.Position - Vector3.new(0, Size.Y / 2, 0)
-
-	local Ratio = UnitModel.Humanoid.BodyHeightScale.Value
+	local BottomPosition = Root.Position - Vector3.new(0, 3 * Ratio, 0)
 
 	local RadiusPart = InitTrove:Clone(RadiusReference)
 	RadiusPart.CFrame = CFrame.new(BottomPosition)
@@ -838,6 +850,7 @@ function UnitModule.InitPlacement(Unit: string)
 
 	local AnimatedRotation = RotationIndex
 	local Changed = InitTrove:Construct(Signal)
+	local AfterChanged = InitTrove:Construct(Signal)
 	local CurrentPromise: Promise.Promise? = nil
 
 	Changed:Connect(function()
@@ -858,6 +871,23 @@ function UnitModule.InitPlacement(Unit: string)
 		end) :: any)
 	end)
 
+	local NewPosition: Vector3 = nil
+
+	local function Update(UnitPosition: Vector3)
+		NewPosition = UnitPosition
+		local LastPosition = CFrame.new(UnitPosition) * CFrame.Angles(0, math.rad(-90 * AnimatedRotation), 0)
+			+ VectorOffset
+		CenterPart.CFrame = LastPosition
+
+		local OldValid = IsValid
+
+		local Parts = CastCylinder(UnitPosition, OvParams)
+		IsValid = CheckValidity(Parts)
+		OnValdiityCheck(OldValid)
+
+		UnitModel.Parent = PlacementClient
+	end
+
 	local function OnFrame()
 		local RaycastResult: RaycastResult? = GetMouseIsPointing(RayParams)
 
@@ -865,16 +895,7 @@ function UnitModule.InitPlacement(Unit: string)
 			UnitPosition = RaycastResult.Position
 
 			if UnitPosition then
-				CenterPart.CFrame = CFrame.new(UnitPosition) * CFrame.Angles(0, math.rad(-90 * AnimatedRotation), 0)
-					+ VectorOffset
-
-				local OldValid = IsValid
-
-				local Parts = CastCylinder(UnitPosition, OvParams)
-				IsValid = CheckValidity(Parts)
-				OnValdiityCheck(OldValid)
-
-				UnitModel.Parent = PlacementClient
+				Update(UnitPosition)
 			end
 		else
 			UnitPosition = nil
@@ -887,7 +908,7 @@ function UnitModule.InitPlacement(Unit: string)
 	local function RotateIndex()
 		RotationIndex = math.fmod(RotationIndex + 1, 4)
 		Changed:Fire()
-		OnFrame()
+		AfterChanged:Fire()
 	end
 
 	local StartTime = tick()
@@ -909,21 +930,95 @@ function UnitModule.InitPlacement(Unit: string)
 		end
 	end
 
-	local function HandleInput(Input: InputObject, Processed: boolean)
-		if Processed then
-			return
-		end
-		if HelperFunctions.IsClick(Input) then
-			HandleClick()
-		elseif Input.UserInputType == Enum.UserInputType.Keyboard then
-			if Input.KeyCode == Enum.KeyCode.R then
-				RotateIndex()
-			end
-		end
-	end
+	local InputTrove = InitTrove:Extend()
 
-	InitTrove:Connect(UserInputService.InputBegan, HandleInput)
-	InitTrove:BindToRenderStep("InitPlacement", Enum.RenderPriority.Character.Value, OnFrame)
+	Input.PreferredInput.Observe(function(Preferred)
+		if Preferred == "MouseKeyboard" then
+			local Mouse = InputTrove:Construct(Input.Mouse)
+			local Keyboard = InputTrove:Construct(Input.Keyboard)
+
+			OnFrame()
+
+			Mouse.LeftDown:Connect(function()
+				HandleClick()
+			end)
+
+			Keyboard.KeyDown:Connect(function(Key: Enum.KeyCode)
+				if Key == Enum.KeyCode.R then
+					RotateIndex()
+				elseif Key == Enum.KeyCode.Escape then
+					InitTrove:Destroy()
+				end
+			end)
+
+			InputTrove:BindToRenderStep("InitPlacement", Enum.RenderPriority.Character.Value, OnFrame)
+		elseif Preferred == "Touch" then
+			local Touch = InputTrove:Construct(Input.Touch)
+
+			local Result = HelperFunctions.Raycast(Camera.ViewportSize / 2, RayParams)
+
+			if Result and Result.Position then
+				Update(Result.Position)
+			else
+				OnFrame()
+			end
+
+			AfterChanged:Connect(function()
+				if CurrentPromise then
+					InputTrove:BindToRenderStep("InitPlacement", Enum.RenderPriority.Character.Value, function()
+						Update(NewPosition)
+					end)
+					CurrentPromise:andThen(function()
+						RunService:UnbindFromRenderStep("InitPlacement")
+					end)
+				end
+			end)
+
+			Touch.TouchMoved:Connect(function(touch: InputObject, processed: boolean)
+				if processed then
+					return
+				end
+				OnFrame()
+			end)
+		elseif Preferred == "Gamepad" then
+		end
+	end)
+
+	if not UserInputService.KeyboardEnabled and UserInputService.TouchEnabled then
+		local NewRoot = InitTrove:Construct(Instance, "Part") :: Part
+		NewRoot.CanCollide = false
+		NewRoot.CanQuery = false
+		NewRoot.CanTouch = false
+		NewRoot.Name = "GuiRoot"
+		NewRoot.Size = Vector3.new(1, 1, 1)
+		NewRoot.Transparency = 1
+		NewRoot.CFrame = Root.CFrame + Vector3.new(0, 3, 0)
+		Weld(NewRoot, Root)
+		NewRoot.Parent = workspace
+
+		local RootGui = InitTrove:Construct(Instance, "BillboardGui") :: BillboardGui
+		RootGui.Adornee = NewRoot
+		RootGui.Active = true
+		RootGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+		RootGui.Size = UDim2.fromOffset(100, 100)
+		RootGui.Name = "UnitRoot"
+		RootGui.AlwaysOnTop = true
+		RootGui.ResetOnSpawn = false
+		RootGui.Parent = Player.PlayerGui
+
+		local Place = function()
+			HandleClick()
+		end
+
+		local ReactRoot = ReactRoblox.createRoot(RootGui)
+		ReactRoot:render(React.createElement(MobilePlacementFrame, {
+			Place = Place,
+			Cancel = InitTrove:WrapClean(),
+			Rotate = function()
+				RotateIndex()
+			end,
+		}))
+	end
 
 	return Data
 end

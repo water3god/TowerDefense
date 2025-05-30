@@ -5,14 +5,12 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local ServerStorage = game:GetService("ServerStorage")
-local RunService = game:GetService("RunService")
 
 if require(ReplicatedStorage.Shared.IsLobby) then
 	return
 end
 
 local Modules = ReplicatedStorage.Modules
-local DelayHandler = require(Modules.DelayHandler)
 local HelperFunctions = require(Modules.HelperFunctions)
 
 local Remotes = ReplicatedStorage.Remotes
@@ -33,7 +31,6 @@ local Constants = require(Shared.Constants)
 
 local GlobalModules = ServerScriptService.GlobalModules
 local Unit = require(GlobalModules.Unit)
-local Enemy = require(GlobalModules.Enemy)
 local GlobalWave = require(GlobalModules.GlobalWave)
 
 local PlayerData = require(GlobalModules.PlayerData)
@@ -207,7 +204,7 @@ Sell.OnServerEvent:Connect(function(Player: Player, UniqueId: string)
 	local GlobalWave = GlobalWave.GetWave()
 
 	if GlobalWave and CurrentUnit and CurrentUnit:IsOwnedBy(Player) then
-		GlobalWave:AddCoinsToUser(Player.UserId, CurrentUnit.TotalCost / Constants.CostDivider)
+		GlobalWave:AddCoinsToUser(Player.UserId, math.floor(CurrentUnit.TotalCost / Constants.CostDivider))
 		CurrentUnit:Delete()
 	end
 end)
