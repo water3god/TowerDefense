@@ -551,12 +551,30 @@ function UnitModule:_CalculateSpeedRatio()
 		self.SpeedRatioChanged:Fire(self.SpeedRatio)
 	end
 end
+--[[Clones adornment automatically]]
+function UnitModule:WeldAdornment(AdornmentInput: Model)
+	local Adornment = self.Trove:Clone(AdornmentInput)
+	WeldParts(self.Character, Adornment)
+
+	return Adornment
+end
 
 function UnitModule:AddPromise(Promise: Promise.Promise, PromiseName: string)
 	self:CancelPromise(PromiseName)
 	self.Promises[PromiseName] = Promise
 
 	self.Trove:AddPromise(Promise :: any)
+
+	Promise:finally(function()
+		self.Promises[PromiseName] = nil
+	end)
+end
+
+function UnitModule:AddAttackPromise(Promise: Promise.Promise, PromiseName: string)
+	self:CancelPromise(PromiseName)
+	self.Promises[PromiseName] = Promise
+
+	self.AttackTrove:AddPromise(Promise :: any)
 
 	Promise:finally(function()
 		self.Promises[PromiseName] = nil

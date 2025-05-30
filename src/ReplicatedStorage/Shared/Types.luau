@@ -246,7 +246,10 @@ export type UnitModule = {
 
 	_CalculateSpeedRatio: (self: Unit) -> (),
 
+	WeldAdornment: (self: Unit, Adornment: Model) -> Model,
+
 	AddPromise: (self: Unit, Promise: Promise.Promise, PromiseName: string) -> (),
+	AddAttackPromise: (self: Unit, Promise: Promise.Promise, PromiseName: string) -> (),
 	CancelPromise: (self: Unit, PromiseName: string) -> (),
 
 	ApplyDetail: (self: Unit) -> (),

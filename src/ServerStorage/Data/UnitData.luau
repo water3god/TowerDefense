@@ -115,10 +115,23 @@ local Data: { [string]: Unit.UnitInput } = {
 			[0] = {
 				function(Unit: Unit.Unit, Damage: number)
 					local CurrentEnemy = Unit.CurrentEnemy
-
-					if CurrentEnemy then
-						CurrentEnemy:Damage(Damage)
-					end
+					Unit:AddAttackPromise(
+						Promise.delay(0.4 * Unit.SpeedRatio):andThen(function()
+							if CurrentEnemy and CurrentEnemy.Damage then
+								local Speed = 10
+								local Distance = (Unit.CFrame.Position - CurrentEnemy.CFrame.Position).Magnitude
+								Unit:AddPromise(
+									Promise.delay(Distance / Speed):andThen(function()
+										if CurrentEnemy and CurrentEnemy.Damage then
+											CurrentEnemy:Damage(Damage)
+										end
+									end),
+									"PompeyAttackArrow"
+								)
+							end
+						end),
+						"PompeyAttackPromise"
+					)
 				end,
 			},
 		},
