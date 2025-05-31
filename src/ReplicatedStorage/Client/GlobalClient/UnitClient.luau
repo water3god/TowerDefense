@@ -487,8 +487,9 @@ function UnitModule:StopAnimation(AnimationName: string, FadeTime: number?)
 	return
 end
 
-function UnitModule:Watch(Anim: AnimationTrack, Funcs: { { Func: () -> (), PlayAfter: boolean, TimeRatio: number } })
-	local CurrentRatio = Anim.TimePosition / Anim.Length
+function UnitModule:Watch(AnimationName: string, Funcs: { { Func: () -> (), PlayAfter: boolean, TimeRatio: number } })
+	local Anim = self.Animations[AnimationName]
+	local CurrentRatio = math.max(Anim.TimePosition + 0.1, 0) / Anim.Length
 
 	for _, FuncData in ipairs(Funcs) do
 		if FuncData.TimeRatio >= CurrentRatio or FuncData.PlayAfter then

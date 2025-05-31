@@ -236,7 +236,7 @@ export type UnitModule = {
 	StopAnimation: (self: Unit, AnimationName: string, FadeTime: number?) -> AnimationTrack?,
 	Watch: (
 		self: Unit,
-		Anim: AnimationTrack,
+		AnimationName: string,
 		Funcs: { { TimeRatio: number, PlayAfter: boolean, Func: () -> () } }
 	) -> (),
 	RotateToEnemy: (self: Unit, Enemy: EnemyClient) -> (),

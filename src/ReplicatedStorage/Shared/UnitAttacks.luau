@@ -14,8 +14,17 @@ local ModelStorage = ReplicatedStorage.ModelStorage
 local Adornments = ModelStorage.Adornments
 local PompeyArrow = Adornments.PompeyArrow
 
+local Emitters = ModelStorage.Emitters
+local Slash = Emitters.Alpha
+
 local Shared = ReplicatedStorage.Shared
 local Types = require(Shared.Types)
+
+local Random = Random.new()
+
+local function RandomVector(): Vector3
+	return Vector3.new(Random:NextNumber(-1, 1), Random:NextNumber(-1, 1), Random:NextNumber(-1, 1))
+end
 
 local function FindFirstMiddle(Adornment: Model): BasePart?
 	for _, Descendant in ipairs(Adornment:GetDescendants()) do
@@ -159,7 +168,7 @@ local UnitAttacks: {
 					local LastPosition: Vector3? = nil
 
 					Enemy.Destroying:Once(function()
-						LastPosition = Enemy.CFrame.Position
+						LastPosition = Enemy.CFrame.Position + Vector3.new(0, Enemy.YOffset, 0)
 						Enemy = nil
 					end)
 
@@ -174,15 +183,15 @@ local UnitAttacks: {
 								if Middle then
 									Middle.Anchored = true
 									if Enemy then
-										LastPosition = Enemy.CFrame.Position
+										LastPosition = Enemy.CFrame.Position + Vector3.new(0, Enemy.YOffset, 0)
 									end
 									Realign(Arrow, CFrame.Angles(0, math.rad(90), 0))
 									if LastPosition then
 										TweenBetweenPositions(
 											Middle,
 											Middle.CFrame.Position,
-											LastPosition,
-											40,
+											LastPosition + RandomVector() / 2,
+											50,
 											Unit.CFrame.Position
 										):await()
 									end
@@ -208,7 +217,9 @@ local UnitAttacks: {
 		},
 		["Spartacus"] = {
 			[0] = {
-				DefaultAttack,
+				function(Unit, AttackInput, Enemy, Delay)
+					DefaultAttack(Unit, AttackInput, Enemy, Delay)
+				end,
 			},
 		},
 	}

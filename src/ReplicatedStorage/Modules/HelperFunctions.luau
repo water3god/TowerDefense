@@ -19,12 +19,18 @@ local IsStudio = RunService:IsStudio()
 
 local Funcs = {}
 
-local function CreateDefaultPart()
+local function CreateRaw()
 	local Part = Instance.new("Part")
 	Part.Anchored = true
 	Part.CanCollide = false
 	Part.CanQuery = false
 	Part.CanTouch = false
+
+	return Part
+end
+
+local function CreateDefaultPart()
+	local Part = CreateRaw()
 
 	task.delay(0.1, function()
 		Part:Destroy()
@@ -523,6 +529,19 @@ end
 function Funcs.Raycast(Position: Vector2, Params: RaycastParams?)
 	local Ray = Camera:ViewportPointToRay(Position.X, Position.Y)
 	return workspace:Raycast(Ray.Origin, Ray.Direction * 500, Params)
+end
+
+function Funcs.EmitParticle(ParticleEmitter: ParticleEmitter, CFrame: CFrame)
+	local Part = CreateRaw()
+	Part.CFrame = CFrame
+	local Attachment = Instance.new("Attachment", Part)
+	local Particle = ParticleEmitter:Clone()
+	Particle.Enabled = false
+	Particle.Parent = Attachment
+	Particle:Emit()
+	task.delay(Particle.Lifetime.Max, function()
+		Part:Destroy()
+	end)
 end
 
 -- Debug Functions --
