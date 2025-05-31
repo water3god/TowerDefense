@@ -6,6 +6,7 @@
       "$className": "Workspace",
       "$ignoreUnknownInstances": true,
       "GlobalWorkspace": {
+        "$ignoreUnknownInstances": false,
         "$path": "Models/GlobalWorkspace.rbxm"
       }
     },
@@ -81,12 +82,15 @@
         "$path": "Packages"
       },
       "Remotes": {
+        "$ignoreUnknownInstances": false,
         "$path": "Models/Remotes.rbxm"
       },
       "Animations": {
+        "$ignoreUnknownInstances": false,
         "$path": "Models/Animations.rbxm"
       },
       "ModelStorage": {
+        "$ignoreUnknownInstances": false,
         "$path": "Models/ModelStorage.rbxm"
       }
     },

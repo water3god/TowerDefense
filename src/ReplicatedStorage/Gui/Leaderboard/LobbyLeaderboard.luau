@@ -223,6 +223,7 @@ local function CreateLobbyLeaderboard(props: Props)
 				BarSize = 0.01,
 				native = {
 					Size = UDim2.fromScale(0.95, 0.95),
+					AutomaticCanvasSize = Enum.AutomaticSize.Y,
 				},
 			}, {
 				UIListLayout = e("UIListLayout", {
