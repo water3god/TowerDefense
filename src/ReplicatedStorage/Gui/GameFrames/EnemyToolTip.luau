@@ -130,7 +130,7 @@ local function CreateConnected(Props: ConnectedProps)
 
 				Trove:Connect(Enemy.HealthChanged, function(Health: number)
 					SetData(Join(Data, {
-						MaxHealth = Health,
+						Health = Health,
 					}) :: any)
 				end)
 

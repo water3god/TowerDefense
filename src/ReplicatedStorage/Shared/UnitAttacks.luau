@@ -7,6 +7,7 @@ local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 
 local Packages = ReplicatedStorage.Packages
+local HelperFunctions = require(ReplicatedStorage.Modules.HelperFunctions)
 local Promise = require(Packages.Promise)
 
 local ModelStorage = ReplicatedStorage.ModelStorage
@@ -26,15 +27,35 @@ local function FindFirstMiddle(Adornment: Model): BasePart?
 	return
 end
 
+local function Realign(Adornment: Model, NewOrientation: CFrame)
+	local Middle = FindFirstMiddle(Adornment)
+
+	if Middle then
+		for _, Weld in ipairs(Middle:GetChildren()) do
+			if Weld:IsA("Motor6D") then
+				local OtherPart = Weld.Part0
+				if OtherPart then
+					Weld.Enabled = false
+					Middle.CFrame *= NewOrientation
+
+					Weld.C0 = OtherPart.CFrame:Inverse()
+					Weld.C1 = Middle.CFrame:Inverse()
+
+					Weld.Enabled = true
+				end
+			end
+		end
+	end
+end
+
 local function ClearWelds(Adornment: Model)
 	for _, Limb in ipairs(Adornment:GetChildren()) do
 		local Middle = Limb:FindFirstChild("Middle") :: BasePart?
 
 		if Middle then
-			for _, Weld in ipairs(Middle:GetChildren()) do
-				if Weld:IsA("Motor6D") then
-					Weld:Destroy()
-				end
+			local Weld = Middle:FindFirstChild("MainMiddleWeld")
+			if Weld then
+				Weld:Destroy()
 			end
 		end
 	end
@@ -85,6 +106,8 @@ local function TweenBetweenPositions(
 			CFrame = CFrame.new(End) * Inital.Rotation,
 		})
 
+		Tween:Play()
+
 		Tween.Completed:Once(function(PlaybackState)
 			if PlaybackState == Enum.PlaybackState.Cancelled then
 				reject()
@@ -126,7 +149,9 @@ local UnitAttacks: {
 					end
 					local SpeedRatio = AttackInput.SpeedRatio
 					PlayAnimation(Unit, AttackInput, Delay)
+
 					local Arrow = Unit:WeldAdornment(PompeyArrow)
+					Arrow.Parent = workspace
 
 					local DelayTime = CalculateDelay(0.4, SpeedRatio, Delay)
 					DestroyBeforeTime(Unit, Arrow, DelayTime)
@@ -139,26 +164,33 @@ local UnitAttacks: {
 					end)
 
 					Unit:AddAttackPromise(
-						Promise.delay(DelayTime):andThen(function()
-							ClearWelds(Arrow)
-							local Middle = FindFirstMiddle(Arrow)
-							if Middle then
+						Promise.delay(DelayTime)
+							:andThen(function()
 								if Enemy then
-									LastPosition = Enemy.CFrame.Position
+									Unit:RotateToEnemy(Enemy)
 								end
-								if LastPosition then
-									TweenBetweenPositions(
-										Middle,
-										Middle.CFrame.Position,
-										LastPosition,
-										10,
-										Unit.CFrame.Position
-									):andThen(function()
-										print("Hit!")
-									end)
+								ClearWelds(Arrow)
+								local Middle = FindFirstMiddle(Arrow)
+								if Middle then
+									Middle.Anchored = true
+									if Enemy then
+										LastPosition = Enemy.CFrame.Position
+									end
+									Realign(Arrow, CFrame.Angles(0, math.rad(90), 0))
+									if LastPosition then
+										TweenBetweenPositions(
+											Middle,
+											Middle.CFrame.Position,
+											LastPosition,
+											40,
+											Unit.CFrame.Position
+										):await()
+									end
 								end
-							end
-						end),
+							end)
+							:finally(function()
+								Arrow:Destroy()
+							end),
 						"AttackPompeyArrow"
 					)
 				end,

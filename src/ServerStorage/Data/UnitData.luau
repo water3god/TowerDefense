@@ -118,7 +118,7 @@ local Data: { [string]: Unit.UnitInput } = {
 					Unit:AddAttackPromise(
 						Promise.delay(0.4 * Unit.SpeedRatio):andThen(function()
 							if CurrentEnemy and CurrentEnemy.Damage then
-								local Speed = 10
+								local Speed = 40
 								local Distance = (Unit.CFrame.Position - CurrentEnemy.CFrame.Position).Magnitude
 								Unit:AddPromise(
 									Promise.delay(Distance / Speed):andThen(function()
