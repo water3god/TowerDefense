@@ -5,6 +5,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Packages = ReplicatedStorage.Packages
+local UIStroke = require(ReplicatedStorage.Gui.CoreGame.UIStroke)
 local React = require(Packages.React)
 local e = React.createElement
 
@@ -146,6 +147,7 @@ export type UnitData = {
 	SmallFrameClick: (
 		{ Data: { CurrentUnit: Types.VisualUnitData, Rarity: string, RarityData: any }, UniqueId: string }
 	) -> (),
+	IsEquipped: boolean,
 	HoveredId: string?,
 	UniqueId: string,
 	XVisible: boolean,
@@ -180,6 +182,17 @@ local function HandleUnit(Data: UnitData)
 
 		Hovered = Data.HoveredId == Data.UniqueId,
 		native = Data.native,
+		containerChildren = {
+			CheckMark = Data.IsEquipped and e(Main.ImageLabel, {
+				native = {
+					Size = UDim2.fromScale(0.25, 0.25),
+					Position = UDim2.fromScale(0.75, 0.6),
+					ImageColor3 = Color3.new(0, 1, 0),
+					Image = "rbxassetid://78742556758797",
+					ZIndex = 3,
+				},
+			}),
+		},
 	}, {
 		BeingSoldFrame = e(BeingSoldFrame, {
 			Visible = Data.XVisible,
@@ -514,6 +527,16 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 	local InventoryNodes = React.useMemo(function()
 		local Table: { [string]: React.Node } = {}
 
+		local function IsEquipped(Id: string)
+			for _, Data in ipairs(EquippedUnits.Units) do
+				if Data.UniqueId == Id then
+					return true
+				end
+			end
+
+			return false
+		end
+
 		@native
 		local function HandleUnitData(Data: Types.VisualUnitData)
 			if Filter ~= "" then
@@ -527,6 +550,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 				HoveredId = HoveredId,
 				SmallFrameClick = SmallFrameClick,
 				UniqueId = Data.UniqueId,
+				IsEquipped = IsEquipped(Data.UniqueId),
 				XVisible = if table.find(SellingItems, Data.UniqueId) then true else false,
 				native = {
 					LayoutOrder = table.find(SortData, Data) or 1,
