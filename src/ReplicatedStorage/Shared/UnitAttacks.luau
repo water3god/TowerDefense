@@ -14,6 +14,9 @@ local ModelStorage = ReplicatedStorage.ModelStorage
 local Adornments = ModelStorage.Adornments
 local PompeyArrow = Adornments.PompeyArrow
 
+local Extra = ModelStorage.Extra
+local ParticleEmitter = Extra.ParticleEmitter
+
 local Emitters = ModelStorage.Emitters
 local Slash = Emitters.Alpha
 
@@ -127,6 +130,85 @@ local function TweenBetweenPositions(
 	end)
 end
 
+local function EmitOnPart(
+	Unit: Types.Unit,
+	Emitters: { Part },
+	ParticlesInput: { ParticleEmitter },
+	Once: boolean,
+	Attack: boolean,
+	Times: number?
+)
+	local Particles = {}
+
+	for _, Emitter in ipairs(Emitters) do
+		for _, Particle in ipairs(ParticlesInput) do
+			local ParticleClone = Particle:Clone()
+			table.insert(Particles, ParticleClone)
+			ParticleClone.Parent = Emitter
+		end
+	end
+
+	local ParticlePromise = Promise.new(function(resolve, reject, oncancel)
+		oncancel(function()
+			for _, Particle in ipairs(Particles) do
+				Particle:Clear()
+			end
+		end)
+		if Once then
+			for _, Particle in ipairs(Particles) do
+				Particle:Emit(Times)
+			end
+			resolve()
+		else
+			for _, Particle in ipairs(Particles) do
+				Particle.Enabled = true
+			end
+		end
+	end):finally(function()
+		for _, Particle in ipairs(Particles) do
+			Particle.Enabled = false
+			task.delay(Particle.Lifetime.Max, function()
+				Particle:Destroy()
+			end)
+		end
+	end)
+
+	if Attack then
+		Unit:AddAttackPromise(ParticlePromise, "___AttackEmitterv0.01")
+	else
+		Unit:AddPromise(ParticlePromise, "___Emitterv0.01")
+	end
+
+	return ParticlePromise
+end
+
+local function Emit(
+	Unit: Types.Unit,
+	ParticlesInput: { ParticleEmitter },
+	CFrame: CFrame,
+	Once: boolean,
+	Attack: boolean
+): Promise.Promise
+	local Emitter = ParticleEmitter:Clone()
+	Emitter.CFrame = CFrame
+
+	local ParticlePromise = EmitOnPart(Unit, { Emitter }, ParticlesInput, Once, Attack):finally(function()
+		local LongestTime = 0
+		for _, Particle in ipairs(ParticlesInput) do
+			if LongestTime < Particle.Lifetime.Max then
+				LongestTime = Particle.Lifetime.Max
+			end
+		end
+		task.delay(LongestTime, function()
+			Emitter:Destroy()
+		end)
+	end)
+
+	Emitter.Parent = workspace
+
+	return ParticlePromise
+end
+
 local function EasyWeld(Part0: BasePart, Part1: BasePart)
 	local Weld = Instance.new("Weld")
 	Weld.Name = Part0.Name
@@ -207,7 +289,24 @@ local UnitAttacks: {
 		},
 		["Alexander The Great"] = {
 			[0] = {
-				DefaultAttack,
+				function(Unit, AttackInput, Enemy, Delay)
+					DefaultAttack(Unit, AttackInput, Enemy, Delay)
+
+					local Spear = Unit.Character.AlexanderArmor.RightHand.Spear
+
+					local DelayTime = CalculateDelay(0.2, AttackInput.SpeedRatio, Delay)
+					local DelProm = Promise.delay(DelayTime)
+						:andThen(function()
+							local EmitPromise =
+								EmitOnPart(Unit, Spear:GetChildren(), { Emitters.Alexander }, false, true)
+							Unit:AddAttackPromise(EmitPromise, "SpartacusAttackEmitReal")
+							Promise.delay(CalculateDelay(0.3, AttackInput.SpeedRatio, Delay - DelayTime)):await()
+						end)
+						:andThen(function()
+							Unit:CancelPromise("SpartacusAttackEmitReal")
+						end)
+					Unit:AddAttackPromise(DelProm, "SpartacusAttackEmit")
+				end,
 			},
 		},
 		["Julius Caesar"] = {
@@ -219,6 +318,19 @@ local UnitAttacks: {
 			[0] = {
 				function(Unit, AttackInput, Enemy, Delay)
 					DefaultAttack(Unit, AttackInput, Enemy, Delay)
+
+					local DelayTime = CalculateDelay(0.42, AttackInput.SpeedRatio, Delay)
+					local DelProm = Promise.delay(DelayTime):andThen(function()
+						Emit(
+							Unit,
+							{ Slash },
+							Unit.Root.CFrame + Unit.CFrame.RightVector / 1.2 + Unit.CFrame.LookVector * 2,
+							true,
+							true
+						)
+					end)
+
+					Unit:AddAttackPromise(DelProm, "SpartacusAttackEmit")
 				end,
 			},
 		},
@@ -232,7 +344,41 @@ local DefaultRuns: { [string]: { [number]: (Unit: Types.Unit) -> () } } = {
 	},
 }
 
-local Abilities: { [string]: { [number]: (Unit: Types.Unit) -> () } } = {}
+local Abilities: {
+	[string]: {
+		[number]: (Unit: Types.Unit, Data: {
+			LastUsed: number,
+			Length: number,
+			Cooldown: number,
+		}) -> (),
+	},
+} =
+	{
+		["Spartacus"] = {
+			function(Unit, Data)
+				local EmitPromise = Emit(
+					Unit,
+					{ Emitters.AwakeningD, Emitters.AwakeningL, Emitters.aura, Emitters.aura2 },
+					Unit.Root.CFrame,
+					false,
+					false
+				)
+				local Delay = workspace:GetServerTimeNow() - Data.LastUsed
+
+				local DelayProm = Promise.delay(Data.Length - Delay):andThen(function()
+					EmitPromise:cancel()
+				end)
+
+				EmitPromise:finally(function(Status)
+					if Status == "Cancelled" then
+						DelayProm:cancel()
+					end
+				end)
+
+				Unit:AddPromise(DelayProm, "SpartacusAbilityPromise")
+			end,
+		},
+	}
 
 return {
 	UnitAttacks = UnitAttacks,
