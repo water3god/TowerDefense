@@ -623,6 +623,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		Filter :: any,
 		FilterMethod :: any,
 		OpenFrame :: any,
+		EquippedUnits :: any,
 	})
 
 	local FilterMethodCallback = React.useCallback(function()

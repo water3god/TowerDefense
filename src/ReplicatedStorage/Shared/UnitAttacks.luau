@@ -141,10 +141,18 @@ local function EmitOnPart(
 	local Particles = {}
 
 	for _, Emitter in ipairs(Emitters) do
+		local Attachment = Emitter:FindFirstChild("___EmitAttachment")
+		if not Attachment then
+			Attachment = Instance.new("Attachment")
+			if Attachment then
+				Attachment.Name = "___EmitAttachment"
+				Attachment.Parent = Emitter
+			end
+		end
 		for _, Particle in ipairs(ParticlesInput) do
 			local ParticleClone = Particle:Clone()
 			table.insert(Particles, ParticleClone)
-			ParticleClone.Parent = Emitter
+			ParticleClone.Parent = Attachment
 		end
 	end
 
@@ -346,11 +354,11 @@ local DefaultRuns: { [string]: { [number]: (Unit: Types.Unit) -> () } } = {
 
 local Abilities: {
 	[string]: {
-		[number]: (Unit: Types.Unit, Data: {
+		(Unit: Types.Unit, Data: {
 			LastUsed: number,
 			Length: number,
 			Cooldown: number,
-		}) -> (),
+		}) -> ()
 	},
 } =
 	{
