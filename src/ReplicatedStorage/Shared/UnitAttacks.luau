@@ -330,6 +330,11 @@ local UnitAttacks: {
 				DefaultAttack,
 			},
 		},
+		["Pyrrhus"] = {
+			[0] = {
+				DefaultAttack,
+			},
+		},
 		["Spartacus"] = {
 			[0] = {
 				function(Unit, AttackInput, Enemy, Delay)
