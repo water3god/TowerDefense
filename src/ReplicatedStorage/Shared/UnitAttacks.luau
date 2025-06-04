@@ -132,8 +132,9 @@ end
 
 local function EmitOnPart(
 	Unit: Types.Unit,
-	Emitters: { Part },
 	ParticlesInput: { ParticleEmitter },
+	Emitters: { Part },
+
 	Once: boolean,
 	Attack: boolean,
 	Times: number?
@@ -164,7 +165,7 @@ local function EmitOnPart(
 		end)
 		if Once then
 			for _, Particle in ipairs(Particles) do
-				Particle:Emit(Times)
+				Particle:Emit(Times or 1)
 			end
 			resolve()
 		else
@@ -195,12 +196,13 @@ local function Emit(
 	ParticlesInput: { ParticleEmitter },
 	CFrame: CFrame,
 	Once: boolean,
-	Attack: boolean
+	Attack: boolean,
+	Times: number?
 ): Promise.Promise
 	local Emitter = ParticleEmitter:Clone()
 	Emitter.CFrame = CFrame
 
-	local ParticlePromise = EmitOnPart(Unit, { Emitter }, ParticlesInput, Once, Attack):finally(function()
+	local ParticlePromise = EmitOnPart(Unit, ParticlesInput, { Emitter }, Once, Attack, Times):finally(function()
 		local LongestTime = 0
 		for _, Particle in ipairs(ParticlesInput) do
 			if LongestTime < Particle.Lifetime.Max then
@@ -299,21 +301,27 @@ local UnitAttacks: {
 			[0] = {
 				function(Unit, AttackInput, Enemy, Delay)
 					DefaultAttack(Unit, AttackInput, Enemy, Delay)
+					local DelayTime = CalculateDelay(0.35, AttackInput.SpeedRatio, Delay)
 
-					local Spear = Unit.Character.AlexanderArmor.RightHand.Spear
-
-					local DelayTime = CalculateDelay(0.2, AttackInput.SpeedRatio, Delay)
 					local DelProm = Promise.delay(DelayTime)
 						:andThen(function()
-							local EmitPromise =
-								EmitOnPart(Unit, Spear:GetChildren(), { Emitters.Alexander }, false, true)
-							Unit:AddAttackPromise(EmitPromise, "SpartacusAttackEmitReal")
+							if not Enemy then
+								return
+							end
+							local EmitPromise = Emit(
+								Unit,
+								{ Emitters.AlexanderSpark },
+								Enemy.Root.CFrame + RandomVector() / 2,
+								true,
+								true
+							)
+							Unit:AddAttackPromise(EmitPromise, "AlexanderAttackEmitReal")
 							Promise.delay(CalculateDelay(0.3, AttackInput.SpeedRatio, Delay - DelayTime)):await()
 						end)
 						:andThen(function()
-							Unit:CancelPromise("SpartacusAttackEmitReal")
+							Unit:CancelPromise("AlexanderAttackEmitReal")
 						end)
-					Unit:AddAttackPromise(DelProm, "SpartacusAttackEmit")
+					Unit:AddAttackPromise(DelProm, "AlexanderAttackEmit")
 				end,
 			},
 		},
@@ -334,7 +342,8 @@ local UnitAttacks: {
 							{ Slash },
 							Unit.Root.CFrame + Unit.CFrame.RightVector / 1.2 + Unit.CFrame.LookVector * 2,
 							true,
-							true
+							true,
+							2
 						)
 					end)
 

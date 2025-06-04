@@ -668,7 +668,11 @@ local function TweenTransparency(BasePart: BasePart, Transparency: number)
 		)
 
 		Tween:Play()
+
+		return Tween
 	end
+
+	return
 end
 
 local function GetIdle(Unit: string)
@@ -815,14 +819,27 @@ function UnitModule.InitPlacement(Unit: string)
 	RangePart.Parent = workspace
 	Variables.InPlacement = true
 
-	InitTrove:Add(task.defer(function()
+	InitTrove:AddPromise(Promise.defer(function(resolve, reject, onCancel)
+		local Tweens = {}
 		for Id, Unit in pairs(Units) do
-			TweenTransparency(Unit.RadiusPart, 0)
+			local Tween = TweenTransparency(Unit.RadiusPart, 0)
+			table.insert(Tweens, Tween)
 		end
-	end))
+
+		onCancel(function()
+			for _, Tween in ipairs(Tweens) do
+				Tween:Cancel()
+			end
+		end)
+	end) :: any)
 
 	InitTrove:Add(function()
 		Variables.InPlacement = false
+		local Tweens = {}
+		for Id, Unit in pairs(Units) do
+			local Tween = TweenTransparency(Unit.RadiusPart, 0)
+			table.insert(Tweens, Tween)
+		end
 		for Id, Unit in pairs(Units) do
 			TweenTransparency(Unit.RadiusPart, 1)
 		end
