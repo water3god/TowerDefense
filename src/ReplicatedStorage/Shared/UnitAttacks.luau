@@ -4,9 +4,11 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local ServerStorage = game:GetService("ServerStorage")
 local TweenService = game:GetService("TweenService")
 
 local Packages = ReplicatedStorage.Packages
+local EnemyClient = require(ReplicatedStorage.Client.GlobalClient.EnemyClient)
 local HelperFunctions = require(ReplicatedStorage.Modules.HelperFunctions)
 local Promise = require(Packages.Promise)
 
@@ -18,6 +20,7 @@ local Extra = ModelStorage.Extra
 local ParticleEmitter = Extra.ParticleEmitter
 
 local Emitters = ModelStorage.Emitters
+local AttackParticle = Emitters.AttackParticle
 local Slash = Emitters.Alpha
 
 local Shared = ReplicatedStorage.Shared
@@ -219,6 +222,26 @@ local function Emit(
 	return ParticlePromise
 end
 
+local function PlayAttackHit(Enemy: Types.EnemyClient?)
+	if not Enemy or not Enemy.Root then
+		return
+	end
+
+	local Emitter = ParticleEmitter:Clone()
+	Emitter.Name = "AttackEmitter"
+	Emitter.CFrame = Enemy.Root.CFrame + RandomVector() / 2
+
+	local Particle = AttackParticle:Clone()
+	Particle.Parent = Emitter.___EmitAttachment
+
+	Emitter.Parent = workspace
+	Particle:Emit()
+
+	task.delay(Particle.Lifetime.Max, function()
+		Emitter:Destroy()
+	end)
+end
+
 local function EasyWeld(Part0: BasePart, Part1: BasePart)
 	local Weld = Instance.new("Weld")
 	Weld.Name = Part0.Name
@@ -286,6 +309,7 @@ local UnitAttacks: {
 											50,
 											Unit.CFrame.Position
 										):await()
+										PlayAttackHit(Enemy)
 									end
 								end
 							end)
@@ -301,26 +325,17 @@ local UnitAttacks: {
 			[0] = {
 				function(Unit, AttackInput, Enemy, Delay)
 					DefaultAttack(Unit, AttackInput, Enemy, Delay)
-					local DelayTime = CalculateDelay(0.35, AttackInput.SpeedRatio, Delay)
+					local DelayTime = CalculateDelay(0.38, AttackInput.SpeedRatio, Delay)
 
-					local DelProm = Promise.delay(DelayTime)
-						:andThen(function()
-							if not Enemy then
-								return
-							end
-							local EmitPromise = Emit(
-								Unit,
-								{ Emitters.AlexanderSpark },
-								Enemy.Root.CFrame + RandomVector() / 2,
-								true,
-								true
-							)
-							Unit:AddAttackPromise(EmitPromise, "AlexanderAttackEmitReal")
-							Promise.delay(CalculateDelay(0.3, AttackInput.SpeedRatio, Delay - DelayTime)):await()
-						end)
-						:andThen(function()
-							Unit:CancelPromise("AlexanderAttackEmitReal")
-						end)
+					local DelProm = Promise.delay(DelayTime):andThen(function()
+						if not Enemy or not Enemy.Root then
+							return
+						end
+						local EmitPromise =
+							Emit(Unit, { Emitters.AlexanderSpark }, Enemy.Root.CFrame + RandomVector() / 2, true, true)
+						PlayAttackHit(Enemy)
+						Unit:AddAttackPromise(EmitPromise, "AlexanderAttackEmitReal")
+					end)
 					Unit:AddAttackPromise(DelProm, "AlexanderAttackEmit")
 				end,
 			},
@@ -350,6 +365,7 @@ local UnitAttacks: {
 							true,
 							2
 						)
+						PlayAttackHit(Enemy)
 					end)
 
 					Unit:AddAttackPromise(DelProm, "SpartacusAttackEmit")
