@@ -78,7 +78,7 @@ type EnemyData = {
 	SpeedChanged: Signal.Signal<number, number>,
 	ReachedEnd: Signal.Signal<>,
 
-	Destroying: Signal.Signal<>,
+	Destroying: Signal.Signal<boolean>,
 }
 
 type EnemyImpl = {
@@ -92,7 +92,7 @@ type EnemyImpl = {
 
 	IsInRange: (self: Enemy, Position: Vector2, Range: number) -> boolean,
 
-	Destroy: (self: Enemy) -> (),
+	Destroy: (self: Enemy, Animate: boolean) -> (),
 
 	GetEnemy: (UniqueId: string) -> Enemy?,
 	GetEnemies: () -> { [string]: Enemy },
@@ -202,7 +202,7 @@ function Enemy.new(Input: EnemyInput)
 
 	self.ReachedEnd:Once(function()
 		if self.Delete then
-			self:Destroy()
+			self:Destroy(false)
 		end
 	end)
 
@@ -274,8 +274,8 @@ function Enemy:IsInRange(StandardPos: Vector2, Range: number)
 	return (SelfPos - StandardPos).Magnitude <= Range / 2
 end
 
-function Enemy:Destroy()
-	self.Destroying:Fire()
+function Enemy:Destroy(Animate: boolean)
+	self.Destroying:Fire(Animate)
 	self.Trove:Destroy()
 	Enemies[self.UniqueId] = nil
 	table.clear(self :: any)

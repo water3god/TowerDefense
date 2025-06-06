@@ -121,7 +121,7 @@ type EnemyData = {
 	HealthChanged: Signal.Signal<number>,
 	MaxHealthChanged: Signal.Signal<number>,
 	ReachedEnd: Signal.Signal<>,
-	Destroying: Signal.Signal<>,
+	Destroying: Signal.Signal<boolean>,
 }
 
 export type EnemyModule = {

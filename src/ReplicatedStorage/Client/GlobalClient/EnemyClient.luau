@@ -13,6 +13,7 @@ local LocationEvent = EnemyEvents.LocationEvent
 local DestroyEvent = EnemyEvents.DestroyEvent
 
 local Packages = ReplicatedStorage.Packages
+local Helper = require(ReplicatedStorage.Modules.SyncTween.Modules.Helper)
 local Signal = require(Packages.Signal)
 local Trove = require(Packages.Trove)
 
@@ -30,6 +31,9 @@ local Default = EnemiesAnimations.Default
 
 local ModelStorage = ReplicatedStorage.ModelStorage
 local Rig = ModelStorage.Extra.Rig
+
+local Emitters = ModelStorage.Emitters
+local DestroyParticle = Emitters.Blood1
 
 local EnemyFolder = {}
 for _, Enemy in ipairs(ModelStorage.Enemies:GetChildren()) do
@@ -182,13 +186,17 @@ local function NewEnemy(Input: Types.EnemyInput, SpectateFire: boolean)
 		WalkAnim:AdjustSpeed(self:GetAnimationRatio())
 	end
 
+	self.Destroying:Connect(function(Animate: boolean)
+		HelperFunctions.EmitParticle(DestroyParticle, self.Root.CFrame)
+	end)
+
 	Enemies[self.UniqueId] = self
 
 	self.NewEnemy:Fire(self, SpectateFire)
 end
 
-local function EnemyDestroy(self: Types.EnemyClient)
-	self.Destroying:Fire()
+local function EnemyDestroy(self: Types.EnemyClient, Animate: boolean)
+	self.Destroying:Fire(Animate)
 	Enemies[self.UniqueId] = nil
 	self.Trove:Destroy()
 	table.clear(self :: any)
@@ -263,11 +271,11 @@ HealthEvent.OnClientEvent:Connect(function(UniqueId: string, Health: number, Max
 	end
 end)
 
-DestroyEvent.OnClientEvent:Connect(function(UniqueIds: { string })
+DestroyEvent.OnClientEvent:Connect(function(UniqueIds: { string }, Animate: boolean)
 	for _, Id in ipairs(UniqueIds) do
 		local Enemy = Enemies[Id]
 		if Enemy then
-			EnemyDestroy(Enemy)
+			EnemyDestroy(Enemy, Animate)
 			Enemies[Id] = nil
 		end
 	end

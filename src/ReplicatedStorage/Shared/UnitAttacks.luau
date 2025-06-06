@@ -20,7 +20,7 @@ local Extra = ModelStorage.Extra
 local ParticleEmitter = Extra.ParticleEmitter
 
 local Emitters = ModelStorage.Emitters
-local AttackParticle = Emitters.AttackParticle
+local AttackParticle = Emitters["Blood-01"]
 local Slash = Emitters.Alpha
 
 local Shared = ReplicatedStorage.Shared
@@ -235,7 +235,7 @@ local function PlayAttackHit(Enemy: Types.EnemyClient?)
 	Particle.Parent = Emitter.___EmitAttachment
 
 	Emitter.Parent = workspace
-	Particle:Emit()
+	Particle:Emit(10)
 
 	task.delay(Particle.Lifetime.Max, function()
 		Emitter:Destroy()

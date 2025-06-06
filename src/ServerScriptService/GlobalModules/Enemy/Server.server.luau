@@ -85,8 +85,8 @@ Enemy.Spawned:Connect(function(NewEnemy: Enemy.Enemy)
 		HandleHealth(NewEnemy.Health, MaxHealth)
 	end)
 
-	NewEnemy.Destroying:Once(function()
-		HelperFunctions.FireClients(DestroyEvent, NewEnemy.ReplicateTo, { UniqueId })
+	NewEnemy.Destroying:Once(function(Animate: boolean)
+		HelperFunctions.FireClients(DestroyEvent, NewEnemy.ReplicateTo, { UniqueId }, Animate)
 	end)
 end)
 
@@ -138,14 +138,14 @@ local function OnFrame()
 				if not Enemy.Ally then
 					if Ally.TimePosition <= Enemy.TimePosition then
 						if Ally.Health == Enemy.Health then
-							Enemy:Destroy()
-							Ally:Destroy()
+							Enemy:Destroy(false)
+							Ally:Destroy(false)
 						elseif Ally.Health < Enemy.Health then
 							Enemy:Damage(Ally.Health)
-							Ally:Destroy()
+							Ally:Destroy(false)
 						elseif Ally.Health > Enemy.Health then
 							Ally:Damage(Enemy.Health)
-							Enemy:Destroy()
+							Enemy:Destroy(false)
 						end
 					end
 				end
