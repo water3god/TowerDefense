@@ -207,7 +207,7 @@ local function SendInfo(Units: { [string]: Unit }, Players: { Player }, New: boo
 		}
 	end
 
-	HelperFunctions.FireClients(PlacementEvent, Players, Data)
+	HelperFunctions.FireClients(PlacementEvent, Players, Data, New)
 end
 
 local function SyncFuncs(Table: { [number]: any })

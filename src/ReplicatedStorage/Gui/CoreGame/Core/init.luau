@@ -406,7 +406,6 @@ local function Render()
 		end, { PlacingUnitId })
 
 		Hooks.useEventConnection(UnitClient.NewUnit, function(Unit, New: boolean)
-			print(Unit, New)
 			if New and Unit.OwnerId == Player.UserId then
 				if PlacingUnitId ~= Unit.UniqueId then
 					SetUnitId(Unit.UniqueId)
