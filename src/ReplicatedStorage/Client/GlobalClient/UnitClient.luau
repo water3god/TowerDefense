@@ -245,6 +245,22 @@ local function SyncFuncs(Table: { [number]: any })
 	return NewTable
 end
 
+local function TweenTransparency(BasePart: BasePart, Transparency: number)
+	if BasePart.Transparency ~= Transparency then
+		local Tween = TweenService:Create(
+			BasePart,
+			TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out),
+			{ Transparency = Transparency }
+		)
+
+		Tween:Play()
+
+		return Tween
+	end
+
+	return
+end
+
 local function NewUnit(Input: Types.UnitInput, New: boolean)
 	local self = setmetatable({}, UnitModule) :: Types.Unit
 
@@ -340,9 +356,21 @@ local function NewUnit(Input: Types.UnitInput, New: boolean)
 			end),
 			"RangeAnimatePromise"
 		)
+		self:AddPromise(
+			Promise.defer(function()
+				TweenTransparency(self.RadiusPart, 0.2)
+			end),
+			"ClickOpenPromise"
+		)
 	end
 
 	local function OnClose()
+		self:AddPromise(
+			Promise.defer(function()
+				TweenTransparency(self.RadiusPart, 1)
+			end),
+			"ClickClosePromise"
+		)
 		RangePart.Parent = nil
 	end
 
@@ -659,22 +687,6 @@ local function GetMouseIsPointing(Params: RaycastParams?)
 	return workspace:Raycast(Ray.Origin, Ray.Direction * 500, Params)
 end
 
-local function TweenTransparency(BasePart: BasePart, Transparency: number)
-	if BasePart.Transparency ~= Transparency then
-		local Tween = TweenService:Create(
-			BasePart,
-			TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out),
-			{ Transparency = Transparency }
-		)
-
-		Tween:Play()
-
-		return Tween
-	end
-
-	return
-end
-
 local function GetIdle(Unit: string)
 	local AnimFolder = UnitsAnimations:FindFirstChild(Unit)
 	if AnimFolder then
@@ -820,26 +832,13 @@ function UnitModule.InitPlacement(Unit: string)
 	Variables.InPlacement = true
 
 	InitTrove:AddPromise(Promise.defer(function(resolve, reject, onCancel)
-		local Tweens = {}
 		for Id, Unit in pairs(Units) do
-			local Tween = TweenTransparency(Unit.RadiusPart, 0)
-			table.insert(Tweens, Tween)
+			TweenTransparency(Unit.RadiusPart, 0.4)
 		end
-
-		onCancel(function()
-			for _, Tween in ipairs(Tweens) do
-				Tween:Cancel()
-			end
-		end)
 	end) :: any)
 
 	InitTrove:Add(function()
 		Variables.InPlacement = false
-		local Tweens = {}
-		for Id, Unit in pairs(Units) do
-			local Tween = TweenTransparency(Unit.RadiusPart, 0)
-			table.insert(Tweens, Tween)
-		end
 		for Id, Unit in pairs(Units) do
 			TweenTransparency(Unit.RadiusPart, 1)
 		end

@@ -29,6 +29,7 @@ local UnitFrame = require(Gui.Inventory.UnitFrame)
 local GameFrames = Gui.GameFrames
 local EquippedUnitsContext = require(GameFrames.EquippedUnitsContext)
 local Currency = require(GameFrames.Currency)
+local WaveContext = require(GameFrames.WaveContext)
 
 local Shared = ReplicatedStorage.Shared
 local LevelRequirements = require(Shared.LevelRequirements)
@@ -116,6 +117,7 @@ type PlacementData = {
 local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 	local UnitsContext = React.useContext(EquippedUnitsContext.Context)
 	local CurrencyContext = React.useContext(Currency.Context)
+	local WaveContext = React.useContext(WaveContext.Context)
 	local Units = UnitsContext.Units
 
 	React.useImperativeHandle(ref, function()
@@ -192,6 +194,14 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 	end
 
 	local Click = IsLobby and LobbyClick or GameClick
+
+	if IsLobby then
+		React.useEffect(function()
+			if WaveContext.StartTime == 0 and WaveContext.Time == 0 then
+				SetPlacement(nil)
+			end
+		end, { WaveContext })
+	end
 
 	local CurrencyValue = React.useMemo(function()
 		return HelperFunctions.NumberScaler.ShortenNumber(CurrencyContext.Value)

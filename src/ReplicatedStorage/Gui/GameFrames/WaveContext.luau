@@ -24,9 +24,9 @@ local Hooks = require(CoreGame.Hooks)
 local WaveService = require(ReplicatedStorage.Client.GlobalClient.WaveService)
 
 local Default = {
-	BaseHealth = 1,
-	MaxHealth = 1,
-	StartTime = 0,
+	BaseHealth = 100,
+	MaxHealth = 100,
+	StartTime = 1,
 	Time = 0,
 	Wave = 1,
 }
