@@ -62,6 +62,7 @@ local MobilePlacementFrame = require(ReplicatedStorage.Gui.GameFrames.MobilePlac
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local Lerps = require(Modules.Lerps)
+local GenerateId = require(Modules.GenerateId)
 
 local Remotes = ReplicatedStorage.Remotes
 local Events = Remotes.Unit
@@ -265,6 +266,7 @@ local function NewUnit(Input: Types.UnitInput, New: boolean)
 	local self = setmetatable({}, UnitModule) :: Types.Unit
 
 	self.UniqueId = Input.UniqueId
+	GenerateId.AddId(self.UniqueId)
 	self.Trove = Trove.new()
 
 	self.AttackTrove = self.Trove:Extend()
@@ -459,6 +461,7 @@ local function UnitDestroy(self: Types.Unit)
 	self.Destroying:Fire()
 	self.Trove:Destroy()
 	Units[self.UniqueId] = nil
+	GenerateId.RemoveId(self.UniqueId)
 	table.clear(self :: any)
 	setmetatable(self :: any, nil)
 end

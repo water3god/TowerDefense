@@ -33,15 +33,16 @@ local WarningContext = React.createContext({
 	Warnings = {},
 	Add = function(Text: string) end,
 } :: {
-	Warnings: { [string]: { Text: string, StartTime: number } },
+	Warnings: { [string]: { Text: string, Color: Color3, StartTime: number } },
 	Add: (Text: string) -> (),
 })
 
 local function WarningProvider(props)
-	local Value, SetValue = React.useState({} :: { [string]: { Text: string, StartTime: number } })
+	local Value, SetValue = React.useState({} :: { [string]: { Text: string, Color: Color3, StartTime: number } })
 
-	local Add = React.useCallback(function(Text: string)
-		SetValue(Join(Value, { [GenerateId.GenerateId()] = { Text = Text, StartTime = tick() } }))
+	local Add = React.useCallback(function(Text: string, ColorInput: Color3?)
+		local Color = ColorInput or Color3.new(1, 0.043137, 0.043137)
+		SetValue(Join(Value, { [GenerateId.GenerateId()] = { Text = Text, Color = Color, StartTime = tick() } }))
 	end, { Value })
 
 	Hooks.useEventConnection(RunService.PostSimulation, function()
@@ -59,12 +60,12 @@ local function WarningProvider(props)
 		end
 	end, { Value })
 
-	Hooks.useEventConnection(SendWarning.OnClientEvent, function(Text: string)
-		Add(Text)
+	Hooks.useEventConnection(SendWarning.OnClientEvent, function(Text: string, Color: Color3?)
+		Add(Text, Color)
 	end, { Value })
 
-	Hooks.useEventConnection(WarningBindable.Event, function(Text: string)
-		Add(Text)
+	Hooks.useEventConnection(WarningBindable.Event, function(Text: string, Color: Color3?)
+		Add(Text, Color)
 	end, { Value })
 
 	return e(WarningContext.Provider, {

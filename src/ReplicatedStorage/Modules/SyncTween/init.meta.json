@@ -1,9 +1,0 @@
-{
-  "ignoreUnknownInstances": true,
-  "getTween": {
-    "$className": "RemoteFunction"
-  },
-  "signalTween": {
-    "$className": "RemoteEvent"
-  }
-}

@@ -73,6 +73,7 @@ type TradeImpl = {
 	_Complete: (self: Trade) -> (),
 
 	Delete: (self: Trade) -> (),
+	Destroy: (self: Trade) -> (),
 
 	GetTradeFromPlayer: (Player: Player) -> Trade?,
 	GetTrades: () -> { [string]: Trade },
@@ -326,9 +327,14 @@ end
 function Trade:Delete()
 	self.Destroying:Fire()
 	self._Trove:Destroy()
+	GenerateId.RemoveId(self.UniqueId)
 
 	table.clear(self :: any)
 	setmetatable(self :: any, nil)
+end
+
+function Trade:Destroy()
+	self:Delete()
 end
 
 function Trade.GetTradeFromPlayer(Player: Player)

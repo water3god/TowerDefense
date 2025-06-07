@@ -276,8 +276,11 @@ end
 
 function Enemy:Destroy(Animate: boolean)
 	self.Destroying:Fire(Animate)
-	self.Trove:Destroy()
-	Enemies[self.UniqueId] = nil
+	if self.Trove then
+		self.Trove:Destroy()
+		Enemies[self.UniqueId] = nil
+		GenerateId.RemoveId(self.UniqueId)
+	end
 	table.clear(self :: any)
 	setmetatable(self :: any, nil)
 end
@@ -364,6 +367,7 @@ end
 function Enemy.RemoveBezier(UniqueId: string)
 	Beziers[UniqueId] = nil
 	Enemy.BezierRemoving:Fire(UniqueId)
+	GenerateId.RemoveId(UniqueId)
 end
 
 return Enemy

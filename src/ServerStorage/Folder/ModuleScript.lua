@@ -1,1 +1,0 @@
-for _, Unit in ipairs(game.ReplicatedStorage.ModelStorage.Units:GetChildren()) do local h = Unit.Humanoid h.BodyDepthScale.Value = 0.6; h.BodyHeightScale.Value = 0.6; h.BodyWidthScale.Value = 0.6 Unit.Parent = workspace; task.delay(0.5, function() Unit.Parent = game.ReplicatedStorage.ModelStorage.Units end) end

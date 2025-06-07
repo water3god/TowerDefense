@@ -326,7 +326,7 @@ function GlobalWave:NextWave()
 					local Enemy = Enemy.new({ EnemyInfo = EnemyData, BezierId = self.BezierId })
 
 					Enemy.HealthChanged:Connect(function(Health: number)
-						if Health == 0 and Enemy.Destroy then
+						if Health == 0 and Enemy.Trove then
 							Enemy:Destroy(true)
 						end
 					end)

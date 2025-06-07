@@ -13,13 +13,13 @@ local LocationEvent = EnemyEvents.LocationEvent
 local DestroyEvent = EnemyEvents.DestroyEvent
 
 local Packages = ReplicatedStorage.Packages
-local Helper = require(ReplicatedStorage.Modules.SyncTween.Modules.Helper)
 local Signal = require(Packages.Signal)
 local Trove = require(Packages.Trove)
 
 local Modules = ReplicatedStorage.Modules
 local BezierPath = require(Modules.BezierPath)
 local HelperFunctions = require(Modules.HelperFunctions)
+local GenerateId = require(Modules.GenerateId)
 
 local Shared = ReplicatedStorage.Shared
 local Types = require(Shared.Types)
@@ -45,7 +45,9 @@ for _, Adornment in ipairs(ModelStorage.Adornments:GetChildren()) do
 	AdornmentFolder[Adornment.Name] = Adornment
 end
 
-local EnemiesFolder = workspace.GlobalWorkspace.Enemies
+local GlobalWorkspace = workspace.GlobalWorkspace
+local EnemiesFolder = GlobalWorkspace.Enemies
+local ParticlesFolder = GlobalWorkspace.Particles
 
 local function WeldParts(Character: typeof(ModelStorage.Extra.Rig), Adornment: Model, SizeRatio: number)
 	for _, Limb in ipairs(Adornment:GetChildren()) do
@@ -121,6 +123,7 @@ local function NewEnemy(Input: Types.EnemyInput, SpectateFire: boolean)
 	local self = setmetatable({}, EnemyModule) :: Types.EnemyClient
 
 	self.UniqueId = Input.UniqueId
+	GenerateId.AddId(self.UniqueId)
 	self.Trove = Trove.new()
 
 	self.SpeedChanged = self.Trove:Add(Signal.new(), "DisconnectAll")
@@ -194,8 +197,8 @@ local function NewEnemy(Input: Types.EnemyInput, SpectateFire: boolean)
 	self.Destroying:Connect(function(Animate: boolean)
 		local Particle = HelperFunctions.EmitParticle(DestroyParticle, self.Root.CFrame, 1, SetColor)
 		local OtherParticle = HelperFunctions.EmitParticle(OtherDestroyParticle, self.Root.CFrame, 16, SetColor)
-		Particle.Parent = workspace
-		OtherParticle.Parent = workspace
+		Particle.Parent = ParticlesFolder
+		OtherParticle.Parent = ParticlesFolder
 	end)
 
 	Enemies[self.UniqueId] = self
@@ -206,6 +209,7 @@ end
 local function EnemyDestroy(self: Types.EnemyClient, Animate: boolean)
 	self.Destroying:Fire(Animate)
 	Enemies[self.UniqueId] = nil
+	GenerateId.RemoveId(self.UniqueId)
 	self.Trove:Destroy()
 	table.clear(self :: any)
 	setmetatable(self :: any, nil)
@@ -244,7 +248,9 @@ SpawnEvent.OnClientEvent:Connect(function(Data: { [string]: Types.EnemyInput }, 
 		if not Enemies[EnemyInput.UniqueId] then
 			NewEnemy(EnemyInput, SpectateFire)
 		else
-			warn("DuplicateEnemy")
+			task.spawn(function()
+				error("Duplicate Enemy! " .. EnemyInput.ModelName)
+			end)
 		end
 	end
 end)

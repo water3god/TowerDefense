@@ -599,6 +599,7 @@ function Unit:Delete()
 	self.Destroying:Fire()
 	HelperFunctions.FireClients(DestroyEvent, self.ReplicateTo, { self.UniqueId })
 	Units[self.UniqueId] = nil
+	GenerateId.RemoveId(self.UniqueId)
 	self._Trove:Destroy()
 
 	table.clear(self :: any)

@@ -2,25 +2,25 @@
 
 -- By Wa1er_God --
 
-local Random = Random.new();
+local Random = Random.new()
 
-return function(RandomList: {[string]: number}) : string?
-	local TotalPercent: number = 0;
-	local CurrentValue: number = 0;
-	
+return function(RandomList: { [string]: number }): string?
+	local TotalPercent: number = 0
+	local CurrentValue: number = 0
+
 	for Name, Percent in pairs(RandomList) do
-		TotalPercent += Percent;
+		TotalPercent += Percent
 	end
-	
-	local RandomNumber: number = Random:NextNumber(0, TotalPercent);
-	
+
+	local RandomNumber: number = Random:NextNumber(0, TotalPercent)
+
 	for Name, Percent in pairs(RandomList) do
-		CurrentValue += Percent;
-		
+		CurrentValue += Percent
+
 		if CurrentValue >= RandomNumber then
-			return Name;
+			return Name
 		end
 	end
-	
-	return nil;
+
+	return nil
 end

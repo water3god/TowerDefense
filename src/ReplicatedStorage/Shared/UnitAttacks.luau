@@ -26,6 +26,9 @@ local Slash = Emitters.Alpha
 local Shared = ReplicatedStorage.Shared
 local Types = require(Shared.Types)
 
+local GlobalWorkspace = workspace.GlobalWorkspace
+local ParticlesFolder = GlobalWorkspace.Particles
+
 local Random = Random.new()
 
 local function RandomVector(): Vector3
@@ -217,7 +220,7 @@ local function Emit(
 		end)
 	end)
 
-	Emitter.Parent = workspace
+	Emitter.Parent = ParticlesFolder
 
 	return ParticlePromise
 end
@@ -234,7 +237,7 @@ local function PlayAttackHit(Enemy: Types.EnemyClient?)
 	local Particle = AttackParticle:Clone()
 	Particle.Parent = Emitter.___EmitAttachment
 
-	Emitter.Parent = workspace
+	Emitter.Parent = ParticlesFolder
 	Particle:Emit(10)
 
 	task.delay(Particle.Lifetime.Max, function()
@@ -275,7 +278,7 @@ local UnitAttacks: {
 					PlayAnimation(Unit, AttackInput, Delay)
 
 					local Arrow = Unit:WeldAdornment(PompeyArrow)
-					Arrow.Parent = workspace
+					Arrow.Parent = ParticlesFolder
 
 					local DelayTime = CalculateDelay(0.4, SpeedRatio, Delay)
 					DestroyBeforeTime(Unit, Arrow, DelayTime)
