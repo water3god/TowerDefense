@@ -41,7 +41,7 @@ local Data: { [string]: Unit.UnitInput } = {
 		AttackFuncs = {
 			[0] = {
 				function(Unit: Unit.Unit, Damage: number)
-					DelayAttack(Unit, Damage, 0.65)
+					DelayAttack(Unit, Damage, 0.42)
 				end,
 			},
 		},
@@ -144,7 +144,7 @@ local Data: { [string]: Unit.UnitInput } = {
 		AttackFuncs = {
 			[0] = {
 				function(Unit: Unit.Unit, Damage: number)
-					DelayAttack(Unit, Damage, 0.55)
+					DelayAttack(Unit, Damage, 0.52)
 				end,
 			},
 		},

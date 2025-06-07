@@ -33,7 +33,8 @@ local ModelStorage = ReplicatedStorage.ModelStorage
 local Rig = ModelStorage.Extra.Rig
 
 local Emitters = ModelStorage.Emitters
-local DestroyParticle = Emitters.Blood1
+local DestroyParticle = Emitters.poof
+local OtherDestroyParticle = Emitters.Pops
 
 local EnemyFolder = {}
 for _, Enemy in ipairs(ModelStorage.Enemies:GetChildren()) do
@@ -186,8 +187,15 @@ local function NewEnemy(Input: Types.EnemyInput, SpectateFire: boolean)
 		WalkAnim:AdjustSpeed(self:GetAnimationRatio())
 	end
 
+	local function SetColor(Particle: ParticleEmitter)
+		Particle.Color = ColorSequence.new(self.Character["Body Colors"].TorsoColor3)
+	end
+
 	self.Destroying:Connect(function(Animate: boolean)
-		HelperFunctions.EmitParticle(DestroyParticle, self.Root.CFrame)
+		local Particle = HelperFunctions.EmitParticle(DestroyParticle, self.Root.CFrame, 1, SetColor)
+		local OtherParticle = HelperFunctions.EmitParticle(OtherDestroyParticle, self.Root.CFrame, 16, SetColor)
+		Particle.Parent = workspace
+		OtherParticle.Parent = workspace
 	end)
 
 	Enemies[self.UniqueId] = self

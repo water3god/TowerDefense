@@ -388,6 +388,33 @@ local function Render()
 		end, { PlacingUnitId })
 
 		React.useEffect(function()
+			if PlacingUnitId then
+				local Unit = UnitClient.GetUnit(PlacingUnitId)
+				if Unit then
+					local Connection = Unit.CharacterClicked:Connect(function(Enabled: boolean)
+						if Enabled == false then
+							SetUnitId(nil)
+						end
+					end)
+
+					return function()
+						Connection:Disconnect()
+					end
+				end
+			end
+			return function() end
+		end, { PlacingUnitId })
+
+		Hooks.useEventConnection(UnitClient.NewUnit, function(Unit, New: boolean)
+			print(Unit, New)
+			if New and Unit.OwnerId == Player.UserId then
+				if PlacingUnitId ~= Unit.UniqueId then
+					SetUnitId(Unit.UniqueId)
+				end
+			end
+		end, { PlacingUnitId })
+
+		React.useEffect(function()
 			local Params = RaycastParams.new()
 			Params.CollisionGroup = "PlacedCharacters"
 

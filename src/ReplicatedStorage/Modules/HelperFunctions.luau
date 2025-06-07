@@ -531,17 +531,29 @@ function Funcs.Raycast(Position: Vector2, Params: RaycastParams?)
 	return workspace:Raycast(Ray.Origin, Ray.Direction * 500, Params)
 end
 
-function Funcs.EmitParticle(ParticleEmitter: ParticleEmitter, CFrame: CFrame, Times: number?)
+function Funcs.EmitParticle(
+	ParticleEmitter: ParticleEmitter,
+	CFrame: CFrame,
+	Times: number?,
+	Func: ((Particle: ParticleEmitter) -> ())?
+)
 	local Part = CreateRaw()
+	Part.Size = Vector3.one
+	Part.Transparency = 1
 	Part.CFrame = CFrame
 	local Attachment = Instance.new("Attachment", Part)
 	local Particle = ParticleEmitter:Clone()
 	Particle.Enabled = false
 	Particle.Parent = Attachment
+	if Func then
+		Func(Particle)
+	end
 	Particle:Emit(Times)
 	task.delay(Particle.Lifetime.Max, function()
 		Part:Destroy()
 	end)
+
+	return Part
 end
 
 -- Debug Functions --

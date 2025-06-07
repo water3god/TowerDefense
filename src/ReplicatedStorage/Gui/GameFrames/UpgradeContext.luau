@@ -88,7 +88,7 @@ local function UpgradeProvider(props: Props)
 					UpgradeData = Unit.UnitData.UnitData,
 					TotalCost = Unit.TotalCost,
 					Level = Unit.Level,
-					Enabled = Enabled ~= nil or true,
+					Enabled = Enabled,
 					Priority = Unit.AttackPriority,
 					Abilities = Unit.Abilities,
 				})

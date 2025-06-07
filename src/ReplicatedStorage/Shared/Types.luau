@@ -264,7 +264,7 @@ export type UnitModule = {
 	GetProperties: (self: Unit) -> { [UnitInfo.StatProperty]: number },
 	GetSpecial: (self: Unit) -> string?,
 
-	NewUnit: Signal.Signal<Unit>,
+	NewUnit: Signal.Signal<Unit, boolean>,
 
 	GetUnit: (UniqueId: string) -> Unit?,
 	GetUnits: () -> { [string]: Unit },

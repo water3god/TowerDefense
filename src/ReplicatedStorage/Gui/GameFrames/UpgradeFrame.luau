@@ -220,12 +220,15 @@ local function CreateUpgradeFrame(Properties: Properties)
 	React.useEffect(function()
 		if Visible then
 			SetTrueVisible(true)
-			API.stop()
+
 			API.start({
 				Scale = 1,
 			})
 		else
-			API.stop()
+			API.start({
+				Scale = 0.9,
+				config = { precision = 1 },
+			})
 			SetTrueVisible(false)
 		end
 	end, { Visible })
@@ -337,6 +340,10 @@ local function CreateUpgradeFrame(Properties: Properties)
 
 	local CloseClick = React.useCallback(function()
 		SetVisible(false)
+		local CurrentUnit = UnitClient.GetUnit(UpgradeData.UniqueId)
+		if CurrentUnit then
+			CurrentUnit:ClickCharacter(false)
+		end
 	end, { Visible })
 
 	local SellText = React.useMemo(function()

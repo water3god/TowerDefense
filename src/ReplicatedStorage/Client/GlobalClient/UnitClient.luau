@@ -245,7 +245,7 @@ local function SyncFuncs(Table: { [number]: any })
 	return NewTable
 end
 
-local function NewUnit(Input: Types.UnitInput)
+local function NewUnit(Input: Types.UnitInput, New: boolean)
 	local self = setmetatable({}, UnitModule) :: Types.Unit
 
 	self.UniqueId = Input.UniqueId
@@ -424,7 +424,7 @@ local function NewUnit(Input: Types.UnitInput)
 	OnLevel(self.Level)
 	self.Upgraded:Connect(OnLevel)
 
-	self.NewUnit:Fire(self)
+	self.NewUnit:Fire(self, New)
 end
 
 local function UnitDestroy(self: Types.Unit)
@@ -1059,9 +1059,9 @@ function UnitModule.InitPlacement(Unit: string)
 	return Data
 end
 
-OnPlacement.OnClientEvent:Connect(function(PlacementData: { [string]: Types.UnitInput })
+OnPlacement.OnClientEvent:Connect(function(PlacementData: { [string]: Types.UnitInput }, New: boolean)
 	for _, Input in pairs(PlacementData) do
-		NewUnit(Input)
+		NewUnit(Input, New)
 	end
 end)
 

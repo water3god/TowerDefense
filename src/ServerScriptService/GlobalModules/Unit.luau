@@ -191,7 +191,7 @@ local function ConvertAbilityData(Table: any)
 	return NewTable
 end
 
-local function SendInfo(Units: { [string]: Unit }, Players: { Player })
+local function SendInfo(Units: { [string]: Unit }, Players: { Player }, New: boolean)
 	local Data: { [string]: any } = {}
 	for Id, Unit in pairs(Units) do
 		Data[tostring(Unit.UniqueId)] = {
@@ -300,7 +300,7 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 		self.Abilities = Table :: any
 	end
 
-	SendInfo({ [self.UniqueId] = self }, self.ReplicateTo)
+	SendInfo({ [self.UniqueId] = self }, self.ReplicateTo, true)
 
 	self.AbilityUsed:Connect(function(Index: number, TimeUsed: number)
 		HelperFunctions.FireClients(AbilityEvent, self.ReplicateTo, self.UniqueId, Index, TimeUsed)
@@ -635,7 +635,7 @@ end
 
 function Unit.SyncUnits(Players: { Player }, Units: { [string]: Unit }, Spawn: boolean)
 	if Spawn then
-		SendInfo(Units, Players)
+		SendInfo(Units, Players, false)
 	else
 		local Data = {}
 		for Id, _ in pairs(Units) do
@@ -665,7 +665,7 @@ SafePlayerAdded:Connect(function(Player: Player)
 	end
 
 	if HelperFunctions.Len(UnitsToReplicate) ~= 0 then
-		SendInfo(UnitsToReplicate, { Player })
+		SendInfo(UnitsToReplicate, { Player }, false)
 	end
 end, true)
 
