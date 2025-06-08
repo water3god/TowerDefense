@@ -8,12 +8,16 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local HelperFunctions = require(ReplicatedStorage.Modules.HelperFunctions)
 
-local WaveEvents = ReplicatedStorage.Remotes.Waves
+local Remotes = ReplicatedStorage.Remotes
+local WaveEvents = Remotes.Waves
 local HealthChanged = WaveEvents.HealthChanged
 local TimeChanged = WaveEvents.TimeChanged
 local WaveEnded = WaveEvents.WaveEnded
 local Passed = WaveEvents.Passed
 local Added = WaveEvents.Added
+
+local Core = Remotes.Core
+local SendWarning = Core.Warning.SendWarning
 
 local Shared = ReplicatedStorage.Shared
 local GameInfo = require(Shared.GameInfo)
@@ -68,6 +72,12 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 
 	Wave.Passed:Connect(function()
 		Passed:FireAllClients(Wave.Wave)
+		if Wave.Wave ~= 1 then
+			SendWarning:FireAllClients(
+				string.format("Wave Bonus: %u Coins", Wave.Data.Data[Wave.Wave].CoinBonus),
+				Color3.new(0.129412, 0.768627, 0.192157)
+			)
+		end
 	end)
 
 	Wave.HealthChanged:Connect(function()

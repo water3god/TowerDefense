@@ -204,7 +204,9 @@ function GlobalWave.new(Input: Input)
 	end)
 
 	self.Passed:Connect(function(Wave: number)
-		self:AddCoins(Input.Data.Data[Wave].CoinBonus)
+		if Wave ~= 1 then
+			self:AddCoins(Input.Data.Data[Wave].CoinBonus)
+		end
 	end)
 
 	self.EnemyDestroying:Connect(function(Enemy)

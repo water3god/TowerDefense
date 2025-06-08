@@ -31,6 +31,7 @@ export type Props = {
 	LayoutOrder: number,
 	Text: string,
 	Delay: number,
+	Color: Color3?,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
@@ -51,13 +52,14 @@ local function CreateWarning(props: Props)
 	return e(Main.Frame, {
 		native = Join({
 			Size = UDim2.fromScale(1, 0.2),
+			ZIndex = 100,
 		}, props.native),
 	}, {
 		Label = e(Main.TextLabel, {
 			native = {
 				LayoutOrder = props.LayoutOrder,
 				Text = props.Text,
-				TextColor3 = Color3.new(1, 0.043137, 0.043137),
+				TextColor3 = props.Color or Color3.new(1, 0.043137, 0.043137),
 				TextTransparency = FadeStyles.Transparency,
 				ZIndex = 100,
 			},
@@ -86,6 +88,7 @@ local function CreateMainFrame(props: any)
 				Text = Data.Text,
 				LayoutOrder = Data.StartTime,
 				Delay = Data.StartTime - tick() + (Constants.WarningTime * 0.8),
+				Color = Data.Color,
 			})
 		end
 
@@ -94,8 +97,9 @@ local function CreateMainFrame(props: any)
 
 	return e(Main.Frame, {
 		native = Join({
-			Position = UDim2.fromScale(0.5, 0.65),
-			Size = UDim2.fromScale(0.6, 0.3),
+			Position = UDim2.fromScale(0.5, 0.6),
+			Size = UDim2.fromScale(0.6, 0.2),
+			ZIndex = 100,
 		}, props.native),
 	}, {
 		UIListLayout = e("UIListLayout", {
