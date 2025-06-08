@@ -350,7 +350,25 @@ local UnitAttacks: {
 		},
 		["Pyrrhus"] = {
 			[0] = {
-				DefaultAttack,
+				function(Unit, AttackInput, Enemy, Delay)
+					DefaultAttack(Unit, AttackInput, Enemy, Delay)
+
+					local DelayTime = CalculateDelay(0.3, AttackInput.SpeedRatio, Delay)
+
+					local DelProm = Promise.delay(DelayTime):andThen(function()
+						Emit(
+							Unit,
+							{ Emitters.BlackSlash },
+							Unit.Root.CFrame + Unit.CFrame.RightVector / 1.2 + Unit.CFrame.LookVector * 1.5,
+							true,
+							true,
+							2
+						)
+						PlayAttackHit(Enemy)
+					end)
+
+					Unit:AddAttackPromise(DelProm, "PyrrhusAttackEmit")
+				end,
 			},
 		},
 		["Spartacus"] = {
