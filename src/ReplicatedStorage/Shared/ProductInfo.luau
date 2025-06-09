@@ -15,7 +15,10 @@ local ProductInfo: { [number]: { Name: string, Image: string, Rarity: RarityInfo
 local GamepassInfo: { [number]: { Name: string, Image: string, Rarity: RarityInfo.Rarity | string, Func: () -> () } } =
 	{}
 
+local GiftIds: { [number]: number } = {}
+
 return {
+	GiftIds = GiftIds,
 	ProductInfo = ProductInfo,
 	GamepassInfo = GamepassInfo,
 }

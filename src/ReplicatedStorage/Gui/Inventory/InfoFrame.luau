@@ -170,10 +170,10 @@ local function CreateInfoFrame(Properties: Properties)
 		}),
 		InfoButton = e(Main.Animateables.ImageButton, {
 			native = {
-				Position = UDim2.fromScale(0.8, 0.66),
+				Position = UDim2.fromScale(0.78, 0.66),
 				Size = UDim2.fromScale(0.21, 0.12),
 				Visible = IsUnit,
-				Image = "rbxasset://textures/ui/GuiImagePlaceholder.png",
+				Image = "rbxassetid://77078349522524",
 			},
 		}, {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {

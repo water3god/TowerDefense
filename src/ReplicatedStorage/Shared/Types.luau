@@ -35,7 +35,6 @@ export type VisualUnitData = {
 
 export type ProductData = {
 	ProductId: number,
-	Name: string,
 	IsGamepass: boolean,
 	Count: number,
 	UniqueId: string,

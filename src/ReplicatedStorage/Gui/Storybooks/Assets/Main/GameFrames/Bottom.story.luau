@@ -22,7 +22,9 @@ local EquippedContext = require(GameFrames.EquippedUnitsContext)
 local CurrencyContext = require(GameFrames.Currency)
 
 -- Controls --
-local controls = {}
+local controls = {
+	Gold = 10,
+}
 
 local Units = {
 	Units = {
@@ -37,12 +39,6 @@ local Units = {
 	NeededXP = 20,
 }
 
-local Currency = {
-	CurrencyName = "Gold",
-	Icon = "rbxassetid://72304165589077",
-	Value = 10,
-}
-
 -- Story --
 local Story = {
 	react = React,
@@ -53,7 +49,11 @@ local Story = {
 			value = Units,
 		}, {
 			CurrencyProvider = e(CurrencyContext.Context.Provider, {
-				value = Currency,
+				value = {
+					CurrencyName = "Gold",
+					Icon = "rbxassetid://72304165589077",
+					Value = Properties.controls.Gold,
+				},
 			}, {
 				Bottom = e(Bottom, {
 					native = {

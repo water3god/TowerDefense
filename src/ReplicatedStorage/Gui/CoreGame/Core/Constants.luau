@@ -10,6 +10,7 @@ local Constants = {
 	ROLL_FRAME = "RollFrame",
 	IN_ROLL = "InRoll",
 	SETTINGS = "Settings",
+	STORE = "Store",
 }
 
 return Constants

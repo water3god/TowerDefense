@@ -60,6 +60,9 @@ local Warning = require(WarningFolder.Warning)
 local SettingFolder = Gui.Settings
 local Settings = require(SettingFolder.Settings)
 
+local StoreFolder = Gui.Store
+local Store = require(StoreFolder.Store)
+
 -- Contexts --
 local InventoryContext = require(Inventory.InventoryContext)
 local TradeMenuContext = require(Trade.TradeContext)
@@ -71,6 +74,7 @@ local StoryContext = require(Story.StoryContext)
 local RollContext = require(Roll.RollContext)
 local WarningContext = require(WarningFolder.WarningContext)
 local SettingContext = require(SettingFolder.SettingsContext)
+local PurchaseContext = require(StoreFolder.PurchaseContext)
 
 local IsRunning = RunService:IsRunning()
 
@@ -240,14 +244,27 @@ local function RenderSettings(Props)
 		Name = Constants.SETTINGS,
 	})
 
-	return e(SettingContext.Provider, {}, {
-		MainStory = e(Settings.Create, {
-			CloseClick = Props.CloseClick,
-			native = {
-				Position = Position,
-				Visible = Visiblity,
-			},
-		}),
+	return e(Settings.Create, {
+		CloseClick = Props.CloseClick,
+		native = {
+			Position = Position,
+			Visible = Visiblity,
+		},
+	})
+end
+
+local function RenderStore(Props)
+	local Position, Visiblity = AnimateWrapper({
+		Visible = Props.Visible,
+		Name = Constants.STORE,
+	})
+
+	return e(Store, {
+		CloseClick = Props.CloseClick,
+		native = {
+			Position = Position,
+			Visible = Visiblity,
+		},
 	})
 end
 
@@ -262,6 +279,7 @@ local VisibleFrames = {
 	[Constants.TRADE_MENU] = {},
 	[Constants.TRADE_FRAME] = {},
 	[Constants.SETTINGS] = {},
+	[Constants.STORE] = {},
 }
 
 local function Render()
@@ -536,6 +554,7 @@ local function Render()
 			SettingContext.Provider,
 			InventoryContext.Provider,
 			EquippedUnitsContext.Provider,
+			PurchaseContext.Provider,
 		},
 	}, {
 		GuiBlur = IsRunning and ReactRoblox.createPortal(
@@ -576,6 +595,12 @@ local function Render()
 						OnCloseClick(Constants.STORY_FRAME)
 					end,
 				}),
+				[Constants.STORE] = e(RenderStore, {
+					Visible = if VisibleFrame == Constants.STORE then true else false,
+					CloseClick = function()
+						OnCloseClick(Constants.STORE)
+					end,
+				}) :: any,
 				[Constants.ROLL_FRAME] = e(RenderRollFrame, {
 					Visible = if VisibleFrame == Constants.ROLL_FRAME then true else false,
 					CloseClick = function()
@@ -698,7 +723,7 @@ local function Render()
 				Name = "Store",
 				Icon = "rbxassetid://101802087294765",
 				OnClick = function()
-					--OnMainButtonClick("InventoryFrame")
+					OnMainButtonClick(Constants.STORE)
 				end,
 			}),
 			SummonButton = e(MainButtonFrame, {

@@ -224,6 +224,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 			UIListLayout = e("UIListLayout", {
 				SortOrder = Enum.SortOrder.LayoutOrder,
 				FillDirection = Enum.FillDirection.Horizontal,
+				HorizontalAlignment = Enum.HorizontalAlignment.Center,
 				Padding = UDim.new(0, 0),
 			}),
 			Frame = e(Main.Frame, {

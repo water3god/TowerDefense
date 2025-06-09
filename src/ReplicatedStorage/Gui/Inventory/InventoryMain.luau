@@ -25,15 +25,20 @@ local ResourceFrame = require(InventoryGUI.ResourceFrame)
 local GameFrames = Gui.GameFrames
 local EquippedUnitsContext = require(GameFrames.EquippedUnitsContext)
 
+local Store = Gui.Store
+local PurchaseContext = require(Store.PurchaseContext)
+
 local Client = ReplicatedStorage.Client
 local GlobalClient = Client.GlobalClient
 local InventoryService = require(GlobalClient.InventoryService)
+local PurchaseService = require(GlobalClient.PurchaseService)
 
 local CoreGame = Gui.CoreGame
 local CloseButton = require(CoreGame.CloseButton)
 local Main = require(CoreGame.Main)
 local Confirm = require(CoreGame.Confirm)
 local Title = require(CoreGame.Title)
+local BaseButton = require(CoreGame.BaseButton)
 
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
@@ -97,37 +102,6 @@ local function Sell(UniqueIds: { string }, Type: string)
 	elseif Type == "Resource" then
 		InventoryService.SellResources(UniqueIds)
 	end
-end
-
-local function CreateBaseButton(Properties: {
-	Text: string,
-	OnClick: () -> (),
-	Highlighted: boolean,
-	native: { [any]: any }?,
-})
-	local Image = React.useMemo(function()
-		if Properties.Highlighted then
-			return "rbxassetid://140162476120723"
-		else
-			return "rbxassetid://90225038866735"
-		end
-	end, { Properties.Highlighted })
-
-	return React.createElement(Main.Animateables.ImageButton, {
-		native = JoinDicts({
-			Size = UDim2.fromScale(0.125, 0.09),
-			Image = Image,
-			[React.Event.MouseButton1Click] = Properties.OnClick,
-		}, Properties.native),
-	}, {
-		TextLabel = React.createElement(Main.TextLabel, {
-			native = {
-				Text = Properties.Text,
-				Position = UDim2.fromScale(0.5, 0.5),
-				Size = UDim2.fromScale(0.9, 0.6),
-			},
-		}),
-	})
 end
 
 local function BeingSoldFrame(props)
@@ -202,6 +176,7 @@ end
 
 export type ProductData = {
 	Data: Types.ProductData,
+	Name: string,
 	SmallFrameClick: (
 		{ Data: { CurrentUnit: Types.ProductData, Rarity: string, RarityData: any }, UniqueId: string }
 	) -> (),
@@ -227,7 +202,7 @@ local function HandleProduct(props: ProductData)
 	local Data = props.Data
 	return e(ProductFrame, {
 		IsGamepass = Data.IsGamepass,
-		Name = Data.Name,
+		Name = props.Name,
 		OnClick = function()
 			props.SmallFrameClick({
 				Data = {
@@ -299,6 +274,7 @@ export type ClickedUnitData = {
 local CreateInventory = React.forwardRef(function(Properties, ref)
 	local InventoryData = React.useContext(InventoryContext.Context)
 	local EquippedUnits = React.useContext(EquippedUnitsContext.Context)
+	local PurchaseData = React.useContext(PurchaseContext.Context)
 
 	local SellingItems, SetSellingItems = React.useState({} :: { string })
 	local HoveredId: string?, SetHovered = React.useState(nil :: string?)
@@ -561,14 +537,23 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 
 		@native
 		local function HandleProductData(Data: Types.ProductData)
+			local Name: string = nil
+
+			if Data.IsGamepass then
+				Name = PurchaseData.GamepassData[Data.ProductId].ProductInfo.Name
+			else
+				Name = PurchaseData.ProductData[Data.ProductId].ProductInfo.Name
+			end
+
 			if Filter ~= "" then
-				if not string.lower(Data.Name):match(string.lower(Filter)) then
+				if not string.lower(Name):match(string.lower(Filter)) then
 					return
 				end
 			end
 
 			local Product = e(HandleProduct, {
 				Data = Data,
+				Name = Name,
 				HoveredId = HoveredId,
 				SmallFrameClick = SmallFrameClick,
 				UniqueId = Data.UniqueId,
@@ -625,6 +610,8 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		OpenFrame :: any,
 		EquippedUnits :: any,
 	})
+
+	local UseProduct = React.useCallback(function(ProductId: number) end, {})
 
 	local FilterMethodCallback = React.useCallback(function()
 		if OpenFrame == "Unit" then
@@ -714,6 +701,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			if OpenFrame == "Unit" then
 				FirstClick = OnEquip
 				SecondClick = IndSellClick
+			elseif OpenFrame == "Product" then
 			else
 				FirstClick = function() end
 				SecondClick = function() end
@@ -724,7 +712,13 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			if OpenFrame == "Unit" then
 				Name = Data.CurrentUnit.Unit
 			elseif OpenFrame == "Product" then
-				Name = Data.CurrentUnit.Name
+				if Data.CurrentUnit.IsGamepass then
+					local ProductData = PurchaseData.GamepassData[Data.CurrentUnit.ProductId]
+					Name = ProductData and ProductData.ProductInfo.Name or "Loading..."
+				else
+					local ProductData = PurchaseData.GamepassData[Data.CurrentUnit.ProductId]
+					Name = ProductData and ProductData.ProductInfo.Name or "Loading..."
+				end
 			elseif OpenFrame == "Resource" then
 				Name = Data.CurrentUnit.Resource
 			end
@@ -829,7 +823,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			},
 		}),
 		InfoFrame = e(InfoFrame, InfoFrameData),
-		UnitsButton = e(CreateBaseButton, {
+		UnitsButton = e(BaseButton, {
 			Text = "Units",
 			OnClick = function()
 				SetOpenFrame("Unit")
@@ -839,7 +833,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 				Position = UDim2.fromScale(0.12, 0.175),
 			},
 		}),
-		GamepassesButton = e(CreateBaseButton, {
+		GamepassesButton = e(BaseButton, {
 			Text = "Products",
 			OnClick = function()
 				SetOpenFrame("Product")
@@ -849,7 +843,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 				Position = UDim2.fromScale(0.26, 0.175),
 			},
 		}),
-		ResourcesButton = e(CreateBaseButton, {
+		ResourcesButton = e(BaseButton, {
 			Text = "Resources",
 			OnClick = function()
 				SetOpenFrame("Resource")

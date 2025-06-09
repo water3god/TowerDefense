@@ -63,6 +63,7 @@ type PlayerDataData<T> = {
 	AutoRollChanged: Signal.Signal<boolean>,
 
 	ProductChanged: Signal.Signal<string, Template.ProductData>,
+	ProductRedeemed: Signal.Signal<number, boolean>,
 	ResourceChanged: Signal.Signal<string, Template.ResourceData>,
 
 	StageChanged: Signal.Signal<StageParamData>,
@@ -97,11 +98,14 @@ type PlayerDataImpl = {
 	DeleteUnit: (self: PlayerData, UniqueId: string) -> (),
 	GetUnitFromId: (self: PlayerData, UniqueId: string) -> Template.UnitData?,
 
+	HasProduct: (self: PlayerData, Id: number, IsGamepass: boolean) -> boolean,
+
 	RedeemGamepass: (self: PlayerData, GamepassId: number) -> (),
 	HasRedeemedGamepass: (self: PlayerData, GamepassId: number) -> boolean,
 
 	AddProduct: (self: PlayerData, ProductId: number, Count: number?) -> (),
 	RemoveProduct: (self: PlayerData, ProductId: number, Count: number?) -> (),
+	RedeemProduct: (self: PlayerData, ProductId: number) -> (),
 
 	AddResource: (self: PlayerData, Resource: string, Count: number?) -> (),
 	RemoveResource: (self: PlayerData, Resource: string, Count: number?) -> (),
@@ -228,6 +232,7 @@ function PlayerData.new(Player: Player)
 	self.AutoRollChanged = self._Trove:Construct(Signal)
 
 	self.ProductChanged = self._Trove:Construct(Signal)
+	self.ProductRedeemed = self._Trove:Construct(Signal)
 	self.ResourceChanged = self._Trove:Construct(Signal)
 
 	self.XPChanged = self._Trove:Construct(Signal)
@@ -411,9 +416,22 @@ function PlayerData:GetUnitFromId(UniqueId: string)
 	return Data.Units[UniqueId]
 end
 
+function PlayerData:HasProduct(ProductId: number, IsGamepass: boolean)
+	local Data = self.Profile.Data
+	for _, ProductData in pairs(Data.Products) do
+		if ProductData.ProductId == ProductId and ProductData.IsGamepass == IsGamepass then
+			return true
+		end
+	end
+
+	return false
+end
+
 function PlayerData:RedeemGamepass(GamepassId: number)
 	if not table.find(self.Profile.Data.Gamepasses, GamepassId) then
 		table.insert(self.Profile.Data.Gamepasses, GamepassId)
+		self.ProductRedeemed:Fire(GamepassId, true)
+		self:RemoveProduct(GamepassId, 1)
 	end
 end
 
@@ -423,6 +441,17 @@ function PlayerData:HasRedeemedGamepass(GamepassId: number)
 	else
 		return false
 	end
+end
+
+function PlayerData:RedeemProduct(ProductId: number)
+	self.ProductRedeemed:Fire(ProductId, false)
+	local Data = self.Profile.Data
+	if Data.CachedProducts[ProductId] then
+		Data.CachedProducts[ProductId] += 1
+	else
+		Data.CachedProducts[ProductId] = 1
+	end
+	self:RemoveProduct(ProductId, 1)
 end
 
 function PlayerData:AddProduct(ProductId: number, CountInput: number?)
@@ -447,7 +476,6 @@ function PlayerData:AddProduct(ProductId: number, CountInput: number?)
 			local Data = {
 				IsGamepass = false,
 				ProductId = ProductId,
-				Name = ProductInfo.ProductInfo[ProductId].Name,
 				UniqueId = Id,
 				Count = Count,
 			}
@@ -458,12 +486,15 @@ function PlayerData:AddProduct(ProductId: number, CountInput: number?)
 			local Data = {
 				IsGamepass = true,
 				ProductId = ProductId,
-				Name = ProductInfo.GamepassInfo[ProductId].Name,
 				UniqueId = Id,
 				Count = Count,
 			}
 			Products[Id] = Data
 			self.ProductChanged:Fire("Added", Data)
+		else
+			task.spawn(function()
+				error(string.format("NO PRODUCT WITH ID: %u", ProductId))
+			end)
 		end
 	end
 end

@@ -12,7 +12,6 @@ export type UnitData = {
 
 export type ProductData = {
 	ProductId: number,
-	Name: string,
 	IsGamepass: boolean,
 	Count: number,
 	UniqueId: string,
@@ -35,6 +34,7 @@ export type Data = {
 		[string]: UnitData,
 	},
 	Gamepasses: { number },
+	CachedProducts: { [number]: number },
 	Products: {
 		[string]: ProductData,
 	},
@@ -56,6 +56,7 @@ local Data: Data = {
 	EquippedUnits = {},
 	Units = {},
 	Gamepasses = {},
+	CachedProducts = {},
 	Products = {},
 	Resources = {},
 	Settings = Settings.Default,

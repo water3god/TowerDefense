@@ -13,6 +13,7 @@ local OriginalPositions: {
 	[Constants.STORY_FRAME] = UDim2.fromScale(0.4, 0.45),
 	[Constants.ROLL_FRAME] = UDim2.fromScale(0.5, 0.5),
 	[Constants.SETTINGS] = UDim2.fromScale(0.5, 0.5),
+	[Constants.STORE] = UDim2.fromScale(0.5, 0.5),
 }
 
 return OriginalPositions
