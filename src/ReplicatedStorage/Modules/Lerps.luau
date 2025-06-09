@@ -37,7 +37,7 @@ end
 function Lerps.number(v0, v1)
 	local dv = v1 - v0
 	return function(t)
-		return v0 + dv*t
+		return v0 + dv * t
 	end
 end
 
@@ -55,35 +55,37 @@ do -- Color3
 		if r < 0.0404482362771076 then
 			r = r / 12.92
 		else
-			r = 0.87941546140213*(r + 0.055)^2.4
+			r = 0.87941546140213 * (r + 0.055) ^ 2.4
 		end
 
 		if g < 0.0404482362771076 then
 			g = g / 12.92
 		else
-			g = 0.87941546140213*(g + 0.055)^2.4
+			g = 0.87941546140213 * (g + 0.055) ^ 2.4
 		end
 
 		if b < 0.0404482362771076 then
 			b = b / 12.92
 		else
-			b = 0.87941546140213*(b + 0.055)^2.4
+			b = 0.87941546140213 * (b + 0.055) ^ 2.4
 		end
 
 		-- sRGB->XYZ->CIELUV
-		local y = 0.2125862307855956*r + 0.71517030370341085*g + 0.0722004986433362*b
-		local z = 3.6590806972265883*r + 11.4426895800574232*g + 4.1149915024264843*b
+		local y = 0.2125862307855956 * r + 0.71517030370341085 * g + 0.0722004986433362 * b
+		local z = 3.6590806972265883 * r + 11.4426895800574232 * g + 4.1149915024264843 * b
 
 		if y > 0.008856451679035631 then
-			l0 = 116*y^(1/3) - 16
+			l0 = 116 * y ^ (1 / 3) - 16
 		else
-			l0 = 903.296296296296*y
+			l0 = 903.296296296296 * y
 		end
 
 		if z > 1e-15 then
-			u0, v0 = l0*(0.9257063972951867*r - 0.8333736323779866*g - 0.09209820666085898*b)/z, l0*(9*y/z - 0.46832)
+			u0, v0 =
+				l0 * (0.9257063972951867 * r - 0.8333736323779866 * g - 0.09209820666085898 * b) / z,
+				l0 * (9 * y / z - 0.46832)
 		else
-			u0, v0 = -0.19783*l0, -0.46832*l0
+			u0, v0 = -0.19783 * l0, -0.46832 * l0
 		end
 
 		-- Convert from linear RGB to scaled CIELUV (RgbToLuv13)
@@ -93,60 +95,62 @@ do -- Color3
 		if r < 0.0404482362771076 then
 			r = r / 12.92
 		else
-			r = 0.87941546140213*(r + 0.055)^2.4
+			r = 0.87941546140213 * (r + 0.055) ^ 2.4
 		end
 
 		if g < 0.0404482362771076 then
 			g = g / 12.92
 		else
-			g = 0.87941546140213*(g + 0.055)^2.4
+			g = 0.87941546140213 * (g + 0.055) ^ 2.4
 		end
 
 		if b < 0.0404482362771076 then
 			b = b / 12.92
 		else
-			b = 0.87941546140213*(b + 0.055)^2.4
+			b = 0.87941546140213 * (b + 0.055) ^ 2.4
 		end
 
 		-- sRGB->XYZ->CIELUV
-		y = 0.2125862307855956*r + 0.71517030370341085*g + 0.0722004986433362*b
-		z = 3.6590806972265883*r + 11.4426895800574232*g + 4.1149915024264843*b
+		y = 0.2125862307855956 * r + 0.71517030370341085 * g + 0.0722004986433362 * b
+		z = 3.6590806972265883 * r + 11.4426895800574232 * g + 4.1149915024264843 * b
 
 		if y > 0.008856451679035631 then
-			l1 = 116*y^(1/3) - 16
+			l1 = 116 * y ^ (1 / 3) - 16
 		else
-			l1 = 903.296296296296*y
+			l1 = 903.296296296296 * y
 		end
 
 		if z > 1e-15 then
-			u1, v1 = l1*(0.9257063972951867*r - 0.8333736323779866*g - 0.09209820666085898*b)/z, l1*(9*y/z - 0.46832)
+			u1, v1 =
+				l1 * (0.9257063972951867 * r - 0.8333736323779866 * g - 0.09209820666085898 * b) / z,
+				l1 * (9 * y / z - 0.46832)
 		else
-			u1, v1 = -0.19783*l1, -0.46832*l1
+			u1, v1 = -0.19783 * l1, -0.46832 * l1
 		end
 
 		return function(t)
-			local l = (1 - t)*l0 + t*l1
+			local l = (1 - t) * l0 + t * l1
 			if l < 0.0197955 then
 				return black
 			end
 
-			local u = ((1 - t)*u0 + t*u1)/l + 0.19783
-			local v = ((1 - t)*v0 + t*v1)/l + 0.46832
+			local u = ((1 - t) * u0 + t * u1) / l + 0.19783
+			local v = ((1 - t) * v0 + t * v1) / l + 0.46832
 
-			local y = (l + 16)/116
+			local y = (l + 16) / 116
 
 			if y > 0.206896551724137931 then
-				y = y*y*y
+				y = y * y * y
 			else
-				y = 0.12841854934601665*y - 0.01771290335807126
+				y = 0.12841854934601665 * y - 0.01771290335807126
 			end
 
-			local x = y*u/v
-			local z = y*((3 - 0.75*u)/v - 5)
+			local x = y * u / v
+			local z = y * ((3 - 0.75 * u) / v - 5)
 
-			local r =  7.2914074*x - 1.5372080*y - 0.4986286*z
-			local g = -2.1800940*x + 1.8757561*y + 0.0415175*z
-			local b =  0.1253477*x - 0.2040211*y + 1.0569959*z
+			local r = 7.2914074 * x - 1.5372080 * y - 0.4986286 * z
+			local g = -2.1800940 * x + 1.8757561 * y + 0.0415175 * z
+			local b = 0.1253477 * x - 0.2040211 * y + 1.0569959 * z
 
 			if r < 0 and r < g and r < b then
 				r, g, b = 0, g - r, b - r
@@ -157,21 +161,21 @@ do -- Color3
 			end
 
 			if r < 3.1306684425e-3 then
-				r = 12.92*r
+				r = 12.92 * r
 			else
-				r = 1.055*r^(1 / 2.4) - 0.055
+				r = 1.055 * r ^ (1 / 2.4) - 0.055
 			end
 
 			if g < 3.1306684425e-3 then
-				g = 12.92*g
+				g = 12.92 * g
 			else
-				g = 1.055*g^(1 / 2.4) - 0.055
+				g = 1.055 * g ^ (1 / 2.4) - 0.055
 			end
 
 			if b < 3.1306684425e-3 then
-				b = 12.92*b
+				b = 12.92 * b
 			else
-				b = 1.055*b^(1 / 2.4) - 0.055
+				b = 1.055 * b ^ (1 / 2.4) - 0.055
 			end
 
 			if r < 0 then
@@ -203,29 +207,30 @@ do -- string
 	local atof = tonumber
 
 	function Lerps.string(v0, v1)
-		local n0, d do
-			local sign0, h0, m0, s0 = s_match(v0, '^([+-]?)(%d*):[+-]?(%d*):[+-]?(%d*)$')
-			local sign1, h1, m1, s1 = s_match(v1, '^([+-]?)(%d*):[+-]?(%d*):[+-]?(%d*)$')
+		local n0, d
+		do
+			local sign0, h0, m0, s0 = s_match(v0, "^([+-]?)(%d*):[+-]?(%d*):[+-]?(%d*)$")
+			local sign1, h1, m1, s1 = s_match(v1, "^([+-]?)(%d*):[+-]?(%d*):[+-]?(%d*)$")
 			if sign0 and sign1 then
-				n0       = 3600*(atof(h0) or 0) + 60*(atof(m0) or 0) + (atof(s0) or 0)
-				local n1 = 3600*(atof(h1) or 0) + 60*(atof(m1) or 0) + (atof(s1) or 0)
-				if sign0 == '-' then
+				n0 = 3600 * (atof(h0) or 0) + 60 * (atof(m0) or 0) + (atof(s0) or 0)
+				local n1 = 3600 * (atof(h1) or 0) + 60 * (atof(m1) or 0) + (atof(s1) or 0)
+				if sign0 == "-" then
 					n0 = -n0
 				end
-				d = (43200 + (sign1 ~= '-' and n1 or -n1) - n0)%86400 - 43200
+				d = (43200 + (sign1 ~= "-" and n1 or -n1) - n0) % 86400 - 43200
 			else
-				error('Invalid TimeOfDay string', 4)
+				error("Invalid TimeOfDay string", 4)
 			end
 		end
 
 		return function(t)
-			local fs = (n0 + d*t)%86400
+			local fs = (n0 + d * t) % 86400
 			local s = fs > 0 and fs or -fs
 			return s_format(
-				fs < 0 and '-%.2u:%.2u:%.2u' or '%.2u:%.2u:%.2u',
-				(s - s%3600)/3600,
-				(s%3600 - s%60)/60,
-				s%60
+				fs < 0 and "-%.2u:%.2u:%.2u" or "%.2u:%.2u:%.2u",
+				(s - s % 3600) / 3600,
+				(s % 3600 - s % 60) / 60,
+				s % 60
 			)
 		end
 	end
@@ -247,7 +252,7 @@ do -- NumberRange
 		local dmin, dmax = v1.Min - min0, v1.Max - max0
 		v0, v1 = nil, nil
 		return function(t)
-			return NR(min0 + t*dmin, max0 + t*dmax)
+			return NR(min0 + t * dmin, max0 + t * dmax)
 		end
 	end
 end
@@ -259,7 +264,7 @@ do -- NumberSequenceKeypoint
 		local dt, dv, de = v1.Time - t0, v1.Value - v0, v1.Envelope - e0
 		v1 = nil
 		return function(t)
-			return NSK(t0 + t*dt, v0 + t*dv, e0 + t*de)
+			return NSK(t0 + t * dt, v0 + t * dv, e0 + t * de)
 		end
 	end
 end
@@ -267,21 +272,12 @@ end
 do -- PhysicalProperties
 	local PP = PhysicalProperties.new
 	function Lerps.PhysicalProperties(v0, v1)
-		local d0, e0, ew0, f0, fw0 =
-			v0.Density,
-			v0.Elasticity,
-			v0.ElasticityWeight,
-			v0.Friction,
-			v0.FrictionWeight
+		local d0, e0, ew0, f0, fw0 = v0.Density, v0.Elasticity, v0.ElasticityWeight, v0.Friction, v0.FrictionWeight
 		local dd, de, dew, df, dfw =
-			v1.Density - d0,
-			v1.Elasticity - e0,
-			v1.ElasticityWeight - ew0,
-			v1.Friction - f0,
-			v1.FrictionWeight - fw0
+			v1.Density - d0, v1.Elasticity - e0, v1.ElasticityWeight - ew0, v1.Friction - f0, v1.FrictionWeight - fw0
 		v0, v1 = nil, nil
 		return function(t)
-			return PP(d0 + t*dd, e0 + t*de, ew0 + t*dew, f0 + t*df, fw0 + t*dfw)
+			return PP(d0 + t * dd, e0 + t * de, ew0 + t * dew, f0 + t * df, fw0 + t * dfw)
 		end
 	end
 end
@@ -290,22 +286,12 @@ do -- Ray
 	local R = Ray.new
 	local V3 = Vector3.new
 	function Lerps.Ray(v0, v1)
-		local o0, d0, o1, d1 =
-			v0.Origin, v0.Direction,
-			v1.Origin, v1.Direction
-		local ox0, oy0, oz0, dx0, dy0, dz0, dx1, dy1, dz1 =
-			o0.x, o0.y, o0.z,
-			d0.x, d0.y, d0.z,
-			d1.x, d1.y, d1.z
-		local dox, doy, doz, ddx, ddy, ddz =
-			o1.x - ox0, o1.y - oy0, o1.z - oz0,
-			d1.x - dx0, d1.y - dy0, d1.z - dz0
+		local o0, d0, o1, d1 = v0.Origin, v0.Direction, v1.Origin, v1.Direction
+		local ox0, oy0, oz0, dx0, dy0, dz0, dx1, dy1, dz1 = o0.x, o0.y, o0.z, d0.x, d0.y, d0.z, d1.x, d1.y, d1.z
+		local dox, doy, doz, ddx, ddy, ddz = o1.x - ox0, o1.y - oy0, o1.z - oz0, d1.x - dx0, d1.y - dy0, d1.z - dz0
 		v0, v1, o0, d0, o1, d1 = nil, nil, nil, nil, nil, nil
 		return function(t)
-			return R(
-				V3(ox0 + t*dox, oy0 + t*doy, oz0 + t*doz),
-				V3(dx0 + t*ddx, dy0 + t*ddy, dz0 + t*ddz)
-			)
+			return R(V3(ox0 + t * dox, oy0 + t * doy, oz0 + t * doz), V3(dx0 + t * ddx, dy0 + t * ddy, dz0 + t * ddz))
 		end
 	end
 end
@@ -321,10 +307,7 @@ do
 		v0, v1 = nil, nil
 
 		return function(t)
-			return newRect(
-				sc + t*dsc, of + t*dof,
-				sc2 + t*dsc2, of2 + t*dof2
-			)
+			return newRect(sc + t * dsc, of + t * dof, sc2 + t * dsc2, of2 + t * dof2)
 		end
 	end
 end
@@ -336,7 +319,7 @@ do -- UDim
 		local dsc, dof = v1.Scale - sc, v1.Offset - of
 		v0, v1 = nil, nil
 		return function(t)
-			return UD(sc + t*dsc, of + t*dof)
+			return UD(sc + t * dsc, of + t * dof)
 		end
 	end
 end
@@ -357,7 +340,7 @@ do -- Vector2
 		local dx, dy = v1.x - x, v1.y - y
 		v0, v1 = nil, nil
 		return function(t)
-			return V2(x + t*dx, y + t*dy)
+			return V2(x + t * dx, y + t * dy)
 		end
 	end
 end
@@ -369,7 +352,7 @@ do -- Vector3
 		local dx, dy, dz = v1.x - x, v1.y - y, v1.z - z
 		v0, v1 = nil, nil
 		return function(t)
-			return V3(x + t*dx, y + t*dy, z + t*dz)
+			return V3(x + t * dx, y + t * dy, z + t * dz)
 		end
 	end
 end
@@ -393,11 +376,11 @@ do -- Region3
 	local newVector3 = Vector3.new
 
 	function Lerps.Region3(start, finish) -- @author Sharksie
-		local start1 = start.CFrame * (-start.Size*0.5)
-		local start2 = start.CFrame * ( start.Size*0.5)
+		local start1 = start.CFrame * (-start.Size * 0.5)
+		local start2 = start.CFrame * (start.Size * 0.5)
 
-		local finish1 = finish.CFrame * (-finish.Size*0.5)
-		local finish2 = finish.CFrame * ( finish.Size*0.5)
+		local finish1 = finish.CFrame * (-finish.Size * 0.5)
+		local finish2 = finish.CFrame * (finish.Size * 0.5)
 
 		local change1 = finish1 - start1
 		local change2 = finish2 - start2
@@ -443,12 +426,9 @@ do -- Region3
 				z2 = iminz
 			end
 
-			return newRegion3(
-				newVector3(x1, y1, z1),
-				newVector3(x2, y2, z2)
-			)
+			return newRegion3(newVector3(x1, y1, z1), newVector3(x2, y2, z2))
 		end
-	end;
+	end
 end
 
 do
@@ -482,12 +462,12 @@ do
 				if closestAbove == closestBelow then
 					bValue, bEnvelope = closestAbove.Value, closestAbove.Envelope
 				else
-					local p = (ap.Time - closestBelow.Time)/(closestAbove.Time - closestBelow.Time)
-					bValue = (closestAbove.Value - closestBelow.Value)*p + closestBelow.Value
-					bEnvelope = (closestAbove.Envelope - closestBelow.Envelope)*p + closestBelow.Envelope
+					local p = (ap.Time - closestBelow.Time) / (closestAbove.Time - closestBelow.Time)
+					bValue = (closestAbove.Value - closestBelow.Value) * p + closestBelow.Value
+					bEnvelope = (closestAbove.Envelope - closestBelow.Envelope) * p + closestBelow.Envelope
 				end
-				local interValue = (bValue - ap.Value)*alpha + ap.Value
-				local interEnvelope = (bEnvelope - ap.Envelope)*alpha + ap.Envelope
+				local interValue = (bValue - ap.Value) * alpha + ap.Value
+				local interEnvelope = (bEnvelope - ap.Envelope) * alpha + ap.Envelope
 				local interp = NumberSequenceKeypoint.new(ap.Time, interValue, interEnvelope)
 
 				table.insert(keypoints, interp)
@@ -514,12 +494,12 @@ do
 					if closestAbove == closestBelow then
 						aValue, aEnvelope = closestAbove.Value, closestAbove.Envelope
 					else
-						local p = (bp.Time - closestBelow.Time)/(closestAbove.Time - closestBelow.Time)
-						aValue = (closestAbove.Value - closestBelow.Value)*p + closestBelow.Value
-						aEnvelope = (closestAbove.Envelope - closestBelow.Envelope)*p + closestBelow.Envelope
+						local p = (bp.Time - closestBelow.Time) / (closestAbove.Time - closestBelow.Time)
+						aValue = (closestAbove.Value - closestBelow.Value) * p + closestBelow.Value
+						aEnvelope = (closestAbove.Envelope - closestBelow.Envelope) * p + closestBelow.Envelope
 					end
-					local interValue = (bp.Value - aValue)*alpha + aValue
-					local interEnvelope = (bp.Envelope - aEnvelope)*alpha + aEnvelope
+					local interValue = (bp.Value - aValue) * alpha + aValue
+					local interEnvelope = (bp.Envelope - aEnvelope) * alpha + aEnvelope
 					local interp = NumberSequenceKeypoint.new(bp.Time, interValue, interEnvelope)
 
 					table.insert(keypoints, interp)

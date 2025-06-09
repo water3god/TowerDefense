@@ -8,9 +8,11 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
+local ReactSpring = require(Packages.ReactSpring)
 local e = React.createElement
 
 local Modules = ReplicatedStorage.Modules
+local Lerps = require(Modules.Lerps)
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
 
@@ -22,6 +24,8 @@ local UIStroke = require(CoreGame.UIStroke)
 local Hooks = require(CoreGame.Hooks)
 
 local WaveContext = require(Gui.GameFrames.WaveContext)
+
+local ColorLerp = Lerps.Color3(Color3.new(1, 0.011765, 0.011765), Color3.new(0.117647, 1, 0.054902))
 
 export type Properties = {
 	native: { [any]: any }?,
@@ -37,6 +41,12 @@ local function CreateTopFrame(Props: Properties)
 	local Health, SetHealth = React.useBinding(1)
 	local MaxHealth, SetMaxHealth = React.useBinding(1)
 
+	local Styles, API = ReactSpring.useSpring(function()
+		return {
+			alpha = 1,
+		}
+	end)
+
 	React.useEffect(function()
 		SetWave(WaveData.Wave)
 		SetTime(WaveData.Time, WaveData.StartTime)
@@ -46,6 +56,12 @@ local function CreateTopFrame(Props: Properties)
 		SetHealth(WaveData.BaseHealth)
 		SetMaxHealth(WaveData.MaxHealth)
 	end, { WaveData.BaseHealth, WaveData.MaxHealth })
+
+	React.useEffect(function()
+		API.start({
+			alpha = math.clamp(WaveData.BaseHealth / WaveData.MaxHealth, 0, 1),
+		})
+	end, { WaveData.MaxHealth, WaveData.BaseHealth })
 
 	return WaveData.BaseHealth
 		and e(Main.Frame, {
@@ -73,7 +89,7 @@ local function CreateTopFrame(Props: Properties)
 					},
 				}, {
 					UIStroke = e(UIStroke.UIStrokeBasic, {
-						Stroke = 0.003,
+						Stroke = 0.002,
 					}),
 				}),
 				Title = e(Main.TextLabel, {
@@ -84,7 +100,7 @@ local function CreateTopFrame(Props: Properties)
 					},
 				}, {
 					UIStroke = e(UIStroke.UIStrokeBasic, {
-						Stroke = 0.003,
+						Stroke = 0.002,
 					}),
 				}),
 			}),
@@ -104,7 +120,7 @@ local function CreateTopFrame(Props: Properties)
 					},
 				}, {
 					UIStroke = e(UIStroke.UIStrokeBasic, {
-						Stroke = 0.003,
+						Stroke = 0.002,
 					}),
 				}),
 				Title = e(Main.TextLabel, {
@@ -115,7 +131,7 @@ local function CreateTopFrame(Props: Properties)
 					},
 				}, {
 					UIStroke = e(UIStroke.UIStrokeBasic, {
-						Stroke = 0.003,
+						Stroke = 0.002,
 					}),
 				}),
 			}),
@@ -130,16 +146,21 @@ local function CreateTopFrame(Props: Properties)
 					CornerRadius = UDim.new(1, 0),
 				}),
 				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.004,
+					Stroke = 0.002,
 					Color = Color3.fromRGB(33, 199, 47),
+					native = {
+						LineJoinMode = Enum.LineJoinMode.Round,
+					},
 				}),
 				Bar = e(Main.Frame, {
 					native = {
 						BackgroundTransparency = 0,
-						BackgroundColor3 = Color3.fromRGB(37, 222, 0),
+						BackgroundColor3 = Styles.alpha:map(function(alpha: number)
+							return ColorLerp(alpha)
+						end),
 						Position = UDim2.fromScale(0, 0.5),
-						Size = React.joinBindings({ Health, MaxHealth }):map(function(Info: { number })
-							return UDim2.fromScale(math.clamp(Info[1] / Info[2], 0, 1), 1)
+						Size = Styles.alpha:map(function(alpha)
+							return UDim2.fromScale(alpha, 1)
 						end),
 						AnchorPoint = Vector2.new(0, 0.5),
 					},
@@ -163,7 +184,7 @@ local function CreateTopFrame(Props: Properties)
 							Rotation = 90,
 						}),
 						UIStroke = e(UIStroke.UIStrokeBasic, {
-							Stroke = 0.003,
+							Stroke = 0.002,
 						}),
 					},
 				}),
