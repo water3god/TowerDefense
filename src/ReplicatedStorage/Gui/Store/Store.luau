@@ -47,6 +47,8 @@ export type ProductProps = {
 	Image: number,
 	Price: number,
 	Owned: boolean,
+	Hovered: boolean,
+	OnClick: () -> (),
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
@@ -61,6 +63,8 @@ local function CreateProductFrame(props: ProductProps)
 		RightText = "",
 		Image = props.Image,
 		Name = props.Name,
+		Hovered = props.Hovered,
+		OnClick = props.OnClick,
 		BackgroundColor = ColorSequence.new(Color3.new(0.188235, 1, 0.282353)),
 		containerChildren = {
 			RobuxLabel = e(Main.TextLabel, {
@@ -135,6 +139,10 @@ local function CreateStoreFrame(Properties: Properties)
 					Image = Data.ProductInfo.IconImageAssetId,
 					Price = Data.ProductInfo.PriceInRobux,
 					Owned = Data.Owned,
+					Hovered = HoveredProduct == Id,
+					OnClick = function()
+						SetHovered(Id)
+					end,
 				})
 			end
 		elseif OpenFrame == "Products" then
@@ -144,12 +152,16 @@ local function CreateStoreFrame(Properties: Properties)
 					Image = Data.ProductInfo.IconImageAssetId,
 					Price = Data.ProductInfo.PriceInRobux,
 					Owned = false,
+					Hovered = HoveredProduct == Id,
+					OnClick = function()
+						SetHovered(Id)
+					end,
 				})
 			end
 		end
 
 		return e(CreateBasicTable, {}, Frames)
-	end, { OpenFrame, PurchaseData.Loaded :: any })
+	end, { OpenFrame, PurchaseData.Loaded :: any, HoveredProduct :: any })
 
 	local GiftId = React.useMemo(function()
 		if HoveredProduct then
@@ -226,7 +238,7 @@ local function CreateStoreFrame(Properties: Properties)
 
 	return e(Main.Frame, {
 		native = JoinDicts({
-			Size = UDim2.fromScale(0.65, 0.8),
+			Size = UDim2.fromScale(0.5, 0.6),
 			BackgroundTransparency = 0,
 			BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
 		}, Properties.native),
@@ -244,7 +256,7 @@ local function CreateStoreFrame(Properties: Properties)
 		}),
 		CloseButton = e(CloseButton, {
 			Position = UDim2.fromScale(1, 0),
-			Size = UDim2.fromScale(0.15, 0.25),
+			Size = UDim2.fromScale(0.1, 0.2),
 			OnClick = Properties.CloseClick,
 		}),
 		InnerFrame = e(Main.Frame, {

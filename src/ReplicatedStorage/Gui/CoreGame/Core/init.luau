@@ -665,24 +665,18 @@ local function Render()
 				}),
 			}),
 
-			BottomFrame = e(Hooks.ContextStack, {
-				providers = {
-					EquippedUnitsContext.Provider,
+			BottomFrame = e(Bottom, {
+				SetHovered = SetHovered,
+				GetHovered = GetHovered,
+				UnitClick = OnBottomUnitClick,
+				SetVisible = function(Visible: boolean)
+					SetVisibleInternal(Constants.INVENTORY_FRAME, Visible)
+				end,
+				native = {
+					Position = VisibleFrames[1] ~= "Bottom" and Styles.Inverted:map(function(Size: number)
+						return UDim2.fromScale(0.5, 0.9):Lerp(UDim2.fromScale(0.5, 1.2), Size)
+					end) or UDim2.fromScale(0.5, 0.9),
 				},
-			}, {
-				BottomFrame = e(Bottom, {
-					SetHovered = SetHovered,
-					GetHovered = GetHovered,
-					UnitClick = OnBottomUnitClick,
-					SetVisible = function(Visible: boolean)
-						SetVisibleInternal(Constants.INVENTORY_FRAME, Visible)
-					end,
-					native = {
-						Position = VisibleFrames[1] ~= "Bottom" and Styles.Inverted:map(function(Size: number)
-							return UDim2.fromScale(0.5, 0.9):Lerp(UDim2.fromScale(0.5, 1.2), Size)
-						end) or UDim2.fromScale(0.5, 0.9),
-					},
-				}),
 			}),
 		}),
 		Buttons = IsLobby and e(Main.Frame, {
