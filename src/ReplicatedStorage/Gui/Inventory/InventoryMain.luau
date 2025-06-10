@@ -749,7 +749,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		end
 
 		return Default
-	end, { OpenFrame :: any, ClickedProductData, ClickedResourceData, ClickedUnitData, EquippedUnits })
+	end, { OpenFrame :: any, ClickedProductData, ClickedResourceData, ClickedUnitData, EquippedUnits, HoveredId })
 
 	return e(Main.ImageLabel, {
 		native = JoinDicts({
