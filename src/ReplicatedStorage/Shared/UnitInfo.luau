@@ -250,6 +250,92 @@ local UnitInfo: { [string]: UnitInfo } = {
 				Damage = { 0 },
 				FireRate = 0,
 				Range = 5,
+				Armor = "AugustusArmor",
+				Cost = 100,
+			},
+		},
+		CollisionRadius = 3,
+		Abilities = {},
+	},
+	["Robert the Bruce"] = {
+		Rarity = "Common",
+		Description = "A Scout",
+		Image = "rbxassetid://73951067640481",
+
+		UnitData = {
+			[0] = {
+				Damage = { 0 },
+				FireRate = 0,
+				Range = 5,
+				Armor = "RobertArmor",
+				Cost = 100,
+			},
+		},
+		CollisionRadius = 3,
+		Abilities = {},
+	},
+	["Richard the Lionheart"] = {
+		Rarity = "Godly",
+		Description = "A Scout",
+		Image = "rbxassetid://73951067640481",
+
+		UnitData = {
+			[0] = {
+				Damage = { 0 },
+				FireRate = 0,
+				Range = 5,
+				Armor = "RichardArmor",
+				Cost = 100,
+			},
+		},
+		CollisionRadius = 3,
+		Abilities = {},
+	},
+	["Charlemagne"] = {
+		Rarity = "Epic",
+		Description = "A Scout",
+		Image = "rbxassetid://73951067640481",
+
+		UnitData = {
+			[0] = {
+				Damage = { 0 },
+				FireRate = 0,
+				Range = 5,
+				Armor = "CharlemagneArmor",
+				Cost = 100,
+			},
+		},
+		CollisionRadius = 3,
+		Abilities = {},
+	},
+	["Joan of Arc"] = {
+		Rarity = "Legendary",
+		Description = "A Scout",
+		Image = "rbxassetid://73951067640481",
+
+		UnitData = {
+			[0] = {
+				Damage = { 0 },
+				FireRate = 0,
+				Range = 5,
+				Armor = "JoanArmor",
+				Cost = 100,
+			},
+		},
+		CollisionRadius = 3,
+		Abilities = {},
+	},
+	["Leif Erikson"] = {
+		Rarity = "Rare",
+		Description = "A Scout",
+		Image = "rbxassetid://73951067640481",
+
+		UnitData = {
+			[0] = {
+				Damage = { 0 },
+				FireRate = 0,
+				Range = 5,
+				Armor = "LeifArmor",
 				Cost = 100,
 			},
 		},

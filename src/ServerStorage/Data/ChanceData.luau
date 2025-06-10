@@ -13,6 +13,12 @@ local ChanceData: {
 	["Julius Caesar"] = 0.1,
 	Augustus = 0.05,
 	Trajan = 0.01,
+	["Robert the Bruce"] = 10,
+	["Leif Erikson"] = 5,
+	Charlemagne = 1,
+	["Joan of Arc"] = 0.1,
+	["William the Conqueror"] = 0.05,
+	["Richard the Lionheart"] = 0.01,
 }
 
 return ChanceData
