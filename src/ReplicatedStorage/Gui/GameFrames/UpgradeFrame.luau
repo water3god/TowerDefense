@@ -72,9 +72,7 @@ local function CreatePropertyFrame(Props: PropertyProperties)
 	local Color = Stats.Colors[Props.PropertyName]
 	local Order = Hooks.LayoutOrder()
 
-	local IsSpecial = React.useMemo(function()
-		return Props.PropertyName == "Specials"
-	end, { Props.PropertyName })
+	local IsSpecial = Props.PropertyName == "Specials"
 
 	return e(Main.Frame, {
 		native = Join({
