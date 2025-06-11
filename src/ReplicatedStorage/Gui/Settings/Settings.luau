@@ -8,6 +8,7 @@ local UserInputService = game:GetService("UserInputService")
 
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
+local ReactSpring = require(Packages.ReactSpring)
 local React = require(Packages.React)
 local e = React.createElement
 
@@ -15,6 +16,7 @@ local Input = require(Packages.Input)
 local Trove = require(Packages.Trove)
 
 local Modules = ReplicatedStorage.Modules
+local Lerps = require(Modules.Lerps)
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
 
@@ -54,6 +56,9 @@ export type ConnectedProps = {
 	children: { [any]: any }?,
 }
 
+local ColorLerp = Lerps.Color3(Color3.new(0.882353, 0.101961, 0.101961), Color3.new(0.098039, 0.843137, 0.137255))
+local PositionLerp = Lerps.UDim2(UDim2.fromScale(0.2, 0.5), UDim2.fromScale(0.8, 0.5))
+
 local function CreateBoolean(props: { Setting: string, Value: boolean })
 	local Value, SetValue = React.useState(props.Value)
 
@@ -61,20 +66,16 @@ local function CreateBoolean(props: { Setting: string, Value: boolean })
 		SetValue(props.Value)
 	end, { props.Value })
 
-	local Color = React.useMemo(function()
-		if Value then
-			return Color3.new(0.098039, 0.843137, 0.137255)
-		else
-			return Color3.new(0.882353, 0.101961, 0.101961)
-		end
-	end, { Value })
+	local Styles, API = ReactSpring.useSpring(function()
+		return {
+			alpha = Value,
+		}
+	end)
 
-	local BarPosition = React.useMemo(function()
-		if Value then
-			return UDim2.fromScale(0.8, 0.5)
-		else
-			return UDim2.fromScale(0.2, 0.5)
-		end
+	React.useEffect(function()
+		API.start({
+			alpha = if Value then 1 else 0,
+		})
 	end, { Value })
 
 	local Click = React.useCallback(function()
@@ -98,10 +99,14 @@ local function CreateBoolean(props: { Setting: string, Value: boolean })
 		}),
 		Bar = e(Main.Frame, {
 			native = {
-				Position = BarPosition,
+				Position = Styles.alpha:map(function(alpha: number)
+					return PositionLerp(alpha)
+				end),
 				Size = UDim2.fromScale(0.4, 1),
 				BackgroundTransparency = 0,
-				BackgroundColor3 = Color,
+				BackgroundColor3 = Styles.alpha:map(function(alpha: number)
+					return ColorLerp(alpha)
+				end),
 			},
 		}, {
 			UICorner = e("UICorner", {
