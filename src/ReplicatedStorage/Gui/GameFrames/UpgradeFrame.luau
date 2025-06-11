@@ -50,6 +50,7 @@ export type PropertyProperties = {
 	Inital: number,
 	Final: number,
 	Other: string,
+	Maxxed: boolean,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
@@ -70,7 +71,10 @@ export type AbilityProps = {
 local function CreatePropertyFrame(Props: PropertyProperties)
 	local Color = Stats.Colors[Props.PropertyName]
 	local Order = Hooks.LayoutOrder()
-	local IsSpecial = Props.PropertyName == "Specials"
+
+	local IsSpecial = React.useMemo(function()
+		return Props.PropertyName == "Specials"
+	end, { Props.PropertyName })
 
 	return e(Main.Frame, {
 		native = Join({
@@ -108,7 +112,7 @@ local function CreatePropertyFrame(Props: PropertyProperties)
 				Image = "rbxassetid://90650317828395",
 				LayoutOrder = Order(),
 				ImageColor3 = Color,
-				Visible = not IsSpecial,
+				Visible = not (IsSpecial or Props.Maxxed),
 			},
 		}, {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
@@ -128,7 +132,7 @@ local function CreatePropertyFrame(Props: PropertyProperties)
 				AutoLocalize = false,
 				TextColor3 = Color,
 				LayoutOrder = Order(),
-				Visible = not IsSpecial,
+				Visible = not (IsSpecial or Props.Maxxed),
 				TextXAlignment = Enum.TextXAlignment.Left,
 			},
 		}),
@@ -257,9 +261,9 @@ local function CreateUpgradeFrame(Properties: Properties)
 		local LevelData = UpgradeData.UpgradeData[UpgradeData.Level]
 		local AboveData = UpgradeData.UpgradeData[UpgradeData.Level + 1]
 
-		if AboveData then
-			local Frames: { [string]: React.Node } = {}
+		local Frames: { [string]: React.Node } = {}
 
+		if AboveData then
 			for Property, Data in pairs(LevelData) do
 				if table.find(Stats.StatProperties, Property) then
 					local function GetValue(Data: number & { number }, Property: string): number
@@ -279,16 +283,43 @@ local function CreateUpgradeFrame(Properties: Properties)
 						Inital = GetValue(Data, Property) :: any,
 						Final = GetValue(AboveData[Property], Property) :: any,
 						Other = tostring(Data),
+						Maxxed = false,
 						native = {
 							LayoutOrder = Stats.Layout[Property :: any],
 						},
 					})
 				end
 			end
-			return Frames
 		else
-			return {}
+			for Property, Data in pairs(LevelData) do
+				if table.find(Stats.StatProperties, Property) then
+					local function GetValue(Data: number & { number }, Property: string): number
+						if Property == "Damage" then
+							return (Data :: any)[1] :: number
+						else
+							return Data :: number
+						end
+					end
+
+					if GetValue(Data, Property) == 0 then
+						continue
+					end
+
+					Frames[Property] = CreatePropertyFrame({
+						PropertyName = Property :: any,
+						Inital = GetValue(Data, Property) :: any,
+						Final = 1,
+						Other = tostring(Data),
+						Maxxed = true,
+						native = {
+							LayoutOrder = Stats.Layout[Property :: any],
+						},
+					})
+				end
+			end
 		end
+
+		return Frames
 	end, { UpgradeData.UpgradeData :: any, UpgradeData.Level :: any })
 
 	local AbilityFrames = React.useMemo(function()

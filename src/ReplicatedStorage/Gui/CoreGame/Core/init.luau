@@ -268,6 +268,203 @@ local function RenderStore(Props)
 	})
 end
 
+local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (string: string?) -> () })
+	local HoveredDataRef = React.useRef(nil :: {
+		Type: "Unit" | "Enemy",
+		Id: string,
+	}?)
+	local HoveredData: {
+		Type: "Unit" | "Enemy",
+		Id: string,
+	}?, SetHoveredData = React.useState(nil :: {
+		Type: "Unit" | "Enemy",
+		Id: string,
+	}?)
+	local HoveredPos, SetHoveredPos = React.useBinding(Vector2.new())
+
+	local PlacingUnitId = React.useRef(props.PlacingUnitId)
+
+	React.useEffect(function()
+		PlacingUnitId.current = props.PlacingUnitId
+	end, { props.PlacingUnitId })
+
+	if not IsLobby then
+		React.useEffect(function()
+			for _, Unit in pairs(UnitClient.GetUnits()) do
+				if Unit.IsClicked then
+					Unit:ClickCharacter(false)
+				end
+			end
+			if props.PlacingUnitId then
+				local Unit = UnitClient.GetUnit(props.PlacingUnitId)
+				if Unit and not Unit.IsClicked then
+					Unit:ClickCharacter(true)
+				end
+			end
+		end, { props.PlacingUnitId })
+
+		React.useEffect(function()
+			if props.PlacingUnitId then
+				local Unit = UnitClient.GetUnit(props.PlacingUnitId)
+				if Unit then
+					local Connection = Unit.CharacterClicked:Connect(function(Enabled: boolean)
+						if Enabled == false then
+							props.SetUnitId(nil)
+						end
+					end)
+
+					return function()
+						Connection:Disconnect()
+					end
+				end
+			end
+			return function() end
+		end, { props.PlacingUnitId })
+
+		Hooks.useEventConnection(UnitClient.NewUnit, function(Unit, New: boolean)
+			if New and Unit.OwnerId == Player.UserId then
+				if props.PlacingUnitId ~= Unit.UniqueId then
+					props.SetUnitId(Unit.UniqueId)
+				end
+			end
+		end, { props.PlacingUnitId })
+
+		React.useEffect(function()
+			local Params = RaycastParams.new()
+			Params.CollisionGroup = "PlacedCharacters"
+
+			local function OnPress(Position: Vector2)
+				local Result = HelperFunctions.Raycast(Position, Params)
+				if Result and Result.Instance then
+					if Result.Instance:IsDescendantOf(GlobalWorkspace) then
+						for _, Unit in pairs(UnitClient.GetUnits()) do
+							if Unit:PartIsDescendantOf(Result.Instance) and not Variables.InPlacement then
+								props.SetUnitId(Unit.UniqueId)
+								return
+							end
+						end
+					end
+				end
+				props.SetUnitId(nil)
+			end
+
+			local function OnFrame(Position: Vector2)
+				local HoveredData = HoveredDataRef.current
+				local Result = HelperFunctions.Raycast(Position, Params)
+				if Result and Result.Instance then
+					if Result.Instance:IsDescendantOf(GlobalWorkspace) then
+						for _, Unit in pairs(UnitClient.GetUnits()) do
+							if PlacingUnitId.current == Unit.UniqueId then
+								continue
+							end
+							if Unit:PartIsDescendantOf(Result.Instance) then
+								if not HoveredData or HoveredData.Id ~= Unit.UniqueId then
+									SetHoveredData({
+										Type = "Unit",
+										Id = Unit.UniqueId,
+									})
+									HoveredDataRef.current = {
+										Type = "Unit",
+										Id = Unit.UniqueId,
+									}
+								end
+								SetHoveredPos(Position)
+								return
+							end
+						end
+						for _, Enemy in pairs(EnemyClient.GetEnemies()) do
+							if Enemy:PartIsDescendantOf(Result.Instance) then
+								if not HoveredData or HoveredData.Id ~= Enemy.UniqueId then
+									SetHoveredData({
+										Type = "Enemy",
+										Id = Enemy.UniqueId,
+									})
+									HoveredDataRef.current = {
+										Type = "Enemy",
+										Id = Enemy.UniqueId,
+									}
+								end
+								SetHoveredPos(Position)
+								return
+							end
+						end
+					end
+				end
+
+				SetHoveredData(nil)
+				HoveredDataRef.current = nil
+			end
+
+			local Trove = Trove.new()
+
+			local Disconnect = Input.PreferredInput.Observe(function(Preferred)
+				Trove:Destroy()
+				if Preferred == "MouseKeyboard" then
+					local Mouse = Trove:Construct(Mouse)
+					local Keyboard = Trove:Construct(Keyboard)
+
+					Mouse.LeftDown:Connect(function()
+						OnPress(Mouse:GetPosition())
+					end)
+
+					Trove:Connect(RunService.PostSimulation, function()
+						OnFrame(Mouse:GetPosition())
+					end)
+				elseif Preferred == "Gamepad" then
+				elseif Preferred == "Touch" then
+					local Touch = Trove:Construct(Touch)
+
+					Touch.TouchTap:Connect(function(TouchPositions: { Vector2 }, Processed: boolean)
+						if Processed then
+							return
+						end
+
+						OnFrame(TouchPositions[1])
+						OnPress(TouchPositions[1])
+					end)
+				end
+			end)
+
+			return function()
+				Trove:Destroy()
+				Disconnect()
+			end
+		end, {})
+	end
+
+	return e(React.Fragment, nil, {
+		UpgradeContext = e(UpgradeContext.Provider, {
+			UnitId = props.PlacingUnitId,
+		}, {
+			UpgradeContainer = e(Main.Frame, {
+				native = {
+					Position = UDim2.fromScale(0, 0.5),
+					Size = UDim2.fromScale(0.4, 0.55),
+					AnchorPoint = Vector2.new(0, 0.5),
+				},
+			}, {
+				UpgradeFrame = e(UpgradeFrame, {
+					IsVisible = props.PlacingUnitId ~= nil and UnitClient.GetUnit(props.PlacingUnitId) ~= nil,
+				}),
+			}),
+		}),
+		UnitToolTip = e(UnitToolTip.Connected, {
+			UnitId = HoveredData and HoveredData.Type == "Unit" and HoveredData.Id :: any,
+			Position = HoveredPos,
+			native = {
+				Visible = HoveredData ~= nil and HoveredData.Type == "Unit",
+			},
+		}),
+		EnemyToolTip = e(EnemyToolTip.Connected, {
+			EnemyId = HoveredData and HoveredData.Type == "Enemy" and HoveredData.Id :: any,
+			Position = HoveredPos,
+			native = {
+				Visible = HoveredData ~= nil and HoveredData.Type == "Enemy",
+			},
+		}),
+	})
+end
+
 local PlayCFrame = CFrame.new(145.5, 7.834, 143.5) * CFrame.Angles(0, math.rad(25), 0)
 local SummonCFrame = CFrame.new(-170, 10, -215)
 
@@ -380,166 +577,10 @@ local function Render()
 	end, {})
 
 	local PlacingUnitId: string?, SetUnitId = React.useState(nil :: string?)
-	local HoveredDataRef = React.useRef(nil :: {
-		Type: "Unit" | "Enemy",
-		Id: string,
-	}?)
-	local HoveredData: {
-		Type: "Unit" | "Enemy",
-		Id: string,
-	}?, SetHoveredData = React.useState(nil :: {
-		Type: "Unit" | "Enemy",
-		Id: string,
-	}?)
-	local HoveredPos, SetHoveredPos = React.useBinding(Vector2.new())
 
 	local OnBottomUnitClick = React.useCallback(function()
 		SetUnitId(nil)
 	end, { PlacingUnitId })
-
-	if not IsLobby then
-		React.useEffect(function()
-			for _, Unit in pairs(UnitClient.GetUnits()) do
-				if Unit.IsClicked then
-					Unit:ClickCharacter(false)
-				end
-			end
-			if PlacingUnitId then
-				local Unit = UnitClient.GetUnit(PlacingUnitId)
-				if Unit and not Unit.IsClicked then
-					Unit:ClickCharacter(true)
-				end
-			end
-		end, { PlacingUnitId })
-
-		React.useEffect(function()
-			if PlacingUnitId then
-				local Unit = UnitClient.GetUnit(PlacingUnitId)
-				if Unit then
-					local Connection = Unit.CharacterClicked:Connect(function(Enabled: boolean)
-						if Enabled == false then
-							SetUnitId(nil)
-						end
-					end)
-
-					return function()
-						Connection:Disconnect()
-					end
-				end
-			end
-			return function() end
-		end, { PlacingUnitId })
-
-		Hooks.useEventConnection(UnitClient.NewUnit, function(Unit, New: boolean)
-			if New and Unit.OwnerId == Player.UserId then
-				if PlacingUnitId ~= Unit.UniqueId then
-					SetUnitId(Unit.UniqueId)
-				end
-			end
-		end, { PlacingUnitId })
-
-		React.useEffect(function()
-			local Params = RaycastParams.new()
-			Params.CollisionGroup = "PlacedCharacters"
-
-			local function OnPress(Position: Vector2)
-				local Result = HelperFunctions.Raycast(Position, Params)
-				if Result and Result.Instance then
-					if Result.Instance:IsDescendantOf(GlobalWorkspace) then
-						for _, Unit in pairs(UnitClient.GetUnits()) do
-							if Unit:PartIsDescendantOf(Result.Instance) and not Variables.InPlacement then
-								SetUnitId(Unit.UniqueId)
-								return
-							end
-						end
-					end
-				end
-				SetUnitId(nil)
-			end
-
-			local function OnFrame(Position: Vector2)
-				local HoveredData = HoveredDataRef.current
-				local Result = HelperFunctions.Raycast(Position, Params)
-				if Result and Result.Instance then
-					if Result.Instance:IsDescendantOf(GlobalWorkspace) then
-						for _, Unit in pairs(UnitClient.GetUnits()) do
-							if PlacingUnitId == Unit.UniqueId then
-								continue
-							end
-							if Unit:PartIsDescendantOf(Result.Instance) then
-								if not HoveredData or HoveredData.Id ~= Unit.UniqueId then
-									SetHoveredData({
-										Type = "Unit",
-										Id = Unit.UniqueId,
-									})
-									HoveredDataRef.current = {
-										Type = "Unit",
-										Id = Unit.UniqueId,
-									}
-								end
-								SetHoveredPos(Position)
-								return
-							end
-						end
-						for _, Enemy in pairs(EnemyClient.GetEnemies()) do
-							if Enemy:PartIsDescendantOf(Result.Instance) then
-								if not HoveredData or HoveredData.Id ~= Enemy.UniqueId then
-									SetHoveredData({
-										Type = "Enemy",
-										Id = Enemy.UniqueId,
-									})
-									HoveredDataRef.current = {
-										Type = "Enemy",
-										Id = Enemy.UniqueId,
-									}
-								end
-								SetHoveredPos(Position)
-								return
-							end
-						end
-					end
-				end
-
-				SetHoveredData(nil)
-				HoveredDataRef.current = nil
-			end
-
-			local Trove = Trove.new()
-
-			local Disconnect = Input.PreferredInput.Observe(function(Preferred)
-				Trove:Destroy()
-				if Preferred == "MouseKeyboard" then
-					local Mouse = Trove:Construct(Mouse)
-					local Keyboard = Trove:Construct(Keyboard)
-
-					Mouse.LeftDown:Connect(function()
-						OnPress(Mouse:GetPosition())
-					end)
-
-					Trove:Connect(RunService.PostSimulation, function()
-						OnFrame(Mouse:GetPosition())
-					end)
-				elseif Preferred == "Gamepad" then
-				elseif Preferred == "Touch" then
-					local Touch = Trove:Construct(Touch)
-
-					Touch.TouchTap:Connect(function(TouchPositions: { Vector2 }, Processed: boolean)
-						if Processed then
-							return
-						end
-
-						OnFrame(TouchPositions[1])
-						OnPress(TouchPositions[1])
-					end)
-				end
-			end)
-
-			return function()
-				Trove:Destroy()
-				Disconnect()
-			end
-		end, {})
-	end
 
 	local VisibleFrames = React.useMemo(function()
 		if TransitionFrame then
@@ -639,34 +680,9 @@ local function Render()
 				EndFrame = e(EndFrame.Connected, {
 					Enabled = true,
 				}),
-				UpgradeContext = e(UpgradeContext.Provider, {
-					UnitId = PlacingUnitId,
-				}, {
-					UpgradeContainer = e(Main.Frame, {
-						native = {
-							Position = UDim2.fromScale(0, 0.5),
-							Size = UDim2.fromScale(0.4, 0.55),
-							AnchorPoint = Vector2.new(0, 0.5),
-						},
-					}, {
-						UpgradeFrame = e(UpgradeFrame, {
-							IsVisible = PlacingUnitId ~= nil and UnitClient.GetUnit(PlacingUnitId) ~= nil,
-						}),
-					}),
-				}),
-				UnitToolTip = e(UnitToolTip.Connected, {
-					UnitId = HoveredData and HoveredData.Type == "Unit" and HoveredData.Id :: any,
-					Position = HoveredPos,
-					native = {
-						Visible = HoveredData ~= nil and HoveredData.Type == "Unit",
-					},
-				}),
-				EnemyToolTip = e(EnemyToolTip.Connected, {
-					EnemyId = HoveredData and HoveredData.Type == "Enemy" and HoveredData.Id :: any,
-					Position = HoveredPos,
-					native = {
-						Visible = HoveredData ~= nil and HoveredData.Type == "Enemy",
-					},
+				ToolTips = e(HandleToolTips, {
+					PlacingUnitId = PlacingUnitId,
+					SetUnitId = SetUnitId,
 				}),
 			}),
 			LobbyOnly = IsLobby and e("Folder", {}, {
