@@ -282,6 +282,9 @@ local VisibleFrames = {
 	[Constants.STORE] = {},
 }
 
+local Params = RaycastParams.new()
+Params.CollisionGroup = "PlacedCharacters"
+
 local function Render()
 	local VisibleFrame: string?, SetVisibleFrame = React.useState(nil :: string?)
 	local TransitionFrame: string?, SetTransitionFrame = React.useState(nil :: string?)
@@ -377,6 +380,10 @@ local function Render()
 	end, {})
 
 	local PlacingUnitId: string?, SetUnitId = React.useState(nil :: string?)
+	local HoveredDataRef = React.useRef(nil :: {
+		Type: "Unit" | "Enemy",
+		Id: string,
+	}?)
 	local HoveredData: {
 		Type: "Unit" | "Enemy",
 		Id: string,
@@ -450,9 +457,8 @@ local function Render()
 				SetUnitId(nil)
 			end
 
-			local Count = 0
-
 			local function OnFrame(Position: Vector2)
+				local HoveredData = HoveredDataRef.current
 				local Result = HelperFunctions.Raycast(Position, Params)
 				if Result and Result.Instance then
 					if Result.Instance:IsDescendantOf(GlobalWorkspace) then
@@ -466,6 +472,10 @@ local function Render()
 										Type = "Unit",
 										Id = Unit.UniqueId,
 									})
+									HoveredDataRef.current = {
+										Type = "Unit",
+										Id = Unit.UniqueId,
+									}
 								end
 								SetHoveredPos(Position)
 								return
@@ -478,6 +488,10 @@ local function Render()
 										Type = "Enemy",
 										Id = Enemy.UniqueId,
 									})
+									HoveredDataRef.current = {
+										Type = "Enemy",
+										Id = Enemy.UniqueId,
+									}
 								end
 								SetHoveredPos(Position)
 								return
@@ -486,12 +500,8 @@ local function Render()
 					end
 				end
 
-				if Count > 10 then
-					Count = 0
-					SetHoveredData(nil)
-				else
-					Count += 1
-				end
+				SetHoveredData(nil)
+				HoveredDataRef.current = nil
 			end
 
 			local Trove = Trove.new()

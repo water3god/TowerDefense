@@ -707,7 +707,6 @@ local DefaultCFrame = CFrame.new(0, -0.4, -2) * CFrame.Angles(0, math.rad(-180),
 
 function UnitModule.InitCharacter(Unit: string, Position: CFrame?)
 	local InitTrove = Trove.new()
-	print(UnitModels[Unit], Unit, UnitModels)
 	local UnitModel: typeof(Rig) = InitTrove:Clone(UnitModels[Unit])
 	local Humanoid: Humanoid & { [any]: any } = UnitModel.Humanoid
 	local Animator: Animator & { [any]: any } = Humanoid.Animator
