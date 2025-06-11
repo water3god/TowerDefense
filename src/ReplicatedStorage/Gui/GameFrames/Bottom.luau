@@ -207,6 +207,14 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 		return HelperFunctions.NumberScaler.ShortenNumber(CurrencyContext.Value)
 	end, { CurrencyContext.Value })
 
+	local BarSize = React.useMemo(function()
+		return UDim2.fromScale(math.clamp(UnitsContext.XP / UnitsContext.NeededXP, 0, 1), 1)
+	end, { UnitsContext.XP, UnitsContext.NeededXP })
+
+	local LevelXP = React.useMemo(function()
+		return string.format("Level %u (%u/%u)", UnitsContext.GlobalLevel, UnitsContext.XP, UnitsContext.NeededXP)
+	end, { UnitsContext.GlobalLevel, UnitsContext.XP, UnitsContext.NeededXP })
+
 	return e(Main.Frame, {
 		native = Join({
 			Size = UDim2.fromScale(0.4, 0.2),
@@ -339,7 +347,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 						BackgroundColor3 = Color3.fromRGB(104, 36, 132),
 						AnchorPoint = Vector2.new(0, 0.5),
 						Position = UDim2.fromScale(0, 0.5),
-						Size = UDim2.fromScale(math.clamp(UnitsContext.XP / UnitsContext.NeededXP, 0, 1), 1),
+						Size = BarSize,
 					},
 				}, {
 					UICorner = e("UICorner", {
@@ -350,12 +358,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 			LevelLabel = e(Main.TextLabel, {
 				native = {
 					Size = UDim2.fromScale(0.3, 0.8),
-					Text = string.format(
-						"Level %u (%u/%u)",
-						UnitsContext.GlobalLevel,
-						UnitsContext.XP,
-						UnitsContext.NeededXP
-					),
+					Text = LevelXP,
 					ZIndex = 2,
 				},
 			}),
