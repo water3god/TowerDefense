@@ -68,7 +68,8 @@ local function CreateBoolean(props: { Setting: string, Value: boolean })
 
 	local Styles, API = ReactSpring.useSpring(function()
 		return {
-			alpha = Value,
+			alpha = if Value then 1 else 0,
+			config = { mass = 1, tension = 400, friction = 40, clamp = true, velocity = 0.02 :: any },
 		}
 	end)
 
