@@ -41,7 +41,7 @@ export type Properties = {
 local CoreCFrame = CFrame.new(0, 0.5, 0) * CFrame.Angles(0, math.rad(180), 0)
 local Distance = 2
 
-local function CreateUnitView(Props: Properties)
+local CreateUnitView = React.forwardRef(function(Props: Properties, ref)
 	local Container = React.useRef(nil)
 	local Camera = React.useRef(nil)
 
@@ -70,6 +70,7 @@ local function CreateUnitView(Props: Properties)
 
 	return e(Main.ViewportFrame, {
 		native = Join({
+			ref = ref,
 			LightDirection = Vector3.new(0, -1, -1),
 			LightColor = Color3.new(1, 1, 1),
 			Ambient = Color3.new(1, 1, 1),
@@ -91,6 +92,6 @@ local function CreateUnitView(Props: Properties)
 			end) or FixedViewportCFrame,
 		}),
 	}, Props.children)
-end
+end)
 
 return CreateUnitView

@@ -195,8 +195,8 @@ local function NewEnemy(Input: Types.EnemyInput, SpectateFire: boolean)
 	end
 
 	self.Destroying:Connect(function(Animate: boolean)
-		local Particle = HelperFunctions.EmitParticle(DestroyParticle, self.Root.CFrame, 1, SetColor)
-		local OtherParticle = HelperFunctions.EmitParticle(OtherDestroyParticle, self.Root.CFrame, 16, SetColor)
+		local Particle = HelperFunctions.EmitParticle({ DestroyParticle }, self.Root.CFrame, 1, SetColor)
+		local OtherParticle = HelperFunctions.EmitParticle({ OtherDestroyParticle }, self.Root.CFrame, 16, SetColor)
 		Particle.Parent = ParticlesFolder
 		OtherParticle.Parent = ParticlesFolder
 	end)

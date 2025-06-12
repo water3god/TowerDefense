@@ -3,8 +3,15 @@
 -- By Wa1er_God --
 
 -- Services --
+local GuiService = game:GetService("GuiService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RtMessagingService = game:GetService("RtMessagingService")
 local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local GlobalWorkspace = workspace.GlobalWorkspace
+local Particles = GlobalWorkspace.Particles
+local Camera = workspace.CurrentCamera
 
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
@@ -36,6 +43,11 @@ local RollService = require(LobbyClient.RollService)
 
 local InventoryService = require(Client.GlobalClient.InventoryService)
 
+local ModelStorage = ReplicatedStorage.ModelStorage
+local Emitters = ModelStorage.Emitters
+local SummonParticle = Emitters.SummonParticle
+local SummonParticle2 = Emitters.SummonParticle2
+
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
 local RarityInfo = require(Shared.RarityInfo)
@@ -54,6 +66,7 @@ export type Properties = {
 export type UnitProperties = {
 	UniqueId: string,
 	UnitName: string,
+	Visible: boolean,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
@@ -65,12 +78,22 @@ export type ConnectedProperties = {
 	children: { [any]: any }?,
 }
 
+local function ChangeSize(Sequence: NumberSequence, Ratio: number)
+	local NewKeypoints = {}
+	for Index, Keypoint in ipairs(Sequence.Keypoints) do
+		NewKeypoints[Index] = NumberSequenceKeypoint.new(Keypoint.Time, Keypoint.Value * Ratio)
+	end
+	return NumberSequence.new(NewKeypoints)
+end
+
 local function CreateUnitFrame(props: UnitProperties)
 	local Position, API = ReactSpring.useSpring(function()
 		return {
 			Scale = 0,
 		}
 	end)
+
+	local ViewRef = React.useRef(nil :: ViewportFrame?)
 
 	local SettingsData = React.useContext(SettingsContext.Context)
 
@@ -106,6 +129,42 @@ local function CreateUnitFrame(props: UnitProperties)
 		end
 	end, { IsSold, props.UniqueId :: any })
 
+	React.useEffect(function()
+		if props.Visible then
+			local Viewport = ViewRef.current :: ViewportFrame
+			local Size = Viewport.AbsoluteSize
+			local Part = HelperFunctions.EmitContinous({ SummonParticle }, CFrame.new(), function(Particle)
+				Particle.Size = ChangeSize(Particle.Size, Size.X / 300)
+				Particle.Color = Data.RarityData.BackgroundColor
+			end)
+
+			local OtherPart = HelperFunctions.EmitParticle({ SummonParticle2 }, CFrame.new(), 12, function(Particle)
+				Particle.Size = ChangeSize(Particle.Size, Size.X / 300)
+				Particle.Color = Data.RarityData.BackgroundColor
+			end)
+
+			local Connection = RunService.PreRender:Connect(function(delta)
+				local NewPos = GuiService:GetGuiInset() + Viewport.AbsolutePosition + Size / 2
+
+				local Ray = Camera:ViewportPointToRay(NewPos.X, NewPos.Y, 2)
+				local Main = CFrame.new(Ray.Origin + Camera.CFrame.LookVector * 0)
+				Part.CFrame = Main
+				OtherPart.CFrame = Main
+			end)
+
+			Part.Parent = Particles
+			OtherPart.Parent = Particles
+
+			return function()
+				Connection:Disconnect()
+				Part:Destroy()
+				OtherPart:Destroy()
+			end
+		else
+			return function() end
+		end
+	end, { Data, props.Visible :: any })
+
 	return e(Main.Frame, {
 		native = Join({}, props.native),
 	}, {
@@ -118,6 +177,7 @@ local function CreateUnitFrame(props: UnitProperties)
 			},
 		}, {
 			View = e(UnitView, {
+				ref = ViewRef,
 				UnitName = props.UnitName,
 				RotationCFrame = RotationCFrame,
 				Distance = 4,
@@ -199,6 +259,7 @@ local function CreateInRoll(props: Properties)
 					UnitFrames["UnitFrame" .. Index] = e(CreateUnitFrame, {
 						UnitName = UnitData.Name,
 						UniqueId = UnitData.Id,
+						Visible = Visible,
 						native = {
 							LayoutOrder = j,
 						},
@@ -220,7 +281,7 @@ local function CreateInRoll(props: Properties)
 			}, UnitFrames)
 		end
 		return Frames
-	end, { props.UnitNames })
+	end, { props.UnitNames, Visible :: any })
 
 	React.useEffect(function()
 		if HelperFunctions.Len(props.UnitNames) > 0 then
@@ -300,13 +361,13 @@ local function CreateInRoll(props: Properties)
 	return e(Main.Frame, {
 		native = Join({
 			Visible = Visible,
-			Position = UDim2.fromScale(0.5, 0.4),
+			Position = UDim2.fromScale(0.5, 0.35),
 			Size = UDim2.fromScale(0.8, 0.6),
 		}, props.native),
 	}, {
 		StopAutoButton = e(Main.Animateables.ImageButton, {
 			native = {
-				Position = UDim2.fromScale(0.5, 1),
+				Position = UDim2.fromScale(0.5, 1.1),
 				Size = UDim2.fromScale(0.5, 0.2),
 				Image = "rbxassetid://80739823452825",
 				ImageColor3 = Color3.new(1.000000, 0.125490, 0.125490),

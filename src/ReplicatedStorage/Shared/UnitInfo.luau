@@ -49,7 +49,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Alexander The Great"] = {
 		Rarity = "Mythic",
 		Description = "A Scout",
-		Image = "rbxassetid://76818408729348",
+		Image = "rbxassetid://123087615935684",
 
 		UnitData = {
 			[0] = {
@@ -66,7 +66,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Leonidas"] = {
 		Rarity = "Godly",
 		Description = "A Scout",
-		Image = "rbxassetid://128751657366626",
+		Image = "rbxassetid://121547000533197",
 
 		UnitData = {
 			[0] = {
@@ -83,7 +83,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Pericles"] = {
 		Rarity = "Epic",
 		Description = "A Scout",
-		Image = "rbxassetid://111308279380468",
+		Image = "rbxassetid://106430561053468",
 
 		UnitData = {
 			[0] = {
@@ -100,7 +100,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Pyrrhus"] = {
 		Rarity = "Common",
 		Description = "A Scout",
-		Image = "rbxassetid://100404690417654",
+		Image = "rbxassetid://122873675701138",
 
 		UnitData = {
 			[0] = {
@@ -117,7 +117,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Socrates"] = {
 		Rarity = "Rare",
 		Description = "A Scout",
-		Image = "rbxassetid://131020680622418",
+		Image = "rbxassetid://92733001424959",
 
 		UnitData = {
 			[0] = {
@@ -133,7 +133,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Themistocles"] = {
 		Rarity = "Legendary",
 		Description = "A Scout",
-		Image = "rbxassetid://110018750391246",
+		Image = "rbxassetid://101001750083065",
 
 		UnitData = {
 			[0] = {
@@ -150,7 +150,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Julius Caesar"] = {
 		Rarity = "Legendary",
 		Description = "A Scout",
-		Image = "rbxassetid://121449132209175",
+		Image = "rbxassetid://123255834687209",
 
 		UnitData = {
 			[0] = {
@@ -167,7 +167,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Pompey"] = {
 		Rarity = "Common",
 		Description = "A Scout",
-		Image = "rbxassetid://135071065213924",
+		Image = "rbxassetid://117170171575136",
 
 		UnitData = {
 			[0] = {
@@ -184,7 +184,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Trajan"] = {
 		Rarity = "Godly",
 		Description = "A Scout",
-		Image = "rbxassetid://71882576147189",
+		Image = "rbxassetid://129329108626021",
 
 		UnitData = {
 			[0] = {
@@ -201,7 +201,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Spartacus"] = {
 		Rarity = "Rare",
 		Description = "A Scout",
-		Image = "rbxassetid://98986641918249",
+		Image = "rbxassetid://121520471894961",
 
 		UnitData = {
 			[0] = {
@@ -227,7 +227,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Cicero"] = {
 		Rarity = "Epic",
 		Description = "A Scout",
-		Image = "rbxassetid://117293946766765",
+		Image = "rbxassetid://73965035363559",
 
 		UnitData = {
 			[0] = {
@@ -243,7 +243,24 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Augustus"] = {
 		Rarity = "Mythic",
 		Description = "A Scout",
-		Image = "rbxassetid://73951067640481",
+		Image = "rbxassetid://117008785997390",
+
+		UnitData = {
+			[0] = {
+				Damage = { 0 },
+				FireRate = 0,
+				Range = 5,
+				Armor = "AugustusArmor",
+				Cost = 100,
+			},
+		},
+		CollisionRadius = 3,
+		Abilities = {},
+	},
+	["William the Conqueror"] = {
+		Rarity = "Mythic",
+		Description = "A Scout",
+		Image = "rbxassetid://127237964660825",
 
 		UnitData = {
 			[0] = {
@@ -260,7 +277,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Robert the Bruce"] = {
 		Rarity = "Common",
 		Description = "A Scout",
-		Image = "rbxassetid://73951067640481",
+		Image = "rbxassetid://118958489112206",
 
 		UnitData = {
 			[0] = {
@@ -277,7 +294,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Richard the Lionheart"] = {
 		Rarity = "Godly",
 		Description = "A Scout",
-		Image = "rbxassetid://73951067640481",
+		Image = "rbxassetid://131934169872463",
 
 		UnitData = {
 			[0] = {
@@ -294,7 +311,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Charlemagne"] = {
 		Rarity = "Epic",
 		Description = "A Scout",
-		Image = "rbxassetid://73951067640481",
+		Image = "rbxassetid://135616277878704",
 
 		UnitData = {
 			[0] = {
@@ -311,7 +328,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Joan of Arc"] = {
 		Rarity = "Legendary",
 		Description = "A Scout",
-		Image = "rbxassetid://73951067640481",
+		Image = "rbxassetid://108269486400086",
 
 		UnitData = {
 			[0] = {
@@ -328,7 +345,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Leif Erikson"] = {
 		Rarity = "Rare",
 		Description = "A Scout",
-		Image = "rbxassetid://73951067640481",
+		Image = "rbxassetid://111147011911639",
 
 		UnitData = {
 			[0] = {

@@ -531,8 +531,30 @@ function Funcs.Raycast(Position: Vector2, Params: RaycastParams?)
 	return workspace:Raycast(Ray.Origin, Ray.Direction * 500, Params)
 end
 
+function Funcs.EmitContinous(
+	ParticleEmitter: { ParticleEmitter },
+	CFrame: CFrame,
+	Func: ((Particle: ParticleEmitter) -> ())?
+)
+	local Part = CreateRaw()
+	Part.Size = Vector3.one
+	Part.Transparency = 1
+	Part.CFrame = CFrame
+	local Attachment = Instance.new("Attachment", Part)
+	for _, Particle in ipairs(ParticleEmitter) do
+		local ParticleClone = Particle:Clone()
+		if Func then
+			Func(ParticleClone)
+		end
+		ParticleClone.Enabled = true
+		ParticleClone.Parent = Attachment
+	end
+
+	return Part
+end
+
 function Funcs.EmitParticle(
-	ParticleEmitter: ParticleEmitter,
+	ParticleEmitter: { ParticleEmitter },
 	CFrame: CFrame,
 	Times: number?,
 	Func: ((Particle: ParticleEmitter) -> ())?
@@ -542,14 +564,20 @@ function Funcs.EmitParticle(
 	Part.Transparency = 1
 	Part.CFrame = CFrame
 	local Attachment = Instance.new("Attachment", Part)
-	local Particle = ParticleEmitter:Clone()
-	Particle.Enabled = false
-	Particle.Parent = Attachment
-	if Func then
-		Func(Particle)
+	local Longest = 0
+	for _, Particle in ipairs(ParticleEmitter) do
+		local ParticleClone = Particle:Clone()
+		ParticleClone.Enabled = false
+		ParticleClone.Parent = Attachment
+		if Func then
+			Func(ParticleClone)
+		end
+		ParticleClone:Emit(Times)
+		if Longest < Particle.Lifetime.Max then
+			Longest = Particle.Lifetime.Max
+		end
 	end
-	Particle:Emit(Times)
-	task.delay(Particle.Lifetime.Max, function()
+	task.delay(Longest, function()
 		Part:Destroy()
 	end)
 
