@@ -3,11 +3,28 @@
   "tree": {
     "$className": "DataModel",
     "Workspace": {
+      "$properties": {
+        "CollisionGroupData": {
+          "BinaryString": "AQYABO////8HRGVmYXVsdAEEw////w9QbGFjZW1lbnRDbGllbnQCBN3///8QU3R1ZGlvU2VsZWN0YWJsZQMExf///wlDaGFyYWN0ZXIEBNT///8QUGxhY2VkQ2hhcmFjdGVycwUE4f///w9Db2xsaXNpb25SYWRpdXM="
+        }
+      },
       "$className": "Workspace",
       "$ignoreUnknownInstances": true,
       "GlobalWorkspace": {
         "$ignoreUnknownInstances": false,
         "$path": "Models/GlobalWorkspace.rbxm"
+      },
+      "Terrain": {
+        "$className": "Terrain",
+        "Clouds": {
+          "$className": "Clouds",
+          "$properties": {
+            "Cover": 0.65,
+            "Density": 0.64,
+            "Color": [1, 1, 1],
+            "Enabled": true
+          }
+        }
       }
     },
     "Lighting": {
@@ -92,6 +109,9 @@
       "ModelStorage": {
         "$ignoreUnknownInstances": false,
         "$path": "Models/ModelStorage.rbxm"
+      },
+      "Assets": {
+        "$path": "assets"
       }
     },
     "ServerScriptService": {

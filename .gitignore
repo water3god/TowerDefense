@@ -6,3 +6,5 @@
 /*.rbxl.lock
 Packages
 .DS_Store
+.env
+Lobby.rbxl

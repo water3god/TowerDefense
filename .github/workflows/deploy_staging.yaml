@@ -1,0 +1,31 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Deploy To Staging
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: ["main"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v3
+
+      - uses: CompeyDev/setup-rokit@v0.1.2
+        name: Install RoKit
+        with:
+          version: "v1.0.0"
+          token: "${{secrets.GITHUB_TOKEN}}"
+
+      #- run: rojo build -o Lobby.rbxl
+      # - run: rbxcloud experince publish -f Lobby.rbxl -p 133996430724424 -u 7774213155 -t published --api-key -a $ secrets.TOWER_DEFENSE_KEY }}
