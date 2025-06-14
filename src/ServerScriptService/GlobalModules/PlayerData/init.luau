@@ -275,6 +275,7 @@ function PlayerData.new(Player: Player)
 
 		self.Profile.OnSessionEnd:Connect(function()
 			self:Delete()
+			Player:Kick()
 		end)
 
 		if self.Player:IsDescendantOf(Players) then

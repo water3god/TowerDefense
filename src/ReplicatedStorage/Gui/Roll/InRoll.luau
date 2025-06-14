@@ -134,12 +134,15 @@ local function CreateUnitFrame(props: UnitProperties)
 			local Viewport = ViewRef.current :: ViewportFrame
 			local Size = Viewport.AbsoluteSize
 			local Part = HelperFunctions.EmitContinous({ SummonParticle }, CFrame.new(), function(Particle)
-				Particle.Size = ChangeSize(Particle.Size, Size.X / 300)
+				Particle.Size = ChangeSize(Particle.Size, Size.X / 400)
 				Particle.Color = Data.RarityData.BackgroundColor
+				task.defer(function()
+					Particle:Emit(1)
+				end)
 			end)
 
 			local OtherPart = HelperFunctions.EmitParticle({ SummonParticle2 }, CFrame.new(), 12, function(Particle)
-				Particle.Size = ChangeSize(Particle.Size, Size.X / 300)
+				Particle.Size = ChangeSize(Particle.Size, Size.X / 400)
 				Particle.Color = Data.RarityData.BackgroundColor
 			end)
 

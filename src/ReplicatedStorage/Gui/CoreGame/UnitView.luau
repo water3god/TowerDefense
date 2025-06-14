@@ -84,9 +84,9 @@ local CreateUnitView = React.forwardRef(function(Props: Properties, ref)
 		Camera = e("Camera", {
 			ref = Camera,
 			CFrame = Props.RotationCFrame and Props.RotationCFrame:map(function(Rotation: CFrame)
-				local Distance = Props.Distance or Distance
+				local NewDistance = Props.Distance or Distance
 				local Offset = Props.Offset or Vector3.zero
-				local Default = Vector3.new(0, 0.5, -Distance)
+				local Default = Vector3.new(0, 0.5, -NewDistance)
 
 				return CFrame.lookAt(Rotation * Default, CoreCFrame.Position) + Offset
 			end) or FixedViewportCFrame,

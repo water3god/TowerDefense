@@ -77,8 +77,12 @@ export type PropertiesMain = {
 }
 
 local function CreateUnitFrame(Properties: PropertiesMain)
-	local UnitData = UnitInfo.UnitInfo[Properties.UnitName]
-	local RarityData = RarityInfo[UnitData.Rarity]
+	local UnitData = React.useMemo(function()
+		return UnitInfo.UnitInfo[Properties.UnitName]
+	end, { Properties.UnitName })
+	local RarityData = React.useMemo(function()
+		return RarityInfo[UnitData.Rarity]
+	end, { UnitData.Rarity })
 
 	return e(CreateUnitFrameRaw, {
 		UnitName = Properties.UnitName,

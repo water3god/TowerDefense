@@ -48,7 +48,7 @@ export type ProductProps = {
 	Price: number,
 	Owned: boolean,
 	Hovered: boolean,
-	OnClick: () -> (),
+	OnClick: (() -> ())?,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
