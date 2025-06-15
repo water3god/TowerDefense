@@ -10,6 +10,15 @@
       },
       "$className": "Workspace",
       "$ignoreUnknownInstances": true,
+      "GameMap": {
+        "$className": "Folder",
+        "Positions": {
+          "$className": "Folder"
+        },
+        "Map": {
+          "$className": "Folder"
+        }
+      },
       "GlobalWorkspace": {
         "$ignoreUnknownInstances": false,
         "$path": "Models/GlobalWorkspace.rbxm"
@@ -29,6 +38,12 @@
     },
     "Lighting": {
       "$className": "Lighting",
+      "$properties": {
+        "Technology": "ShadowMap",
+        "Ambient": [0.275, 0.275, 0.275],
+        "Brightness": 4.38,
+        "ClockTime": 14.5
+      },
       "DepthOfField": {
         "$className": "DepthOfFieldEffect",
         "$properties": {
@@ -109,9 +124,6 @@
       "ModelStorage": {
         "$ignoreUnknownInstances": false,
         "$path": "Models/ModelStorage.rbxm"
-      },
-      "Assets": {
-        "$path": "assets"
       }
     },
     "ServerScriptService": {
@@ -132,6 +144,17 @@
         "$path": "src/StarterPlayer/StarterPlayerScripts"
       },
       "$ignoreUnknownInstances": true
+    },
+    "SoundService": {
+      "GlobalMusic": {
+        "$path": "Models/GlobalMusic.rbxm"
+      }
+    },
+    "TextChatService": {
+      "$properties": {
+        "ChatVersion": "TextChatService"
+      },
+       "$ignoreUnknownInstances": true
     }
   }
 }

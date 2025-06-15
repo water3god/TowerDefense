@@ -18,7 +18,7 @@ local Types = require(Shared.Types)
 local RarityInfo = require(Shared.RarityInfo)
 
 export type Difficulty = "Normal" | "Hard" | "Insane"
-local Difficulty = { "Normal", "Hard", "Hard" }
+local Difficulty = { "Normal", "Hard", "Insane" }
 
 export type RewardInfo = { Units: { string }, Resources: { Types.RewardData } }
 
@@ -26,7 +26,7 @@ export type LevelInfo = {
 	Name: string,
 	GameId: string,
 	Index: number, --7 is infinite
-	XPMultiplier: number,
+	XPMultiplier: number, -- normal XP is multiplied and given to player
 	Prerequisite: { Map: string, Index: number }?,
 	RewardInfo: { [Difficulty | string]: RewardInfo },
 }
@@ -40,9 +40,9 @@ export type ResourceData = {
 export type MapInfo = {
 	Name: string,
 	MapId: string,
-	LevelInfo: { LevelInfo },
 	Image: string,
 	Prerequisite: string?,
+	LevelInfo: { LevelInfo },
 }
 
 local Data = {}
@@ -51,6 +51,8 @@ local GameInfo: { MapInfo } = {
 	{
 		Name = "Battle of Hastings",
 		MapId = "BattleOfHastings",
+		Image = "rbxassetid://136581013754707",
+		Prerequisite = nil,
 		LevelInfo = {
 			{
 				Name = "Hastings1",
@@ -161,8 +163,955 @@ local GameInfo: { MapInfo } = {
 				},
 			},
 		},
-		Image = "rbxassetid://136581013754707",
-		Prerequisite = nil,
+	},
+	{
+		MapId = "Egypt",
+		Name = "Egypt",
+		Image = "rbxassetid://137415330481106",
+		LevelInfo = {
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 1,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "",
+				Index = 1,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 2,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 3,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 4,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 5,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 6,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+		},
+	},
+	{
+		MapId = "Greece",
+		Name = "Greece",
+		Image = "rbxassetid://87671289193280",
+		LevelInfo = {
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 1,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 1,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 2,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 3,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 4,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 5,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 6,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+		},
+		Prerequisite = "Egypt",
+	},
+	{
+		MapId = "Rome",
+		Name = "Rome",
+		Image = "rbxassetid://81260716481225",
+		LevelInfo = {
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 1,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 1,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 2,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 3,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 4,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 5,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 6,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+		},
+		Prerequisite = "Greece",
+	},
+	{
+		MapId = "China",
+		Name = "China",
+		Image = "rbxassetid://96878463422313",
+		LevelInfo = {
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 1,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 1,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 2,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 3,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 4,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 5,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 6,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+		},
+		Prerequisite = "Rome",
+	},
+	{
+		MapId = "Medieval",
+		Name = "Medieval",
+		Image = "rbxassetid://74203135188399",
+		LevelInfo = {
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 1,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 1,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 2,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 3,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 4,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 5,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+			{
+				Name = "The Flood",
+				GameId = "Hastingsv1",
+				Index = 6,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
+						},
+					},
+				},
+			},
+		},
+		Prerequisite = "China",
 	},
 }
 

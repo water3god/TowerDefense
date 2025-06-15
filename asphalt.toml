@@ -1,6 +1,7 @@
 asset_dir = "assets"
 exclude_assets = ["*.luau", "*.rbxm"]
 write_dir = "assets"
+version = 2
 
 [creator]
 type = "group"
