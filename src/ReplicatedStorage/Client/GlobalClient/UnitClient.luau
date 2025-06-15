@@ -218,8 +218,9 @@ local function SetAdornment(Character: typeof(Rig), AdornmentName: string)
 	return Adornment
 end
 
-local function CastCylinder(Position: Vector3, Params: OverlapParams?)
+local function CastCylinder(Position: Vector3, Params: OverlapParams?, RatioRadius: number)
 	local Cast = CylinderCast:Clone()
+	Cast.Size = Vector3.new(RatioRadius, Cast.Size.Y, RatioRadius)
 	Cast.CFrame = CFrame.new(Position) * Cast.CFrame.Rotation
 	return workspace:GetPartsInPart(Cast, Params)
 end
@@ -789,6 +790,7 @@ function UnitModule.InitPlacement(Unit: string)
 	end
 
 	local Ratio = UnitModel.Humanoid.BodyHeightScale.Value
+	local RatioRadius = Radius / Ratio
 
 	local Root = CharacterData.CenterPart
 
@@ -796,7 +798,7 @@ function UnitModule.InitPlacement(Unit: string)
 
 	local RadiusPart = InitTrove:Clone(RadiusReference)
 	RadiusPart.CFrame = CFrame.new(BottomPosition)
-	RadiusPart.Size = Vector3.new(Radius / Ratio, RadiusPart.Size.Y, Radius / Ratio)
+	RadiusPart.Size = Vector3.new(RatioRadius, RadiusPart.Size.Y, RatioRadius)
 	Weld(RadiusPart, Root)
 	RadiusPart.Transparency = 1
 	RadiusPart.Parent = UnitModel
@@ -919,7 +921,7 @@ function UnitModule.InitPlacement(Unit: string)
 
 		local OldValid = IsValid
 
-		local Parts = CastCylinder(UnitPosition, OvParams)
+		local Parts = CastCylinder(UnitPosition, OvParams, Radius)
 		IsValid = CheckValidity(Parts)
 		OnValdiityCheck(OldValid)
 

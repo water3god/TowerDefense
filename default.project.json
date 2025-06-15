@@ -13,10 +13,12 @@
       "GameMap": {
         "$className": "Folder",
         "Positions": {
-          "$className": "Folder"
+          "$className": "Folder",
+          "$ignoreUnknownInstances": true
         },
         "Map": {
-          "$className": "Folder"
+          "$className": "Folder",
+           "$ignoreUnknownInstances": true
         }
       },
       "GlobalWorkspace": {
@@ -134,7 +136,10 @@
     "ServerStorage": {
       "$className": "ServerStorage",
       "$ignoreUnknownInstances": true,
-      "$path": "src/ServerStorage"
+      "$path": "src/ServerStorage",
+      "TagList": {
+        "$path": "Models/TagList.rbxm"
+      }
     },
     "StarterPlayer": {
       "$className": "StarterPlayer",

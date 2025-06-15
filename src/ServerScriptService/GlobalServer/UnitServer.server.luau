@@ -11,6 +11,7 @@ if require(ReplicatedStorage.Shared.IsLobby) then
 end
 
 local Modules = ReplicatedStorage.Modules
+local Input = require(ReplicatedStorage.Packages.Input)
 local HelperFunctions = require(Modules.HelperFunctions)
 
 local Remotes = ReplicatedStorage.Remotes
@@ -96,6 +97,7 @@ local function CheckPlacement(InputCFrame: CFrame, UnitInfo: UnitInfo.UnitInfo):
 			OvParams.CollisionGroup = "PlacementClient"
 
 			local Cylinder = CloneCylinder(UnitInfo.CollisionRadius)
+			Cylinder.CFrame = CFrame.new(InputCFrame.Position) * Cylinder.CFrame.Rotation
 			local Parts = workspace:GetPartsInPart(Cylinder, OvParams)
 
 			for _, BasePart in ipairs(Parts) do

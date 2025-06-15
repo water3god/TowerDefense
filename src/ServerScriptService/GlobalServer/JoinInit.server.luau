@@ -46,7 +46,13 @@ local function Init(DataInput: Types.RecieveData?)
 		return
 	end
 
-	for _, Base in ipairs(PositionFolder:GetChildren()) do
+	local Children = PositionFolder:GetChildren()
+
+	table.sort(Children, function(a, b)
+		return tonumber(a.Name) < tonumber(b.Name)
+	end)
+
+	for _, Base in ipairs(Children) do
 		if Base:IsA("BasePart") then
 			table.insert(Positions, Base.CFrame.Position)
 		end
