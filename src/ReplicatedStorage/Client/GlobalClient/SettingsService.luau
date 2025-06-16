@@ -73,7 +73,12 @@ function SettingService.ChangeSettingClient(Setting: string, Value: any)
 end
 
 function SettingService.SyncSetting(Setting: string)
-	ChangeSetting:FireServer(Setting, PlayerSettings[Setting])
+	task.spawn(function()
+		if not SettingService.IsSynced then
+			SettingService.Synced:Wait()
+		end
+		ChangeSetting:FireServer(Setting, PlayerSettings[Setting])
+	end)
 end
 
 function SettingService.SyncSettings()

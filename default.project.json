@@ -42,7 +42,12 @@
       "$className": "Lighting",
       "$properties": {
         "Technology": "ShadowMap",
-        "Ambient": [0.275, 0.275, 0.275],
+        "EnvironmentDiffuseScale": 1,
+        "EnvironmentSpecularScale": 1,
+        "Ambient": [0.3, 0.3, 0.3],
+        "OutdoorAmbient": [0.3, 0.3, 0.3],
+        "GlobalShadows": true,
+        "ShadowSoftness": 0.2,
         "Brightness": 4.38,
         "ClockTime": 14.5
       },
@@ -143,6 +148,9 @@
     },
     "StarterPlayer": {
       "$className": "StarterPlayer",
+      "$properties": {
+
+      },
       "StarterPlayerScripts": {
         "$className": "StarterPlayerScripts",
         "$ignoreUnknownInstances": true,
@@ -151,8 +159,17 @@
       "$ignoreUnknownInstances": true
     },
     "SoundService": {
+      "$properties": {
+        "RespectFilteringEnabled": true
+      },
       "GlobalMusic": {
         "$path": "Models/GlobalMusic.rbxm"
+      },
+      "SoundEffects": {
+        "$path": "Models/SoundEffects.rbxm"
+      },
+      "PlayingSounds": {
+        "$className": "Folder"
       }
     },
     "TextChatService": {
@@ -160,6 +177,11 @@
         "ChatVersion": "TextChatService"
       },
        "$ignoreUnknownInstances": true
+    },
+    "HttpService": {
+      "$properties": {
+        "HttpEnabled": true
+      }
     }
   }
 }

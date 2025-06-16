@@ -1,7 +1,7 @@
 --!strict
 
 local MapData = {
-	BattleOfHastings = 83987369304152,
+	Greece = 102345497954325,
 	Medieval = 73896682379351,
 	Egypt = 127938395239034,
 	Rome = 70563289460748,

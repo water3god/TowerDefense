@@ -1,1 +1,7 @@
-[entries]
+version = 2
+
+[inputs.assets.0e060d6520247859c8b3c600832eefe5c5461ed22eee20d7ddc5a6d5f22fecfe]
+asset_id = 71896901260038
+
+[inputs.assets.4cab48aa59fb58d348376778f4829e028ecee3bf5f8a04b78dd8de70fae67567]
+asset_id = 123023750916736

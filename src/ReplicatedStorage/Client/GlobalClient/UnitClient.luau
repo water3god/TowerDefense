@@ -820,7 +820,7 @@ function UnitModule.InitPlacement(Unit: string)
 
 	local UnitPosition: Vector3? = nil
 	local RotationIndex: number = 0
-	local IsValid: boolean = false
+	local IsValid: boolean = nil
 
 	local RangePart, Animate, RangeTrove = GetRotatingRange(Range)
 	InitTrove:Add(RangeTrove)

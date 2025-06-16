@@ -2,13 +2,10 @@
 
 -- By Wa1er_God --
 
-local DifficultyInfo = {}
-
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
-local MessagingService = game:GetService("MessagingService")
 local MemoryStoreService = game:GetService("MemoryStoreService")
 
 if require(ReplicatedStorage.Shared.IsLobby) then
@@ -88,7 +85,7 @@ if game["Run Service"]:IsStudio() then
 	local Ids = { 343804839 }
 	Init({
 		PlayerIds = Ids,
-		MapId = "BattleOfHastings",
+		MapId = "Rome",
 		LevelId = "Hastingsv1",
 		Difficulty = "Insane",
 	})

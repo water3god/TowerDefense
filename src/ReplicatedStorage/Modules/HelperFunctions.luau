@@ -5,6 +5,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
+local SoundService = game:GetService("SoundService")
 
 local Packages = ReplicatedStorage.Packages
 local Trove = require(Packages.Trove)
@@ -427,6 +428,21 @@ function Funcs.PlaySound(Sound: Sound, Origin: CFrame)
 
 	PlayedSound.Ended:Once(function()
 		Part:Destroy()
+	end)
+end
+
+function Funcs.PlaySoundGlobal(Sound: Sound)
+	local PlayedSound = Sound:Clone()
+
+	PlayedSound.PlaybackSpeed = PlayedSound.PlaybackSpeed
+		+ Random:NextNumber(-PlayedSound.PlaybackSpeed * 0.05, PlayedSound.PlaybackSpeed * 0.05)
+	PlayedSound.Volume = PlayedSound.Volume + Random:NextNumber(-0.05, PlayedSound.Volume * 0.05)
+
+	PlayedSound.Parent = SoundService.PlayingSounds
+	PlayedSound:Play()
+
+	PlayedSound.Ended:Once(function()
+		PlayedSound:Destroy()
 	end)
 end
 

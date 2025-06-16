@@ -11,6 +11,7 @@ local Settings = {}
 Settings.PreSync = {
 	Music = false,
 	MusicVolume = 1,
+	SFXVolume = 1,
 	AutoRoll = false,
 	CommonSkip = false,
 	RareSkip = false,
@@ -23,6 +24,7 @@ Settings.PreSync = {
 Settings.Default = {
 	Music = true,
 	MusicVolume = 1,
+	SFXVolume = 1,
 	AutoRoll = false,
 	CommonSkip = false,
 	RareSkip = false,
@@ -35,6 +37,7 @@ Settings.Default = {
 Settings.SettingIndexes = {
 	"Music",
 	"MusicVolume",
+	"SFXVolume",
 	"AutoRoll",
 	"CommonSkip",
 	"RareSkip",
@@ -46,6 +49,7 @@ Settings.SettingIndexes = {
 
 Settings.Displays = {
 	MusicVolume = "Music Volume",
+	SFXVolume = "Sound Effect Volume",
 	CommonSkip = "Common Sell",
 	RareSkip = "Rare AutoSell",
 	EpicSkip = "Epic AutoSell",
@@ -56,6 +60,7 @@ Settings.Displays = {
 Settings.SettingTypes = {
 	Music = "boolean",
 	MusicVolume = "number",
+	SFXVolume = "number",
 	AutoRoll = "boolean",
 	CommonSkip = "boolean",
 	RareSkip = "boolean",

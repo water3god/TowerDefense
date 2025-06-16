@@ -12,3 +12,7 @@ output_name = "init"
 typescript = false
 style = "nested"
 strip_extension = true
+
+[inputs.assets]
+path = "assets/**/*"
+output_path = "assets/init"

@@ -8,10 +8,13 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RtMessagingService = game:GetService("RtMessagingService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
+local SoundService = game:GetService("SoundService")
 
 local GlobalWorkspace = workspace.GlobalWorkspace
 local Particles = GlobalWorkspace.Particles
 local Camera = workspace.CurrentCamera
+
+local SummonSound = SoundService.SoundEffects.Sounds.SummonEffect
 
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
@@ -41,7 +44,9 @@ local Client = ReplicatedStorage.Client
 local LobbyClient = Client.LobbyClient
 local RollService = require(LobbyClient.RollService)
 
-local InventoryService = require(Client.GlobalClient.InventoryService)
+local GlobalClient = Client.GlobalClient
+local SFXService = require(GlobalClient.SFXService)
+local InventoryService = require(GlobalClient.InventoryService)
 
 local ModelStorage = ReplicatedStorage.ModelStorage
 local Emitters = ModelStorage.Emitters
@@ -111,6 +116,14 @@ local function CreateUnitFrame(props: UnitProperties)
 			return {} :: any
 		end
 	end, { props.UnitName })
+
+	React.useEffect(function()
+		if Data.Rarity == "Godly" then
+		elseif Data.Rarity == "Mythic" then
+		else
+			SFXService.PlaySoundGlobal(SummonSound)
+		end
+	end, { props.UnitName, Data :: any })
 
 	local RotationCFrame = React.useBinding(CFrame.Angles(math.rad(20), 0, 0))
 

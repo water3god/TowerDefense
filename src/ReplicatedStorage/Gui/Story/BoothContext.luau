@@ -41,7 +41,7 @@ export type BoothData = {
 }
 
 local Default: BoothData = {
-	MapId = "BattleOfHastings",
+	MapId = "Rome",
 	LevelId = "Hastingsv1",
 	Difficulty = "Normal",
 	PlayerCount = 1,
