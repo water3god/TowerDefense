@@ -1,2 +1,4 @@
 std = "roblox"
-incorrect_standard_library_use = false
+
+[lints]
+incorrect_standard_library_use = "allow"

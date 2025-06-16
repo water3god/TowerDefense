@@ -148,9 +148,6 @@
     },
     "StarterPlayer": {
       "$className": "StarterPlayer",
-      "$properties": {
-
-      },
       "StarterPlayerScripts": {
         "$className": "StarterPlayerScripts",
         "$ignoreUnknownInstances": true,

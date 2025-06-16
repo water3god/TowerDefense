@@ -4,6 +4,7 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local ServerStorage = game:GetService("ServerStorage")
 
 local EnemyEvents = ReplicatedStorage.Remotes.Enemy
 local SpawnEvent = EnemyEvents.SpawnEvent
@@ -13,6 +14,8 @@ local LocationEvent = EnemyEvents.LocationEvent
 local DestroyEvent = EnemyEvents.DestroyEvent
 
 local Packages = ReplicatedStorage.Packages
+local Timer = require(ReplicatedStorage.Packages.Timer)
+local Promise = require(Packages.Promise)
 local Signal = require(Packages.Signal)
 local Trove = require(Packages.Trove)
 
@@ -30,11 +33,16 @@ local EnemiesAnimations = AnimationFolder.Enemies
 local Default = EnemiesAnimations.Default
 
 local ModelStorage = ReplicatedStorage.ModelStorage
-local Rig = ModelStorage.Extra.Rig
+local Extra = ModelStorage.Extra
+local Rig = Extra.Rig
+local Arrow = Extra.Arrow
 
 local Emitters = ModelStorage.Emitters
 local DestroyParticle = Emitters.poof
 local OtherDestroyParticle = Emitters.Pops
+
+local GlobalClient = ReplicatedStorage.Client.GlobalClient
+local WaveService = require(GlobalClient.WaveService)
 
 local EnemyFolder = {}
 for _, Enemy in ipairs(ModelStorage.Enemies:GetChildren()) do
@@ -48,6 +56,7 @@ end
 local GlobalWorkspace = workspace.GlobalWorkspace
 local EnemiesFolder = GlobalWorkspace.Enemies
 local ParticlesFolder = GlobalWorkspace.Particles
+local Misc = GlobalWorkspace.Misc
 
 local function WeldParts(Character: typeof(ModelStorage.Extra.Rig), Adornment: Model, SizeRatio: number)
 	for _, Limb in ipairs(Adornment:GetChildren()) do
@@ -103,8 +112,8 @@ local function GetYOffset(Model: Model)
 	return Size.Y / 2 + HeightDifference
 end
 
-local function AddEnemyTag(Rig: typeof(Rig))
-	for _, BasePart in ipairs(Rig:GetDescendants()) do
+local function AddEnemyTag(RigClone: typeof(Rig))
+	for _, BasePart in ipairs(RigClone:GetDescendants()) do
 		if BasePart:IsA("BasePart") then
 			BasePart.CollisionGroup = "PlacedCharacters"
 		end
@@ -195,10 +204,12 @@ local function NewEnemy(Input: Types.EnemyInput, SpectateFire: boolean)
 	end
 
 	self.Destroying:Connect(function(Animate: boolean)
-		local Particle = HelperFunctions.EmitParticle({ DestroyParticle }, self.Root.CFrame, 1, SetColor)
-		local OtherParticle = HelperFunctions.EmitParticle({ OtherDestroyParticle }, self.Root.CFrame, 16, SetColor)
-		Particle.Parent = ParticlesFolder
-		OtherParticle.Parent = ParticlesFolder
+		if Animate then
+			local Particle = HelperFunctions.EmitParticle({ DestroyParticle }, self.Root.CFrame, 1, SetColor)
+			local OtherParticle = HelperFunctions.EmitParticle({ OtherDestroyParticle }, self.Root.CFrame, 16, SetColor)
+			Particle.Parent = ParticlesFolder
+			OtherParticle.Parent = ParticlesFolder
+		end
 	end)
 
 	Enemies[self.UniqueId] = self
@@ -315,7 +326,7 @@ local function CalculateTimePosition(Enemy: Types.EnemyClient)
 end
 
 RunService.PostSimulation:Connect(function()
-	for Id, self in pairs(Enemies) do
+	for _, self in pairs(Enemies) do
 		local TimePosition = CalculateTimePosition(self)
 
 		self.TimePosition = TimePosition
@@ -324,5 +335,83 @@ RunService.PostSimulation:Connect(function()
 		self.Root.CFrame = self.CFrame + Vector3.new(0, self.YOffset, 0)
 	end
 end)
+
+-- Arrow Info --
+export type ArrowData = { StartTime: number, Arrow: typeof(Arrow), Bezier: string }
+
+local Arrows: { ArrowData } = {}
+local VectorOffset = Vector3.new(0, 0.5, 0)
+local ArrowSpeed = 50
+
+local function CalculateArrowTimePosition(ArrowData: ArrowData)
+	local Bezier = Beziers[ArrowData.Bezier]
+
+	if not Bezier then
+		return 0
+	end
+
+	local Difference = workspace:GetServerTimeNow() - ArrowData.StartTime
+	local Length = Bezier.PathLength
+
+	return math.clamp((ArrowSpeed / Length) * Difference, 0, 1)
+end
+
+local StartTrove = Trove.new()
+
+local function OnStart()
+	local ArrowTimer = StartTrove:Construct(Timer, 1)
+
+	ArrowTimer.Tick:Connect(function()
+		for Id, Bezier in pairs(Beziers) do
+			local ArrowClone = Arrow:Clone()
+			table.insert(Arrows, { StartTime = workspace:GetServerTimeNow(), Arrow = ArrowClone, Bezier = Id })
+			ArrowClone.CFrame = Bezier:CalculateUniformCFrame(0)
+			ArrowClone.Parent = Misc
+			StartTrove:Add(ArrowClone)
+		end
+	end)
+
+	StartTrove:Add(function()
+		table.clear(Arrows)
+	end)
+
+	ArrowTimer:Start()
+end
+
+do
+	local Data = WaveService.GetWaveData()
+	if Data and Data.Wave == 0 then
+		OnStart()
+	end
+end
+
+WaveService.Added:Connect(function(Data)
+	if Data.Wave == 0 then
+		OnStart()
+	end
+end)
+
+WaveService.Passed:Connect(StartTrove:WrapClean())
+WaveService.Ended:Connect(StartTrove:WrapClean())
+
+RunService.PostSimulation:Connect(function()
+	for _, ArrowData in ipairs(Arrows) do
+		local Bezier = Beziers[ArrowData.Bezier]
+		local Time = CalculateArrowTimePosition(ArrowData)
+		if Time == 0 or not Bezier then
+			continue
+		end
+		if Time == 1 then
+			ArrowData.Arrow:Destroy()
+			local Index = table.find(Arrows, ArrowData)
+			if Index then
+				table.remove(ArrowData, Index)
+			end
+		end
+		ArrowData.Arrow.CFrame = Bezier:CalculateUniformCFrame(Time) + VectorOffset
+	end
+end)
+
+-- End of Arrow stuff --
 
 return EnemyModule
