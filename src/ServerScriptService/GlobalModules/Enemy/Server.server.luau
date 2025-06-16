@@ -1,6 +1,6 @@
 --!strict
+--!native
 
-local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
@@ -49,10 +49,10 @@ SafePlayerAdded:Connect(function(Player: Player)
 
 	local FullEnemyTable = {}
 
-	for Id, Enemy in pairs(Enemies) do
+	for _, self in pairs(Enemies) do
 		local Table = {}
-		AddInfoToSpawn(Table, Enemy)
-		FullEnemyTable[Enemy.UniqueId] = Table
+		AddInfoToSpawn(Table, self)
+		FullEnemyTable[self.UniqueId] = Table
 	end
 
 	SpawnEvent:FireClient(Player, FullEnemyTable, false)
@@ -63,9 +63,9 @@ Enemy.Spawned:Connect(function(NewEnemy: Enemy.Enemy)
 	AddInfoToSpawn(Data, NewEnemy)
 	HelperFunctions.FireClients(SpawnEvent, NewEnemy.ReplicateTo, { Data }, true)
 
-	local UniqueId = NewEnemy.UniqueId
+	local UniqueId: string = NewEnemy.UniqueId
 
-	NewEnemy.SpeedChanged:Connect(function(Speed: number, Time: number)
+	NewEnemy.SpeedChanged:Connect(function(Speed: number)
 		HelperFunctions.FireClients(SpeedEvent, NewEnemy.ReplicateTo, {
 			UniqueId = NewEnemy.UniqueId,
 			Speed = Speed,
@@ -77,11 +77,11 @@ Enemy.Spawned:Connect(function(NewEnemy: Enemy.Enemy)
 		HelperFunctions.FireClients(HealthEvent, NewEnemy.ReplicateTo, NewEnemy.UniqueId, Health, MaxHealth)
 	end
 
-	NewEnemy.HealthChanged:Connect(function(Health)
+	NewEnemy.HealthChanged:Connect(function(Health: number)
 		HandleHealth(Health, NewEnemy.MaxHealth)
 	end)
 
-	NewEnemy.MaxHealthChanged:Connect(function(MaxHealth)
+	NewEnemy.MaxHealthChanged:Connect(function(MaxHealth: number)
 		HandleHealth(NewEnemy.Health, MaxHealth)
 	end)
 
@@ -98,54 +98,52 @@ Enemy.BezierRemoving:Connect(function(UniqueId: string)
 	LocationEvent:FireAllClients(UniqueId)
 end)
 
-@native
-local function CalculateTimePosition(Enemy: Enemy.Enemy)
-	local NewTime = 0
-	local CurrentTime = workspace:GetServerTimeNow()
+local function CalculateTimePosition(EnemyInput: Enemy.Enemy)
+	local NewTime: number = 0
+	local CurrentTime: number = workspace:GetServerTimeNow()
 
-	for _, Data in ipairs(Enemy.SpeedChanges) do
-		local EndTime = Data.TimeEnd or CurrentTime
-		local Difference = EndTime - Data.TimeStart
+	for _, Data in ipairs(EnemyInput.SpeedChanges) do
+		local EndTime: number = Data.TimeEnd or CurrentTime
+		local Difference: number = EndTime - Data.TimeStart
 
-		NewTime += (Data.Speed / Enemy.PathLength) * Difference
+		NewTime += (Data.Speed / EnemyInput.PathLength) * Difference
 	end
 
 	NewTime = math.clamp(NewTime, 0, 1)
-	if Enemy.Ally then
+	if EnemyInput.Ally then
 		NewTime = math.abs(NewTime - 1)
 	end
 
 	return NewTime
 end
 
-@native
 local function OnFrame()
-	for Id, Enemy in pairs(Enemies) do
-		local TimePosition = CalculateTimePosition(Enemy)
+	for _, self in pairs(Enemies) do
+		local TimePosition: number = CalculateTimePosition(self)
 
-		Enemy.TimePosition = TimePosition
+		self.TimePosition = TimePosition
 
-		Enemy.CFrame = Enemy.Bezier:CalculateUniformCFrame(Enemy.TimePosition) + Enemy.VectorOffset
+		self.CFrame = self.Bezier:CalculateUniformCFrame(self.TimePosition) + self.VectorOffset
 
-		if Enemy.TimePosition == 0 or Enemy.TimePosition == 1 then
-			Enemy.ReachedEnd:Fire()
+		if self.TimePosition == 0 or self.TimePosition == 1 then
+			self.ReachedEnd:Fire()
 		end
 	end
 
 	for _, Ally in pairs(Enemies) do
 		if Ally.Ally then
-			for _, Enemy in pairs(Enemies) do
-				if not Enemy.Ally then
-					if Ally.TimePosition <= Enemy.TimePosition then
-						if Ally.Health == Enemy.Health then
-							Enemy:Destroy(false)
+			for _, self in pairs(Enemies) do
+				if not self.Ally then
+					if Ally.TimePosition <= self.TimePosition then
+						if Ally.Health == self.Health then
+							self:Destroy(false)
 							Ally:Destroy(false)
-						elseif Ally.Health < Enemy.Health then
-							Enemy:Damage(Ally.Health)
+						elseif Ally.Health < self.Health then
+							self:Damage(Ally.Health)
 							Ally:Destroy(false)
-						elseif Ally.Health > Enemy.Health then
-							Ally:Damage(Enemy.Health)
-							Enemy:Destroy(false)
+						elseif Ally.Health > self.Health then
+							Ally:Damage(self.Health)
+							self:Destroy(false)
 						end
 					end
 				end

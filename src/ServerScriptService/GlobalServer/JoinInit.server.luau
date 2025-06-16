@@ -108,8 +108,6 @@ local Success, Value = xpcall(function()
 	return MapStore:GetAsync(tostring(game.PrivateServerId))
 end, OnError)
 
-print(Success, Value)
-
 if Success then
 	if Value then
 		Init(Value)

@@ -1,4 +1,5 @@
 --!strict
+--!native
 
 --10-24-2024
 
@@ -7,7 +8,6 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
-local ServerStorage = game:GetService("ServerStorage")
 local RunService = game:GetService("RunService")
 
 local UnitEvents = ReplicatedStorage.Remotes.Unit
@@ -46,7 +46,6 @@ end
 
 local GlobalModules = ServerScriptService.GlobalModules
 local Enemy = require(GlobalModules.Enemy)
-local SortTypes = Enemy.GetSortTypes()
 
 local Units: { [string]: Unit } = {}
 
@@ -191,9 +190,9 @@ local function ConvertAbilityData(Table: any)
 	return NewTable
 end
 
-local function SendInfo(Units: { [string]: Unit }, Players: { Player }, New: boolean)
+local function SendInfo(UnitInput: { [string]: Unit }, PlayerInput: { Player }, New: boolean)
 	local Data: { [string]: any } = {}
-	for Id, Unit in pairs(Units) do
+	for _, Unit in pairs(UnitInput) do
 		Data[tostring(Unit.UniqueId)] = {
 			UniqueId = Unit.UniqueId,
 			UnitName = Unit.UnitName,
@@ -207,11 +206,11 @@ local function SendInfo(Units: { [string]: Unit }, Players: { Player }, New: boo
 		}
 	end
 
-	HelperFunctions.FireClients(PlacementEvent, Players, Data, New)
+	HelperFunctions.FireClients(PlacementEvent, PlayerInput, Data, New)
 end
 
 local function SyncFuncs(Table: { [number]: any })
-	local HighestLevel = 0
+	local HighestLevel: number = 0
 
 	for Level, _ in ipairs(Table) do
 		if Level > HighestLevel then
@@ -219,7 +218,7 @@ local function SyncFuncs(Table: { [number]: any })
 		end
 	end
 
-	local Closest = 0
+	local Closest: number = 0
 	local NewTable = {}
 
 	for i = 0, HighestLevel, 1 do
@@ -313,7 +312,7 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 		end
 
 		if self.UnitData.UnitData[self.Level].FireRate ~= 0 then
-			local Connection = self._Trove:Connect(RunService.PostSimulation, function(Delta: number)
+			local Connection = self._Trove:Connect(RunService.PostSimulation, function()
 				self:UpdateEnemy()
 			end)
 
@@ -332,9 +331,9 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 end
 
 function Unit:UpdateEnemy()
-	local LevelData = self.UnitData.UnitData[self.Level]
-	local Range = LevelData.Range
-	local FireRate = LevelData.FireRate
+	local LevelData: UnitInfo.UnitData = self.UnitData.UnitData[self.Level]
+	local Range: number = LevelData.Range
+	local FireRate: number = LevelData.FireRate
 
 	local EnemiesInRange = Enemy.GetEnemiesInRange(self.CFrame.Position, Range)
 	local ClosestEnemy = Enemy.GetSortedEnemy(EnemiesInRange, self.AttackPriority)
@@ -362,7 +361,7 @@ function Unit:UpdateEnemy()
 		return
 	end
 
-	local TimeDef = workspace:GetServerTimeNow() - self.LastFired
+	local TimeDef: number = workspace:GetServerTimeNow() - self.LastFired
 
 	if TimeDef >= FireRate * self.SpeedRatio then
 		self:Attack()
@@ -379,7 +378,7 @@ end
 
 function Unit:Attack()
 	local UpgradeData = self.UnitData.UnitData
-	local CurrentTime = workspace:GetServerTimeNow()
+	local CurrentTime: number = workspace:GetServerTimeNow()
 
 	if not self.CurrentEnemy then
 		return
@@ -394,7 +393,7 @@ function Unit:Attack()
 		self.AttackIndex = 1
 	end
 
-	local Damage = LevelData.Damage[self.AttackIndex]
+	local Damage: number = LevelData.Damage[self.AttackIndex]
 
 	self.AttackTrove:Destroy()
 
@@ -476,7 +475,7 @@ function Unit:PlayAnimation(
 	}, true)
 end
 
-function Unit:StopAnimation(AnimationName: string, FadeTime: number?)
+function Unit:StopAnimation(AnimationName: string)
 	HelperFunctions.FireClients(AnimationEvent, self.ReplicateTo, {
 		UniqueId = self.UniqueId,
 		AnimationName = AnimationName,
@@ -509,10 +508,10 @@ function Unit:Stun(Length: number)
 end
 
 function Unit:_CalculateSpeedRatio()
-	local OldRatio = self.SpeedRatio
-	local SpeedRatio = 1
+	local OldRatio: number = self.SpeedRatio
+	local SpeedRatio: number = 1
 
-	for Name, Data in pairs(self.SpeedRatioData) do
+	for _, Data in pairs(self.SpeedRatioData) do
 		SpeedRatio *= Data.SpeedRatio
 	end
 
@@ -538,45 +537,45 @@ function Unit:ChangeSpeedRatio(Name: string, SpeedRatio: number, Duration: numbe
 	)
 end
 
-function Unit:AddPromise(Promise: Promise.Promise, PromiseName: string)
+function Unit:AddPromise(UnitPromise: Promise.Promise, PromiseName: string)
 	self:CancelPromise(PromiseName)
-	self.Promises[PromiseName] = Promise
+	self.Promises[PromiseName] = UnitPromise
 
-	self._Trove:AddPromise(Promise :: any)
+	self._Trove:AddPromise(UnitPromise :: any)
 
-	Promise:finally(function()
+	UnitPromise:finally(function()
 		self.Promises[PromiseName] = nil
 	end)
 end
 
-function Unit:AddAttackPromise(Promise: Promise.Promise, PromiseName: string)
+function Unit:AddAttackPromise(AttackPromise: Promise.Promise, PromiseName: string)
 	self:CancelPromise(PromiseName)
-	self.Promises[PromiseName] = Promise
+	self.Promises[PromiseName] = AttackPromise
 
-	self.AttackTrove:AddPromise(Promise :: any)
+	self.AttackTrove:AddPromise(AttackPromise :: any)
 
-	Promise:finally(function()
+	AttackPromise:finally(function()
 		self.Promises[PromiseName] = nil
 	end)
 end
 
 function Unit:CancelPromise(PromiseName: string)
-	local Promise = self.Promises[PromiseName]
-	if Promise then
-		Promise:cancel()
+	local UnitPromise: Promise.Promise = self.Promises[PromiseName]
+	if UnitPromise then
+		UnitPromise:cancel()
 		self.Promises[PromiseName] = nil
 	end
 end
 
 function Unit:Watch(Time: number, Funcs: { { Func: () -> (), TimeRatio: number } })
 	for _, FuncData in ipairs(Funcs) do
-		local NewTime = (Time * self.SpeedRatio) * FuncData.TimeRatio
+		local NewTime: number = (Time * self.SpeedRatio) * FuncData.TimeRatio
 		self.AttackTrove:Add(task.delay(NewTime, FuncData.Func))
 	end
 end
 
 function Unit:AddSpectator(Player: Player)
-	local Index = table.find(self.ReplicateTo, Player)
+	local Index: number? = table.find(self.ReplicateTo, Player)
 
 	if not Index then
 		table.insert(self.ReplicateTo, Player)
@@ -584,7 +583,7 @@ function Unit:AddSpectator(Player: Player)
 end
 
 function Unit:RemoveSpectator(Player: Player)
-	local Index = table.find(self.ReplicateTo, Player)
+	local Index: number? = table.find(self.ReplicateTo, Player)
 
 	if Index then
 		table.remove(self.ReplicateTo, Index)
@@ -618,15 +617,15 @@ function Unit.GetOwnedUnits(Player: Player, Array: boolean)
 	local Data: { [any]: any } = {}
 
 	if Array then
-		for _, Unit in pairs(Units) do
-			if Unit.Owner == Player then
-				table.insert(Data, Unit)
+		for _, self in pairs(Units) do
+			if self.Owner == Player then
+				table.insert(Data, self)
 			end
 		end
 	else
-		for _, Unit in pairs(Units) do
-			if Unit.Owner == Player then
-				Data[Unit.UniqueId] = Unit
+		for _, self in pairs(Units) do
+			if self.Owner == Player then
+				Data[self.UniqueId] = self
 			end
 		end
 	end
@@ -634,15 +633,15 @@ function Unit.GetOwnedUnits(Player: Player, Array: boolean)
 	return Data
 end
 
-function Unit.SyncUnits(Players: { Player }, Units: { [string]: Unit }, Spawn: boolean)
+function Unit.SyncUnits(PlayerList: { Player }, UnitList: { [string]: Unit }, Spawn: boolean)
 	if Spawn then
-		SendInfo(Units, Players, false)
+		SendInfo(UnitList, PlayerList, false)
 	else
-		local Data = {}
-		for Id, _ in pairs(Units) do
+		local Data: { string } = {}
+		for Id, _ in pairs(UnitList) do
 			table.insert(Data, Id)
 		end
-		HelperFunctions.FireClients(DestroyEvent, Players, Data)
+		HelperFunctions.FireClients(DestroyEvent, PlayerList, Data)
 	end
 end
 
@@ -651,17 +650,17 @@ function Unit.GetUnits()
 end
 
 SafePlayerAdded:Connect(function(Player: Player)
-	local UnitsToReplicate = {}
-	for Id, Unit in pairs(Units) do
-		if Unit.OwnerId == Player.UserId then
-			Unit.Owner = Player
+	local UnitsToReplicate: { [string]: Unit } = {}
+	for _, self in pairs(Units) do
+		if self.OwnerId == Player.UserId then
+			self.Owner = Player
 		end
-		if Unit.IsGlobal then
-			table.insert(Unit.ReplicateTo, Player)
+		if self.IsGlobal then
+			table.insert(self.ReplicateTo, Player)
 		end
 
-		if table.find(Unit.ReplicateTo, Player) then
-			UnitsToReplicate[Unit.UniqueId] = Unit
+		if table.find(self.ReplicateTo, Player) then
+			UnitsToReplicate[self.UniqueId] = self
 		end
 	end
 
@@ -671,11 +670,11 @@ SafePlayerAdded:Connect(function(Player: Player)
 end, true)
 
 SafePlayerRemoving:Connect(function(Player: Player)
-	for Id, Unit in pairs(Units) do
-		local Index = table.find(Unit.ReplicateTo, Player)
+	for _, self in pairs(Units) do
+		local Index: number? = table.find(self.ReplicateTo, Player)
 
 		if Index then
-			table.remove(Unit.ReplicateTo, Index)
+			table.remove(self.ReplicateTo, Index)
 		end
 	end
 end)

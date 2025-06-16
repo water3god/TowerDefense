@@ -155,7 +155,7 @@ local LevelData = LevelRequirements
 local function GetMaxUnits(Level: number)
 	local UnitsAvailable = 0
 
-	for Frame, LevelReq in ipairs(LevelData.EquippedFrames) do
+	for _, LevelReq in ipairs(LevelData.EquippedFrames) do
 		if Level >= LevelReq then
 			UnitsAvailable += 1
 		end
@@ -166,7 +166,7 @@ end
 
 local function Reconcile(Data: { [any]: any }, Type: string)
 	if Type == "Units" then
-		for Id, UnitData in pairs(Data) do
+		for _, UnitData in pairs(Data) do
 			if not UnitData.UniqueId then
 				UnitData.UniqueId = GenerateId.GenerateId()
 			end
@@ -354,7 +354,6 @@ function PlayerData:UnequipUnit(Id: string)
 		if UniqueId == Id then
 			self.UnitUnequipped:Fire(Id, Index)
 			Data.EquippedUnits[Index] = nil
-			print(self.Profile.Data.EquippedUnits)
 			return
 		end
 	end
@@ -362,7 +361,7 @@ end
 
 function PlayerData:AddUnit(UnitName: string, ExtraData: {}?)
 	local Data = self.Profile.Data
-	local Length = Len(Data.Units)
+	local Length: number = Len(Data.Units)
 
 	local Id = GenerateId.GenerateId()
 
@@ -679,10 +678,10 @@ function PlayerData:GetSettingChangedSignal(Setting: string)
 	if self.SettingSignals[Setting] then
 		return self.SettingSignals[Setting]
 	else
-		local Signal = self._Trove:Add(Signal.new(), "DisconnectAll")
+		local SettingSignal = self._Trove:Construct(Signal)
 
-		self.SettingSignals[Setting] = Signal
-		return Signal
+		self.SettingSignals[Setting] = SettingSignal
+		return SettingSignal
 	end
 end
 

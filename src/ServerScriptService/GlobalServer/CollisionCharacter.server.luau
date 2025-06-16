@@ -10,6 +10,12 @@ local function AddCollision(Character: Model)
 			Descendant.CollisionGroup = "Character"
 		end
 	end
+
+	Character.DescendantAdded:Connect(function(Descendant: Instance)
+		if Descendant:IsA("BasePart") then
+			Descendant.CollisionGroup = "Character"
+		end
+	end)
 end
 
 SafePlayerAdded:Connect(function(Player: Player)

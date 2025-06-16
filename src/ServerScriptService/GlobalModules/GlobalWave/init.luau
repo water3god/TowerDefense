@@ -2,8 +2,8 @@
 
 -- By Wa1er_God --
 
-local StartTime = 30
-local WaveTweenTime = 6
+local StartTime: number = 30
+local WaveTweenTime: number = 6
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
@@ -196,9 +196,9 @@ function GlobalWave.new(Input: Input)
 		end
 	end)
 
-	self.EnemyAdded:Connect(function(Enemy: Enemy.Enemy)
-		Enemy.ReachedEnd:Once(function()
-			local Health = Enemy.Health
+	self.EnemyAdded:Connect(function(EnemyInput: Enemy.Enemy)
+		EnemyInput.ReachedEnd:Once(function()
+			local Health = EnemyInput.Health
 			self:Damage(Health)
 		end)
 	end)
@@ -209,8 +209,8 @@ function GlobalWave.new(Input: Input)
 		end
 	end)
 
-	self.EnemyDestroying:Connect(function(Enemy)
-		self:AddCoins(Enemy.MaxHealth / 5)
+	self.EnemyDestroying:Connect(function(EnemyInput: Enemy.Enemy)
+		self:AddCoins(EnemyInput.MaxHealth / 5)
 	end)
 
 	CurrentWave = self
@@ -219,13 +219,13 @@ function GlobalWave.new(Input: Input)
 end
 
 function GlobalWave.infinite(InfInput: InfiniteInput)
-	local Data: WaveData.WaveData = {
+	local InfData: WaveData.WaveData = {
 		Data = {},
 		EnemyData = InfInput.Data.EnemyData,
 	}
 
 	local Input: Input = {
-		Data = Data,
+		Data = InfData,
 		RewardInfo = InfInput.RewardInfo,
 		XPMultiplier = InfInput.XPMultiplier,
 		Positions = InfInput.Positions,
@@ -237,17 +237,17 @@ function GlobalWave.infinite(InfInput: InfiniteInput)
 	local OrderPriority = {}
 	local InfEnemyData = InfInput.Data.Data
 
-	for Enemy, Info in pairs(InfEnemyData) do
-		OrderPriority[Info.OrderPriority] = Enemy
+	for EnemyKey, Info in pairs(InfEnemyData) do
+		OrderPriority[Info.OrderPriority] = EnemyKey
 	end
 
-	local Wave = GlobalWave.new(Input)
+	local Wave: GlobalWave = GlobalWave.new(Input)
 
 	local function AddInfoToWave(WaveNum: number)
 		WaveNum += 1
 
 		local EnemiesData = {}
-		local Time = 1
+		local Time: number = 1
 
 		for _, EnemyName in ipairs(OrderPriority) do
 			local Info = InfEnemyData[EnemyName]
@@ -261,14 +261,14 @@ function GlobalWave.infinite(InfInput: InfiniteInput)
 
 			EnemiesData[EnemyName] = {}
 
-			for i = 1, Info.SpawnCount or 1, 1 do
+			for _ = 1, Info.SpawnCount or 1, 1 do
 				table.insert(EnemiesData[EnemyName], Time)
 				Time += 1
 			end
 			Time += 2
 		end
 
-		Data.Data[WaveNum] = { Enemies = EnemiesData, Length = Time, CoinBonus = 200 + 50 * WaveNum }
+		InfData.Data[WaveNum] = { Enemies = EnemiesData, Length = Time, CoinBonus = 200 + 50 * WaveNum }
 	end
 
 	AddInfoToWave(Wave.Wave)
@@ -290,31 +290,31 @@ function GlobalWave:NextWave()
 	self.Trove:Add(task.delay(WaveTweenTime, function()
 		self.Wave += 1
 		self.Passed:Fire(self.Wave)
-		local WaveData = self.Data.Data[self.Wave]
+		local ThisWaveData = self.Data.Data[self.Wave]
 
-		self:_SetTime(WaveData.Length)
+		self:_SetTime(ThisWaveData.Length)
 
-		self.WaveTrove:Add(task.delay(WaveData.Length, function()
+		self.WaveTrove:Add(task.delay(ThisWaveData.Length, function()
 			self:NextWave()
 		end))
 
-		local ThreadCount = 0
-		local EnemyCount = 0
-		local LongestTime = 0
+		local ThreadCount: number = 0
+		local EnemyCount: number = 0
+		local LongestTime: number = 0
 
 		local Destroying = self.WaveTrove:Construct(Signal)
 
-		self.WaveTrove:Connect(Destroying, function(Enemy: Enemy.Enemy)
+		self.WaveTrove:Connect(Destroying, function(_: Enemy.Enemy)
 			EnemyCount -= 1
 			if ThreadCount <= 0 and EnemyCount <= 0 then
 				self:NextWave()
 			end
 		end)
 
-		for EnemyName, Times in pairs(WaveData.Enemies) do
-			local EnemyData = HelperFunctions.DeepClone(EnemyData[EnemyName])
+		for EnemyName, Times in pairs(ThisWaveData.Enemies) do
+			local EnemyDataClone = HelperFunctions.DeepClone(EnemyData[EnemyName])
 
-			EnemyData.Health *= self.DifficultyData.HealthRatio
+			EnemyDataClone.Health *= self.DifficultyData.HealthRatio
 
 			for _, Time in ipairs(Times) do
 				ThreadCount += 1
@@ -325,22 +325,22 @@ function GlobalWave:NextWave()
 				self.WaveTrove:Add(task.delay(Time, function()
 					ThreadCount -= 1
 
-					local Enemy = Enemy.new({ EnemyInfo = EnemyData, BezierId = self.BezierId })
+					local NewEnemy = Enemy.new({ EnemyInfo = EnemyDataClone, BezierId = self.BezierId })
 
-					Enemy.HealthChanged:Connect(function(Health: number)
-						if Health == 0 and Enemy.Trove then
-							Enemy:Destroy(true)
+					NewEnemy.HealthChanged:Connect(function(Health: number)
+						if Health == 0 and NewEnemy.Trove then
+							NewEnemy:Destroy(true)
 						end
 					end)
 
-					Enemy.Trove:Connect(self.Ended, function()
-						Enemy:Destroy(false)
+					NewEnemy.Trove:Connect(self.Ended, function()
+						NewEnemy:Destroy(false)
 					end)
 
-					self.EnemyAdded:Fire(Enemy)
-					Enemy.Destroying:Once(function()
-						self.EnemyDestroying:Fire(Enemy)
-						Destroying:Fire(Enemy)
+					self.EnemyAdded:Fire(NewEnemy)
+					NewEnemy.Destroying:Once(function()
+						self.EnemyDestroying:Fire(NewEnemy)
+						Destroying:Fire(NewEnemy)
 					end)
 				end))
 			end

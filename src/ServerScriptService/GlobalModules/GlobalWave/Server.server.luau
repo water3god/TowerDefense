@@ -19,9 +19,6 @@ local Added = WaveEvents.Added
 local Core = Remotes.Core
 local SendWarning = Core.Warning.SendWarning
 
-local Shared = ReplicatedStorage.Shared
-local GameInfo = require(Shared.GameInfo)
-
 local GlobalModules = ServerScriptService.GlobalModules
 local PlayerData = require(GlobalModules.PlayerData)
 
@@ -93,46 +90,46 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 		end
 
 		for _, Player in ipairs(Players:GetPlayers()) do
-			local PlayerData = PlayerData.GetPlayerData(Player)
+			local PlayerDataModule = PlayerData.GetPlayerData(Player)
 			local SendData = { Units = {}, Resources = {}, ExistingUnits = {} }
 			local OtherSendData = {}
 
-			if PlayerData then
+			if PlayerDataModule then
 				for _, Unit in ipairs(Wave.RewardInfo.Units) do
-					local Data = PlayerData.Profile.Data
+					local Data = PlayerDataModule.Profile.Data
 
 					if HelperFunctions.Len(Data.Units) < Data.MaxUnitCount then
-						PlayerData:AddUnit(Unit)
+						PlayerDataModule:AddUnit(Unit)
 						table.insert(SendData, Unit)
 					end
 				end
 
 				for _, Resource in ipairs(Wave.RewardInfo.Resources) do
 					if Resource.Resource == "Gold" then
-						PlayerData:AddGold(Resource.Count)
+						PlayerDataModule:AddGold(Resource.Count)
 					else
-						PlayerData:AddResource(Resource.Resource, Resource.Count)
+						PlayerDataModule:AddResource(Resource.Resource, Resource.Count)
 					end
 					table.insert(SendData.Resources, Resource)
 				end
 
-				for _, EquippedUnit in ipairs(PlayerData:GetEquippedUnits()) do
-					local OldData = PlayerData:GetUnitFromId(EquippedUnit) :: any
+				for _, EquippedUnit in ipairs(PlayerDataModule:GetEquippedUnits()) do
+					local OldData = PlayerDataModule:GetUnitFromId(EquippedUnit) :: any
 
 					local Data = { Name = OldData.Unit, OldLevel = OldData.Level, OldXP = OldData.XP }
-					PlayerData:AddUnitXP(EquippedUnit, TotalXP)
+					PlayerDataModule:AddUnitXP(EquippedUnit, TotalXP)
 					Data.NewLevel = OldData.Level
 					Data.NewXP = OldData.XP
 					table.insert(SendData.ExistingUnits, Data)
 				end
 
-				OtherSendData.OldXP = PlayerData.Profile.Data.XP
-				OtherSendData.OldLevel = PlayerData.Profile.Data.Level
+				OtherSendData.OldXP = PlayerDataModule.Profile.Data.XP
+				OtherSendData.OldLevel = PlayerDataModule.Profile.Data.Level
 
-				PlayerData:AddXP(TotalXP / 9)
+				PlayerDataModule:AddXP(TotalXP / 9)
 
-				OtherSendData.NewXP = PlayerData.Profile.Data.XP
-				OtherSendData.NewLevel = PlayerData.Profile.Data.Level
+				OtherSendData.NewXP = PlayerDataModule.Profile.Data.XP
+				OtherSendData.NewLevel = PlayerDataModule.Profile.Data.Level
 
 				WaveEnded:FireClient(Player, Win, SendData, OtherSendData)
 			end
@@ -148,11 +145,11 @@ end
 GlobalWave.Added:Connect(OnAdded)
 
 local function OnPlayerAdded(Player: Player)
-	local Wave = GlobalWave.GetWave()
+	local NewWave = GlobalWave.GetWave()
 
-	if Wave then
-		local SerializedWave = SerializeWave(Wave)
-		Added:FireAllClients(SerializedWave)
+	if NewWave then
+		local SerializedWave = SerializeWave(NewWave)
+		Added:FireClient(Player, SerializedWave)
 	end
 end
 

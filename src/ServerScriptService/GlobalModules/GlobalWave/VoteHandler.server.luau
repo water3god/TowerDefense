@@ -92,25 +92,27 @@ local function FireClientInfo(Info: { Time: number, StartTime: number })
 	end)
 end
 
-local function OnAdded(GlobalWave: GlobalWave.GlobalWave)
-	FireClientInfo({ StartTime = workspace:GetServerTimeNow(), Time = GlobalWave.Time })
+local function OnAdded(Wave: GlobalWave.GlobalWave)
+	FireClientInfo({ StartTime = workspace:GetServerTimeNow(), Time = Wave.Time })
 
-	GlobalWave.OnSkipPrompt:Connect(function()
-		local TimeLeft = math.floor((GlobalWave.StartTime + GlobalWave.Time) - workspace:GetServerTimeNow())
+	Wave.OnSkipPrompt:Connect(function()
+		local TimeLeft = math.floor((Wave.StartTime + Wave.Time) - workspace:GetServerTimeNow())
 
 		if TimeLeft > 5 then
 			FireClientInfo({ StartTime = workspace:GetServerTimeNow(), Time = TimeLeft })
 		end
 	end)
 
-	GlobalWave.Passed:Connect(function()
+	Wave.Passed:Connect(function()
 		VoteTrove:Destroy()
 	end)
 end
 
-local Wave = GlobalWave.GetWave()
-if Wave then
-	OnAdded(Wave)
+do
+	local Wave = GlobalWave.GetWave()
+	if Wave then
+		OnAdded(Wave)
+	end
 end
 
 GlobalWave.Added:Connect(OnAdded)

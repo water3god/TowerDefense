@@ -19,7 +19,6 @@ local Len = HelperFunctions.Len
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
-local BaseFrame = require(Gui.CoreGame.BaseFrame)
 local Title = require(CoreGame.Title)
 local CloseButton = require(CoreGame.CloseButton)
 local UIStroke = require(CoreGame.UIStroke)
@@ -115,8 +114,7 @@ local function CreateMainStory(Properties: Properties)
 			})
 		end
 
-		for Index, Reward in ipairs(Data.Resources) do
-			local RewardData = GameInfo.RewardInfo[Reward.Resource]
+		for _, Reward in ipairs(Data.Resources) do
 			FrameTable["Reward" .. Reward.Resource] = e(ResourceFrame, {
 				Name = Reward.Resource,
 				Value = Reward.Count,
@@ -130,14 +128,14 @@ local function CreateMainStory(Properties: Properties)
 
 	local MapData = React.useMemo(function()
 		local Data = {}
-		for Index, MapData in ipairs(GameInfo.GameInfo) do
-			Data[MapData.MapId] = e(Main.Animateables.TextButton, {
+		for Index, MapInfo in ipairs(GameInfo.GameInfo) do
+			Data[MapInfo.MapId] = e(Main.Animateables.TextButton, {
 				native = {
 					Text = "",
 					Size = UDim2.fromScale(0.9, 0.25),
-					ZIndex = Index,
+					LayoutOrder = Index,
 					[React.Event.MouseButton1Click] = function()
-						MapClicked(MapData.MapId)
+						MapClicked(MapInfo.MapId)
 					end,
 				},
 				children = {
@@ -148,7 +146,7 @@ local function CreateMainStory(Properties: Properties)
 						children = {
 							MapImage = e(Main.ImageLabel, {
 								native = {
-									Image = MapData.Image,
+									Image = MapInfo.Image,
 									ScaleType = Enum.ScaleType.Crop,
 								},
 								children = {
@@ -179,18 +177,18 @@ local function CreateMainStory(Properties: Properties)
 								native = {
 									Position = UDim2.fromScale(0.5, 0),
 									Size = UDim2.fromScale(0.9, 0.4),
-									Text = MapData.Name,
+									Text = MapInfo.Name,
 								},
 							}),
 							MapsCleared = e(Main.TextLabel, {
 								native = {
 									Position = UDim2.fromScale(0.5, 1),
 									Size = UDim2.fromScale(0.9, 0.4),
-									Text = StoryData.CompletedMaps[MapData.MapId] and string.format(
+									Text = StoryData.CompletedMaps[MapInfo.MapId] and string.format(
 										"%u/%u",
-										Len(StoryData.CompletedMaps[MapData.MapId]),
-										#MapData.LevelInfo
-									) or string.format("0/%u", #MapData.LevelInfo),
+										Len(StoryData.CompletedMaps[MapInfo.MapId]),
+										#MapInfo.LevelInfo
+									) or string.format("0/%u", #MapInfo.LevelInfo),
 								},
 							}),
 						},
@@ -252,20 +250,20 @@ local function CreateMainStory(Properties: Properties)
 	end, { CurrentMap :: any })
 
 	local FirstValue = React.useMemo(function()
-		local MapData = StoryData.CompletedMaps[CurrentMap]
+		local MapInfo = StoryData.CompletedMaps[CurrentMap]
 
-		if MapData and MapData[Stage] and MapData[Stage][Difficulty] and MapData[Stage][Difficulty].FinishedCount then
-			return tostring(MapData[Stage][Difficulty].FinishedCount)
+		if MapInfo and MapInfo[Stage] and MapInfo[Stage][Difficulty] and MapInfo[Stage][Difficulty].FinishedCount then
+			return tostring(MapInfo[Stage][Difficulty].FinishedCount)
 		else
 			return "N/A"
 		end
 	end, { CurrentMap :: any, Stage :: any, Difficulty :: any, StoryData :: any })
 
 	local SecondValue = React.useMemo(function()
-		local MapData = StoryData.CompletedMaps[CurrentMap]
+		local MapInfo = StoryData.CompletedMaps[CurrentMap]
 
-		if MapData and MapData[Stage] and MapData[Stage][Difficulty] and MapData[Stage][Difficulty].FastestTime then
-			return tostring(MapData[Stage][Difficulty].FastestTime)
+		if MapInfo and MapInfo[Stage] and MapInfo[Stage][Difficulty] and MapInfo[Stage][Difficulty].FastestTime then
+			return tostring(MapInfo[Stage][Difficulty].FastestTime)
 		else
 			return "N/A"
 		end
@@ -322,8 +320,8 @@ local function CreateMainStory(Properties: Properties)
 			TimeLabel = e(Main.TextLabel, {
 				native = {
 					Size = UDim2.fromScale(0.8, 0.8),
-					Text = Time:map(function(Time: number)
-						return string.format("Time Left: %u", math.floor(Time))
+					Text = Time:map(function(TimeLeft: number)
+						return string.format("Time Left: %u", math.floor(TimeLeft))
 					end),
 					ZIndex = 3,
 				},

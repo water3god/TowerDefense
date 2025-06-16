@@ -1,11 +1,9 @@
----!strict
+--!strict
+--!native
 
 -- By Wa1er_God --
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local ServerScriptService = game:GetService("ServerScriptService")
-local ServerStorage = game:GetService("ServerStorage")
-local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 
 local Packages = ReplicatedStorage.Packages
@@ -15,12 +13,11 @@ local Signal = require(Packages.Signal)
 local Modules = ReplicatedStorage.Modules
 local BezierPath = require(Modules.BezierPath)
 local GenerateId = require(Modules.GenerateId)
-local HelperFunctions = require(Modules.HelperFunctions)
 
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
 
-local Random = Random.new()
+local Random: Random = Random.new()
 
 export type EnemyInfo = {
 	ModelName: string,
@@ -42,6 +39,8 @@ export type EnemyInput = {
 type EnemyData = {
 	UniqueId: string,
 	Trove: Trove.Trove,
+
+	Players: { Player }?,
 
 	CFrame: CFrame,
 	TimePosition: number,
@@ -77,6 +76,9 @@ type EnemyData = {
 	MaxHealthChanged: Signal.Signal<number>,
 	SpeedChanged: Signal.Signal<number, number>,
 	ReachedEnd: Signal.Signal<>,
+
+	SpectatorAdded: Signal.Signal<>,
+	SpectatorRemoving: Signal.Signal<>,
 
 	Destroying: Signal.Signal<boolean>,
 }
@@ -162,7 +164,7 @@ function Enemy.new(Input: EnemyInput)
 	self.PlayFunc = Input.EnemyInfo.PlayFunc
 	self.DestroyFunc = Input.EnemyInfo.DestroyFunc
 
-	if self.Reverse then
+	if self.Ally then
 		self.TimePosition = 1
 	else
 		self.TimePosition = 0
@@ -171,7 +173,7 @@ function Enemy.new(Input: EnemyInput)
 	self.SpeedChanges = { { TimeStart = workspace:GetServerTimeNow(), Speed = self.Speed } }
 	self.OriginalSpeed = self.Speed
 	self.VectorOffset = Vector3.zero
-	--self.VectorOffset = Vector3.new(Random:NextNumber(-0.5, 0.5), 0, Random:NextNumber(-0.5, 0.5))
+	self.VectorOffset = Vector3.new(Random:NextNumber(-0.1, 0.1), 0, Random:NextNumber(-0.1, 0.1))
 
 	self.Bezier = Beziers[Input.BezierId]
 	self.BezierId = Input.BezierId
@@ -183,7 +185,7 @@ function Enemy.new(Input: EnemyInput)
 	self.PathLength = self.Bezier:GetPathLength()
 	self.CFrame = self.Bezier:CalculateUniformCFrame(self.TimePosition)
 
-	local OldHP = self.Health
+	local OldHP: number = self.Health
 
 	self.HealthChanged:Connect(function(Health: number)
 		if OldHP > Health then
@@ -201,7 +203,7 @@ function Enemy.new(Input: EnemyInput)
 	end)
 
 	self.ReachedEnd:Once(function()
-		if self.Delete then
+		if self.Destroy then
 			self:Destroy(false)
 		end
 	end)
@@ -243,7 +245,7 @@ end
 
 function Enemy:AdjustSpeed(Speed: number)
 	self.Speed = Speed
-	local Time = workspace:GetServerTimeNow()
+	local Time: number = workspace:GetServerTimeNow()
 	self.SpeedChanges[#self.SpeedChanges].TimeEnd = Time
 	table.insert(self.SpeedChanges, { TimeStart = Time, Speed = Speed })
 
@@ -298,7 +300,7 @@ function Enemy.GetBeziers()
 end
 
 function Enemy.GetSortTypes()
-	return UnitInfo.SortTypes
+	return UnitInfo.SortTypes :: any
 end
 
 function Enemy.GetSortedEnemy(EnemiesInput: { Enemy }, SortType: UnitInfo.SortType | string)
@@ -311,34 +313,34 @@ function Enemy.GetSortedEnemy(EnemiesInput: { Enemy }, SortType: UnitInfo.SortTy
 
 	if SortType == "First" then
 		ClosestValue = 0
-		for _, Enemy in ipairs(EnemiesInput) do
-			if ClosestValue < Enemy.TimePosition then
-				ClosestEnemy = Enemy
-				ClosestValue = Enemy.TimePosition
+		for _, self in ipairs(EnemiesInput) do
+			if ClosestValue < self.TimePosition then
+				ClosestEnemy = self
+				ClosestValue = self.TimePosition
 			end
 		end
 	elseif SortType == "Last" then
 		ClosestValue = 1
-		for _, Enemy in ipairs(EnemiesInput) do
-			if ClosestValue > Enemy.TimePosition then
-				ClosestEnemy = Enemy
-				ClosestValue = Enemy.TimePosition
+		for _, self in ipairs(EnemiesInput) do
+			if ClosestValue > self.TimePosition then
+				ClosestEnemy = self
+				ClosestValue = self.TimePosition
 			end
 		end
 	elseif SortType == "Strongest" then
 		ClosestValue = 0
-		for _, Enemy in ipairs(EnemiesInput) do
-			if ClosestValue < Enemy.Health then
-				ClosestEnemy = Enemy
-				ClosestValue = Enemy.Health
+		for _, self in ipairs(EnemiesInput) do
+			if ClosestValue < self.Health then
+				ClosestEnemy = self
+				ClosestValue = self.Health
 			end
 		end
 	elseif SortType == "Weakest" then
 		ClosestValue = math.huge
-		for _, Enemy in ipairs(EnemiesInput) do
-			if ClosestValue > Enemy.Health then
-				ClosestEnemy = Enemy
-				ClosestValue = Enemy.Health
+		for _, self in ipairs(EnemiesInput) do
+			if ClosestValue > self.Health then
+				ClosestEnemy = self
+				ClosestValue = self.Health
 			end
 		end
 	end
@@ -347,12 +349,12 @@ function Enemy.GetSortedEnemy(EnemiesInput: { Enemy }, SortType: UnitInfo.SortTy
 end
 
 function Enemy.GetEnemiesInRange(Position: Vector3, Range: number)
-	local StandardizedPos = Vector2.new(Position.X, Position.Z)
+	local StandardizedPos: Vector2 = Vector2.new(Position.X, Position.Z)
 	local EnemiesTable = {}
 
-	for _, Enemy in pairs(Enemies) do
-		if Enemy:IsInRange(StandardizedPos, Range) then
-			table.insert(EnemiesTable, Enemy)
+	for _, self in pairs(Enemies) do
+		if self:IsInRange(StandardizedPos, Range) then
+			table.insert(EnemiesTable, self)
 		end
 	end
 
