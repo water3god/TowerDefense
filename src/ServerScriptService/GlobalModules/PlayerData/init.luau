@@ -624,6 +624,13 @@ function PlayerData:OwnsStage(ParamData: GetStageData)
 		if ParamData.Stage == 1 or CompletedMaps[ParamData.Map][ParamData.Stage] then
 			return true
 		end
+	else
+		local MapData = GameInfo.GetMapFromId(ParamData.Map)
+		if MapData then
+			if MapData.Prerequisite == nil and ParamData.Stage == 1 then
+				return true
+			end
+		end
 	end
 
 	return false
