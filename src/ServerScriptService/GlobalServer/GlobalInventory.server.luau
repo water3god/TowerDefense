@@ -4,7 +4,6 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
-local ServerStorage = game:GetService("ServerStorage")
 
 local GlobalModules = ServerScriptService.GlobalModules
 local PlayerData = require(GlobalModules.PlayerData)
@@ -18,7 +17,9 @@ local ItemChanged = InventoryEvents.ItemChanged
 local InventorySync = InventoryEvents.InventorySync
 local UnitEquipped = InventoryEvents.UnitEquipped
 
-local UnitData = require(ServerStorage.Data.UnitData)
+local LevelEvents = Remotes.Level
+local LevelChangedEvent = LevelEvents.LevelChanged
+local XPChangedEvent = LevelEvents.XPChanged
 
 local function OnDataAdded(Data: PlayerData.PlayerData)
 	local Player = Data.Player
@@ -56,18 +57,26 @@ local function OnDataAdded(Data: PlayerData.PlayerData)
 		ItemChanged:FireClient(Player, "Units", Unit.UniqueId, nil)
 	end)
 
-	Data.ProductChanged:Connect(function(Type, Data)
+	Data.ProductChanged:Connect(function(Type, ProductData)
 		local IsNil = Type == "Removed"
-		ItemChanged:FireClient(Player, "Products", Data.UniqueId, not IsNil and Data)
+		ItemChanged:FireClient(Player, "Products", ProductData.UniqueId, not IsNil and ProductData)
 	end)
 
-	Data.ResourceChanged:Connect(function(Type, Data)
+	Data.ResourceChanged:Connect(function(Type, ResourceData)
 		local IsNil = Type == "Removed"
-		ItemChanged:FireClient(Player, "Resources", Data.UniqueId, not IsNil and Data)
+		ItemChanged:FireClient(Player, "Resources", ResourceData.UniqueId, not IsNil and ResourceData)
+	end)
+
+	Data.LeveledUp:Connect(function(Level: number)
+		LevelChangedEvent:FireClient(Player, Level)
+	end)
+
+	Data.XPChanged:Connect(function(XP: number)
+		XPChangedEvent:FireClient(Player, XP)
 	end)
 end
 
-for Id, Data in pairs(PlayerData.GetDatas()) do
+for _, Data in pairs(PlayerData.GetDatas()) do
 	OnDataAdded(Data)
 end
 

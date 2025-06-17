@@ -48,32 +48,32 @@ local GameInfo = require(Shared.GameInfo)
 local Types = require(Shared.Types)
 local Constants = require(Shared.Constants)
 
-local Data = ServerStorage.Data
-local MapData = require(Data.MapData)
+local ServerData = ServerStorage.Data
+local MapData = require(ServerData.MapData)
 
 local LobbyModules = ServerScriptService.LobbyModules
 local Booth = require(LobbyModules.Booth)
 
-local BoothsInstance = workspace.MainMap.Medieval.Booths
+local _BoothsInstance = workspace.MainMap.Medieval.Booths
 
 local MapStore = MemoryStoreService:GetHashMap(Constants.INFORMATIONHASHMAP)
 
-local function AddTimeData(Table: any, Booth: Booth.Booth)
-	Table.StartTime = Booth.StartTime
-	Table.EndTime = Booth.StartTime + Booth.TimeLeft
+local function AddTimeData(Table: any, BoothData: Booth.Booth)
+	Table.StartTime = BoothData.StartTime
+	Table.EndTime = BoothData.StartTime + BoothData.TimeLeft
 end
 
-local function SendWaitingData(Players: { Player }, Booth: Booth.Booth)
-	if Booth.Data then
-		local Data = {
-			OwnerId = Booth.Players[1].UserId,
-			MapId = Booth.Data.MapId,
-			LevelId = Booth.Data.LevelId,
-			Difficulty = Booth.Data.Difficulty,
+local function SendWaitingData(Players: { Player }, BoothInfo: Booth.Booth)
+	if BoothInfo.Data then
+		local BoothData = {
+			OwnerId = BoothInfo.Players[1].UserId,
+			MapId = BoothInfo.Data.MapId,
+			LevelId = BoothInfo.Data.LevelId,
+			Difficulty = BoothInfo.Data.Difficulty,
 			Players = Players,
 		}
-		AddTimeData(Data, Booth)
-		HelperFunctions.FireClients(BoothWaiting, Players, Data)
+		AddTimeData(BoothData, BoothInfo)
+		HelperFunctions.FireClients(BoothWaiting, Players, BoothData)
 	end
 end
 
@@ -121,8 +121,8 @@ local function TpToMap(Data: Types.SentData)
 	end)
 end
 
-local function InitLoadingBooth(Model: typeof(BoothsInstance.Booth1))
-	local Booth = Booth.new({
+local function InitLoadingBooth(Model: typeof(_BoothsInstance.Booth1))
+	local NewBooth = Booth.new({
 		Folder = Model,
 		TouchPart = Model.TouchPart,
 		TPInPart = Model.TPInPart,
@@ -133,41 +133,41 @@ local function InitLoadingBooth(Model: typeof(BoothsInstance.Booth1))
 
 	local Root = ReactRoblox.createRoot(GUI)
 	Root:render(e(BoothContext.Provider, {
-		BoothId = Booth.UniqueId,
+		BoothId = NewBooth.UniqueId,
 	}, {
 		BoothFrame = e(BoothFrame, {}),
 	}))
 
-	Booth.PlayerAdded:Connect(function(Player: Player)
-		HelperFunctions.FireClients(PlayerChanged, Booth.Players, Player.UserId, true)
-		if Booth.Status == "LoadingPlayers" then
-			SendWaitingData({ Player }, Booth)
+	NewBooth.PlayerAdded:Connect(function(Player: Player)
+		HelperFunctions.FireClients(PlayerChanged, NewBooth.Players, Player.UserId, true)
+		if NewBooth.Status == "LoadingPlayers" then
+			SendWaitingData({ Player }, NewBooth)
 		end
 	end)
 
-	Booth.PlayerRemoving:Connect(function(Player: Player)
-		HelperFunctions.FireClients(PlayerChanged, Booth.Players, Player.UserId, false)
+	NewBooth.PlayerRemoving:Connect(function(Player: Player)
+		HelperFunctions.FireClients(PlayerChanged, NewBooth.Players, Player.UserId, false)
 	end)
 
-	Booth.StartedChoosing:Connect(function(Player: Player)
+	NewBooth.StartedChoosing:Connect(function(Player: Player)
 		local Data = {}
-		AddTimeData(Data, Booth)
+		AddTimeData(Data, NewBooth)
 		BoothChoosing:FireClient(Player, Data)
 	end)
 
-	Booth.StartedWaiting:Connect(function()
-		SendWaitingData(Booth.Players, Booth)
+	NewBooth.StartedWaiting:Connect(function()
+		SendWaitingData(NewBooth.Players, NewBooth)
 	end)
 
-	Booth.MapLoading:Connect(function()
-		HelperFunctions.FireClients(BoothMapLoading, Booth.Players)
-		if Booth.Data then
-			TpToMap(Booth.Data)
+	NewBooth.MapLoading:Connect(function()
+		HelperFunctions.FireClients(BoothMapLoading, NewBooth.Players)
+		if NewBooth.Data then
+			TpToMap(NewBooth.Data)
 		end
 	end)
 
-	Booth.BoothEnded:Connect(function()
-		HelperFunctions.FireClients(BoothRestarted, Booth.Players)
+	NewBooth.BoothEnded:Connect(function()
+		HelperFunctions.FireClients(BoothRestarted, NewBooth.Players)
 	end)
 end
 

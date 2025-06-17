@@ -37,16 +37,16 @@ EquipUnit.OnServerEvent:Connect(function(Player: Player, Data: { UniqueId: strin
 		return
 	end
 
-	local PlayerData = PlayerData.GetPlayerDataAsync(Player)
+	local PData = PlayerData.GetPlayerDataAsync(Player)
 
-	if PlayerData then
-		if PlayerData.CurrentWave then
+	if PData then
+		if PData.CurrentWave then
 			return
 		end
 		if Data.Equip then
-			PlayerData:EquipUnit(Data.UniqueId)
+			PData:EquipUnit(Data.UniqueId)
 		else
-			PlayerData:UnequipUnit(Data.UniqueId)
+			PData:UnequipUnit(Data.UniqueId)
 		end
 	end
 end)
@@ -60,15 +60,15 @@ Sell.OnServerEvent:Connect(function(Player: Player, Type: string, Data: { string
 		return
 	end
 
-	local PlayerData = PlayerData.GetPlayerDataAsync(Player)
+	local PData = PlayerData.GetPlayerDataAsync(Player)
 
-	if PlayerData then
-		if PlayerData.CurrentWave then
+	if PData then
+		if PData.CurrentWave then
 			return
 		end
 		local TotalCost = 0
 		if Type == "Unit" then
-			local PlayerUnits = PlayerData.Profile.Data.Units
+			local PlayerUnits = PData.Profile.Data.Units
 			for _, UniqueId in ipairs(Data) do
 				if typeof(UniqueId) ~= "string" then
 					continue
@@ -79,10 +79,10 @@ Sell.OnServerEvent:Connect(function(Player: Player, Type: string, Data: { string
 				end
 				local Rarity = UnitInfo.UnitInfo[Unit.Unit].Rarity
 				TotalCost += RarityInfo[Rarity :: any].Value
-				PlayerData:DeleteUnit(UniqueId)
+				PData:DeleteUnit(UniqueId)
 			end
 		elseif Type == "Product" then
-			local PlayerProducts = PlayerData.Profile.Data.Products
+			local PlayerProducts = PData.Profile.Data.Products
 			for _, UniqueId in ipairs(Data) do
 				if typeof(UniqueId) ~= "string" then
 					continue
@@ -93,10 +93,10 @@ Sell.OnServerEvent:Connect(function(Player: Player, Type: string, Data: { string
 				end
 				local Rarity = UnitInfo.UnitInfo[Product.UniqueId].Rarity
 				TotalCost += RarityInfo[Rarity :: any].Value
-				PlayerData:DeleteUnit(UniqueId)
+				PData:DeleteUnit(UniqueId)
 			end
 		elseif Type == "Resource" then
-			local PlayerResources = PlayerData.Profile.Data.Resources
+			local PlayerResources = PData.Profile.Data.Resources
 			for _, UniqueId in ipairs(Data) do
 				if typeof(UniqueId) ~= "string" then
 					continue
@@ -108,10 +108,10 @@ Sell.OnServerEvent:Connect(function(Player: Player, Type: string, Data: { string
 				end
 				local Rarity = UnitInfo.UnitInfo[Product.UniqueId].Rarity
 				TotalCost += RarityInfo[Rarity :: any].Value
-				PlayerData:DeleteUnit(UniqueId)
+				PData:DeleteUnit(UniqueId)
 			end
 		end
 
-		PlayerData:AddGold(TotalCost)
+		PData:AddGold(TotalCost)
 	end
 end)

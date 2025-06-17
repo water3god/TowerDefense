@@ -93,7 +93,7 @@ if game["Run Service"]:IsStudio() then
 end
 
 local function KickPlayer(Player: Player)
-	--Player:Kick("Error Whille Loading Game");
+	Player:Kick("Error Whille Loading Game. Please Rejoin.")
 end
 
 local function OnError()

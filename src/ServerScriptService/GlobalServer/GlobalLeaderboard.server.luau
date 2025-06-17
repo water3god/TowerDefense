@@ -23,9 +23,9 @@ local RobuxSpentStore = DataStoreService:GetOrderedDataStore(Constants.RobuxSpen
 local DataTimer = Timer.new(100)
 DataTimer:Start()
 
-local function HandleData(PlayerData: PlayerData.PlayerData)
-	local UserId = PlayerData.Player.UserId
-	local Data = PlayerData.Profile.Data
+local function HandleData(PData: PlayerData.PlayerData)
+	local UserId = PData.Player.UserId
+	local Data = PData.Profile.Data
 
 	local function OnTick()
 		pcall(function()
@@ -62,7 +62,7 @@ local function HandleData(PlayerData: PlayerData.PlayerData)
 	OnTick()
 	local Connection = DataTimer.Tick:Connect(OnTick)
 
-	PlayerData.Destroying:Connect(function()
+	PData.Destroying:Connect(function()
 		Connection:Disconnect()
 		Connection = nil
 	end)

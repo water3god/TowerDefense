@@ -11,7 +11,6 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local Remotes = ReplicatedStorage.Remotes
 local MarketplaceEvents = Remotes.Marketplace
-local ProductPurchased = MarketplaceEvents.ProductPurchased
 local UseProduct = MarketplaceEvents.UseProduct
 
 local Shared = ReplicatedStorage.Shared
@@ -117,7 +116,7 @@ local function OnPlayerData(Data: PlayerData.PlayerData)
 
 	if HelperFunctions.Len(ProfData.CachedProducts) ~= 0 then
 		for CachedProduct, Count in ipairs(ProfData.CachedProducts) do
-			for i = 1, Count, 1 do
+			for _ = 1, Count, 1 do
 				task.spawn(Redeem, CachedProduct)
 			end
 		end

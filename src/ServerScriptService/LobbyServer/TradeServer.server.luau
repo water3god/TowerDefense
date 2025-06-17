@@ -6,7 +6,6 @@ local TradeRequestTime: number = 15
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
-local Players = game:GetService("Players")
 
 if not require(ReplicatedStorage.Shared.IsLobby) then
 	return
@@ -134,47 +133,47 @@ TradeAccept.OnServerEvent:Connect(function(Player: Player, OtherPlayer: Player)
 
 	table.clear(Data.RequestThreads)
 
-	local Trade = Trade.new(Player, OtherPlayer)
+	local NewTrade = Trade.new(Player, OtherPlayer)
 
-	if Trade then
+	if NewTrade then
 		print("Trade Started")
-		Data.Trade = Trade
+		Data.Trade = NewTrade
 
 		local SentData = {
-			Player1 = Trade.Player1,
-			Player2 = Trade.Player2,
+			Player1 = NewTrade.Player1,
+			Player2 = NewTrade.Player2,
 		}
 
-		TradeStart:FireClient(Trade.Player1, SentData)
-		TradeStart:FireClient(Trade.Player2, SentData)
+		TradeStart:FireClient(NewTrade.Player1, SentData)
+		TradeStart:FireClient(NewTrade.Player2, SentData)
 
-		Trade.Destroying:Once(function()
-			TradeEnd:FireClient(Trade.Player1)
-			TradeEnd:FireClient(Trade.Player2)
+		NewTrade.Destroying:Once(function()
+			TradeEnd:FireClient(NewTrade.Player1)
+			TradeEnd:FireClient(NewTrade.Player2)
 			print("Trade Completed")
 			Data.Trade = nil
 
-			UpdateStatus({ Trade.Player1, Trade.Player2 })
+			UpdateStatus({ NewTrade.Player1, NewTrade.Player2 })
 		end)
 
-		UpdateStatus({ Trade.Player1, Trade.Player2 })
+		UpdateStatus({ NewTrade.Player1, NewTrade.Player2 })
 
-		Trade.UnitAdded:Connect(function(Unit: string, Player: Player)
-			local PlayerData = PlayerData.GetPlayerData(Player)
+		NewTrade.UnitAdded:Connect(function(Unit: string, NewPlayer: Player)
+			local PData = PlayerData.GetPlayerData(NewPlayer)
 
-			if PlayerData then
-				local UnitData = PlayerData:GetUnitFromId(Unit)
+			if PData then
+				local UnitData = PData:GetUnitFromId(Unit)
 
 				if UnitData then
-					UnitChanged:FireClient(Trade.Player1, Player, UnitData, "Added")
-					UnitChanged:FireClient(Trade.Player2, Player, UnitData, "Added")
+					UnitChanged:FireClient(NewTrade.Player1, NewPlayer, UnitData, "Added")
+					UnitChanged:FireClient(NewTrade.Player2, NewPlayer, UnitData, "Added")
 				end
 			end
 		end)
 
-		Trade.UnitRemoving:Connect(function(Unit: string, Player: Player)
-			UnitChanged:FireClient(Trade.Player1, Player, Unit, "Removing")
-			UnitChanged:FireClient(Trade.Player2, Player, Unit, "Removing")
+		NewTrade.UnitRemoving:Connect(function(Unit: string, NewPlayer: Player)
+			UnitChanged:FireClient(NewTrade.Player1, NewPlayer, Unit, "Removing")
+			UnitChanged:FireClient(NewTrade.Player2, NewPlayer, Unit, "Removing")
 		end)
 	end
 end)
@@ -195,7 +194,7 @@ ChangeUnit.OnServerEvent:Connect(function(Player: Player, Id: string, Type: stri
 	end
 end)
 
-ChangeProduct.OnServerEvent:Connect(function(Player: Player) end)
+ChangeProduct.OnServerEvent:Connect(function(NewPlayer: Player) end)
 
 local function OnDestroying(Player: Player, TradeData: TradeData)
 	for OtherPlayer, OtherData in pairs(PlayerTradeData) do
@@ -238,21 +237,21 @@ local function OnAdded(Data: PlayerData.PlayerData)
 
 	local SentData = {}
 
-	for Player, Data in pairs(PlayerTradeData) do
+	for Player, OtherTradeData in pairs(PlayerTradeData) do
 		SentData[Player.UserId] = {
-			Status = GetStatusFromData(Data),
+			Status = GetStatusFromData(OtherTradeData),
 		}
 	end
 
 	TradeSync:FireClient(Data.Player, SentData)
 
-	local SentData = {
+	local OtherSentData = {
 		[Data.Player.UserId] = {
 			Status = GetStatusFromData(TradeData),
 		},
 	}
 
-	TradeSync:FireAllClients(SentData)
+	TradeSync:FireAllClients(OtherSentData)
 end
 
 for _, Data in pairs(PlayerData.GetDatas()) do

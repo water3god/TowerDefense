@@ -4,14 +4,9 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
-local ServerStorage = game:GetService("ServerStorage")
-local Players = game:GetService("Players")
 
 local GlobalModules = ServerScriptService.GlobalModules
 local PlayerData = require(GlobalModules.PlayerData)
-local GlobalWave = require(GlobalModules.GlobalWave)
-
-local UnitData = require(ServerStorage.Data.UnitData)
 
 local Remotes = ReplicatedStorage.Remotes
 
@@ -27,19 +22,23 @@ ChangeSetting.OnServerEvent:Connect(function(Player: Player, Setting: string, Va
 		return
 	end
 
-	local PlayerData = PlayerData.GetPlayerDataAsync(Player)
+	local Data = PlayerData.GetPlayerDataAsync(Player)
 
-	if PlayerData then
-		PlayerData:ChangeSetting(Setting, Value)
+	if Data then
+		Data:ChangeSetting(Setting, Value)
 	end
 end)
 
 SettingSync.OnServerEvent:Connect(function(Player: Player, Data: any)
-	local PlayerData = PlayerData.GetPlayerDataAsync(Player)
+	if typeof(Data) ~= "table" then
+		return
+	end
 
-	if PlayerData then
+	local PData = PlayerData.GetPlayerDataAsync(Player)
+
+	if PData then
 		for Setting, Value in pairs(Data) do
-			PlayerData:ChangeSetting(Setting, Value)
+			PData:ChangeSetting(Setting, Value)
 		end
 	end
 end)
@@ -53,7 +52,7 @@ local function OnDataAdded(Data: PlayerData.PlayerData)
 	end)
 end
 
-for Id, Data in pairs(PlayerData.GetDatas()) do
+for _, Data in pairs(PlayerData.GetDatas()) do
 	OnDataAdded(Data)
 end
 

@@ -11,7 +11,6 @@ if require(ReplicatedStorage.Shared.IsLobby) then
 end
 
 local Modules = ReplicatedStorage.Modules
-local Input = require(ReplicatedStorage.Packages.Input)
 local HelperFunctions = require(Modules.HelperFunctions)
 
 local Remotes = ReplicatedStorage.Remotes
@@ -71,11 +70,11 @@ ChangePriority.OnServerEvent:Connect(function(Player: Player, UniqueId: string)
 	end
 end)
 
-local function CheckPlacement(InputCFrame: CFrame, UnitInfo: UnitInfo.UnitInfo): RaycastResult?
+local function CheckPlacement(InputCFrame: CFrame, Info: UnitInfo.UnitInfo): RaycastResult?
 	local UnitPos = HelperFunctions.ConvertToVec2(InputCFrame.Position)
 
-	for UniqueId, OtherUnit in pairs(Unit.GetUnits()) do
-		local Radius = UnitInfo.CollisionRadius + OtherUnit.CollisionRadius
+	for _, OtherUnit in pairs(Unit.GetUnits()) do
+		local Radius = Info.CollisionRadius + OtherUnit.CollisionRadius
 		local OtherPos = HelperFunctions.ConvertToVec2(OtherUnit.CFrame.Position)
 
 		if (UnitPos - OtherPos).Magnitude < Radius / 2 then
@@ -96,7 +95,7 @@ local function CheckPlacement(InputCFrame: CFrame, UnitInfo: UnitInfo.UnitInfo):
 			OvParams.FilterType = Enum.RaycastFilterType.Exclude
 			OvParams.CollisionGroup = "PlacementClient"
 
-			local Cylinder = CloneCylinder(UnitInfo.CollisionRadius)
+			local Cylinder = CloneCylinder(Info.CollisionRadius)
 			Cylinder.CFrame = CFrame.new(InputCFrame.Position) * Cylinder.CFrame.Rotation
 			local Parts = workspace:GetPartsInPart(Cylinder, OvParams)
 
@@ -118,22 +117,24 @@ end
 local function PlaceUnit(Player: Player, Wave: GlobalWave.GlobalWave, Data: PlacementData)
 	local InputCFrame = CFrame.new(Data.UnitPosition) * CFrame.Angles(0, math.rad(-90 * Data.RotationIndex), 0)
 
-	local UnitData = UnitData.UnitData[Data.Unit]
-	local UnitInfo = UnitInfo.UnitInfo[Data.Unit]
+	local UnitUnitData = UnitData.UnitData[Data.Unit]
+	local UnitUnitInfo = UnitInfo.UnitInfo[Data.Unit]
 
 	if UnitData then
-		local Cost = UnitInfo.UnitData[0].Cost
+		local Cost = UnitUnitInfo.UnitData[0].Cost
 		local PlayerCoins = Wave.Coins[Player.UserId]
 
 		if Wave:HasEnoughCoins(Player.UserId, Cost) then
-			local Result = CheckPlacement(InputCFrame, UnitInfo)
+			local Result = CheckPlacement(InputCFrame, UnitUnitInfo)
 			if Result then
 				Unit.new({
 					CFrame = InputCFrame,
 					OwnerId = Player.UserId,
 					Level = 0,
-				}, UnitData)
+				}, UnitUnitData)
 				Wave:SubtractCoinsFromUser(Player.UserId, Cost)
+			else
+				SendWarning:FireClient(Player, "Incorrect Placement!")
 			end
 		else
 			SendWarning:FireClient(Player, string.format("You are missing %u Coins!", Cost - PlayerCoins))
@@ -142,9 +143,9 @@ local function PlaceUnit(Player: Player, Wave: GlobalWave.GlobalWave, Data: Plac
 end
 
 local function OnPlacement(Player: Player, Data: PlacementData)
-	local PlayerData = PlayerData.GetPlayerData(Player)
+	local PData = PlayerData.GetPlayerData(Player)
 
-	if PlayerData then
+	if PData then
 		local Wave = GlobalWave.GetWave()
 		if Wave then
 			PlaceUnit(Player, Wave, Data)
@@ -203,10 +204,10 @@ Sell.OnServerEvent:Connect(function(Player: Player, UniqueId: string)
 	end
 
 	local CurrentUnit = Unit.GetUnit(UniqueId)
-	local GlobalWave = GlobalWave.GetWave()
+	local Wave = GlobalWave.GetWave()
 
-	if GlobalWave and CurrentUnit and CurrentUnit:IsOwnedBy(Player) then
-		GlobalWave:AddCoinsToUser(Player.UserId, math.floor(CurrentUnit.TotalCost / Constants.CostDivider))
+	if Wave and CurrentUnit and CurrentUnit:IsOwnedBy(Player) then
+		Wave:AddCoinsToUser(Player.UserId, math.floor(CurrentUnit.TotalCost / Constants.CostDivider))
 		CurrentUnit:Delete()
 	end
 end)
