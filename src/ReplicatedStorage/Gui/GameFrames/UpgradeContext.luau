@@ -73,7 +73,7 @@ local function UpgradeProvider(props: Props)
 	local Data, SetData = React.useState(DefaultValue)
 
 	React.useEffect(function()
-		local Trove = Trove.new()
+		local UpgradeTrove = Trove.new()
 		local Unit = props.UnitId and UnitClient.GetUnit(props.UnitId)
 		if Unit then
 			local function Set(EnabledInput: boolean?)
@@ -96,11 +96,11 @@ local function UpgradeProvider(props: Props)
 
 			Set()
 
-			Trove:Connect(Unit.Upgraded, Set)
-			Trove:Connect(Unit.PriorityChanged, Set)
-			Trove:Connect(Unit.AbilityUsed, Set)
+			UpgradeTrove:Connect(Unit.Upgraded, Set)
+			UpgradeTrove:Connect(Unit.PriorityChanged, Set)
+			UpgradeTrove:Connect(Unit.AbilityUsed, Set)
 
-			Trove:Connect(Unit.Destroying, function()
+			UpgradeTrove:Connect(Unit.Destroying, function()
 				Set(false)
 			end)
 		else
@@ -109,7 +109,7 @@ local function UpgradeProvider(props: Props)
 			}) :: any)
 		end
 
-		return Trove:WrapClean()
+		return UpgradeTrove:WrapClean()
 	end, { props.UnitId })
 
 	return e(UpgradeContext.Provider, {

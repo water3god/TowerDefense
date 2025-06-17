@@ -133,7 +133,7 @@ end
 local function CreateRollMain(props: Properties)
 	local RollData = React.useContext(RollContext.Context)
 	local WarningData = React.useContext(WarningContext.Context)
-	local CurrencyContext = React.useContext(CurrencyContext.Context)
+	local CurrencyData = React.useContext(CurrencyContext.Context)
 	local InventoryData = React.useContext(InventoryContext.Context)
 
 	local RollMultiplier, SetRollMultiplier = React.useState(1)
@@ -192,10 +192,10 @@ local function CreateRollMain(props: Properties)
 	end, { RollMultiplier })
 
 	local SummonClick = React.useCallback(function()
-		local Cost = Constants.ROLLCOSTS.MAIN * RollMultiplier
+		local NewCost = Constants.ROLLCOSTS.MAIN * RollMultiplier
 
-		if CurrencyContext.Value < Cost then
-			WarningData.Add(string.format("You are missing %u Gold!", Cost - CurrencyContext.Value))
+		if CurrencyData.Value < NewCost then
+			WarningData.Add(string.format("You are missing %u Gold!", NewCost - CurrencyData.Value))
 			return
 		end
 
@@ -205,7 +205,7 @@ local function CreateRollMain(props: Properties)
 		end
 
 		RollService.Roll(RollMultiplier)
-	end, { RollMultiplier, WarningData.Warnings :: any, CurrencyContext.Value, InventoryData :: any })
+	end, { RollMultiplier, WarningData.Warnings :: any, CurrencyData.Value, InventoryData :: any })
 
 	local OnAutoClick = React.useCallback(function()
 		local Value = not InAutoSell
@@ -347,8 +347,8 @@ local function CreateRollMain(props: Properties)
 			native = {
 				Size = UDim2.fromScale(0.5, 0.1),
 				Position = UDim2.fromScale(0.5, 0.2),
-				Text = Time:map(function(Time: number)
-					return string.format("Next Banner: %s", HelperFunctions.FormatTime(Time))
+				Text = Time:map(function(TimeInput: number)
+					return string.format("Next Banner: %s", HelperFunctions.FormatTime(TimeInput))
 				end),
 				ZIndex = 2,
 			},

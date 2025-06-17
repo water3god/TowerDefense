@@ -83,8 +83,8 @@ local function CreateTopFrame(Props: Properties)
 					native = {
 						Position = UDim2.fromScale(0.5, 0.7),
 						Size = UDim2.fromScale(1, 0.4),
-						Text = Time:map(function(Time)
-							return HelperFunctions.FormatTime(Time)
+						Text = Time:map(function(TimeInput: number)
+							return HelperFunctions.FormatTime(TimeInput)
 						end),
 					},
 				}, {
@@ -114,8 +114,8 @@ local function CreateTopFrame(Props: Properties)
 					native = {
 						Position = UDim2.fromScale(0.5, 0.7),
 						Size = UDim2.fromScale(1, 0.4),
-						Text = Wave:map(function(Wave)
-							return tostring(Wave)
+						Text = Wave:map(function(InputWave: number)
+							return tostring(InputWave)
 						end),
 					},
 				}, {

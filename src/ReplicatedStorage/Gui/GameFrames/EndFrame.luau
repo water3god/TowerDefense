@@ -5,21 +5,15 @@
 -- Services --
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
-local TeleportService = game:GetService("TeleportService")
-local RunService = game:GetService("RunService")
-
-local Player = Players.LocalPlayer
 
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
-local ReactRoblox = require(Packages.ReactRoblox)
 local ReactSpring = require(Packages.ReactSpring)
 local Promise = require(Packages.Promise)
 local e = React.createElement
 
 local Modules = ReplicatedStorage.Modules
-local Lerps = require(Modules.Lerps)
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
 
@@ -39,7 +33,6 @@ local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
 local UIStroke = require(CoreGame.UIStroke)
 local Hooks = require(CoreGame.Hooks)
-local BaseFrame = require(CoreGame.BaseFrame)
 local CloseButton = require(CoreGame.CloseButton)
 
 local Inventory = Gui.Inventory
@@ -389,9 +382,15 @@ local function CreateVoteFrame(Props: Props)
 		end
 
 		for _, Data in ipairs(Props.EndData.Resources) do
+			local Amount: number = Data.Count
+
+			if Data.Resource == "Gold" and not Props.Success and WaveService.Percentage then
+				Amount = math.floor(Data.Count / WaveService.Percentage / 2)
+			end
+
 			Frames["Resource" .. Data.Resource] = e(ResourceFrame, {
 				Name = Data.Resource,
-				Value = Data.Count,
+				Value = Amount,
 				native = {
 					LayoutOrder = RewardOrder(),
 				},
@@ -677,13 +676,13 @@ local function VoteConnected(props)
 		SetEnabled(true)
 	end, {})
 
-	Hooks.useEventConnection(Players.PlayerAdded, function(Player: Player)
+	Hooks.useEventConnection(Players.PlayerAdded, function()
 		SetData(Join(PlayerData:getValue(), {
 			Total = #Players:GetPlayers(),
 		}) :: any)
 	end, {})
 
-	Hooks.useEventConnection(Players.PlayerRemoving, function(Player: Player)
+	Hooks.useEventConnection(Players.PlayerRemoving, function()
 		SetData(Join(PlayerData:getValue(), {
 			Total = #Players:GetPlayers(),
 		}) :: any)

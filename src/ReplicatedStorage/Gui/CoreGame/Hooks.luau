@@ -4,16 +4,11 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
 
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
 local e = React.createElement
 local Signal = require(Packages.Signal)
-
-local Modules = ReplicatedStorage.Modules
-local Join = require(Modules.JoinDicts)
-local HelperFunctions = require(Modules.HelperFunctions)
 
 local Hooks = {}
 
@@ -84,10 +79,10 @@ function Hooks.UseTime()
 
 	return Time,
 		TotalTime,
-		function(TotalTime: number, StartTime: number)
-			if TimeData.TotalTime ~= TotalTime or TimeData.StartTime ~= StartTime then
+		function(NewTotalTime: number, StartTime: number)
+			if TimeData.TotalTime ~= NewTotalTime or TimeData.StartTime ~= StartTime then
 				SetTimeData({
-					TotalTime = TotalTime,
+					TotalTime = NewTotalTime,
 					StartTime = StartTime,
 				})
 			end

@@ -131,7 +131,7 @@ local function CreateNumber(props: { Setting: string, Value: number })
 	React.useEffect(function()
 		if Holding then
 			local Frame = TouchBox.current :: TextBox
-			local Trove = Trove.new()
+			local InputTrove = Trove.new()
 
 			local function Moved(Position: Vector2)
 				local Difference = Position.X - Frame.AbsolutePosition.X
@@ -144,32 +144,32 @@ local function CreateNumber(props: { Setting: string, Value: number })
 
 			local Function = Input.PreferredInput.Observe(function(PreferredInput)
 				if PreferredInput == "Gamepad" then
-					local Gamepad = Trove:Construct(Input.Gamepad)
+					local Gamepad = InputTrove:Construct(Input.Gamepad)
 				elseif PreferredInput == "MouseKeyboard" then
 					Moved(UserInputService:GetMouseLocation())
 
-					Trove:Connect(UserInputService.InputChanged, function(Input, Processed)
-						if Input.UserInputType == Enum.UserInputType.MouseMovement then
+					InputTrove:Connect(UserInputService.InputChanged, function(InputObject)
+						if InputObject.UserInputType == Enum.UserInputType.MouseMovement then
 							Moved(UserInputService:GetMouseLocation())
 						end
 					end)
 
-					Trove:Connect(UserInputService.InputEnded, function(Input: InputObject)
-						if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+					InputTrove:Connect(UserInputService.InputEnded, function(InputObject: InputObject)
+						if InputObject.UserInputType == Enum.UserInputType.MouseButton1 then
 							SetHolding(false)
 						end
 					end)
 				elseif PreferredInput == "Touch" then
-					local Touch = Trove:Construct(Input.Touch)
+					local Touch = InputTrove:Construct(Input.Touch)
 					Moved(UserInputService:GetMouseLocation())
-					Touch.TouchMoved:Connect(function(Input: InputObject)
+					Touch.TouchMoved:Connect(function()
 						Moved(UserInputService:GetMouseLocation())
 					end)
 				end
 			end)
 
 			return function()
-				Trove:Destroy()
+				InputTrove:Destroy()
 				Function()
 			end
 		else
@@ -178,7 +178,7 @@ local function CreateNumber(props: { Setting: string, Value: number })
 		end
 	end, { Holding })
 
-	local Down = React.useCallback(function(rbx: TextButton)
+	local Down = React.useCallback(function()
 		SetHolding(true)
 	end, {})
 

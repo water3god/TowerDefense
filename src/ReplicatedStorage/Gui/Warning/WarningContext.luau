@@ -31,7 +31,7 @@ local Constants = require(Shared.Constants)
 
 local WarningContext = React.createContext({
 	Warnings = {},
-	Add = function(Text: string) end,
+	Add = function() end,
 } :: {
 	Warnings: { [string]: { Text: string, Color: Color3, StartTime: number } },
 	Add: (Text: string) -> (),

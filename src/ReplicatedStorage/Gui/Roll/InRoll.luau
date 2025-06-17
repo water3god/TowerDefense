@@ -5,8 +5,6 @@
 -- Services --
 local GuiService = game:GetService("GuiService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RtMessagingService = game:GetService("RtMessagingService")
-local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
 
@@ -92,12 +90,6 @@ local function ChangeSize(Sequence: NumberSequence, Ratio: number)
 end
 
 local function CreateUnitFrame(props: UnitProperties)
-	local Position, API = ReactSpring.useSpring(function()
-		return {
-			Scale = 0,
-		}
-	end)
-
 	local ViewRef = React.useRef(nil :: ViewportFrame?)
 
 	local SettingsData = React.useContext(SettingsContext.Context)
@@ -159,13 +151,13 @@ local function CreateUnitFrame(props: UnitProperties)
 				Particle.Color = Data.RarityData.BackgroundColor
 			end)
 
-			local Connection = RunService.PreRender:Connect(function(delta)
+			local Connection = RunService.PreRender:Connect(function()
 				local NewPos = GuiService:GetGuiInset() + Viewport.AbsolutePosition + Size / 2
 
 				local Ray = Camera:ViewportPointToRay(NewPos.X, NewPos.Y, 2)
-				local Main = CFrame.new(Ray.Origin + Camera.CFrame.LookVector * 0)
-				Part.CFrame = Main
-				OtherPart.CFrame = Main
+				local NewCFrame = CFrame.new(Ray.Origin + Camera.CFrame.LookVector * 0)
+				Part.CFrame = NewCFrame
+				OtherPart.CFrame = NewCFrame
 			end)
 
 			Part.Parent = Particles
@@ -307,12 +299,12 @@ local function CreateInRoll(props: Properties)
 		local TimeDifference = workspace:GetServerTimeNow() - props.LastFiredTime
 		local DelayTime = Constants.ROLLDELAYTIME * 0.9 - TimeDifference
 		if props.AutoRoll then
-			local Promise = Promise.delay(DelayTime):andThen(function()
+			local NewPromise = Promise.delay(DelayTime):andThen(function()
 				SetVisible(false)
 			end)
 
 			return function()
-				Promise:cancel()
+				NewPromise:cancel()
 			end
 		else
 			if DelayTime <= 0 then
@@ -324,7 +316,7 @@ local function CreateInRoll(props: Properties)
 	end, { props.UnitNames :: any, props.LastFiredTime :: any, props.AutoRoll :: any })
 
 	React.useEffect(function()
-		local Trove = Trove.new()
+		local InputTrove = Trove.new()
 		if not Visible then
 			return function() end
 		end
@@ -342,15 +334,15 @@ local function CreateInRoll(props: Properties)
 		end
 
 		local Disconnect = Input.PreferredInput.Observe(function(Preferred)
-			Trove:Destroy()
+			InputTrove:Destroy()
 			if Preferred == "MouseKeyboard" then
-				local Mouse = Trove:Construct(Input.Mouse)
+				local Mouse = InputTrove:Construct(Input.Mouse)
 
 				Mouse.LeftUp:Connect(function()
 					CloseClick()
 				end)
 			elseif Preferred == "Touch" then
-				local Touch = Trove:Construct(Input.Touch)
+				local Touch = InputTrove:Construct(Input.Touch)
 
 				Touch.TouchTapInWorld:Connect(function(_, Processed: boolean)
 					if Processed then
@@ -359,11 +351,12 @@ local function CreateInRoll(props: Properties)
 					CloseClick()
 				end)
 			elseif Preferred == "Gamepad" then
+				return
 			end
 		end)
 
 		return function()
-			Trove:Destroy()
+			InputTrove:Destroy()
 			Disconnect()
 		end
 	end, { props.AutoRoll, props.CloseClick :: any, Visible, props.LastFiredTime :: any })

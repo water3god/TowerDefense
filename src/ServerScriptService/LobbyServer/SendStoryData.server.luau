@@ -13,7 +13,7 @@ end
 local Remotes = ReplicatedStorage.Remotes
 local BoothEvents = Remotes.Booth
 local DataEvents = BoothEvents.DataEvents
-local DataSync: RemoteEvent = DataEvents.DataSync
+local DataSync = DataEvents.DataSync
 
 local GlobalModules = ServerScriptService.GlobalModules
 local PlayerData = require(GlobalModules.PlayerData)

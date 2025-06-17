@@ -11,7 +11,6 @@ local React = require(Packages.React)
 local e = React.createElement
 
 local Trove = require(Packages.Trove)
-local Promise = require(Packages.Promise)
 
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
@@ -37,7 +36,7 @@ local function Provider(props)
 	local Value, SetValue = React.useState(Default :: WaveService.WaveData)
 
 	React.useEffect(function()
-		local Trove = Trove.new()
+		local WaveTrove = Trove.new()
 
 		local function SetWaveData()
 			local Data = WaveService.GetWaveData()
@@ -47,12 +46,12 @@ local function Provider(props)
 		end
 
 		SetWaveData()
-		Trove:Connect(WaveService.Added, SetWaveData)
-		Trove:Connect(WaveService.HealthChanged, SetWaveData)
-		Trove:Connect(WaveService.Passed, SetWaveData)
-		Trove:Connect(WaveService.TimeChanged, SetWaveData)
+		WaveTrove:Connect(WaveService.Added, SetWaveData)
+		WaveTrove:Connect(WaveService.HealthChanged, SetWaveData)
+		WaveTrove:Connect(WaveService.Passed, SetWaveData)
+		WaveTrove:Connect(WaveService.TimeChanged, SetWaveData)
 
-		return Trove:WrapClean()
+		return WaveTrove:WrapClean()
 	end, {})
 
 	Hooks.useEventConnection(WaveService.Ended, function()

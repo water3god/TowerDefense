@@ -3,6 +3,7 @@
 -- By Wa1er_God --
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
 
 local Packages = ReplicatedStorage.Packages
 local Trove = require(Packages.Trove)
@@ -12,9 +13,13 @@ local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local GenerateId = require(Modules.GenerateId)
 
+local GlobalModules = ServerScriptService.GlobalModules
+local PlayerData = require(GlobalModules.PlayerData)
+
 local Shared = ReplicatedStorage.Shared
 local Constants = require(Shared.Constants)
 local Types = require(Shared.Types)
+local GameInfo = require(Shared.GameInfo)
 
 local VectorOffset = Vector3.new(0, 3, 0)
 
@@ -87,7 +92,7 @@ end
 
 local Booths: { [Instance]: Booth } = {}
 
-local Statuses = { "Idle", "ChoosingMap", "LoadingPlayers", "LoadingIn" }
+local _Statuses = { "Idle", "ChoosingMap", "LoadingPlayers", "LoadingIn" }
 local GlobalPlayersQueue: { Player } = {}
 local threads: { [Player]: thread } = {}
 
@@ -98,16 +103,16 @@ function Booth.new(Input: BoothInput)
 	self.Trove = Trove.new()
 	self.StatusTrove = self.Trove:Extend()
 
-	self.FirstTouchReject = self.Trove:Add(Signal.new(), "DisconnectAll")
-	self.LaterTouchesReject = self.Trove:Add(Signal.new(), "DisconnectAll")
+	self.FirstTouchReject = self.Trove:Construct(Signal)
+	self.LaterTouchesReject = self.Trove:Construct(Signal)
 
-	self.PlayerAdded = self.Trove:Add(Signal.new(), "DisconnectAll")
-	self.PlayerRemoving = self.Trove:Add(Signal.new(), "DisconnectAll")
+	self.PlayerAdded = self.Trove:Construct(Signal)
+	self.PlayerRemoving = self.Trove:Construct(Signal)
 
-	self.StartedChoosing = self.Trove:Add(Signal.new(), "DisconnectAll")
-	self.StartedWaiting = self.Trove:Add(Signal.new(), "DisconnectAll")
-	self.MapLoading = self.Trove:Add(Signal.new(), "DisconnectAll")
-	self.BoothEnded = self.Trove:Add(Signal.new(), "DisconnectAll")
+	self.StartedChoosing = self.Trove:Construct(Signal)
+	self.StartedWaiting = self.Trove:Construct(Signal)
+	self.MapLoading = self.Trove:Construct(Signal)
+	self.BoothEnded = self.Trove:Construct(Signal)
 
 	self.Status = "Idle"
 	self.StartTime = 0
@@ -127,8 +132,8 @@ function Booth.new(Input: BoothInput)
 				return
 			end
 
-			for _, Booth in pairs(Booths) do
-				if table.find(Booth.Players, Player) then
+			for _, OtherBooth in pairs(Booths) do
+				if table.find(OtherBooth.Players, Player) then
 					return
 				end
 			end
@@ -212,6 +217,27 @@ function Booth:ChooseMap(MapId: string, LevelId: string, Difficulty: string)
 		return
 	end
 	self.StatusTrove:Destroy()
+
+	local Owner = self.Players[1]
+
+	local PData = PlayerData.GetPlayerData(Owner)
+
+	if PData then
+		local _, LevelInfo = GameInfo.GetDataFromInfo(MapId, LevelId)
+		if LevelInfo then
+			if not (PData:OwnsMap(MapId) and PData:OwnsStage({
+				Map = MapId,
+				Stage = LevelInfo.Index,
+			})) then
+				return
+			end
+		else
+			return
+		end
+	else
+		return
+	end
+
 	self.Data = {
 		MapId = MapId,
 		LevelId = LevelId,
@@ -244,8 +270,8 @@ function Booth:Start()
 end
 
 function Booth:AddPlayer(Player: Player)
-	for _, Booth in pairs(Booths) do
-		if table.find(Booth.Players, Player) then
+	for _, NewBooth in pairs(Booths) do
+		if table.find(NewBooth.Players, Player) then
 			return
 		end
 	end
@@ -297,9 +323,9 @@ function Booth:Reset()
 end
 
 function Booth.GetBooth(UniqueId: string)
-	for _, Booth in pairs(Booths) do
-		if Booth.UniqueId == UniqueId then
-			return Booth
+	for _, OtherBooth in pairs(Booths) do
+		if OtherBooth.UniqueId == UniqueId then
+			return OtherBooth
 		end
 	end
 
@@ -311,9 +337,9 @@ function Booth.GetBooths()
 end
 
 function Booth.GetBoothFromPlayer(Player: Player)
-	for _, Booth in pairs(Booths) do
-		if table.find(Booth.Players, Player) then
-			return Booth
+	for _, OtherBooth in pairs(Booths) do
+		if table.find(OtherBooth.Players, Player) then
+			return OtherBooth
 		end
 	end
 

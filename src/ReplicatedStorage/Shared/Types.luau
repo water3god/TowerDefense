@@ -17,8 +17,8 @@ local UnitInfo = require(Shared.UnitInfo)
 
 local ModelStorage = ReplicatedStorage.ModelStorage
 local Extra = ModelStorage.Extra
-local CollisionRadius = Extra.CollisionRadius
-local Rig = Extra.Rig
+local _CollisionRadius = Extra.CollisionRadius
+local _Rig = Extra.Rig
 
 export type Status = "InTrade" | "Finalized" | "Accepted"
 export type TradeStatusMessage = "Trading" | "CanTrade" | "TradeDisabled"
@@ -91,10 +91,10 @@ type EnemyData = {
 	UniqueId: string,
 	Trove: Trove.Trove,
 
-	Character: typeof(Rig),
-	Root: typeof(Rig.HumanoidRootPart),
-	Humanoid: typeof(Rig.Humanoid),
-	Animator: typeof(Rig.Humanoid.Animator),
+	Character: typeof(_Rig),
+	Root: typeof(_Rig.HumanoidRootPart),
+	Humanoid: typeof(_Rig.Humanoid),
+	Animator: typeof(_Rig.Humanoid.Animator),
 	Adornment: Model?,
 	SizeRatio: number,
 	CFrame: CFrame,
@@ -174,13 +174,13 @@ type UnitData = {
 
 	AttackTrove: Trove.Trove,
 
-	Character: typeof(Rig),
+	Character: typeof(_Rig),
 	Armor: Model?,
-	Root: typeof(Rig.HumanoidRootPart),
+	Root: typeof(_Rig.HumanoidRootPart),
 	CenterPart: BasePart,
-	Humanoid: typeof(Rig.Humanoid),
-	Animator: typeof(Rig.Humanoid.Animator),
-	RadiusPart: typeof(CollisionRadius),
+	Humanoid: typeof(_Rig.Humanoid),
+	Animator: typeof(_Rig.Humanoid.Animator),
+	RadiusPart: typeof(_CollisionRadius),
 	RangePart: BasePart,
 
 	VisualCFrame: CFrame,

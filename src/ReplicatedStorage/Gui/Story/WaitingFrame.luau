@@ -175,8 +175,8 @@ local function CreateWaitingFrame(Props: Properties)
 				TimeLabel = e(Main.TextLabel, {
 					native = {
 						Size = UDim2.fromScale(1, 0.7),
-						Text = Time:map(function(Time: number)
-							return string.format("Time Left: %u", math.floor(Time))
+						Text = Time:map(function(TimeInput: number)
+							return string.format("Time Left: %u", math.floor(TimeInput))
 						end),
 						ZIndex = 2,
 					},

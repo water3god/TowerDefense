@@ -13,10 +13,6 @@ local e = React.createElement
 
 local Trove = require(Packages.Trove)
 
-local Gui = ReplicatedStorage.Gui
-local CoreGame = Gui.CoreGame
-local Hooks = require(CoreGame.Hooks)
-
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
@@ -57,20 +53,20 @@ local function Provider(props: Properties)
 	local Value, SetValue = React.useState(table.clone(Default))
 
 	React.useEffect(function()
-		local Booth = Booth.GetBooth(props.BoothId)
-		local Trove = Trove.new()
+		local NewBooth = Booth.GetBooth(props.BoothId)
+		local BoothTrove = Trove.new()
 
-		if Booth then
+		if NewBooth then
 			local function HandleWaiting()
-				local Data = Booth.Data :: any
+				local Data = NewBooth.Data :: any
 				local Table = {
 					MapId = Data.MapId,
 					LevelId = Data.LevelId,
 					Difficulty = Data.Difficulty,
-					PlayerCount = #Booth.Players,
+					PlayerCount = #NewBooth.Players,
 					MaxPlayerCount = 4,
-					StartTime = Booth.StartTime,
-					EndTime = Booth.StartTime + Booth.TimeLeft,
+					StartTime = NewBooth.StartTime,
+					EndTime = NewBooth.StartTime + NewBooth.TimeLeft,
 					Status = "LoadingPlayers",
 				}
 				SetValue(Table :: any)
@@ -92,26 +88,25 @@ local function Provider(props: Properties)
 
 			local function OnPlayerChanged()
 				local Table = Join(Value, {
-					Players = #Booth.Players,
+					Players = #NewBooth.Players,
 				})
 				SetValue(Table :: any)
 			end
 
-			if Booth.Status == "LoadingPlayers" or Booth.Status == "LoadingIn" then
+			if NewBooth.Status == "LoadingPlayers" or NewBooth.Status == "LoadingIn" then
 				HandleWaiting()
-			elseif Booth.Status == "ChoosingMap" then
-			else
+			elseif NewBooth.Status ~= "ChoosingMap" then
 				HandleOther()
 			end
 
-			Trove:Connect(Booth.StartedWaiting, HandleWaiting)
-			Trove:Connect(Booth.BoothEnded, HandleOther)
-			Trove:Connect(Booth.PlayerAdded, OnPlayerChanged)
-			Trove:Connect(Booth.PlayerRemoving, OnPlayerChanged)
-			Trove:Connect(Booth.StartedChoosing, HandleChoosing)
+			BoothTrove:Connect(NewBooth.StartedWaiting, HandleWaiting)
+			BoothTrove:Connect(NewBooth.BoothEnded, HandleOther)
+			BoothTrove:Connect(NewBooth.PlayerAdded, OnPlayerChanged)
+			BoothTrove:Connect(NewBooth.PlayerRemoving, OnPlayerChanged)
+			BoothTrove:Connect(NewBooth.StartedChoosing, HandleChoosing)
 		end
 
-		return Trove:WrapClean()
+		return BoothTrove:WrapClean()
 	end, {})
 
 	return e(Context.Provider, {

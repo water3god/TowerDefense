@@ -9,7 +9,6 @@ local GuiService = game:GetService("GuiService")
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
-local ReactRoblox = require(Packages.ReactRoblox)
 local e = React.createElement
 
 local Trove = require(Packages.Trove)
@@ -154,7 +153,7 @@ local function UnitConnected(Props: ConnectedProps)
 	})
 
 	React.useEffect(function()
-		local Trove = Trove.new()
+		local NewTrove = Trove.new()
 		if Props.UnitId then
 			local Unit = UnitClient.GetUnit(Props.UnitId)
 			if Unit then
@@ -163,25 +162,25 @@ local function UnitConnected(Props: ConnectedProps)
 					Data = Unit:GetProperties(),
 				})
 
-				Trove:Connect(Unit.Upgraded, function()
+				NewTrove:Connect(Unit.Upgraded, function()
 					SetData({
 						UnitName = Unit.UnitName,
 						Data = Unit:GetProperties(),
 					})
 				end)
 
-				Trove:Connect(Unit.PropertyChanged, function()
+				NewTrove:Connect(Unit.PropertyChanged, function()
 					SetData({
 						UnitName = Unit.UnitName,
 						Data = Unit:GetProperties(),
 					})
 				end)
 
-				Trove:Connect(Unit.Destroying, Trove:WrapClean())
+				NewTrove:Connect(Unit.Destroying, NewTrove:WrapClean())
 			end
 		end
 
-		return Trove:WrapClean()
+		return NewTrove:WrapClean()
 	end, { Props.UnitId })
 
 	return e(CreateUnitToolTip, {

@@ -5,7 +5,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Packages = ReplicatedStorage.Packages
-local UIStroke = require(ReplicatedStorage.Gui.CoreGame.UIStroke)
 local React = require(Packages.React)
 local e = React.createElement
 
@@ -61,7 +60,6 @@ type FData = Types.VisualUnitData
 
 do
 	local Data = UnitInfo.UnitInfo
-	@native
 	function FilterFunctions.Rarity(a: FData, b: FData)
 		local RarityA = Data[a.Unit].Rarity
 		local RarityB = Data[b.Unit].Rarity
@@ -75,7 +73,6 @@ do
 		end
 	end
 
-	@native
 	function FilterFunctions.Level(a: FData, b: FData)
 		if a.Level == b.Level then
 			return a.Unit < b.Unit
@@ -84,7 +81,6 @@ do
 		end
 	end
 
-	@native
 	function FilterFunctions.Name(a: FData, b: FData)
 		if a.Unit == b.Unit and a.Level then
 			return a.Level > b.Level
@@ -341,13 +337,13 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 	end, { InventoryData })
 
 	local SmallFrameClick = React.useCallback(function(Data: { Data: any, UniqueId: string })
-		local function SetClicked(Data: any)
+		local function SetClicked(ClickData: any)
 			if OpenFrame == "Unit" then
-				SetClickedUnitData(Data)
+				SetClickedUnitData(ClickData)
 			elseif OpenFrame == "Product" then
-				SetClickedProductData(Data)
+				SetClickedProductData(ClickData)
 			elseif OpenFrame == "Resource" then
-				SetClickedResourceData(Data)
+				SetClickedResourceData(ClickData)
 			end
 		end
 
@@ -513,7 +509,6 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			return false
 		end
 
-		@native
 		local function HandleUnitData(Data: Types.VisualUnitData)
 			if Filter ~= "" then
 				if not string.lower(Data.Unit):match(string.lower(Filter)) then
@@ -535,7 +530,6 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			Table[Data.UniqueId] = Unit
 		end
 
-		@native
 		local function HandleProductData(Data: Types.ProductData)
 			local Name: string = nil
 
@@ -565,7 +559,6 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			Table[Data.UniqueId] = Product
 		end
 
-		@native
 		local function HandleResourceData(Data: Types.ResourceData)
 			if Filter ~= "" then
 				if not string.lower(Data.Resource):match(string.lower(Filter)) then
@@ -693,7 +686,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			if not Data then
 				return Default
 			end
-			local IsEquipped = if OpenFrame == "Unit" and HoveredId and IsEquipped(HoveredId) then true else false
+			local IsEquippedBool = if OpenFrame == "Unit" and HoveredId and IsEquipped(HoveredId) then true else false
 
 			local FirstClick = nil
 			local SecondClick = nil
@@ -701,7 +694,6 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			if OpenFrame == "Unit" then
 				FirstClick = OnEquip
 				SecondClick = IndSellClick
-			elseif OpenFrame == "Product" then
 			else
 				FirstClick = function() end
 				SecondClick = function() end
@@ -716,7 +708,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 					local ProductData = PurchaseData.GamepassData[Data.CurrentUnit.ProductId]
 					Name = ProductData and ProductData.ProductInfo.Name or "Loading..."
 				else
-					local ProductData = PurchaseData.GamepassData[Data.CurrentUnit.ProductId]
+					local ProductData = PurchaseData.ProductData[Data.CurrentUnit.ProductId]
 					Name = ProductData and ProductData.ProductInfo.Name or "Loading..."
 				end
 			elseif OpenFrame == "Resource" then
@@ -731,7 +723,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 					RarityInfo = Data.RarityData,
 					Type = OpenFrame,
 					Visible = if HoveredId then true else false,
-					IsEquipped = IsEquipped,
+					IsEquipped = IsEquippedBool,
 					OnFirstClick = FirstClick,
 					OnSellClick = SecondClick,
 				}

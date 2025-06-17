@@ -127,12 +127,7 @@ do
 				API.start({
 					Scale = 1.1,
 				})
-			elseif Instance.GuiState == Enum.GuiState.Press then
-				API.stop()
-				API.start({
-					Scale = 1,
-				})
-			elseif Instance.GuiState == Enum.GuiState.Idle then
+			elseif Instance.GuiState == Enum.GuiState.Press or Instance.GuiState == Enum.GuiState.Idle then
 				API.stop()
 				API.start({
 					Scale = 1,

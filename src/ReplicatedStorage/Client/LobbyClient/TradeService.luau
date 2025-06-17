@@ -56,12 +56,12 @@ export type TradeData = Types.TradeData
 export type VisualUnitData = Types.VisualUnitData
 export type TradeStatusMessage = Types.TradeStatusMessage
 
-function Data.SendTradeRequest(Player: Player)
-	TradeRequest:FireServer(Player)
+function Data.SendTradeRequest(PlayerInput: Player)
+	TradeRequest:FireServer(PlayerInput)
 end
 
-function Data.AcceptTrade(Player: Player)
-	TradeAccept:FireServer(Player)
+function Data.AcceptTrade(PlayerInput: Player)
+	TradeAccept:FireServer(PlayerInput)
 end
 
 function Data.GetTradeData()
@@ -84,9 +84,9 @@ function Data.RemoveProduct()
 	ChangeProduct:FireServer()
 end
 
-TradeStart.OnClientEvent:Connect(function(Player: Player)
+TradeStart.OnClientEvent:Connect(function(NewPlayer: Player)
 	CurrentTradeData = {
-		OtherPlayer = Player,
+		OtherPlayer = NewPlayer,
 		YourUnits = {},
 		OtherUnits = {},
 		Status = "InTrade",
@@ -107,14 +107,14 @@ TradeSync.OnClientEvent:Connect(function(SentData: { [number]: { Status: Types.T
 			continue
 		end
 
-		local Player = Players:GetPlayerByUserId(UserId)
-		local OldValue = TradeStatuses[Player]
+		local NewPlayer = Players:GetPlayerByUserId(UserId)
+		local OldValue = TradeStatuses[NewPlayer]
 		if Player then
-			TradeStatuses[Player] = DataSent.Status
+			TradeStatuses[NewPlayer] = DataSent.Status
 		end
 
 		if OldValue ~= DataSent.Status then
-			Data.SyncedStatus:Fire(Player, DataSent.Status)
+			Data.SyncedStatus:Fire(NewPlayer, DataSent.Status)
 		end
 	end
 end)
@@ -163,13 +163,13 @@ TradeRequest.OnClientEvent:Connect(function(OtherPlayer: Player, Time: number)
 	end)
 end)
 
-Players.PlayerRemoving:Connect(function(Player: Player)
-	if TradeStatuses[Player] then
-		TradeStatuses[Player] = nil
+Players.PlayerRemoving:Connect(function(NewPlayer: Player)
+	if TradeStatuses[NewPlayer] then
+		TradeStatuses[NewPlayer] = nil
 	end
-	if Data.TradeRequests[Player] then
-		Data.TradeRequests[Player] = nil
-		Data.RequestEnded:Fire(Player)
+	if Data.TradeRequests[NewPlayer] then
+		Data.TradeRequests[NewPlayer] = nil
+		Data.RequestEnded:Fire(NewPlayer)
 	end
 end)
 

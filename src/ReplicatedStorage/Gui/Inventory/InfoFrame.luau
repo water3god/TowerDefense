@@ -8,9 +8,6 @@ local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
 local e = React.createElement
 
-local Modules = ReplicatedStorage.Modules
-local HelperFunctions = require(Modules.HelperFunctions)
-
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local UIStroke = require(CoreGame.UIStroke)
@@ -18,14 +15,11 @@ local Main = require(CoreGame.Main)
 local UnitView = require(CoreGame.UnitView)
 
 local Shared = ReplicatedStorage.Shared
-local UnitInfo = require(Shared.UnitInfo)
 local GameInfo = require(Shared.GameInfo)
 local ProductInfo = require(Shared.ProductInfo)
 local RarityInfo = require(Shared.RarityInfo)
 local Types = require(Shared.Types)
 
-local UnitModels = ReplicatedStorage.ModelStorage.Units
-local UnitAnimations = ReplicatedStorage.Animations.Units
 export type InfoType = "Unit" | "Product" | "Resource"
 
 export type UnitData = Types.VisualUnitData

@@ -34,32 +34,32 @@ local function ContextProvider(props)
 	})
 
 	React.useEffect(function()
-		local Trove = Trove.new()
+		local InvTrove = Trove.new()
 
 		local function Update()
-			local Inventory = table.clone(InventoryService:GetInventory()) :: any
-			Inventory.MaxUnitCount = InventoryService.MaxUnitCount
-			SetInventory(Inventory)
+			local NewInventory = table.clone(InventoryService:GetInventory()) :: any
+			NewInventory.MaxUnitCount = InventoryService.MaxUnitCount
+			SetInventory(NewInventory)
 		end
 
-		Trove:Add(task.spawn(function()
+		InvTrove:Add(task.spawn(function()
 			if not InventoryService.IsSynced then
 				InventoryService.Synced:Wait()
 			end
 			Update()
 		end))
 
-		Trove:Connect(InventoryService.UnitAdded, Update)
-		Trove:Connect(InventoryService.UnitRemoved, Update)
-		Trove:Connect(InventoryService.UnitChanged, Update)
-		Trove:Connect(InventoryService.ProductAdded, Update)
-		Trove:Connect(InventoryService.ProductChanged, Update)
-		Trove:Connect(InventoryService.ProductRemoved, Update)
-		Trove:Connect(InventoryService.ResourceAdded, Update)
-		Trove:Connect(InventoryService.ResourceChanged, Update)
-		Trove:Connect(InventoryService.ResourceRemoved, Update)
+		InvTrove:Connect(InventoryService.UnitAdded, Update)
+		InvTrove:Connect(InventoryService.UnitRemoved, Update)
+		InvTrove:Connect(InventoryService.UnitChanged, Update)
+		InvTrove:Connect(InventoryService.ProductAdded, Update)
+		InvTrove:Connect(InventoryService.ProductChanged, Update)
+		InvTrove:Connect(InventoryService.ProductRemoved, Update)
+		InvTrove:Connect(InventoryService.ResourceAdded, Update)
+		InvTrove:Connect(InventoryService.ResourceChanged, Update)
+		InvTrove:Connect(InventoryService.ResourceRemoved, Update)
 
-		return Trove:WrapClean()
+		return InvTrove:WrapClean()
 	end, {})
 
 	return e(InventoryContext.Provider, {

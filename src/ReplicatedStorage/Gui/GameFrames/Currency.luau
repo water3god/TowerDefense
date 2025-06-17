@@ -10,8 +10,6 @@ local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
 local e = React.createElement
 
-local Gui = ReplicatedStorage.Gui
-
 local Client = ReplicatedStorage.Client
 local GlobalClient = Client.GlobalClient
 local CurrencyService = require(GlobalClient.CurrencyService)

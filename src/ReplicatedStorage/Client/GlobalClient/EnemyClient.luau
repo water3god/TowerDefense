@@ -4,7 +4,6 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
-local ServerStorage = game:GetService("ServerStorage")
 
 local EnemyEvents = ReplicatedStorage.Remotes.Enemy
 local SpawnEvent = EnemyEvents.SpawnEvent
@@ -15,7 +14,6 @@ local DestroyEvent = EnemyEvents.DestroyEvent
 
 local Packages = ReplicatedStorage.Packages
 local Timer = require(ReplicatedStorage.Packages.Timer)
-local Promise = require(Packages.Promise)
 local Signal = require(Packages.Signal)
 local Trove = require(Packages.Trove)
 
@@ -34,7 +32,7 @@ local Default = EnemiesAnimations.Default
 
 local ModelStorage = ReplicatedStorage.ModelStorage
 local Extra = ModelStorage.Extra
-local Rig = Extra.Rig
+local _Rig = Extra.Rig
 local Arrow = Extra.Arrow
 
 local Emitters = ModelStorage.Emitters
@@ -112,7 +110,7 @@ local function GetYOffset(Model: Model)
 	return Size.Y / 2 + HeightDifference
 end
 
-local function AddEnemyTag(RigClone: typeof(Rig))
+local function AddEnemyTag(RigClone: typeof(_Rig))
 	for _, BasePart in ipairs(RigClone:GetDescendants()) do
 		if BasePart:IsA("BasePart") then
 			BasePart.CollisionGroup = "PlacedCharacters"

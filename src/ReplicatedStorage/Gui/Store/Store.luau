@@ -11,10 +11,7 @@ local Player = Players.LocalPlayer
 
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
-local Main = require(ReplicatedStorage.Gui.CoreGame.Main)
-local InfoFrame = require(ReplicatedStorage.Gui.Inventory.InfoFrame)
 local React = require(Packages.React)
-local ReactRoblox = require(Packages.ReactRoblox)
 local e = React.createElement
 
 local Modules = ReplicatedStorage.Modules
@@ -24,6 +21,7 @@ local JoinDicts = HelperFunctions.joinDicts
 -- Reference UI --
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
+local Main = require(CoreGame.Main)
 local CloseButton = require(CoreGame.CloseButton)
 local UIStroke = require(CoreGame.UIStroke)
 local Title = require(CoreGame.Title)
@@ -103,7 +101,7 @@ local function CreateBasicTable(props: { children: { [any]: any }? })
 		},
 	}, {
 		UIGridLayout = e("UIGridLayout", {
-			CellPadding = UDim2.new(0, 0),
+			CellPadding = UDim2.fromScale(0, 0),
 			CellSize = UDim2.fromScale(0.2, 0.3),
 			StartCorner = Enum.StartCorner.TopLeft,
 		}),
@@ -120,8 +118,8 @@ local function CreateStoreFrame(Properties: Properties)
 		SetHovered(nil)
 	end, { OpenFrame })
 
-	local OnFrameButtonClick = React.useCallback(function(OpenFrame: string)
-		SetOpenFrame(OpenFrame)
+	local OnFrameButtonClick = React.useCallback(function(OpenFrameInput: string)
+		SetOpenFrame(OpenFrameInput)
 	end, {})
 
 	local MainFrames = React.useMemo(function()
@@ -132,6 +130,7 @@ local function CreateStoreFrame(Properties: Properties)
 		local Frames = {}
 
 		if OpenFrame == "Offers" then
+			return Frames
 		elseif OpenFrame == "Gamepasses" then
 			for Id, Data in pairs(PurchaseData.GamepassData) do
 				Frames[Id] = e(CreateProductFrame, {
@@ -180,6 +179,7 @@ local function CreateStoreFrame(Properties: Properties)
 		elseif OpenFrame == "Gamepasses" then
 			MarketplaceService:PromptGamePassPurchase(Player, HoveredProduct)
 		elseif OpenFrame == "Offers" then
+			return
 		end
 	end, { HoveredProduct, OpenFrame :: any })
 
@@ -193,9 +193,10 @@ local function CreateStoreFrame(Properties: Properties)
 			end
 		elseif OpenFrame == "Gamepasses" then
 			if GiftId then
-				MarketplaceService:PromptProductPurchase(Player, HoveredProduct)
+				MarketplaceService:PromptGamePassPurchase(Player, HoveredProduct)
 			end
 		elseif OpenFrame == "Offers" then
+			return
 		end
 	end, { HoveredProduct, OpenFrame :: any })
 

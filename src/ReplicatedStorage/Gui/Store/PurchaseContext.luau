@@ -9,9 +9,7 @@ local PurchaseService = require(ReplicatedStorage.Client.GlobalClient.PurchaseSe
 
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
-local Main = require(ReplicatedStorage.Gui.CoreGame.Main)
 local React = require(Packages.React)
-local ReactRoblox = require(Packages.ReactRoblox)
 local e = React.createElement
 
 -- Reference UI --

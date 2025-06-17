@@ -264,11 +264,11 @@ local function CreateUpgradeFrame(Properties: Properties)
 		if AboveData then
 			for Property, Data in pairs(LevelData) do
 				if table.find(Stats.StatProperties, Property) then
-					local function GetValue(Data: number & { number }, Property: string): number
-						if Property == "Damage" then
-							return (Data :: any)[1] :: number
+					local function GetValue(PropData: number & { number }, PropertyInput: string): number
+						if PropertyInput == "Damage" then
+							return (PropData :: any)[1] :: number
 						else
-							return Data :: number
+							return PropData :: number
 						end
 					end
 
@@ -291,11 +291,11 @@ local function CreateUpgradeFrame(Properties: Properties)
 		else
 			for Property, Data in pairs(LevelData) do
 				if table.find(Stats.StatProperties, Property) then
-					local function GetValue(Data: number & { number }, Property: string): number
-						if Property == "Damage" then
-							return (Data :: any)[1] :: number
+					local function GetValue(DataInput: number & { number }, PropertyInput: string): number
+						if PropertyInput == "Damage" then
+							return (DataInput :: any)[1] :: number
 						else
-							return Data :: number
+							return DataInput :: number
 						end
 					end
 

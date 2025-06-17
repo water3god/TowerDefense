@@ -4,7 +4,6 @@
 
 -- Services --
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local SmoothVoxelsUpgraderService = game:GetService("SmoothVoxelsUpgraderService")
 local SoundService = game:GetService("SoundService")
 
 local Packages = ReplicatedStorage.Packages

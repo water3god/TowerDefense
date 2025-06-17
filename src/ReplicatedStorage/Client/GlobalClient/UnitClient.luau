@@ -15,7 +15,7 @@ local Player = Players.LocalPlayer
 local ModelStorage = ReplicatedStorage.ModelStorage
 local UnitsAnimations = ReplicatedStorage.Animations.Units
 local Default = UnitsAnimations.Default
-local Global = UnitsAnimations.Global
+local _Global = UnitsAnimations.Global
 
 local GlobalWorkspace = workspace.GlobalWorkspace
 local UnitsFolder = GlobalWorkspace.Units
@@ -34,9 +34,9 @@ local Camera = workspace.CurrentCamera
 
 local Extra = ModelStorage.Extra
 local RadiusReference = Extra.CollisionRadius
-local Rig = Extra.Rig
+local _Rig = Extra.Rig
 local RangeDisplay = Extra.RangeDisplay
-local CenterPart = Extra.CenterPart
+local CenterPartRef = Extra.CenterPart
 local CylinderCast = Extra.CylinderCast
 
 local Client = ReplicatedStorage.Client
@@ -53,7 +53,7 @@ local Packages = ReplicatedStorage.Packages
 local Trove = require(Packages.Trove)
 local Signal = require(Packages.Signal)
 local Promise = require(Packages.Promise)
-local Input = require(Packages.Input)
+local InputLib = require(Packages.Input)
 local React = require(Packages.React)
 local ReactRoblox = require(Packages.ReactRoblox)
 
@@ -151,9 +151,9 @@ local function WeldParts(Character: typeof(ModelStorage.Extra.Rig), Adornment: M
 	end
 end
 
-local function GetRotatingRange(Range: number)
-	local Trove = Trove.new()
-	local RangePart: BasePart = Trove:Clone(RangeDisplay)
+local function GetRotatingRange()
+	local NewTrove = Trove.new()
+	local RangePart: BasePart = NewTrove:Clone(RangeDisplay)
 	RangePart.CollisionGroup = "PlacementClient"
 
 	local CurrentPromise: Promise.Promise? = nil
@@ -167,35 +167,35 @@ local function GetRotatingRange(Range: number)
 
 		local ShrunkRange = Range * 0.5
 		local NumberLerp = Enabled and Lerps.number(ShrunkRange, Range) or Lerps.number(Range, ShrunkRange)
-		local Promise = Trove:AddPromise(HelperFunctions.TweenPromise(0.05, function(alpha: number)
+		local NewPromise = NewTrove:AddPromise(HelperFunctions.TweenPromise(0.05, function(alpha: number)
 			local Direction = if Enabled then Enum.EasingDirection.Out else Enum.EasingDirection.In
 			local NewAlpha = TweenService:GetValue(alpha, Enum.EasingStyle.Cubic, Direction)
 			local LerpedRange = NumberLerp(NewAlpha)
 			RangePart.Size = Vector3.new(LerpedRange, RangePart.Size.Y, LerpedRange)
 		end) :: any) :: Promise.Promise
 
-		Promise:andThen(function()
+		NewPromise:andThen(function()
 			CurrentPromise = nil
 		end)
 
-		CurrentPromise = Promise
+		CurrentPromise = NewPromise
 
-		return Promise
+		return NewPromise
 	end
 
-	Trove:Connect(RangePart:GetPropertyChangedSignal("Parent"), function()
+	NewTrove:Connect(RangePart:GetPropertyChangedSignal("Parent"), function()
 		if Connection then
 			Connection:Disconnect()
 			Connection = nil
 		end
 		if RangePart.Parent then
-			Connection = Trove:Connect(RunService.PreSimulation, function()
+			Connection = NewTrove:Connect(RunService.PreSimulation, function()
 				RangePart.CFrame *= CFrame.Angles(0, math.rad(0.5), 0)
 			end) :: any
 		end
 	end)
 
-	return RangePart, Animate, Trove
+	return RangePart, Animate, NewTrove
 end
 
 --[[Part0 is the part being attached, Part1 is the Root (Usually Middle or PrimaryPart) part. ]]
@@ -211,7 +211,7 @@ local function Weld(Part0: BasePart, Part1: BasePart)
 	return Motor
 end
 
-local function SetAdornment(Character: typeof(Rig), AdornmentName: string)
+local function SetAdornment(Character: typeof(_Rig), AdornmentName: string)
 	local Adornment = Adornments[AdornmentName]:Clone()
 	WeldParts(Character, Adornment)
 	Adornment.Parent = Character
@@ -315,7 +315,7 @@ local function NewUnit(Input: Types.UnitInput, New: boolean)
 	local CenterVector3 = self.UnitData.Vector3Offset
 
 	if CenterVector3 and CenterVector3 ~= Vector3.zero then
-		self.CenterPart = CenterPart:Clone()
+		self.CenterPart = CenterPartRef:Clone()
 		self.CenterPart.CFrame = self.Root.CFrame + CenterVector3
 		Weld(self.CenterPart, self.Root)
 	else
@@ -339,7 +339,7 @@ local function NewUnit(Input: Types.UnitInput, New: boolean)
 
 	self.IsClicked = false
 
-	local RangePart, Animate, RangeTrove = GetRotatingRange(1)
+	local RangePart, Animate, RangeTrove = GetRotatingRange()
 
 	self.RangePart = RangePart
 	self.RangePart.Anchored = true
@@ -575,7 +575,7 @@ function UnitModule:_CalculateSpeedRatio()
 	local OldRatio = self.SpeedRatio
 	local SpeedRatio = 1
 
-	for Name, Data in pairs(self.SpeedRatioData) do
+	for _, Data in pairs(self.SpeedRatioData) do
 		SpeedRatio *= Data.SpeedRatio
 	end
 
@@ -592,32 +592,32 @@ function UnitModule:WeldAdornment(AdornmentInput: Model)
 	return Adornment
 end
 
-function UnitModule:AddPromise(Promise: Promise.Promise, PromiseName: string)
+function UnitModule:AddPromise(NewPromise: Promise.Promise, PromiseName: string)
 	self:CancelPromise(PromiseName)
-	self.Promises[PromiseName] = Promise
+	self.Promises[PromiseName] = NewPromise
 
-	self.Trove:AddPromise(Promise :: any)
+	self.Trove:AddPromise(NewPromise :: any)
 
-	Promise:finally(function()
+	NewPromise:finally(function()
 		self.Promises[PromiseName] = nil
 	end)
 end
 
-function UnitModule:AddAttackPromise(Promise: Promise.Promise, PromiseName: string)
+function UnitModule:AddAttackPromise(AttackPromise: Promise.Promise, PromiseName: string)
 	self:CancelPromise(PromiseName)
-	self.Promises[PromiseName] = Promise
+	self.Promises[PromiseName] = AttackPromise
 
-	self.AttackTrove:AddPromise(Promise :: any)
+	self.AttackTrove:AddPromise(AttackPromise :: any)
 
-	Promise:finally(function()
+	AttackPromise:finally(function()
 		self.Promises[PromiseName] = nil
 	end)
 end
 
 function UnitModule:CancelPromise(PromiseName: string)
-	local Promise = self.Promises[PromiseName]
-	if Promise then
-		Promise:cancel()
+	local UnitPromise = self.Promises[PromiseName]
+	if UnitPromise then
+		UnitPromise:cancel()
 		self.Promises[PromiseName] = nil
 	end
 end
@@ -708,7 +708,7 @@ local DefaultCFrame = CFrame.new(0, -0.4, -2) * CFrame.Angles(0, math.rad(-180),
 
 function UnitModule.InitCharacter(Unit: string, Position: CFrame?)
 	local InitTrove = Trove.new()
-	local UnitModel: typeof(Rig) = InitTrove:Clone(UnitModels[Unit])
+	local UnitModel: typeof(_Rig) = InitTrove:Clone(UnitModels[Unit])
 	local Humanoid: Humanoid & { [any]: any } = UnitModel.Humanoid
 	local Animator: Animator & { [any]: any } = Humanoid.Animator
 	local Root: BasePart = UnitModel.HumanoidRootPart
@@ -724,7 +724,7 @@ function UnitModule.InitCharacter(Unit: string, Position: CFrame?)
 	end
 
 	if UnitData.Vector3Offset and UnitData.Vector3Offset ~= Vector3.zero then
-		CenterPart = CenterPart:Clone()
+		CenterPart = CenterPartRef:Clone()
 		CenterPart.CFrame = Root.CFrame + UnitData.Vector3Offset
 		Weld(CenterPart, Root)
 	else
@@ -822,7 +822,7 @@ function UnitModule.InitPlacement(Unit: string)
 	local RotationIndex: number = 0
 	local IsValid: boolean = nil
 
-	local RangePart, Animate, RangeTrove = GetRotatingRange(Range)
+	local RangePart, Animate, RangeTrove = GetRotatingRange()
 	InitTrove:Add(RangeTrove)
 	Animate(Range, true)
 
@@ -836,16 +836,16 @@ function UnitModule.InitPlacement(Unit: string)
 	RangePart.Parent = workspace
 	Variables.InPlacement = true
 
-	InitTrove:AddPromise(Promise.defer(function(resolve, reject, onCancel)
-		for Id, Unit in pairs(Units) do
-			TweenTransparency(Unit.RadiusPart, 0.4)
+	InitTrove:AddPromise(Promise.defer(function()
+		for _, OtherUnit in pairs(Units) do
+			TweenTransparency(OtherUnit.RadiusPart, 0.4)
 		end
 	end) :: any)
 
 	InitTrove:Add(function()
 		Variables.InPlacement = false
-		for Id, Unit in pairs(Units) do
-			TweenTransparency(Unit.RadiusPart, 1)
+		for _, OtherUnit in pairs(Units) do
+			TweenTransparency(OtherUnit.RadiusPart, 1)
 		end
 	end)
 
@@ -862,10 +862,10 @@ function UnitModule.InitPlacement(Unit: string)
 			end
 		end
 		if UnitPosition then
-			local UnitPosition = HelperFunctions.ConvertToVec2(UnitPosition)
-			for _, Unit in pairs(Units) do
-				local OtherPosition = HelperFunctions.ConvertToVec2(Unit.CFrame.Position)
-				if (UnitPosition - OtherPosition).Magnitude < (Unit.CollisionRadius + Radius) / 2 then
+			local NewUnitPosition = HelperFunctions.ConvertToVec2(UnitPosition)
+			for _, OtherUnit in pairs(Units) do
+				local OtherPosition = HelperFunctions.ConvertToVec2(OtherUnit.CFrame.Position)
+				if (NewUnitPosition - OtherPosition).Magnitude < (OtherUnit.CollisionRadius + Radius) / 2 then
 					return false
 				end
 			end
@@ -913,15 +913,15 @@ function UnitModule.InitPlacement(Unit: string)
 
 	local NewPosition: Vector3 = nil
 
-	local function Update(UnitPosition: Vector3)
-		NewPosition = UnitPosition
-		local LastPosition = CFrame.new(UnitPosition) * CFrame.Angles(0, math.rad(-90 * AnimatedRotation), 0)
+	local function Update(NewUnitPosition: Vector3)
+		NewPosition = NewUnitPosition
+		local LastPosition = CFrame.new(NewUnitPosition) * CFrame.Angles(0, math.rad(-90 * AnimatedRotation), 0)
 			+ VectorOffset
 		CenterPart.CFrame = LastPosition
 
 		local OldValid = IsValid
 
-		local Parts = CastCylinder(UnitPosition, OvParams, Radius)
+		local Parts = CastCylinder(NewUnitPosition, OvParams, Radius)
 		IsValid = CheckValidity(Parts)
 		OnValdiityCheck(OldValid)
 
@@ -972,10 +972,10 @@ function UnitModule.InitPlacement(Unit: string)
 
 	local InputTrove = InitTrove:Extend()
 
-	Input.PreferredInput.Observe(function(Preferred)
+	InputLib.PreferredInput.Observe(function(Preferred)
 		if Preferred == "MouseKeyboard" then
-			local Mouse = InputTrove:Construct(Input.Mouse)
-			local Keyboard = InputTrove:Construct(Input.Keyboard)
+			local Mouse = InputTrove:Construct(InputLib.Mouse)
+			local Keyboard = InputTrove:Construct(InputLib.Keyboard)
 
 			OnFrame()
 
@@ -993,7 +993,7 @@ function UnitModule.InitPlacement(Unit: string)
 
 			InputTrove:BindToRenderStep("InitPlacement", Enum.RenderPriority.Character.Value, OnFrame)
 		elseif Preferred == "Touch" then
-			local Touch = InputTrove:Construct(Input.Touch)
+			local Touch = InputTrove:Construct(InputLib.Touch)
 
 			local Result = HelperFunctions.Raycast(Camera.ViewportSize / 2, RayParams)
 
@@ -1014,13 +1014,14 @@ function UnitModule.InitPlacement(Unit: string)
 				end
 			end)
 
-			Touch.TouchMoved:Connect(function(touch: InputObject, processed: boolean)
+			Touch.TouchMoved:Connect(function(_, processed: boolean)
 				if processed then
 					return
 				end
 				OnFrame()
 			end)
 		elseif Preferred == "Gamepad" then
+			return
 		end
 	end)
 
@@ -1064,8 +1065,8 @@ function UnitModule.InitPlacement(Unit: string)
 end
 
 OnPlacement.OnClientEvent:Connect(function(PlacementData: { [string]: Types.UnitInput }, New: boolean)
-	for _, Input in pairs(PlacementData) do
-		NewUnit(Input, New)
+	for _, NewInput in pairs(PlacementData) do
+		NewUnit(NewInput, New)
 	end
 end)
 

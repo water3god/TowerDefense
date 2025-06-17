@@ -117,7 +117,7 @@ type PlacementData = {
 local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 	local UnitsContext = React.useContext(EquippedUnitsContext.Context)
 	local CurrencyContext = React.useContext(Currency.Context)
-	local WaveContext = React.useContext(WaveContext.Context)
+	local WaveData = React.useContext(WaveContext.Context)
 	local Units = UnitsContext.Units
 
 	React.useImperativeHandle(ref, function()
@@ -176,10 +176,10 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 
 	if not IsLobby then
 		React.useEffect(function()
-			local Trove = Trove.new()
-			local Keyboard = Trove:Construct(Keyboard)
+			local InputTrove = Trove.new()
+			local NewKeyboard = InputTrove:Construct(Keyboard)
 
-			Keyboard.KeyDown:Connect(function(KeyCode: Enum.KeyCode)
+			NewKeyboard.KeyDown:Connect(function(KeyCode: Enum.KeyCode)
 				if KeyCode.Value >= 49 and KeyCode.Value <= 53 then
 					local Key = KeyCode.Value - 48
 
@@ -189,7 +189,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 				end
 			end)
 
-			return Trove:WrapClean()
+			return InputTrove:WrapClean()
 		end, { Units, PlacementData :: any })
 	end
 
@@ -197,10 +197,10 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 
 	if IsLobby then
 		React.useEffect(function()
-			if WaveContext.StartTime == 0 and WaveContext.Time == 0 then
+			if WaveData.StartTime == 0 and WaveData.Time == 0 then
 				SetPlacement(nil)
 			end
-		end, { WaveContext })
+		end, { WaveData })
 	end
 
 	local CurrencyValue = React.useMemo(function()

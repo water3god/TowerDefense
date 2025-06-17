@@ -14,20 +14,20 @@ local Remotes = ReplicatedStorage.Remotes
 local BoothEvents = Remotes.Booth
 
 local ClientFires = BoothEvents.ClientFires
-local ChooseMap: RemoteEvent = ClientFires.ChooseMap
-local LeaveBooth: RemoteEvent = ClientFires.LeaveBooth
-local OwnerStart: RemoteEvent = ClientFires.OwnerStart
+local ChooseMap = ClientFires.ChooseMap
+local LeaveBooth = ClientFires.LeaveBooth
+local OwnerStart = ClientFires.OwnerStart
 
 local ServerFires = BoothEvents.ServerFires
-local BoothChoosing: RemoteEvent = ServerFires.BoothChoosing
-local BoothMapLoading: RemoteEvent = ServerFires.BoothMapLoading
-local BoothRestarted: RemoteEvent = ServerFires.BoothRestarted
-local BoothWaiting: RemoteEvent = ServerFires.BoothWaiting
-local PlayerChanged: RemoteEvent = ServerFires.PlayerChanged
+local BoothChoosing = ServerFires.BoothChoosing
+local BoothMapLoading = ServerFires.BoothMapLoading
+local BoothRestarted = ServerFires.BoothRestarted
+local BoothWaiting = ServerFires.BoothWaiting
+local PlayerChanged = ServerFires.PlayerChanged
 --local TPGuiSet = ServerFires.TPGuiSet
 
 local DataEvents = BoothEvents.DataEvents
-local DataSync: RemoteEvent = DataEvents.DataSync
+local DataSync = DataEvents.DataSync
 
 export type TimeData = {
 	StartTime: number,
@@ -107,7 +107,7 @@ BoothRestarted.OnClientEvent:Connect(function()
 	Module.Data = nil
 end)
 
-BoothWaiting.OnClientEvent:Connect(function(Data)
+BoothWaiting.OnClientEvent:Connect(function(Data: any)
 	Module.Data = Data
 	Module.BoothWaiting:Fire(Data)
 end)

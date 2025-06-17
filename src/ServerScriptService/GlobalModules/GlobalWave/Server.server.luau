@@ -89,28 +89,45 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 			TotalXP = CalculateXPNormal(Win, Wave.Wave, Wave.XPMultiplier)
 		end
 
+		local WavePercentage = Wave.Wave / #Wave.Data.Data
+
 		for _, Player in ipairs(Players:GetPlayers()) do
 			local PlayerDataModule = PlayerData.GetPlayerData(Player)
 			local SendData = { Units = {}, Resources = {}, ExistingUnits = {} }
 			local OtherSendData = {}
 
 			if PlayerDataModule then
-				for _, Unit in ipairs(Wave.RewardInfo.Units) do
-					local Data = PlayerDataModule.Profile.Data
+				if Win then
+					for _, Unit in ipairs(Wave.RewardInfo.Units) do
+						local Data = PlayerDataModule.Profile.Data
 
-					if HelperFunctions.Len(Data.Units) < Data.MaxUnitCount then
-						PlayerDataModule:AddUnit(Unit)
-						table.insert(SendData, Unit)
+						if HelperFunctions.Len(Data.Units) < Data.MaxUnitCount then
+							PlayerDataModule:AddUnit(Unit)
+							table.insert(SendData, Unit)
+						end
 					end
 				end
 
 				for _, Resource in ipairs(Wave.RewardInfo.Resources) do
 					if Resource.Resource == "Gold" then
-						PlayerDataModule:AddGold(Resource.Count)
+						if Win then
+							PlayerDataModule:AddGold(Resource.Count)
+							table.insert(SendData.Resources, Resource)
+						else
+							if not Wave.IsInfinite then
+								local Amount = math.floor(Resource.Count / WavePercentage / 2)
+								if Amount > 0 then
+									PlayerDataModule:AddGold(Amount)
+									table.insert(SendData.Resources, Resource)
+								end
+							end
+						end
 					else
-						PlayerDataModule:AddResource(Resource.Resource, Resource.Count)
+						if Win then
+							PlayerDataModule:AddResource(Resource.Resource, Resource.Count)
+							table.insert(SendData.Resources, Resource)
+						end
 					end
-					table.insert(SendData.Resources, Resource)
 				end
 
 				for _, EquippedUnit in ipairs(PlayerDataModule:GetEquippedUnits()) do
@@ -131,7 +148,7 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 				OtherSendData.NewXP = PlayerDataModule.Profile.Data.XP
 				OtherSendData.NewLevel = PlayerDataModule.Profile.Data.Level
 
-				WaveEnded:FireClient(Player, Win, SendData, OtherSendData)
+				WaveEnded:FireClient(Player, Win, SendData, OtherSendData, WavePercentage)
 			end
 		end
 	end)

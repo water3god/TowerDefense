@@ -8,7 +8,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
-local ReactRoblox = require(Packages.ReactRoblox)
 local e = React.createElement
 
 local Modules = ReplicatedStorage.Modules
@@ -34,14 +33,14 @@ local function CreateBaseButton(Properties: {
 		end
 	end, { Properties.Highlighted })
 
-	return React.createElement(Main.Animateables.ImageButton, {
+	return e(Main.Animateables.ImageButton, {
 		native = JoinDicts({
 			Size = UDim2.fromScale(0.125, 0.09),
 			Image = Image,
 			[React.Event.MouseButton1Click] = Properties.OnClick,
 		}, Properties.native),
 	}, {
-		TextLabel = React.createElement(Main.TextLabel, {
+		TextLabel = e(Main.TextLabel, {
 			native = {
 				Text = Properties.Text,
 				Position = UDim2.fromScale(0.5, 0.5),

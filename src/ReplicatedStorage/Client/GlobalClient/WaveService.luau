@@ -52,8 +52,9 @@ local Module: {
 	HealthChanged: Signal.Signal<number, number>,
 	Passed: Signal.Signal<number>,
 	TimeChanged: Signal.Signal<number, number>,
-	Ended: Signal.Signal<boolean, GameInfo.ResourceData, any>,
+	Ended: Signal.Signal<boolean, GameInfo.ResourceData, any, number>,
 	Win: boolean?,
+	Percentage: number?,
 	EndData: GameInfo.ResourceData?,
 	MainXPData: MainXPData?,
 
@@ -74,6 +75,7 @@ local Module: {
 		TimeChanged = Signal.new(),
 		Ended = Signal.new(),
 		Win = nil,
+		Percentage = nil,
 		EndData = nil,
 
 		VoteData = {
@@ -121,12 +123,13 @@ TimeChanged.OnClientEvent:Connect(function(Data: { Time: number, StartTime: numb
 	end
 end)
 
-WaveEnded.OnClientEvent:Connect(function(Win: boolean, Data: GameInfo.ResourceData, OtherData)
+WaveEnded.OnClientEvent:Connect(function(Win: boolean, Data: GameInfo.ResourceData, OtherData, Percentage: number)
 	Module.Win = Win
 	Module.EndData = Data
 	Module.MainXPData = OtherData
+	Module.Percentage = Percentage
 	if WaveData then
-		Module.Ended:Fire(Win, Data, OtherData)
+		Module.Ended:Fire(Win, Data, OtherData, Percentage)
 		WaveData = nil
 	end
 end)

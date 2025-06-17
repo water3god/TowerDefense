@@ -9,7 +9,6 @@ local GuiService = game:GetService("GuiService")
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
-local ReactRoblox = require(Packages.ReactRoblox)
 local e = React.createElement
 
 local Trove = require(Packages.Trove)
@@ -118,7 +117,7 @@ local function CreateConnected(Props: ConnectedProps)
 	})
 
 	React.useEffect(function()
-		local Trove = Trove.new()
+		local NewTrove = Trove.new()
 		if Props.EnemyId then
 			local Enemy = EnemyClient.GetEnemy(Props.EnemyId)
 			if Enemy then
@@ -128,22 +127,22 @@ local function CreateConnected(Props: ConnectedProps)
 					MaxHealth = Enemy.MaxHealth,
 				})
 
-				Trove:Connect(Enemy.HealthChanged, function(Health: number)
+				NewTrove:Connect(Enemy.HealthChanged, function(Health: number)
 					SetData(Join(Data, {
 						Health = Health,
 					}) :: any)
 				end)
 
-				Trove:Connect(Enemy.MaxHealthChanged, function(MaxHealth: number)
+				NewTrove:Connect(Enemy.MaxHealthChanged, function(MaxHealth: number)
 					SetData(Join(Data, {
 						MaxHealth = MaxHealth,
 					}) :: any)
 				end)
 
-				Trove:Connect(Enemy.Destroying, Trove:WrapClean())
+				NewTrove:Connect(Enemy.Destroying, NewTrove:WrapClean())
 			end
 		end
-		return Trove:WrapClean()
+		return NewTrove:WrapClean()
 	end, { Props.EnemyId })
 
 	return e(CreateEnemyToolTip, {

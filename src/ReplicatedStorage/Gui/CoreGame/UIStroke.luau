@@ -15,9 +15,6 @@ local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
 
-local CoreGame = ReplicatedStorage.Gui.CoreGame
-local Hooks = require(CoreGame.Hooks)
-
 local Camera = workspace.CurrentCamera
 
 local IsRunning = RunService:IsRunning()
@@ -108,23 +105,23 @@ function Funcs.UIStrokeAdvanced(Properties: PropertiesBasic)
 	local Stroke: { current: UIStroke? } = React.useRef(nil)
 
 	React.useEffect(function()
-		local Trove = Trove.new()
+		local NewTrove = Trove.new()
 
 		if Stroke.current then
-			local Stroke = Stroke.current
+			local StrokeInst = Stroke.current
 
-			if Stroke.Parent and Stroke.Parent:IsA("GuiObject") then
+			if StrokeInst.Parent and StrokeInst.Parent:IsA("GuiObject") then
 				local function Set()
-					local AbsoluteSize = Stroke.Parent.AbsoluteSize
+					local AbsoluteSize = StrokeInst.Parent.AbsoluteSize
 					local TotalSize = (AbsoluteSize.X + AbsoluteSize.Y) / 2
 					SetSize(TotalSize * Properties.Stroke)
 				end
 				Set()
-				Trove:Connect(Stroke.Parent:GetPropertyChangedSignal("AbsoluteSize"), Set)
+				NewTrove:Connect(StrokeInst.Parent:GetPropertyChangedSignal("AbsoluteSize"), Set)
 			end
 		end
 
-		return Trove:WrapClean()
+		return NewTrove:WrapClean()
 	end, { Stroke.current, Properties.Stroke :: any })
 
 	return e(

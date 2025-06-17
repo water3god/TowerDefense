@@ -14,7 +14,6 @@ local ReactSpring = require(Packages.ReactSpring)
 local e = React.createElement
 
 local Trove = require(Packages.Trove)
-local TableUtil = require(Packages.TableUtil)
 local Input = require(Packages.Input)
 local Touch = Input.Touch
 local Keyboard = Input.Keyboard
@@ -349,7 +348,7 @@ local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (strin
 			end
 
 			local function OnFrame(Position: Vector2)
-				local HoveredData = HoveredDataRef.current
+				local NewHoveredData = HoveredDataRef.current
 				local Result = HelperFunctions.Raycast(Position, Params)
 				if Result and Result.Instance then
 					if Result.Instance:IsDescendantOf(GlobalWorkspace) then
@@ -358,7 +357,7 @@ local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (strin
 								continue
 							end
 							if Unit:PartIsDescendantOf(Result.Instance) then
-								if not HoveredData or HoveredData.Id ~= Unit.UniqueId then
+								if not NewHoveredData or NewHoveredData.Id ~= Unit.UniqueId then
 									SetHoveredData({
 										Type = "Unit",
 										Id = Unit.UniqueId,
@@ -374,7 +373,7 @@ local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (strin
 						end
 						for _, Enemy in pairs(EnemyClient.GetEnemies()) do
 							if Enemy:PartIsDescendantOf(Result.Instance) then
-								if not HoveredData or HoveredData.Id ~= Enemy.UniqueId then
+								if not NewHoveredData or NewHoveredData.Id ~= Enemy.UniqueId then
 									SetHoveredData({
 										Type = "Enemy",
 										Id = Enemy.UniqueId,
@@ -395,26 +394,27 @@ local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (strin
 				HoveredDataRef.current = nil
 			end
 
-			local Trove = Trove.new()
+			local InputTrove = Trove.new()
 
 			local Disconnect = Input.PreferredInput.Observe(function(Preferred)
-				Trove:Destroy()
+				InputTrove:Destroy()
 				if Preferred == "MouseKeyboard" then
-					local Mouse = Trove:Construct(Mouse)
-					local Keyboard = Trove:Construct(Keyboard)
+					local NewMouse = InputTrove:Construct(Mouse)
+					local NewKeyboard = InputTrove:Construct(Keyboard)
 
-					Mouse.LeftDown:Connect(function()
+					NewMouse.LeftDown:Connect(function()
 						OnPress(Mouse:GetPosition())
 					end)
 
-					Trove:Connect(RunService.PostSimulation, function()
+					InputTrove:Connect(RunService.PostSimulation, function()
 						OnFrame(Mouse:GetPosition())
 					end)
 				elseif Preferred == "Gamepad" then
+					return
 				elseif Preferred == "Touch" then
-					local Touch = Trove:Construct(Touch)
+					local NewTouch = InputTrove:Construct(Touch)
 
-					Touch.TouchTap:Connect(function(TouchPositions: { Vector2 }, Processed: boolean)
+					NewTouch.TouchTap:Connect(function(TouchPositions: { Vector2 }, Processed: boolean)
 						if Processed then
 							return
 						end
@@ -426,7 +426,7 @@ local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (strin
 			end)
 
 			return function()
-				Trove:Destroy()
+				InputTrove:Destroy()
 				Disconnect()
 			end
 		end, {})
@@ -468,7 +468,7 @@ end
 local PlayCFrame = CFrame.new(145.5, 7.834, 143.5) * CFrame.Angles(0, math.rad(25), 0)
 local SummonCFrame = CFrame.new(-170, 10, -215)
 
-local VisibleFrames = {
+local _VisibleFrames = {
 	[Constants.INVENTORY_FRAME] = { "Bottom" },
 	[Constants.IN_ROLL] = { "Bottom" },
 	[Constants.ROLL_FRAME] = { "Bottom" },
@@ -584,7 +584,7 @@ local function Render()
 
 	local VisibleFrames = React.useMemo(function()
 		if TransitionFrame then
-			return VisibleFrames[TransitionFrame]
+			return _VisibleFrames[TransitionFrame]
 		else
 			return {}
 		end

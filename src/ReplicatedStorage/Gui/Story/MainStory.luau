@@ -32,6 +32,9 @@ local ResourceFrame = require(Inventory.ResourceFrame)
 local Story = Gui.Story
 local StoryContext = require(Story.StoryContext)
 
+local WarningFolder = Gui.Warning
+local WarningContext = require(WarningFolder.WarningContext)
+
 local Shared = ReplicatedStorage.Shared
 local GameInfo = require(Shared.GameInfo)
 
@@ -44,19 +47,33 @@ export type Properties = {
 	children: { [any]: any }?,
 }
 
-local function CreateStage(Props: { Hovered: boolean, Number: number, OnClick: () -> () })
+local function CreateStage(Props: { Hovered: boolean, Number: number, OnClick: () -> (), Enabled: boolean })
+	local WarningData = React.useContext(WarningContext.Context)
+
+	local NoLevel = React.useCallback(function()
+		WarningData.Add(string.format("You do not have Level %u Unlocked!", Props.Number))
+	end, { WarningData, Props.Number :: any })
+
 	return e(Main.Animateables.TextButton, {
 		native = {
 			BackgroundTransparency = 0,
-			BackgroundColor3 = if Props.Hovered then Color3.fromRGB(127, 32, 165) else Color3.fromRGB(93, 11, 141),
+			BackgroundColor3 = if Props.Enabled then Color3.fromRGB(127, 32, 165) else Color3.fromRGB(93, 11, 141),
 			Size = UDim2.fromScale(0.78, 0.78),
 			LayoutOrder = Props.Number,
 			Text = "",
-			[React.Event.MouseButton1Click] = Props.OnClick,
+			[React.Event.MouseButton1Click] = Props.Enabled and Props.OnClick or NoLevel,
 		},
 		children = {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 				AspectRatio = 1,
+			}),
+			UIStroke = Props.Hovered and e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.01,
+				Color = Color3.new(1, 1, 1),
+				native = {
+					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+					LineJoinMode = Enum.LineJoinMode.Round,
+				},
 			}),
 			UICorner = e("UICorner", {
 				CornerRadius = UDim.new(0.2, 0),
@@ -71,11 +88,125 @@ local function CreateStage(Props: { Hovered: boolean, Number: number, OnClick: (
 	})
 end
 
+local function CreateMap(Props: {
+	Enabled: boolean,
+	CurrentMap: string,
+	MapInfo: GameInfo.MapInfo,
+	Index: number,
+	MapClicked: (MapId: string) -> (),
+})
+	local StoryData = React.useContext(StoryContext.Context)
+	local WarningData = React.useContext(WarningContext.Context)
+
+	local InvalidMap = React.useCallback(function()
+		WarningData.Add(string.format("You do not have %s Unlocked!", Props.MapInfo.Name))
+	end, { WarningData, Props.MapInfo :: any })
+
+	return e(Main.Animateables.TextButton, {
+		native = {
+			Text = "",
+			Size = UDim2.fromScale(0.9, 0.25),
+			LayoutOrder = Props.Index,
+			[React.Event.MouseButton1Click] = Props.Enabled and function()
+				Props.MapClicked(Props.MapInfo.MapId)
+			end or InvalidMap,
+		},
+		children = {
+			Main = e(Main.Frame, {
+				native = {
+					Size = UDim2.fromScale(1, 0.7),
+				},
+				children = {
+					MapImage = e(Main.ImageLabel, {
+						native = {
+							Image = Props.MapInfo.Image,
+							ScaleType = Enum.ScaleType.Crop,
+							ImageTransparency = Props.Enabled and 0 or 0.7,
+						},
+						children = {
+							UICorner = e("UICorner", {
+								CornerRadius = UDim.new(0.2, 0),
+							}),
+							UIStroke = Props.CurrentMap == Props.MapInfo.MapId and e(UIStroke.UIStrokeAdvanced, {
+								Stroke = 0.01,
+								Color = Color3.new(1, 1, 1),
+								native = {
+									LineJoinMode = Enum.LineJoinMode.Round,
+								},
+							}),
+							Locked = not Props.Enabled and e(Main.TextLabel, {
+								native = {
+									Text = "Locked!",
+									Rotation = 10,
+									Size = UDim2.fromScale(0.9, 0.5),
+									ZIndex = 10,
+								},
+							}, {
+								UIStroke = e(UIStroke.UIStrokeAdvanced, {
+									Stroke = 0.02,
+									Color = Color3.new(0, 0, 0),
+								}),
+							}),
+							FrameGrad = e(Main.Frame, {
+								native = {
+									BackgroundTransparency = 0,
+								},
+								children = {
+									UICorner = e("UICorner", {
+										CornerRadius = UDim.new(0.2, 0),
+									}),
+									UIGradient = e("UIGradient", {
+										Color = ColorSequence.new(Color3.new()),
+										Rotation = 90,
+										Transparency = NumberSequence.new({
+											NumberSequenceKeypoint.new(0, 1),
+											NumberSequenceKeypoint.new(1, 0.4),
+										}),
+									}),
+								},
+							}),
+						},
+					}),
+					MapName = e(Main.TextLabel, {
+						native = {
+							Position = UDim2.fromScale(0.5, 0),
+							Size = UDim2.fromScale(0.9, 0.4),
+							Text = Props.MapInfo.Name,
+						},
+					}, {
+						UIStroke = e(UIStroke.UIStrokeAdvanced, {
+							Stroke = 0.02,
+							Color = Color3.new(0, 0, 0),
+						}),
+					}),
+					MapsCleared = e(Main.TextLabel, {
+						native = {
+							Position = UDim2.fromScale(0.5, 1),
+							Size = UDim2.fromScale(0.9, 0.4),
+							Text = StoryData.CompletedMaps[Props.MapInfo.MapId] and string.format(
+								"%u/%u",
+								Len(StoryData.CompletedMaps[Props.MapInfo.MapId]),
+								#Props.MapInfo.LevelInfo
+							) or string.format("0/%u", #Props.MapInfo.LevelInfo),
+						},
+					}, {
+						UIStroke = e(UIStroke.UIStrokeAdvanced, {
+							Stroke = 0.02,
+							Color = Color3.new(0, 0, 0),
+						}),
+					}),
+				},
+			}),
+		},
+	})
+end
+
 local HoveredColor = Color3.fromRGB(183, 42, 255)
 local DefaultColor = Color3.new(0.227451, 0.082353, 0.290196)
 
 local function CreateMainStory(Properties: Properties)
 	local StoryData = React.useContext(StoryContext.Context)
+	local WarningData = React.useContext(WarningContext.Context)
 
 	local Time, TotalTime, SetTime = Hooks.UseTime()
 
@@ -129,75 +260,28 @@ local function CreateMainStory(Properties: Properties)
 	local MapData = React.useMemo(function()
 		local Data = {}
 		for Index, MapInfo in ipairs(GameInfo.GameInfo) do
-			Data[MapInfo.MapId] = e(Main.Animateables.TextButton, {
-				native = {
-					Text = "",
-					Size = UDim2.fromScale(0.9, 0.25),
-					LayoutOrder = Index,
-					[React.Event.MouseButton1Click] = function()
-						MapClicked(MapInfo.MapId)
-					end,
-				},
-				children = {
-					Main = e(Main.Frame, {
-						native = {
-							Size = UDim2.fromScale(1, 0.7),
-						},
-						children = {
-							MapImage = e(Main.ImageLabel, {
-								native = {
-									Image = MapInfo.Image,
-									ScaleType = Enum.ScaleType.Crop,
-								},
-								children = {
-									UICorner = e("UICorner", {
-										CornerRadius = UDim.new(0.2, 0),
-									}),
-									FrameGrad = e(Main.Frame, {
-										native = {
-											BackgroundTransparency = 0,
-										},
-										children = {
-											UICorner = e("UICorner", {
-												CornerRadius = UDim.new(0.2, 0),
-											}),
-											UIGradient = e("UIGradient", {
-												Color = ColorSequence.new(Color3.new()),
-												Rotation = 90,
-												Transparency = NumberSequence.new({
-													NumberSequenceKeypoint.new(0, 1),
-													NumberSequenceKeypoint.new(1, 0.4),
-												}),
-											}),
-										},
-									}),
-								},
-							}),
-							MapName = e(Main.TextLabel, {
-								native = {
-									Position = UDim2.fromScale(0.5, 0),
-									Size = UDim2.fromScale(0.9, 0.4),
-									Text = MapInfo.Name,
-								},
-							}),
-							MapsCleared = e(Main.TextLabel, {
-								native = {
-									Position = UDim2.fromScale(0.5, 1),
-									Size = UDim2.fromScale(0.9, 0.4),
-									Text = StoryData.CompletedMaps[MapInfo.MapId] and string.format(
-										"%u/%u",
-										Len(StoryData.CompletedMaps[MapInfo.MapId]),
-										#MapInfo.LevelInfo
-									) or string.format("0/%u", #MapInfo.LevelInfo),
-								},
-							}),
-						},
-					}),
-				},
+			local Enabled: boolean = nil
+
+			if MapInfo.Prerequisite then
+				if StoryData.CompletedMaps[MapInfo.MapId] then
+					Enabled = true
+				else
+					Enabled = false
+				end
+			else
+				Enabled = true
+			end
+
+			Data[MapInfo.MapId] = e(CreateMap, {
+				CurrentMap = CurrentMap,
+				Enabled = Enabled,
+				MapInfo = MapInfo,
+				Index = Index,
+				MapClicked = MapClicked,
 			})
 		end
 		return Data
-	end, { StoryData })
+	end, { StoryData, MapClicked :: any })
 
 	React.useEffect(function()
 		SetStage(1)
@@ -272,6 +356,16 @@ local function CreateMainStory(Properties: Properties)
 	local MapImage = React.useMemo(function()
 		return (GameInfo.GetMapFromId(CurrentMap) :: any).Image :: string
 	end, { CurrentMap :: any })
+
+	local EnabledIndex = React.useMemo(function()
+		local Data = StoryData.CompletedMaps[CurrentMap]
+
+		if Data then
+			return #Data + 1
+		end
+
+		return 1
+	end, { StoryData, CurrentMap :: any })
 
 	return e(Main.ImageLabel, {
 		native = Join({
@@ -451,6 +545,7 @@ local function CreateMainStory(Properties: Properties)
 						Number = 1,
 						Hovered = Stage == 1,
 						Visible = LevelCount >= 1,
+						Enabled = EnabledIndex >= 1,
 						OnClick = function()
 							SetStage(1)
 						end,
@@ -459,6 +554,7 @@ local function CreateMainStory(Properties: Properties)
 						Number = 2,
 						Hovered = Stage == 2,
 						Visible = LevelCount >= 2,
+						Enabled = EnabledIndex >= 2,
 						OnClick = function()
 							SetStage(2)
 						end,
@@ -467,6 +563,7 @@ local function CreateMainStory(Properties: Properties)
 						Number = 3,
 						Hovered = Stage == 3,
 						Visible = LevelCount >= 3,
+						Enabled = EnabledIndex >= 3,
 						OnClick = function()
 							SetStage(3)
 						end,
@@ -475,6 +572,7 @@ local function CreateMainStory(Properties: Properties)
 						Number = 4,
 						Hovered = Stage == 4,
 						Visible = LevelCount >= 4,
+						Enabled = EnabledIndex >= 4,
 						OnClick = function()
 							SetStage(4)
 						end,
@@ -483,6 +581,7 @@ local function CreateMainStory(Properties: Properties)
 						Number = 5,
 						Hovered = Stage == 5,
 						Visible = LevelCount >= 5,
+						Enabled = EnabledIndex >= 5,
 						OnClick = function()
 							SetStage(5)
 						end,

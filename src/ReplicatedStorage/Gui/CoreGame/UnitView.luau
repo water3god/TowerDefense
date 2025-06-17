@@ -8,7 +8,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
-local ReactRoblox = require(Packages.ReactRoblox)
 local e = React.createElement
 
 local Modules = ReplicatedStorage.Modules
@@ -26,7 +25,6 @@ local UnitClient = require(GlobalClient.UnitClient)
 
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
-local RarityInfo = require(Shared.RarityInfo)
 
 export type Properties = {
 	UnitName: string?,
@@ -59,7 +57,6 @@ local CreateUnitView = React.forwardRef(function(Props: Properties, ref)
 		if Props.UnitName then
 			local UnitData = UnitInfo.UnitInfo[Props.UnitName]
 			local ViewportOffset = UnitData.ViewportOffset or Vector3.zero
-			local Distance = Props.Distance or Distance
 			local DistanceVector = Vector3.new(0, 0, -Distance)
 
 			return (CoreCFrame + DistanceVector :: any) + ViewportOffset

@@ -8,16 +8,11 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
-local ReactRoblox = require(Packages.ReactRoblox)
 local e = React.createElement
 
 local Client = ReplicatedStorage.Client
 local GlobalClient = Client.GlobalClient
 local SettingsService = require(GlobalClient.SettingsService)
-
-local Modules = ReplicatedStorage.Modules
-local HelperFunctions = require(Modules.HelperFunctions)
-local Join = HelperFunctions.joinDicts
 
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
@@ -46,9 +41,9 @@ local function SettingsProvider(props: any)
 		SetSettings(table.clone(SettingsService.GetPlayerSettings()))
 	end, {})
 
-	Hooks.useEventConnection(SettingsService.SettingChanged, function(Setting: string, Value: any)
+	Hooks.useEventConnection(SettingsService.SettingChanged, function()
 		SetSettings(table.clone(SettingsService.GetPlayerSettings()))
-	end, { Settings })
+	end, {})
 
 	return e(SettingsContext.Provider, {
 		value = Settings,

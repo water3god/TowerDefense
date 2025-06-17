@@ -44,8 +44,8 @@ local function Update()
 	end
 end
 
-local function OnAdded(GlobalWave: GlobalWave.GlobalWave)
-	GlobalWave.Ended:Connect(function(Win: boolean)
+local function OnAdded(Wave: GlobalWave.GlobalWave)
+	Wave.Ended:Connect(function(Win: boolean)
 		Data = {
 			VotedCount = 0,
 			Win = Win,

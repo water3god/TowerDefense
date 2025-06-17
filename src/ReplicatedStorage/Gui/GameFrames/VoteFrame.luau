@@ -11,7 +11,7 @@ local React = require(Packages.React)
 local ReactSpring = require(Packages.ReactSpring)
 local e = React.createElement
 
-local Promise = require(Packages.Promise)
+local _Promise = require(Packages.Promise)
 
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
@@ -88,7 +88,7 @@ local function CreateVoteFrame(Props: Props)
 	end, {})
 
 	local Visiblity, SetVisibility = React.useState(false)
-	local Promise = React.useRef(nil :: Promise.Promise?)
+	local Promise = React.useRef(nil :: _Promise.Promise?)
 
 	React.useEffect(function()
 		if IsVisible then
@@ -213,8 +213,8 @@ local function CreateVoteFrame(Props: Props)
 			native = {
 				Position = UDim2.fromScale(0.5, 1.15),
 				Size = UDim2.fromScale(0.6, 0.2),
-				Text = Time:map(function(Time)
-					return string.format("Starts In: %u", math.floor(Time))
+				Text = Time:map(function(TimeInput: number)
+					return string.format("Starts In: %u", math.floor(TimeInput))
 				end),
 			},
 		}, {

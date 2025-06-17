@@ -72,6 +72,8 @@ type Data = {
 	Bezier: BezierPath.Path,
 	BezierId: string,
 
+	InitTime: number, -- When Wave First Initalizes (game start time) --
+
 	CoinsChanged: Signal.Signal<number, number>,
 	Passed: Signal.Signal<number>,
 	TimeChanged: Signal.Signal<number, number>,
@@ -166,6 +168,8 @@ function GlobalWave.new(Input: Input)
 
 	self.Positions = Input.Positions
 	self.Data = Input.Data
+
+	self.InitTime = workspace:GetServerTimeNow()
 
 	self.Coins = {}
 

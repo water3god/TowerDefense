@@ -26,6 +26,7 @@ local WaveData = require(ServerStorage.Data.WaveData)
 local GlobalModules = ServerScriptService.GlobalModules
 local GlobalWave = require(GlobalModules.GlobalWave)
 local UnitModule = require(GlobalModules.Unit)
+local PlayerData = require(GlobalModules.PlayerData)
 
 local MapStore = MemoryStoreService:GetHashMap(Constants.INFORMATIONHASHMAP)
 
@@ -67,7 +68,7 @@ local function Init(DataInput: Types.RecieveData?)
 		for _, Unit in pairs(UnitModule.GetUnits()) do
 			Unit:Delete()
 		end
-		GlobalWave.new({
+		local Wave = GlobalWave.new({
 			PlayerIds = Data.PlayerIds,
 			XPMultiplier = XPMultiplier,
 			RewardInfo = (LevelInfo :: any).RewardInfo[Data.Difficulty],
@@ -76,6 +77,30 @@ local function Init(DataInput: Types.RecieveData?)
 			Difficulty = Data.Difficulty,
 			IsInfinite = false,
 		})
+
+		Wave.Ended:Once(function()
+			if not LevelInfo then
+				error(string.format("No LevelInfo! MapId: %s, LevelId: %s", Data.MapId, Data.LevelId))
+				return
+			end
+
+			for PlayerId, _ in ipairs(Wave.Coins) do
+				local Player = Players:GetPlayerByUserId(PlayerId)
+
+				if Player then
+					local DataModule = PlayerData.GetPlayerData(Player)
+
+					if DataModule then
+						DataModule:AddStage({
+							Map = Data.MapId,
+							Stage = LevelInfo.Index,
+							Difficulty = Data.Difficulty,
+							TimeFinished = math.floor(workspace:GetServerTimeNow() - Wave.InitTime),
+						})
+					end
+				end
+			end
+		end)
 	end
 end
 

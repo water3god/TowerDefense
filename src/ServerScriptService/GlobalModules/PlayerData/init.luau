@@ -116,6 +116,7 @@ type PlayerDataImpl = {
 
 	AddRobuxSpent: (self: PlayerData, Robux: number) -> (),
 
+	OwnsMap: (self: PlayerData, Map: string) -> boolean,
 	OwnsStage: (self: PlayerData, Data: GetStageData) -> boolean,
 	AddStage: (self: PlayerData, Data: StageParamData) -> (),
 
@@ -601,11 +602,26 @@ function PlayerData:AddRobuxSpent(RobuxSpent: number)
 	self.RobuxSpent:Fire(Data.RobuxSpent)
 end
 
-function PlayerData:OwnsStage(ParamData: GetStageData)
-	local Data = self.Profile.Data
+function PlayerData:OwnsMap(Map: string)
+	local CompletedMaps = self.Profile.Data.CompletedMaps
 
-	if Data.CompletedMaps[ParamData.Map] then
-		if Data.CompletedMaps[ParamData.Map][ParamData.Stage] then
+	if CompletedMaps[Map] then
+		return true
+	else
+		local MapData = GameInfo.GetMapFromId(Map)
+		if MapData and not MapData.Prerequisite then
+			return true
+		else
+			return false
+		end
+	end
+end
+
+function PlayerData:OwnsStage(ParamData: GetStageData)
+	local CompletedMaps = self.Profile.Data.CompletedMaps
+
+	if CompletedMaps[ParamData.Map] then
+		if ParamData.Stage == 1 or CompletedMaps[ParamData.Map][ParamData.Stage] then
 			return true
 		end
 	end

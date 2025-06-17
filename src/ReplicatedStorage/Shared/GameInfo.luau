@@ -27,7 +27,6 @@ export type LevelInfo = {
 	GameId: string,
 	Index: number, --7 is infinite
 	XPMultiplier: number, -- normal XP is multiplied and given to player
-	Prerequisite: { Map: string, Index: number }?,
 	RewardInfo: { [Difficulty | string]: RewardInfo },
 }
 
@@ -1085,9 +1084,9 @@ function Data.GetFullName(MapName: string, Index: number, LevelName: string)
 	return string.format("%s: %u - %s", MapName, Index, LevelName)
 end
 
-function Data.GetDifficultyString(Difficulty: string)
-	local Color = Colors[Difficulty]
-	return string.format('Difficulty: <font color = "#%s">%s</font>', Color:ToHex(), Difficulty)
+function Data.GetDifficultyString(DifficultyInput: string)
+	local Color = Colors[DifficultyInput]
+	return string.format('Difficulty: <font color = "#%s">%s</font>', Color:ToHex(), DifficultyInput)
 end
 
 return Data

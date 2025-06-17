@@ -11,7 +11,6 @@ local Players = game:GetService("Players")
 local Packages = ReplicatedStorage.Packages
 local Timer = require(Packages.Timer)
 local React = require(Packages.React)
-local ReactRoblox = require(Packages.ReactRoblox)
 local e = React.createElement
 
 local Modules = ReplicatedStorage.Modules
@@ -27,7 +26,7 @@ local Datastores: { [string]: OrderedDataStore } = {
 	RobuxSpentStore = DataStoreService:GetOrderedDataStore(Constants.RobuxSpentStore),
 }
 
-local LeaderboardData: { [string]: { Title: string, ValueName: string } } = {
+local LeaderboardDataProps: { [string]: { Title: string, ValueName: string } } = {
 	LevelXPStore = { Title = "Level Leaderboard", ValueName = "Level" },
 	TotalGoldStore = { Title = "Gold Leaderboard", ValueName = "Gold" },
 	RobuxSpentStore = { Title = "Robux Leaderboard", ValueName = "Robux" },
@@ -138,7 +137,7 @@ end
 
 local function CreateLobbyLeaderboard(props: Props)
 	local LeaderboardData = React.useMemo(function()
-		return LeaderboardData[props.Type]
+		return LeaderboardDataProps[props.Type]
 	end, { props.Type })
 
 	local PlayerFrames = React.useMemo(function()
