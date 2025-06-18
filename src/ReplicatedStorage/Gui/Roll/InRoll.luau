@@ -227,13 +227,21 @@ local function CreateUnitFrame(props: UnitProperties)
 					Color = Data.RarityData and Data.RarityData.Color,
 				}),
 			}),
-			SoldFrame = e(Main.TextLabel, {
+			SoldLabel = e(Main.TextLabel, {
 				native = {
-					Size = UDim2.fromScale(0.7, 0.15),
+					Size = UDim2.fromScale(0.7, 0.1),
 					Position = UDim2.fromScale(0.5, 1.05),
 					Visible = IsSold,
 					Text = "Sold",
+					TextTransparency = 0.5,
 				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.03,
+					native = {
+						Transparency = 0.5,
+					},
+				}),
 			}),
 		}),
 	}, props.children)
