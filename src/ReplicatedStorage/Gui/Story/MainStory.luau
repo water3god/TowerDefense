@@ -68,7 +68,7 @@ local function CreateStage(Props: { Hovered: boolean, Number: number, OnClick: (
 				AspectRatio = 1,
 			}),
 			UIStroke = Props.Hovered and e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.01,
+				Stroke = 0.02,
 				Color = Color3.new(1, 1, 1),
 				native = {
 					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,

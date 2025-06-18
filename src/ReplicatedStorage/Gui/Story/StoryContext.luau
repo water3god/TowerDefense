@@ -10,11 +10,6 @@ local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
 local e = React.createElement
 
-local Trove = require(Packages.Trove)
-
-local Shared = ReplicatedStorage.Shared
-local GameInfo = require(Shared.GameInfo)
-
 local Client = ReplicatedStorage.Client
 local LobbyClient = Client.LobbyClient
 local StoryService = require(LobbyClient.StoryService)
