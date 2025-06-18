@@ -135,7 +135,7 @@ local function CreateUnitFrame(props: UnitProperties)
 	end, { IsSold, props.UniqueId :: any })
 
 	React.useEffect(function()
-		if props.Visible then
+		if props.Visible and RunService:IsRunning() then
 			local Viewport = ViewRef.current :: ViewportFrame
 			local Size = Viewport.AbsoluteSize
 			local Part = HelperFunctions.EmitContinous({ SummonParticle }, CFrame.new(), function(Particle)
