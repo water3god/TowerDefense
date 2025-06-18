@@ -113,7 +113,9 @@ local function InitTimer(Data: PlayerData.PlayerData, Count: number)
 			Data:SubtractGold(Price)
 			Roll(Data, math.min(Difference, Count, GoldDifference), true)
 		else
-			Delays[Data.Player].Timer:Destroy()
+			if Delays[Data.Player] then
+				Delays[Data.Player].Timer:Destroy()
+			end
 		end
 	end)
 
