@@ -238,9 +238,6 @@ local function CreateUnitFrame(props: UnitProperties)
 			}, {
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {
 					Stroke = 0.03,
-					native = {
-						Transparency = 0.5,
-					},
 				}),
 			}),
 		}),

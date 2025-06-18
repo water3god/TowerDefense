@@ -80,12 +80,19 @@ local function Roll(Data: PlayerData.PlayerData, Count: number, Auto: boolean)
 end
 
 local function LessThanMaxUnits(Data: PlayerData.PlayerData)
+	if not Data.Profile then
+		return false, 1
+	end
 	local Given = Data.Profile.Data
 	local Difference = Given.MaxUnitCount - HelperFunctions.Len(Given.Units)
 	return Difference > 0, Difference
 end
 
 local function LessThanGold(Data: PlayerData.PlayerData)
+	if not Data.Profile then
+		return false, 1
+	end
+
 	local Price = Constants.ROLLCOSTS.MAIN
 	local Given = Data.Profile.Data
 	local LessThan = Given.Gold / Price
