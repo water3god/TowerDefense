@@ -84,7 +84,7 @@ local function Init(DataInput: Types.RecieveData?)
 				return
 			end
 
-			for PlayerId, _ in ipairs(Wave.Coins) do
+			for PlayerId, _ in pairs(Wave.Coins) do
 				local Player = Players:GetPlayerByUserId(PlayerId)
 
 				if Player then

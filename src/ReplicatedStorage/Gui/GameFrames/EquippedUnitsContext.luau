@@ -78,9 +78,14 @@ local function Provider(props)
 			Update()
 		end)
 
+		local Connection2 = InventoryService.XPChanged:Connect(function()
+			Update()
+		end)
+
 		return function()
 			Connection:Disconnect()
 			Connection1:Disconnect()
+			Connection2:Disconnect()
 		end
 	end, {})
 

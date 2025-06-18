@@ -13,6 +13,11 @@ local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local GenerateId = require(Modules.GenerateId)
 
+local Remotes = ReplicatedStorage.Remotes
+local Core = Remotes.Core
+local WarningFolder = Core.Warning
+local SendWarning = WarningFolder.SendWarning
+
 local GlobalModules = ServerScriptService.GlobalModules
 local PlayerData = require(GlobalModules.PlayerData)
 
@@ -272,6 +277,33 @@ end
 function Booth:AddPlayer(Player: Player)
 	for _, NewBooth in pairs(Booths) do
 		if table.find(NewBooth.Players, Player) then
+			return
+		end
+	end
+
+	if self.Status == "LoadingPlayers" then
+		local PData = PlayerData.GetPlayerData(Player)
+		local Data = self.Data
+
+		if PData and Data then
+			local MapInfo, LevelInfo = GameInfo.GetDataFromInfo(Data.MapId, Data.LevelId)
+			if MapInfo and LevelInfo then
+				if
+					not (
+						PData:OwnsMap(Data.MapId)
+						and PData:OwnsStage({
+							Map = Data.MapId,
+							Stage = LevelInfo.Index,
+						})
+					)
+				then
+					SendWarning:FireClient(Player, string.format("You do not have %s Unlocked!", MapInfo.Name))
+					return
+				end
+			else
+				return
+			end
+		else
 			return
 		end
 	end
