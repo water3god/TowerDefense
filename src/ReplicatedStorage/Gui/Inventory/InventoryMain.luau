@@ -16,6 +16,7 @@ local Gui = ReplicatedStorage.Gui
 local InventoryGUI = Gui.Inventory
 local InfoFrame = require(InventoryGUI.InfoFrame)
 local InventoryContext = require(InventoryGUI.InventoryContext)
+local StatsFrame = require(InventoryGUI.StatsFrame)
 
 local UnitFrame = require(InventoryGUI.UnitFrame)
 local ProductFrame = require(InventoryGUI.ProductFrame)
@@ -604,7 +605,9 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		EquippedUnits :: any,
 	})
 
-	local UseProduct = React.useCallback(function(ProductId: number) end, {})
+	local UseProduct = React.useCallback(function(ProductId: number, IsGamepass: boolean)
+		PurchaseService.UsePurchase(ProductId, IsGamepass)
+	end, {})
 
 	local FilterMethodCallback = React.useCallback(function()
 		if OpenFrame == "Unit" then
@@ -743,12 +746,33 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		return Default
 	end, { OpenFrame :: any, ClickedProductData, ClickedResourceData, ClickedUnitData, EquippedUnits, HoveredId })
 
+	local InfoVisible, SetInfoVisible = React.useState(false)
+
+	local OpenInfoClick = React.useCallback(function()
+		SetInfoVisible(true)
+	end, {})
+
+	local CloseInfoClick = React.useCallback(function()
+		SetInfoVisible(false)
+	end, {})
+
+	React.useEffect(function()
+		if OpenFrame ~= "Unit" or HoveredId == nil then
+			SetInfoVisible(false)
+		end
+	end, { OpenFrame, HoveredId :: any })
+
 	return e(Main.ImageLabel, {
 		native = JoinDicts({
 			Size = UDim2.fromScale(0.55, 0.5),
 			Image = "rbxassetid://103903141717286",
 		}, Properties.native),
 	}, {
+		StatsFrame = e(StatsFrame, {
+			UnitName = if OpenFrame == "Unit" and InfoFrameData.Visible then InfoFrameData.Name else nil,
+			Visible = InfoVisible,
+			CloseClick = CloseInfoClick,
+		}),
 		IndConfirm = e(Confirm, {
 			Title = "Selling Unit",
 			Description = IndConfirmDescription,
@@ -814,7 +838,12 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 				[React.Event.MouseButton1Click] = OnSellPressed,
 			},
 		}),
-		InfoFrame = e(InfoFrame, InfoFrameData),
+		InfoFrame = e(
+			InfoFrame,
+			JoinDicts(InfoFrameData, {
+				OnInfoClick = OpenInfoClick,
+			})
+		),
 		UnitsButton = e(BaseButton, {
 			Text = "Units",
 			OnClick = function()

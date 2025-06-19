@@ -37,8 +37,10 @@ export type Properties = {
 	Data: any,
 	RarityInfo: RarityInfo.RarityInfo?,
 
-	OnFirstClick: () -> ()?,
-	OnSellClick: () -> ()?,
+	OnInfoClick: (() -> ())?,
+
+	OnFirstClick: (() -> ())?,
+	OnSellClick: (() -> ())?,
 }
 
 local function CreateInfoFrame(Properties: Properties)
@@ -168,6 +170,7 @@ local function CreateInfoFrame(Properties: Properties)
 				Size = UDim2.fromScale(0.21, 0.12),
 				Visible = IsUnit,
 				Image = "rbxassetid://77078349522524",
+				[React.Event.MouseButton1Click] = Properties.OnInfoClick,
 			},
 		}, {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {

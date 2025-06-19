@@ -94,7 +94,7 @@ local function CreateConfirm(props: props)
 	local Styles, api = ReactSpring.useSpring(function()
 		return {
 			Scale = 0.9,
-			config = { mass = 1, tension = 400, friction = 30 },
+			config = { mass = 1, tension = 400, friction = 30, precision = 0.01 },
 		}
 	end)
 

@@ -28,6 +28,7 @@ local InventoryContext = require(Inventory.InventoryContext)
 
 local Roll = Gui.Roll
 local RollContext = require(Roll.RollContext)
+local UnitInformation = require(Roll.UnitInformation)
 
 local Warning = Gui.Warning
 local WarningContext = require(Warning.WarningContext)
@@ -218,12 +219,22 @@ local function CreateRollMain(props: Properties)
 		return string.format("Summon: %s Gold", CostString)
 	end, { Cost })
 
+	local UnitInfoVis, SetUnitInfoVis = React.useState(false)
+
+	local UnitVisCloseClick = React.useCallback(function()
+		SetUnitInfoVis(false)
+	end, {})
+
 	return e(Main.ImageLabel, {
 		native = Join({
 			Size = UDim2.fromScale(0.6, 0.5),
 			Image = "rbxassetid://100546338175267",
 		}, props.native),
 	}, {
+		UnitInformation = e(UnitInformation, {
+			Visible = UnitInfoVis,
+			CloseClick = UnitVisCloseClick,
+		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 1.7,
 		}),
@@ -243,6 +254,9 @@ local function CreateRollMain(props: Properties)
 				Size = UDim2.fromScale(0.25, 0.15),
 				Position = UDim2.fromScale(0.17, 0.88),
 				ImageColor3 = Color3.fromRGB(135, 1, 203),
+				[React.Event.MouseButton1Click] = function()
+					SetUnitInfoVis(not UnitInfoVis)
+				end,
 			},
 		}, {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {

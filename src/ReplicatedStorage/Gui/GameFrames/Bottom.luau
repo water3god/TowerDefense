@@ -237,7 +237,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 			}),
 			Frame = e(Main.Frame, {
 				native = {
-					Size = UDim2.fromScale(0.375, 1),
+					Size = UDim2.fromScale(0.45, 1),
 				},
 			}),
 			Icon = e(Main.ImageLabel, {

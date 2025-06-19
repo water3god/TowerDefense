@@ -3,35 +3,28 @@
 -- By Wa1er_God --
 
 -- Services --
-
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- Libraries --
-
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
 local ReactRoblox = require(Packages.ReactRoblox)
 local e = React.createElement
 
 -- Reference UI --
-
 local Gui = ReplicatedStorage.Gui
-local Inventory = Gui.Inventory
-local StatsFrame = require(Inventory.StatsFrame)
+local UnitInformation = require(Gui.Roll.UnitInformation)
 
 -- Controls --
-
 local controls = {}
 
 -- Story --
-
 local Story = {
 	react = React,
 	reactRoblox = ReactRoblox,
-	--controls = controls,
+	controls = controls,
 	story = function(Properties)
-		local Frame = e(StatsFrame, {
-			UnitName = "Trajan",
+		local Frame = e(UnitInformation, {
 			Visible = true,
 		})
 		return Frame
