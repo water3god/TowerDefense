@@ -196,6 +196,84 @@ local Data: { [string]: Unit.UnitInput } = {
 		DefaultRuns = {},
 		Abilities = {},
 	},
+	["Rammeses II"] = {
+		UnitName = "Rammeses II",
+
+		AttackFuncs = {
+			[0] = {
+				function(Unit: Unit.Unit, Damage: number)
+					DelayAttack(Unit, Damage, 0.35)
+				end,
+			},
+		},
+		DefaultRuns = {},
+		Abilities = {},
+	},
+	["Akhenaten"] = {
+		UnitName = "Akhenaten",
+
+		AttackFuncs = {
+			[0] = {
+				function(Unit: Unit.Unit, Damage: number)
+					DelayAttack(Unit, Damage, 0.35)
+				end,
+			},
+		},
+		DefaultRuns = {},
+		Abilities = {},
+	},
+	["Tutankhamun"] = {
+		UnitName = "Tutankhamun",
+
+		AttackFuncs = {
+			[0] = {
+				function(Unit: Unit.Unit, Damage: number)
+					DelayAttack(Unit, Damage, 0.35)
+				end,
+			},
+		},
+		DefaultRuns = {},
+		Abilities = {},
+	},
+	["Narmer"] = {
+		UnitName = "Narmer",
+
+		AttackFuncs = {
+			[0] = {
+				function(Unit: Unit.Unit, Damage: number)
+					DelayAttack(Unit, Damage, 0.35)
+				end,
+			},
+		},
+		DefaultRuns = {},
+		Abilities = {},
+	},
+	["Cleopatra"] = {
+		UnitName = "Cleopatra",
+
+		AttackFuncs = {
+			[0] = {
+				function(Unit: Unit.Unit, Damage: number)
+					DelayAttack(Unit, Damage, 0.35)
+				end,
+			},
+		},
+		DefaultRuns = {},
+		Abilities = {},
+	},
+	["Ptolemy"] = {
+		UnitName = "Ptolemy",
+
+		AttackFuncs = {
+			[0] = {
+				function(Unit: Unit.Unit, Damage: number)
+					DelayAttack(Unit, Damage, 0.35)
+				end,
+			},
+		},
+		DefaultRuns = {},
+		Abilities = {},
+	},
 }
 
 local Ultimate = {}

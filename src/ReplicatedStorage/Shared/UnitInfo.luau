@@ -359,6 +359,106 @@ local UnitInfo: { [string]: UnitInfo } = {
 		CollisionRadius = 3,
 		Abilities = {},
 	},
+	["Ptolemy"] = {
+		Rarity = "Common",
+		Description = "A Scout",
+		Image = "rbxassetid://84772192162069",
+
+		UnitData = {
+			[0] = {
+				Damage = { 0 },
+				FireRate = 0,
+				Range = 5,
+				Armor = "PtolemyArmor",
+				Cost = 100,
+			},
+		},
+		CollisionRadius = 3,
+		Abilities = {},
+	},
+	["Cleopatra"] = {
+		Rarity = "Rare",
+		Description = "A Scout",
+		Image = "rbxassetid://137545520172915",
+
+		UnitData = {
+			[0] = {
+				Damage = { 0 },
+				FireRate = 0,
+				Range = 5,
+				Armor = "CleopatraArmor",
+				Cost = 100,
+			},
+		},
+		CollisionRadius = 3,
+		Abilities = {},
+	},
+	["Narmer"] = {
+		Rarity = "Epic",
+		Description = "A Scout",
+		Image = "rbxassetid://123302243147194",
+
+		UnitData = {
+			[0] = {
+				Damage = { 0 },
+				FireRate = 0,
+				Range = 5,
+				Armor = "NarmerArmor",
+				Cost = 100,
+			},
+		},
+		CollisionRadius = 3,
+		Abilities = {},
+	},
+	["Akhenaten"] = {
+		Rarity = "Legendary",
+		Description = "A Scout",
+		Image = "rbxassetid://140319991588251",
+
+		UnitData = {
+			[0] = {
+				Damage = { 0 },
+				FireRate = 0,
+				Range = 5,
+				Cost = 100,
+			},
+		},
+		CollisionRadius = 3,
+		Abilities = {},
+	},
+	["Ramesses II"] = {
+		Rarity = "Mythic",
+		Description = "A Scout",
+		Image = "rbxassetid://115676624628103",
+
+		UnitData = {
+			[0] = {
+				Damage = { 0 },
+				FireRate = 0,
+				Range = 5,
+				Armor = "RamessesArmor",
+				Cost = 100,
+			},
+		},
+		CollisionRadius = 3,
+		Abilities = {},
+	},
+	["Tutankhamun"] = {
+		Rarity = "Godly",
+		Description = "A Scout",
+		Image = "rbxassetid://127377869922808",
+
+		UnitData = {
+			[0] = {
+				Damage = { 0 },
+				FireRate = 0,
+				Range = 5,
+				Cost = 100,
+			},
+		},
+		CollisionRadius = 3,
+		Abilities = {},
+	},
 }
 
 export type SortType = "First" | "Last" | "Strongest" | "Weakest"
