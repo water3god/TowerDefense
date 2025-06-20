@@ -37,10 +37,11 @@ export type Props = {
 }
 
 local Data: {
-	[string]: { Color: Color3, Units: { string } },
+	[string]: { Color: Color3, Index: number, Units: { string } },
 } = {
 	Egypt = {
 		Color = Color3.new(0.827451, 0.862745, 0.141176),
+		Index = 1,
 		Units = {
 			"Ptolemy",
 			"Cleopatra",
@@ -52,6 +53,7 @@ local Data: {
 	},
 	Greece = {
 		Color = Color3.new(0.12549, 0.721569, 0.854902),
+		Index = 2,
 		Units = {
 			"Pyrrhus",
 			"Pericles",
@@ -63,6 +65,7 @@ local Data: {
 	},
 	Rome = {
 		Color = Color3.new(0.831373, 0.145098, 0.145098),
+		Index = 3,
 		Units = {
 			"Pompey",
 			"Spartacus",
@@ -74,10 +77,12 @@ local Data: {
 	},
 	China = {
 		Color = Color3.new(0.572549, 0.109804, 0.109804),
+		Index = 3,
 		Units = {},
 	},
 	Medieval = {
 		Color = Color3.new(0.160784, 0.141176, 0.305882),
+		Index = 4,
 		Units = {
 			"Robert the Bruce",
 			"Leif Erikson",
@@ -113,7 +118,6 @@ local function CreateUnitInfo(Props: Props)
 
 	local UnitFrames = React.useMemo(function()
 		local Frames: { [string]: React.Node } = {}
-		local LayoutOrder = Hooks.LayoutOrder()
 
 		for Name, GenreData in pairs(Data) do
 			if #GenreData.Units ~= 0 then
@@ -136,7 +140,7 @@ local function CreateUnitInfo(Props: Props)
 				Frames[Name] = e(Main.Frame, {
 					native = {
 						Size = UDim2.fromScale(1, 0.3),
-						LayoutOrder = LayoutOrder(),
+						LayoutOrder = GenreData.Index,
 					},
 				}, {
 					Container = e(Main.Frame, {
@@ -219,9 +223,10 @@ local function CreateUnitInfo(Props: Props)
 			MainFrame = e(Main.ScrollingFrame, {
 				BarSize = 0.01,
 				native = {
-					Position = UDim2.fromScale(0.5, 0.55),
-					Size = UDim2.fromScale(0.9, 0.91),
+					Position = UDim2.fromScale(0.5, 0.52),
+					Size = UDim2.fromScale(0.9, 0.9),
 					AutomaticCanvasSize = Enum.AutomaticSize.Y,
+					ZIndex = 3,
 				},
 			}, {
 				UIListLayout = e("UIListLayout", {
@@ -249,7 +254,7 @@ local function CreateUnitInfo(Props: Props)
 			}),
 			InnerFrame = e(Main.Frame, {
 				native = {
-					Position = UDim2.fromScale(0.5, 0.52),
+					Position = UDim2.fromScale(0.5, 0.5),
 					Size = UDim2.fromScale(0.94, 0.9),
 				},
 			}, {
