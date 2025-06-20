@@ -41,7 +41,14 @@ local Data: {
 } = {
 	Egypt = {
 		Color = Color3.new(0.827451, 0.862745, 0.141176),
-		Units = {},
+		Units = {
+			"Ptolemy",
+			"Cleopatra",
+			"Narmer",
+			"Akhenaten",
+			"Ramesses II",
+			"Tutankhamun",
+		},
 	},
 	Greece = {
 		Color = Color3.new(0.12549, 0.721569, 0.854902),
