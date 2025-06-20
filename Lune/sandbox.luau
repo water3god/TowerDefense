@@ -27,34 +27,34 @@ local SANDBOXED_ENV = {
 local PROMPT_MSG_TMPL = `allow {SANDBOXED_ENV.debugName} to access %s?`
 local DENIED_ERR_TMPL = `{SANDBOXED_ENV.debugName} tried to access disallowed library %s!`
 
-local function discoverAndReadScript(filePath: string): string
+local function discoverAndReadScript(FilePath: string): string
 	local scriptContents: string
 
-	if fs.isFile(filePath) then
-		scriptContents = fs.readFile(filePath)
+	if fs.isFile(FilePath) then
+		scriptContents = fs.readFile(FilePath)
 		return scriptContents
 	end
 
-	if fs.isDir(filePath) then
-		if fs.isFile(filePath .. "/init.luau") then
-			scriptContents = fs.readFile(filePath .. "/init.luau")
+	if fs.isDir(FilePath) then
+		if fs.isFile(FilePath .. "/init.luau") then
+			scriptContents = fs.readFile(FilePath .. "/init.luau")
 		end
 
-		if fs.isFile(filePath .. "/init.lua") then
-			scriptContents = fs.readFile(filePath .. "/init.lua")
+		if fs.isFile(FilePath .. "/init.lua") then
+			scriptContents = fs.readFile(FilePath .. "/init.lua")
 		end
 	end
 
 	if scriptContents == nil then
 		for _, ext in { ".luau", ".lua" } do
-			local filePathExt = filePath .. ext
+			local filePathExt = FilePath .. ext
 			if fs.isFile(filePathExt) then
 				scriptContents = fs.readFile(filePathExt)
 			end
 		end
 
 		if scriptContents == nil then
-			error(`No such file or directory \`{filePath}\``)
+			error(`No such file or directory \`{FilePath}\``)
 		end
 	end
 
@@ -69,7 +69,7 @@ local function sandboxGetfenv(): {}
 	return {}
 end
 
-local function sandboxSetfenv(env: {}): never
+local function sandboxSetfenv(_env: {}): never
 	error("cannot call setfenv from sandbox")
 end
 

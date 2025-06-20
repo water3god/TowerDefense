@@ -29,9 +29,6 @@ local Inventory = Gui.Inventory
 local UnitFrame = require(Inventory.UnitFrame)
 local StatsFrame = require(Inventory.StatsFrame)
 
-local Shared = ReplicatedStorage.Shared
-local UnitInfo = require(Shared.UnitInfo)
-
 export type Props = {
 	Visible: boolean,
 	CloseClick: (() -> ())?,

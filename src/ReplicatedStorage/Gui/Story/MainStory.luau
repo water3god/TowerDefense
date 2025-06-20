@@ -206,7 +206,6 @@ local DefaultColor = Color3.new(0.227451, 0.082353, 0.290196)
 
 local function CreateMainStory(Properties: Properties)
 	local StoryData = React.useContext(StoryContext.Context)
-	local WarningData = React.useContext(WarningContext.Context)
 
 	local Time, TotalTime, SetTime = Hooks.UseTime()
 

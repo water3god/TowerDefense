@@ -16,7 +16,8 @@ local e = React.createElement
 local Trove = require(Packages.Trove)
 
 local Modules = ReplicatedStorage.Modules
-local Join = require(Modules.JoinDicts)
+local HelperFunctions = require(Modules.HelperFunctions)
+local Join = HelperFunctions.joinDicts
 
 local TradeService = require(ReplicatedStorage.Client.LobbyClient.TradeService)
 

@@ -323,7 +323,6 @@ end
 
 function Funcs.TweenPromise(TotalTime: number, Handler: (alpha: number) -> ())
 	return Promise.new(function(resolve, reject, onCancel)
-		local TotalTime = 0.5
 		local Count = 0
 
 		local Connection: RBXScriptConnection? = nil

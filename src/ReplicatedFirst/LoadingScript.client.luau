@@ -111,10 +111,10 @@ local Images = {
 	"rbxassetid://120986367718593",
 }
 
-local function ConvertIdsToDecals(Images: { string })
+local function ConvertIdsToDecals(ImagesInput: { string })
 	local Decals = {}
 
-	for _, Image in ipairs(Images) do
+	for _, Image in ipairs(ImagesInput) do
 		local Decal = Instance.new("Decal")
 		Decal.Texture = Image
 		table.insert(Decals, Decal)

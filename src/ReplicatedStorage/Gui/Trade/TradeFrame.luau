@@ -19,7 +19,8 @@ local UIStroke = require(CoreGame.UIStroke)
 local Title = require(CoreGame.Title)
 
 local Modules = ReplicatedStorage.Modules
-local Join = require(Modules.JoinDicts)
+local HelperFunctions = require(Modules.HelperFunctions)
+local Join = HelperFunctions.joinDicts
 
 local Client = ReplicatedStorage.Client
 local TradeService = require(Client.LobbyClient.TradeService)

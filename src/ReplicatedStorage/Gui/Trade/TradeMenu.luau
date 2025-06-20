@@ -17,8 +17,8 @@ local Trade = Gui.Trade
 local TradeContext = require(Trade.TradeContext)
 
 local Modules = ReplicatedStorage.Modules
-local Join = require(Modules.JoinDicts)
-local HeleprFunctions = require(Modules.HelperFunctions)
+local HelperFunctions = require(Modules.HelperFunctions)
+local Join = HelperFunctions.joinDicts
 
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)

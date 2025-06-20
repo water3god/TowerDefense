@@ -17,7 +17,6 @@ local SummonSound = SoundService.SoundEffects.Sounds.SummonEffect
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
-local ReactSpring = require(Packages.ReactSpring)
 local e = React.createElement
 
 local Trove = require(Packages.Trove)
