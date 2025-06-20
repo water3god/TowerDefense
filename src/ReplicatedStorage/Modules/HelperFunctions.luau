@@ -16,7 +16,6 @@ local DelayHandler = require(script.Parent.DelayHandler)
 local Camera = workspace.CurrentCamera
 
 local Random = Random.new()
-local IsStudio = RunService:IsStudio()
 
 local Funcs = {}
 
@@ -45,7 +44,7 @@ end
 function Funcs.DeepFreeze<T>(Table: {} & T): T
 	local NewTable: any = Table
 
-	for k, v in pairs(NewTable) do
+	for _, v in pairs(NewTable) do
 		if typeof(v) == "table" then
 			Funcs.DeepFreeze(v)
 		end
@@ -71,8 +70,8 @@ function Funcs.IsSameTable(...: { [any]: any })
 
 	for _, Table in ipairs(List) do
 		for Index, Value in pairs(Table) do
-			for _, Table in ipairs(List) do
-				if Table[Index] ~= Value then
+			for _, NewTable in ipairs(List) do
+				if NewTable[Index] ~= Value then
 					return false
 				end
 			end
@@ -170,7 +169,7 @@ function Funcs.IsClick(Input: InputObject)
 	return false
 end
 
-function Funcs.MouseButton1Click(Frame: GuiObject, Func: () -> (), Trove: Trove.Trove?)
+function Funcs.MouseButton1Click(Frame: GuiObject, Func: () -> (), NewTrove: Trove.Trove?)
 	local Connection1 = Frame.InputBegan:Connect(function(Input: InputObject)
 		if Funcs.IsClick(Input) then
 			Func()
@@ -178,9 +177,9 @@ function Funcs.MouseButton1Click(Frame: GuiObject, Func: () -> (), Trove: Trove.
 	end)
 	local Connection2 = Frame.TouchTap:Connect(Func)
 
-	if Trove then
-		Trove:Add(Connection1)
-		Trove:Add(Connection2)
+	if NewTrove then
+		NewTrove:Add(Connection1)
+		NewTrove:Add(Connection2)
 	end
 
 	return { Connection1, Connection2 }
@@ -295,7 +294,7 @@ function Funcs.CalcTime(Time: number, StartTime: number, CurrentTime: number)
 	return Time - (CurrentTime - StartTime)
 end
 
-function Funcs.ConnectTime(StartTime: number, EndTime: number, Func: (Time: number) -> (), TimeTrove: Trove.Trove?)
+function Funcs.ConnectTime(_StartTime: number, EndTime: number, Func: (Time: number) -> (), TimeTrove: Trove.Trove?)
 	local Connection = nil
 	if TimeTrove then
 		Connection = TimeTrove:Connect(RunService.PostSimulation, function()
@@ -555,7 +554,8 @@ function Funcs.EmitContinous(
 	Part.Size = Vector3.one
 	Part.Transparency = 1
 	Part.CFrame = CFrame
-	local Attachment = Instance.new("Attachment", Part)
+	local Attachment = Instance.new("Attachment")
+	Attachment.Parent = Part
 	for _, Particle in ipairs(ParticleEmitter) do
 		local ParticleClone = Particle:Clone()
 		if Func then
@@ -578,7 +578,8 @@ function Funcs.EmitParticle(
 	Part.Size = Vector3.one
 	Part.Transparency = 1
 	Part.CFrame = CFrame
-	local Attachment = Instance.new("Attachment", Part)
+	local Attachment = Instance.new("Attachment")
+	Attachment.Parent = Part
 	local Longest = 0
 	for _, Particle in ipairs(ParticleEmitter) do
 		local ParticleClone = Particle:Clone()

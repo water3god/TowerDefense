@@ -362,7 +362,6 @@ end
 
 function PlayerData:AddUnit(UnitName: string, ExtraData: {}?)
 	local Data = self.Profile.Data
-	local Length: number = Len(Data.Units)
 
 	local Id = GenerateId.GenerateId()
 

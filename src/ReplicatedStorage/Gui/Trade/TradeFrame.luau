@@ -91,26 +91,26 @@ local function TradeMain(Properties: Properties)
 	end, { TradeData })
 
 	React.useEffect(function()
-		local Trove = Trove.new()
-		Trove:Connect(TradeService.NewTrade, function(TradeData)
+		local TradeTrove = Trove.new()
+		TradeTrove:Connect(TradeService.NewTrade, function(TradeData)
 			SetTradeData(TradeData)
 			Properties.Toggle(true)
 		end)
 
-		Trove:Connect(TradeService.Ended, function()
+		TradeTrove:Connect(TradeService.Ended, function()
 			SetTradeData(nil)
 			Properties.Toggle(false)
 		end)
 
-		Trove:Connect(TradeService.UnitAdded, function(VisualData: TradeService.VisualUnitData, Player: Player)
+		TradeTrove:Connect(TradeService.UnitAdded, function(_VisualData: TradeService.VisualUnitData, _Player: Player)
 			SetTradeData(TradeService.GetTradeData())
 		end)
 
-		Trove:Connect(TradeService.UnitRemoving, function(UniqueId: string, Player: Player)
+		TradeTrove:Connect(TradeService.UnitRemoving, function(_UniqueId: string, _Player: Player)
 			SetTradeData(TradeService.GetTradeData())
 		end)
 
-		return Trove:WrapClean()
+		return TradeTrove:WrapClean()
 	end, {})
 
 	return e(Main.ImageLabel, {

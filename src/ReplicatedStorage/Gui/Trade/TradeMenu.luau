@@ -99,7 +99,7 @@ local function CreatePlayerFrame(Properties: PlayerFrameProps)
 							}),
 							ThumbnailImage = e(Main.ImageLabel, {
 								native = {
-									Image = HeleprFunctions.GetThumbnailAsync(Properties.Player),
+									Image = HelperFunctions.GetThumbnailAsync(Properties.Player),
 									Size = UDim2.fromScale(0.95, 0.95),
 								},
 								children = {
@@ -164,7 +164,7 @@ local function CreateTradeMenu(Properties: Properties)
 			}),
 			NoPlayers = e(Main.Frame, {
 				native = {
-					Visible = HeleprFunctions.Len(TradeStatuses) == 0,
+					Visible = HelperFunctions.Len(TradeStatuses) == 0,
 					Size = UDim2.fromScale(0.4, 0.15),
 				},
 				children = {
