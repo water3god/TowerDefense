@@ -270,6 +270,9 @@ local function CreateSettingsFrame(props: Properties)
 		local Frames: { [string]: React.Node } = {}
 
 		for Setting, Value in pairs(SettingsData) do
+			if table.find(SettingsModule.NotVisible, Setting) then
+				continue
+			end
 			Frames[Setting] = e(CreateSetting, {
 				SettingName = Setting,
 				Type = typeof(Value),

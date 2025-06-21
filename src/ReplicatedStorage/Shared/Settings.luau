@@ -34,6 +34,10 @@ Settings.Default = {
 	CanTrade = true,
 }
 
+Settings.NotVisible = {
+	"AutoRoll",
+}
+
 Settings.SettingIndexes = {
 	"Music",
 	"MusicVolume",

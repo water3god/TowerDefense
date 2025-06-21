@@ -19,6 +19,11 @@ local ChanceData: {
 	["Joan of Arc"] = 0.1,
 	["William the Conqueror"] = 0.05,
 	["Richard the Lionheart"] = 0.01,
+	Ptolemy = 10,
+	Cleopatra = 5,
+	Narmer = 1,
+	Akhenaten = 0.1,
+	["Ramesses II"] = 0.05,
 }
 
 return ChanceData

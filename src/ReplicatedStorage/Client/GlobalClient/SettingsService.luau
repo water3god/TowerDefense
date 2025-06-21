@@ -53,6 +53,9 @@ function SettingService.GetSettingChangedSignal(Setting: string)
 end
 
 function SettingService.ChangeSetting(Setting: string, Value: any)
+	if PlayerSettings[Setting] == Value and SettingService.IsSynced then
+		return
+	end
 	PlayerSettings[Setting] = Value
 	SettingChanged:Fire(Setting, Value)
 	if SettingChangedSignals[Setting] then
