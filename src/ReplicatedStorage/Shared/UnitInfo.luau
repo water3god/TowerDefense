@@ -267,7 +267,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 				Damage = { 0 },
 				FireRate = 0,
 				Range = 5,
-				Armor = "AugustusArmor",
+				Armor = "WilliamArmor",
 				Cost = 100,
 			},
 		},
