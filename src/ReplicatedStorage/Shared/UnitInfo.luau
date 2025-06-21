@@ -264,8 +264,8 @@ local UnitInfo: { [string]: UnitInfo } = {
 
 		UnitData = {
 			[0] = {
-				Damage = { 0 },
-				FireRate = 0,
+				Damage = { 5 },
+				FireRate = 1.5,
 				Range = 5,
 				Armor = "WilliamArmor",
 				Cost = 100,
@@ -281,8 +281,8 @@ local UnitInfo: { [string]: UnitInfo } = {
 
 		UnitData = {
 			[0] = {
-				Damage = { 0 },
-				FireRate = 0,
+				Damage = { 5 },
+				FireRate = 1,
 				Range = 5,
 				Armor = "RobertArmor",
 				Cost = 100,
@@ -298,8 +298,8 @@ local UnitInfo: { [string]: UnitInfo } = {
 
 		UnitData = {
 			[0] = {
-				Damage = { 0 },
-				FireRate = 0,
+				Damage = { 10 },
+				FireRate = 1.5,
 				Range = 5,
 				Armor = "RichardArmor",
 				Cost = 100,
@@ -315,8 +315,8 @@ local UnitInfo: { [string]: UnitInfo } = {
 
 		UnitData = {
 			[0] = {
-				Damage = { 0 },
-				FireRate = 0,
+				Damage = { 10 },
+				FireRate = 2,
 				Range = 5,
 				Armor = "CharlemagneArmor",
 				Cost = 100,
@@ -366,8 +366,8 @@ local UnitInfo: { [string]: UnitInfo } = {
 
 		UnitData = {
 			[0] = {
-				Damage = { 0 },
-				FireRate = 0,
+				Damage = { 5 },
+				FireRate = 3,
 				Range = 5,
 				Armor = "PtolemyArmor",
 				Cost = 100,
@@ -383,8 +383,8 @@ local UnitInfo: { [string]: UnitInfo } = {
 
 		UnitData = {
 			[0] = {
-				Damage = { 0 },
-				FireRate = 0,
+				Damage = { 5 },
+				FireRate = 2,
 				Range = 5,
 				Armor = "CleopatraArmor",
 				Cost = 100,
@@ -400,8 +400,8 @@ local UnitInfo: { [string]: UnitInfo } = {
 
 		UnitData = {
 			[0] = {
-				Damage = { 0 },
-				FireRate = 0,
+				Damage = { 5 },
+				FireRate = 2,
 				Range = 5,
 				Armor = "NarmerArmor",
 				Cost = 100,
@@ -433,8 +433,8 @@ local UnitInfo: { [string]: UnitInfo } = {
 
 		UnitData = {
 			[0] = {
-				Damage = { 0 },
-				FireRate = 0,
+				Damage = { 5 },
+				FireRate = 2,
 				Range = 5,
 				Armor = "RamessesArmor",
 				Cost = 100,

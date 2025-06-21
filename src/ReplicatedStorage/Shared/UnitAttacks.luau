@@ -411,6 +411,46 @@ local UnitAttacks: {
 				end,
 			},
 		},
+		["William the Conqueror"] = {
+			[0] = {
+				DefaultAttack,
+			},
+		},
+		["Charlemagne"] = {
+			[0] = {
+				DefaultAttack,
+			},
+		},
+		["Richard the Lionheart"] = {
+			[0] = {
+				DefaultAttack,
+			},
+		},
+		["Robert the Bruce"] = {
+			[0] = {
+				DefaultAttack,
+			},
+		},
+		["Ptolemy"] = {
+			[0] = {
+				DefaultAttack,
+			},
+		},
+		["Cleopatra"] = {
+			[0] = {
+				DefaultAttack,
+			},
+		},
+		["Narmer"] = {
+			[0] = {
+				DefaultAttack,
+			},
+		},
+		["Ramesses II"] = {
+			[0] = {
+				DefaultAttack,
+			},
+		},
 	}
 
 local DefaultRuns: { [string]: { [number]: (Unit: Types.Unit) -> () } } = {

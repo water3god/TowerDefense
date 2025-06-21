@@ -563,18 +563,18 @@ local function Render()
 	local OnPlay = React.useCallback(function()
 		local Character = Player.Character
 
-		if Character then
+		if Character and not VisibleFrame then
 			Character:PivotTo(PlayCFrame)
 		end
-	end, {})
+	end, { VisibleFrame })
 
 	local OnSummon = React.useCallback(function()
 		local Character = Player.Character
 
-		if Character then
+		if Character and not VisibleFrame then
 			Character:PivotTo(SummonCFrame)
 		end
-	end, {})
+	end, { VisibleFrame })
 
 	local PlacingUnitId: string?, SetUnitId = React.useState(nil :: string?)
 

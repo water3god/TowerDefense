@@ -9,7 +9,7 @@ local Packages = ReplicatedStorage.Packages
 local Promise = require(Packages.Promise)
 
 local GlobalModules = ServerScriptService.GlobalModules
-local Unit = require(GlobalModules.Unit)
+local UnitModule = require(GlobalModules.Unit)
 local GlobalWave = require(GlobalModules.GlobalWave)
 
 local function AddAlly(Ally: string, Data: {}?)
@@ -19,7 +19,7 @@ local function AddAlly(Ally: string, Data: {}?)
 	end
 end
 
-local function DelayAttack(Unit: Unit.Unit, Damage: number, Delay: number)
+local function DelayAttack(Unit: UnitModule.Unit, Damage: number, Delay: number)
 	local CurrentEnemy = Unit.CurrentEnemy
 
 	if CurrentEnemy then
@@ -34,13 +34,13 @@ local function DelayAttack(Unit: Unit.Unit, Damage: number, Delay: number)
 	end
 end
 
-local Data: { [string]: Unit.UnitInput } = {
+local UnitData: { [string]: UnitModule.UnitInput } = {
 	["Alexander The Great"] = {
 		UnitName = "Alexander The Great",
 
 		AttackFuncs = {
 			[0] = {
-				function(Unit: Unit.Unit, Damage: number)
+				function(Unit: UnitModule.Unit, Damage: number)
 					DelayAttack(Unit, Damage, 0.42)
 				end,
 			},
@@ -53,7 +53,7 @@ local Data: { [string]: Unit.UnitInput } = {
 
 		AttackFuncs = {
 			[0] = {
-				function(Unit: Unit.Unit, Damage: number)
+				function(Unit: UnitModule.Unit, Damage: number)
 					DelayAttack(Unit, Damage, 0.28)
 				end,
 			},
@@ -73,7 +73,7 @@ local Data: { [string]: Unit.UnitInput } = {
 
 		AttackFuncs = {
 			[0] = {
-				function(Unit: Unit.Unit, Damage: number)
+				function(Unit: UnitModule.Unit, Damage: number)
 					DelayAttack(Unit, Damage, 0.35)
 				end,
 			},
@@ -100,7 +100,7 @@ local Data: { [string]: Unit.UnitInput } = {
 
 		AttackFuncs = {
 			[0] = {
-				function(Unit: Unit.Unit, Damage: number)
+				function(Unit: UnitModule.Unit, Damage: number)
 					DelayAttack(Unit, Damage, 0.23)
 				end,
 			},
@@ -113,7 +113,7 @@ local Data: { [string]: Unit.UnitInput } = {
 
 		AttackFuncs = {
 			[0] = {
-				function(Unit: Unit.Unit, Damage: number)
+				function(Unit: UnitModule.Unit, Damage: number)
 					local CurrentEnemy = Unit.CurrentEnemy
 					Unit:AddAttackPromise(
 						Promise.delay(0.4 * Unit.SpeedRatio):andThen(function()
@@ -143,7 +143,7 @@ local Data: { [string]: Unit.UnitInput } = {
 
 		AttackFuncs = {
 			[0] = {
-				function(Unit: Unit.Unit, Damage: number)
+				function(Unit: UnitModule.Unit, Damage: number)
 					DelayAttack(Unit, Damage, 0.52)
 				end,
 			},
@@ -196,12 +196,80 @@ local Data: { [string]: Unit.UnitInput } = {
 		DefaultRuns = {},
 		Abilities = {},
 	},
+	["Robert the Bruce"] = {
+		UnitName = "Robert the Bruce",
+
+		AttackFuncs = {
+			[0] = {
+				function(Unit: UnitModule.Unit, Damage: number)
+					DelayAttack(Unit, Damage, 0.5)
+				end,
+			},
+		},
+		DefaultRuns = {},
+		Abilities = {},
+	},
+	["Leif Erikson"] = {
+		UnitName = "Leif Erikson",
+
+		AttackFuncs = {},
+		DefaultRuns = {},
+		Abilities = {},
+	},
+	["Charlemagne"] = {
+		UnitName = "Charlemagne",
+
+		AttackFuncs = {
+			[0] = {
+				function(Unit: UnitModule.Unit, Damage: number)
+					DelayAttack(Unit, Damage, 0.6)
+				end,
+			},
+		},
+		DefaultRuns = {},
+		Abilities = {},
+	},
+	["Joan of Arc"] = {
+		UnitName = "Joan of Arc",
+
+		AttackFuncs = {},
+		DefaultRuns = {},
+		Abilities = {},
+	},
+	["William the Conqueror"] = {
+		UnitName = "William the Conqueror",
+
+		AttackFuncs = {
+			[0] = {
+				function(Unit: UnitModule.Unit, Damage: number)
+					DelayAttack(Unit, Damage, 0.3)
+					DelayAttack(Unit, Damage, 0.5)
+					DelayAttack(Unit, Damage, 0.8)
+				end,
+			},
+		},
+		DefaultRuns = {},
+		Abilities = {},
+	},
+	["Richard the Lionheart"] = {
+		UnitName = "Richard the Lionheart",
+
+		AttackFuncs = {
+			[0] = {
+				function(Unit: UnitModule.Unit, Damage: number)
+					DelayAttack(Unit, Damage, 0.6)
+				end,
+			},
+		},
+		DefaultRuns = {},
+		Abilities = {},
+	},
 	["Rammeses II"] = {
 		UnitName = "Rammeses II",
 
 		AttackFuncs = {
 			[0] = {
-				function(Unit: Unit.Unit, Damage: number)
+				function(Unit: UnitModule.Unit, Damage: number)
 					DelayAttack(Unit, Damage, 0.35)
 				end,
 			},
@@ -212,26 +280,14 @@ local Data: { [string]: Unit.UnitInput } = {
 	["Akhenaten"] = {
 		UnitName = "Akhenaten",
 
-		AttackFuncs = {
-			[0] = {
-				function(Unit: Unit.Unit, Damage: number)
-					DelayAttack(Unit, Damage, 0.35)
-				end,
-			},
-		},
+		AttackFuncs = {},
 		DefaultRuns = {},
 		Abilities = {},
 	},
 	["Tutankhamun"] = {
 		UnitName = "Tutankhamun",
 
-		AttackFuncs = {
-			[0] = {
-				function(Unit: Unit.Unit, Damage: number)
-					DelayAttack(Unit, Damage, 0.35)
-				end,
-			},
-		},
+		AttackFuncs = {},
 		DefaultRuns = {},
 		Abilities = {},
 	},
@@ -240,7 +296,7 @@ local Data: { [string]: Unit.UnitInput } = {
 
 		AttackFuncs = {
 			[0] = {
-				function(Unit: Unit.Unit, Damage: number)
+				function(Unit: UnitModule.Unit, Damage: number)
 					DelayAttack(Unit, Damage, 0.35)
 				end,
 			},
@@ -253,7 +309,7 @@ local Data: { [string]: Unit.UnitInput } = {
 
 		AttackFuncs = {
 			[0] = {
-				function(Unit: Unit.Unit, Damage: number)
+				function(Unit: UnitModule.Unit, Damage: number)
 					DelayAttack(Unit, Damage, 0.35)
 				end,
 			},
@@ -266,7 +322,7 @@ local Data: { [string]: Unit.UnitInput } = {
 
 		AttackFuncs = {
 			[0] = {
-				function(Unit: Unit.Unit, Damage: number)
+				function(Unit: UnitModule.Unit, Damage: number)
 					DelayAttack(Unit, Damage, 0.35)
 				end,
 			},
@@ -278,7 +334,7 @@ local Data: { [string]: Unit.UnitInput } = {
 
 local Ultimate = {}
 
-Ultimate.UnitData = Data
+Ultimate.UnitData = UnitData
 
 function Ultimate.LevelFunc(Level: number): number
 	return 1 + (Level / 100)

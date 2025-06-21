@@ -118,7 +118,14 @@ local function PlaceUnit(Player: Player, Wave: GlobalWave.GlobalWave, Data: Plac
 	local InputCFrame = CFrame.new(Data.UnitPosition) * CFrame.Angles(0, math.rad(-90 * Data.RotationIndex), 0)
 
 	local UnitUnitData = UnitData.UnitData[Data.Unit]
+
+	if not UnitUnitData then
+		warn(`No UnitData for '{Data.Unit}`)
+	end
 	local UnitUnitInfo = UnitInfo.UnitInfo[Data.Unit]
+	if not UnitUnitInfo then
+		warn(`No UnitData for '{Data.Unit}`)
+	end
 
 	if UnitData then
 		local Cost = UnitUnitInfo.UnitData[0].Cost
