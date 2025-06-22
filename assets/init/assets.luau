@@ -8,6 +8,7 @@ local assets = {
 		["Tut.png"] = "rbxassetid://127377869922808",
 	},
 	audio = {
+		["657948__lilmati__family-friendly-inspect-sound-ui-or-in-game-notification.wav"] = "rbxassetid://72255888882620",
 		["explosion.mp3"] = "rbxassetid://133965358324268",
 	},
 	images = {

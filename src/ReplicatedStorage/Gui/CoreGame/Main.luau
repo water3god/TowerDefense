@@ -20,6 +20,8 @@ local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local DefaultScrolling = require(CoreGame.DefaultScrolling)
 
+local SFXService = require(ReplicatedStorage.Client.GlobalClient.SFXService)
+
 local DefaultGui = {}
 
 local DefaultProps = {
@@ -127,7 +129,15 @@ do
 				API.start({
 					Scale = 1.1,
 				})
-			elseif Instance.GuiState == Enum.GuiState.Press or Instance.GuiState == Enum.GuiState.Idle then
+			elseif Instance.GuiState == Enum.GuiState.Press then
+				API.stop()
+				API.start({
+					Scale = 1,
+				})
+				SFXService.PlaySoundGlobalWithId("rbxassetid://72255888882620", function(Sound: Sound)
+					Sound.Volume = 0.1
+				end)
+			elseif Instance.GuiState == Enum.GuiState.Idle then
 				API.stop()
 				API.start({
 					Scale = 1,
@@ -136,20 +146,6 @@ do
 		end, {})
 
 		return Scale, Callback
-	end
-
-	function Animateables.Frame(Properties: Properties)
-		local Scale, Callback = ApplyEffect()
-
-		return e(DefaultGui.Frame, {
-			native = JoinDicts(Properties.native, {
-				[React.Change.GuiState] = Callback,
-			}),
-		}, {
-			AnimateScale = e("UIScale", {
-				Scale = Scale.Scale,
-			}),
-		}, Properties.children)
 	end
 
 	function Animateables.ImageButton(Properties: Properties)
@@ -176,20 +172,6 @@ do
 		}, {
 			AnimateScale = e("UIScale", {
 				Scale = Scale.Scale,
-			}),
-		}, Properties.children)
-	end
-
-	function Animateables.CanvasGroup(Properties: Properties)
-		local Scale, Callback = ApplyEffect()
-
-		return e(DefaultGui.CanvasGroup, {
-			native = JoinDicts(Properties.native, {
-				[React.Change.GuiState] = Callback,
-			}),
-		}, {
-			AnimateScale = e("UIScale", {
-				Scale = Scale,
 			}),
 		}, Properties.children)
 	end

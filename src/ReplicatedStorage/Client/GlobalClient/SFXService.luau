@@ -5,12 +5,15 @@
 -- Services --
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SoundService = game:GetService("SoundService")
+local RunService = game:GetService("RunService")
 
 local Packages = ReplicatedStorage.Packages
 local Signal = require(Packages.Signal)
 
 local GlobalClient = ReplicatedStorage.Client.GlobalClient
-local SettingsService = require(GlobalClient.SettingsService)
+local SettingsService = if RunService:IsClient()
+	then require(GlobalClient.SettingsService)
+	else {} :: typeof(require(GlobalClient.SettingsService))
 
 local SoundEffects = SoundService.SoundEffects
 local SoundGroup = SoundEffects.SoundGroup
@@ -81,12 +84,33 @@ local function PlaySoundGlobal(SoundInput: Sound, Func: ((Sound: Sound) -> ())?)
 	end)
 end
 
+local function PlaySoundGlobalWithId(SoundId: string, Func: ((Sound: Sound) -> ())?)
+	local Sound = Instance.new("Sound")
+	Sound.SoundId = SoundId
+	Sound.SoundGroup = SoundGroup
+
+	if Func then
+		Func(Sound)
+	end
+
+	Sound.Parent = PlayingSounds
+
+	table.insert(SoundsList, Sound)
+	Sound:Play()
+
+	Sound.Ended:Once(function()
+		RemoveSound(Sound)
+		Sound:Destroy()
+	end)
+end
+
 local Module: {
 	PlayingSounds: { Sound },
 	SoundPlayed: Signal.Signal<Sound>,
 	Synced: boolean,
-	PlaySoundAt: (SoundInput: Sound, CFrame: CFrame, Func: (() -> ())?) -> (),
-	PlaySoundGlobal: (SoundInput: Sound, Func: (() -> ())?) -> (),
+	PlaySoundAt: (SoundInput: Sound, CFrame: CFrame, Func: ((Sound: Sound) -> ())?) -> (),
+	PlaySoundGlobal: (SoundInput: Sound, Func: ((Sound: Sound) -> ())?) -> (),
+	PlaySoundGlobalWithId: (SoundId: string, Func: ((Sound: Sound) -> ())?) -> (),
 } =
 	{
 		PlayingSounds = SoundsList,
@@ -94,15 +118,18 @@ local Module: {
 		Synced = false,
 		PlaySoundAt = PlaySoundAt,
 		PlaySoundGlobal = PlaySoundGlobal,
+		PlaySoundGlobalWithId = PlaySoundGlobalWithId,
 	}
 
-task.spawn(function()
-	SoundGroup.Volume = SettingsService.GetSetting("SFXVolume", true)
-	Module.Synced = true
-end)
+if RunService:IsClient() then
+	task.spawn(function()
+		SoundGroup.Volume = SettingsService.GetSetting("SFXVolume", true)
+		Module.Synced = true
+	end)
 
-SettingsService.GetSettingChangedSignal("SFXVolume"):Connect(function(Volume: number)
-	SoundGroup.Volume = Volume
-end)
+	SettingsService.GetSettingChangedSignal("SFXVolume"):Connect(function(Volume: number)
+		SoundGroup.Volume = Volume
+	end)
+end
 
 return Module
