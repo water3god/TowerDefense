@@ -203,7 +203,7 @@ local function CreateUnitFrame(props: UnitProperties)
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeGradient, {
-					Stroke = 0.03,
+					Stroke = 0.015,
 					GradColor = Data.RarityData and Data.RarityData.StrokeColor,
 				}),
 				UIGradient = e("UIGradient", {
@@ -219,7 +219,7 @@ local function CreateUnitFrame(props: UnitProperties)
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeGradient, {
-					Stroke = 0.03,
+					Stroke = 0.015,
 					GradColor = Data.RarityData and Data.RarityData.StrokeColor,
 				}),
 				UIGradient = e("UIGradient", {
@@ -232,11 +232,11 @@ local function CreateUnitFrame(props: UnitProperties)
 					Position = UDim2.fromScale(0.5, 1.05),
 					Visible = IsSold,
 					Text = "Sold",
-					TextTransparency = 0.5,
+					TextColor3 = Color3.new(0.5, 0.5, 0.5),
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.03,
+					Stroke = 0.015,
 				}),
 			}),
 		}),
@@ -254,21 +254,21 @@ local function CreateInRoll(props: Properties)
 		end
 	end, { Visible })
 
-	local MainFrames: any = React.useMemo(function()
-		local Frames = {}
+	local MainFrames = React.useMemo(function()
+		local Frames: { [string]: React.Node } = {}
 		local RowCount = math.ceil(#props.UnitNames / MaxPerRow)
 
 		local MaxSize = math.max(math.pow(1 - math.clamp(#props.UnitNames, 0, 4) * 0.12, 1.2), 0.5)
 
 		for i = 1, RowCount, 1 do
-			local UnitFrames: any = {}
+			local UnitFrames: { [string]: React.Node } = {}
 
 			for j = 1, MaxPerRow, 1 do
 				local Index = MaxPerRow * (i - 1) + j
 				local UnitData = props.UnitNames[Index]
 
 				if UnitData then
-					UnitFrames["UnitFrame" .. Index] = e(CreateUnitFrame, {
+					UnitFrames["UnitFrame" .. Index .. tick()] = e(CreateUnitFrame, {
 						UnitName = UnitData.Name,
 						UniqueId = UnitData.Id,
 						Visible = Visible,
@@ -301,15 +301,15 @@ local function CreateInRoll(props: Properties)
 		end
 
 		local TimeDifference = workspace:GetServerTimeNow() - props.LastFiredTime
-		local DelayTime = Constants.ROLLDELAYTIME * 0.9 - TimeDifference
+		local DelayTime = Constants.ROLLDELAYTIME * Constants.ROLLPERCENT - TimeDifference
 		if props.AutoRoll then
-			local NewPromise = Promise.delay(DelayTime):andThen(function()
+			--[[local NewPromise = Promise.delay(DelayTime):andThen(function()
 				SetVisible(false)
 			end)
 
 			return function()
 				NewPromise:cancel()
-			end
+			end]]
 		else
 			if DelayTime <= 0 then
 				SetVisible(false)
@@ -328,7 +328,8 @@ local function CreateInRoll(props: Properties)
 		local function CloseClick()
 			if
 				props.CloseClick
-				and workspace:GetServerTimeNow() - props.LastFiredTime > Constants.ROLLDELAYTIME * 0.9
+				and workspace:GetServerTimeNow() - props.LastFiredTime
+					> Constants.ROLLDELAYTIME * Constants.ROLLPERCENT
 			then
 				if not props.AutoRoll then
 					SetVisible(false)
@@ -374,16 +375,16 @@ local function CreateInRoll(props: Properties)
 	return e(Main.Frame, {
 		native = Join({
 			Visible = Visible,
-			Position = UDim2.fromScale(0.5, 0.35),
+			Position = UDim2.fromScale(0.5, 0.3),
 			Size = UDim2.fromScale(0.8, 0.6),
 		}, props.native),
 	}, {
 		StopAutoButton = e(Main.Animateables.ImageButton, {
 			native = {
-				Position = UDim2.fromScale(0.5, 1.1),
-				Size = UDim2.fromScale(0.5, 0.2),
+				Position = UDim2.fromScale(0.5, 1.15),
+				Size = UDim2.fromScale(0.4, 0.15),
 				Image = "rbxassetid://80739823452825",
-				ImageColor3 = Color3.new(1.000000, 0.125490, 0.125490),
+				ImageColor3 = Color3.new(1, 0.12549, 0.12549),
 				Visible = props.AutoRoll,
 				[React.Event.MouseButton1Click] = CancelAutoRoll,
 			},
@@ -398,7 +399,7 @@ local function CreateInRoll(props: Properties)
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.03,
+					Stroke = 0.02,
 				}),
 			}),
 		}),

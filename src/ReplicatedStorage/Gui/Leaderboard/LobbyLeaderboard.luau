@@ -65,8 +65,15 @@ local function CreatePlayerFrame(props: PlayerProps)
 		if CachedNames[props.UserId] then
 			return CachedNames[props.UserId]
 		else
-			CachedNames[props.UserId] = Players:GetNameFromUserIdAsync(props.UserId)
-			return CachedNames[props.UserId]
+			local Success, Returned = pcall(function()
+				return Players:GetNameFromUserIdAsync(props.UserId)
+			end)
+			if Success then
+				CachedNames[props.UserId] = Returned
+				return CachedNames[props.UserId]
+			else
+				return tostring(props.UserId)
+			end
 		end
 	end, { props.UserId })
 

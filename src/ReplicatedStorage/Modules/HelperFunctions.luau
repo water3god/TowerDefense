@@ -474,6 +474,25 @@ function Funcs.GetThumbnailIdAsync(UserId: number)
 	end
 end
 
+function Funcs.LoadAnimation(Character: Model, Animation: Animation): AnimationTrack?
+	local Humanoid = Character:FindFirstAncestorWhichIsA("Humanoid")
+	if not Humanoid then
+		return nil
+	end
+
+	local Animator = Humanoid:FindFirstAncestorWhichIsA("Animator")
+	if not Animator then
+		return nil
+	end
+
+	local AnimationTrack = Animator:LoadAnimation(Animation)
+	if not AnimationTrack then
+		return nil
+	end
+
+	return AnimationTrack
+end
+
 function Funcs.GetSmallestNumber(Data: { [number]: any }, Target: number)
 	local LargestNumber: number = 0
 	for Number, _ in pairs(Data) do

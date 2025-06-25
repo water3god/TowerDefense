@@ -4,11 +4,14 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
 
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
 local e = React.createElement
 local Signal = require(Packages.Signal)
+
+local Player = Players.LocalPlayer
 
 local Hooks = {}
 
@@ -114,6 +117,32 @@ function Hooks.useEventConnection<T...>(
 			connection:Disconnect()
 		end
 	end, { event, cachedCallback } :: { unknown })
+end
+
+function Hooks.useCamera()
+	return React.useMemo(function()
+		return workspace.CurrentCamera
+	end, {})
+end
+
+function Hooks.useCharacter()
+	local Character: typeof(ReplicatedStorage.ModelStorage.Extra.Rig)?, SetCharacter =
+		React.useState(nil :: typeof(ReplicatedStorage.ModelStorage.Extra.Rig)?)
+
+	React.useEffect(function()
+		SetCharacter(Player.Character)
+	end, {})
+
+	Hooks.useEventConnection(Player.CharacterAdded, function()
+		SetCharacter(Player.Character)
+	end, {})
+
+	Hooks.useEventConnection(Player.CharacterRemoving, function()
+		print("removing")
+		SetCharacter(nil)
+	end, {})
+
+	return Character
 end
 
 return Hooks

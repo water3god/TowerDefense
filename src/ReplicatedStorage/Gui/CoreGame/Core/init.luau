@@ -6,6 +6,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
+local GuiService = game:GetService("GuiService")
 
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
@@ -16,7 +17,6 @@ local e = React.createElement
 local Trove = require(Packages.Trove)
 local Input = require(Packages.Input)
 local Touch = Input.Touch
-local Keyboard = Input.Keyboard
 local Mouse = Input.Mouse
 local Gamepad = Input.Gamepad
 
@@ -93,7 +93,6 @@ local Restricted = require(script.Restricted)
 local GlobalWorkspace = workspace.GlobalWorkspace
 
 local Player = Players.LocalPlayer
-
 export type InventoryProps = {
 	CloseClick: () -> (),
 	Visible: boolean,
@@ -119,6 +118,7 @@ local function AnimateWrapper(Props: { Visible: boolean, Name: string })
 	local Styles, API = ReactSpring.useSpring(function()
 		return {
 			alpha = 1,
+			config = { mass = 1, tension = 190, friction = 22, velocity = 0.01 :: any },
 		}
 	end)
 
@@ -400,7 +400,6 @@ local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (strin
 				InputTrove:Destroy()
 				if Preferred == "MouseKeyboard" then
 					local NewMouse = InputTrove:Construct(Mouse)
-					local NewKeyboard = InputTrove:Construct(Keyboard)
 
 					NewMouse.LeftDown:Connect(function()
 						OnPress(Mouse:GetPosition())
@@ -410,7 +409,10 @@ local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (strin
 						OnFrame(Mouse:GetPosition())
 					end)
 				elseif Preferred == "Gamepad" then
-					return
+					local NewGamepad = InputTrove:Construct(Gamepad)
+					NewGamepad.ButtonA:Connect(function()
+						OnPress(NewGamepad:GetPosition())
+					end)
 				elseif Preferred == "Touch" then
 					local NewTouch = InputTrove:Construct(Touch)
 
@@ -468,7 +470,7 @@ end
 local PlayCFrame = CFrame.new(145.5, 7.834, 143.5) * CFrame.Angles(0, math.rad(25), 0)
 local SummonCFrame = CFrame.new(-170, 10, -215)
 
-local _VisibleFrames = {
+local VisibleFrames = {
 	[Constants.INVENTORY_FRAME] = { "Bottom" },
 	[Constants.IN_ROLL] = { "Bottom" },
 	[Constants.ROLL_FRAME] = { "Bottom" },
@@ -479,16 +481,25 @@ local _VisibleFrames = {
 	[Constants.STORE] = {},
 }
 
+local NoBlur = {
+	Constants.IN_ROLL,
+}
+
+local CharacterConfig = { mass = 1, tension = 500, friction = 40, velocity = 0.01 :: any }
+
 local Params = RaycastParams.new()
 Params.CollisionGroup = "PlacedCharacters"
 
 local function Render()
 	local VisibleFrame: string?, SetVisibleFrame = React.useState(nil :: string?)
-	local TransitionFrame: string?, SetTransitionFrame = React.useState(nil :: string?)
+	local Character = Hooks.useCharacter()
+	local Camera = Hooks.useCamera()
+
+	local VisibleFrameBinding, SetVisibleFrameBinding = React.useBinding(VisibleFrame)
 
 	React.useEffect(function()
 		if VisibleFrame then
-			SetTransitionFrame(VisibleFrame)
+			SetVisibleFrameBinding(VisibleFrame)
 		end
 	end, { VisibleFrame })
 
@@ -496,6 +507,8 @@ local function Render()
 		return {
 			Size = 0,
 			Inverted = 0,
+			FieldOfView = 70,
+			config = { mass = 1, tension = 190, friction = 19, velocity = 0.01 :: any },
 		}
 	end)
 
@@ -561,20 +574,16 @@ local function Render()
 	end, { VisibleFrame })
 
 	local OnPlay = React.useCallback(function()
-		local Character = Player.Character
-
 		if Character and not VisibleFrame then
 			Character:PivotTo(PlayCFrame)
 		end
-	end, { VisibleFrame })
+	end, { VisibleFrame, Character :: any })
 
 	local OnSummon = React.useCallback(function()
-		local Character = Player.Character
-
 		if Character and not VisibleFrame then
 			Character:PivotTo(SummonCFrame)
 		end
-	end, { VisibleFrame })
+	end, { VisibleFrame, Character :: any })
 
 	local PlacingUnitId: string?, SetUnitId = React.useState(nil :: string?)
 
@@ -582,19 +591,82 @@ local function Render()
 		SetUnitId(nil)
 	end, { PlacingUnitId })
 
-	local VisibleFrames = React.useMemo(function()
-		if TransitionFrame then
-			return _VisibleFrames[TransitionFrame]
-		else
-			return {}
-		end
-	end, { TransitionFrame })
+	local SprintAnim = React.useRef(nil :: AnimationTrack?)
 
 	React.useEffect(function()
-		API.stop()
+		local StopFrame = VisibleFrame and not table.find(NoBlur, VisibleFrame)
+		if Character then
+			local Humanoid = Character.Humanoid
+			local SprintTrove = Trove.new()
+
+			if not SprintAnim then
+				SprintAnim = Character
+			end
+
+			if StopFrame then
+				Humanoid.WalkSpeed = 24
+			end
+
+			local CleanUp = Input.PreferredInput.Observe(function(PreferredInput)
+				if PreferredInput == "MouseKeyboard" then
+					local Keyboard = SprintTrove:Construct(Input.Keyboard)
+
+					Keyboard.KeyDown:Connect(function(Key: Enum.KeyCode)
+						if Key == Enum.KeyCode.LeftShift then
+							if not StopFrame then
+								API.start({
+									FieldOfView = 80,
+									config = CharacterConfig,
+								})
+								Humanoid.WalkSpeed = 40
+							end
+						end
+					end)
+
+					local function Stop()
+						if not StopFrame then
+							API.start({
+								FieldOfView = 70,
+								config = CharacterConfig,
+							})
+							Humanoid.WalkSpeed = 24
+						end
+					end
+
+					SprintTrove:Connect(GuiService.MenuOpened, function()
+						Stop()
+					end)
+
+					Keyboard.KeyUp:Connect(function(Key: Enum.KeyCode)
+						if Key == Enum.KeyCode.LeftShift then
+							Stop()
+						end
+					end)
+				end
+			end)
+
+			return function()
+				SprintTrove:Destroy()
+				CleanUp()
+			end
+		else
+			API.start({
+				FieldOfView = if VisibleFrame and not table.find(NoBlur, VisibleFrame) then 65 else 70,
+				config = CharacterConfig,
+			})
+
+			return function() end
+		end
+	end, { Character, VisibleFrame })
+
+	React.useEffect(function()
 		API.start({
-			Size = if VisibleFrame then 20 else 0,
+			Size = if VisibleFrame and not table.find(NoBlur, VisibleFrame) then 20 else 0,
 			Inverted = if VisibleFrame then 1 else 0,
+		})
+		API.start({
+			FieldOfView = if VisibleFrame and not table.find(NoBlur, VisibleFrame) then 65 else 70,
+			config = CharacterConfig,
 		})
 	end, { VisibleFrame })
 
@@ -608,6 +680,12 @@ local function Render()
 			PurchaseContext.Provider,
 		},
 	}, {
+		FieldOfView = e("Folder", {
+			Archivable = IsRunning and Styles.FieldOfView:map(function(FieldOfView: number)
+				Camera.FieldOfView = FieldOfView
+				return true
+			end) or true,
+		}),
 		GuiBlur = IsRunning and ReactRoblox.createPortal(
 			e("BlurEffect", {
 				Size = Styles.Size,
@@ -699,9 +777,14 @@ local function Render()
 					SetVisibleInternal(Constants.INVENTORY_FRAME, Visible)
 				end,
 				native = {
-					Position = VisibleFrames[1] ~= "Bottom" and Styles.Inverted:map(function(Size: number)
-						return UDim2.fromScale(0.5, 0.9):Lerp(UDim2.fromScale(0.5, 1.2), Size)
-					end) or UDim2.fromScale(0.5, 0.9),
+					Position = React.joinBindings({ Styles.Inverted :: any, VisibleFrameBinding })
+						:map(function(NewData: { any })
+							if NewData[2] and table.find(VisibleFrames[NewData[2]], "Bottom") then
+								return UDim2.fromScale(0.5, 0.9)
+							else
+								return UDim2.fromScale(0.5, 0.9):Lerp(UDim2.fromScale(0.5, 1.2), NewData[1])
+							end
+						end),
 				},
 			}),
 		}),

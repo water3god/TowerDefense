@@ -23,6 +23,7 @@ local Constants = {
 	ROLLDELAYTIME = 3,
 	STARTCOINS = 500,
 	ROLLCOSTS = { MAIN = 40 },
+	ROLLPERCENT = 1,
 }
 
 return Constants

@@ -104,8 +104,8 @@ local function CreateUnitViewport(props: ViewportProps)
 				ZIndex = 2,
 			},
 		}, {
-			UIStroke = e(UIStroke.UIStroke, {
-				Stroke = 0.0015,
+			UIStroke = e(UIStroke.UIStrokeGradient, {
+				Stroke = 0.02,
 				GradColor = Data.RarityData and Data.RarityData.StrokeColor,
 			}),
 			UIGradient = e("UIGradient", {
@@ -120,8 +120,8 @@ local function CreateUnitViewport(props: ViewportProps)
 				ZIndex = 2,
 			},
 		}, {
-			UIStroke = e(UIStroke.UIStroke, {
-				Stroke = 0.0015,
+			UIStroke = e(UIStroke.UIStrokeGradient, {
+				Stroke = 0.02,
 				GradColor = Data.RarityData and Data.RarityData.StrokeColor,
 			}),
 			UIGradient = e("UIGradient", {
