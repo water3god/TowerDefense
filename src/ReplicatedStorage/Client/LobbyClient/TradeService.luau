@@ -84,15 +84,16 @@ function Data.RemoveProduct()
 	ChangeProduct:FireServer()
 end
 
-TradeStart.OnClientEvent:Connect(function(NewPlayer: Player)
+TradeStart.OnClientEvent:Connect(function(PlayerData: { Player1: Player, Player2: Player })
 	CurrentTradeData = {
-		OtherPlayer = NewPlayer,
+		OtherPlayer = if Player == PlayerData.Player1 then PlayerData.Player1 else PlayerData.Player2,
 		YourUnits = {},
 		OtherUnits = {},
 		Status = "InTrade",
 		YourStatus = "InTrade",
 		OtherStatus = "InTrade",
 	}
+	Data.CurrentTradeData = CurrentTradeData
 	Data.NewTrade:Fire(CurrentTradeData)
 end)
 

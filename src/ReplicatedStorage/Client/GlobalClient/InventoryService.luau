@@ -68,7 +68,7 @@ ItemChanged.OnClientEvent:Connect(function(Type: string, UniqueId: string, Data:
 		else
 			UnitChanged:Fire(Data)
 		end
-	elseif Type == "Gamepasses" then
+	elseif Type == "Products" then
 		if Data == nil then
 			ProductRemoved:Fire(UniqueId)
 		elseif not CurrentInventory[Type][UniqueId] then

@@ -575,7 +575,7 @@ end
 
 function PlayerData:SetGold(Gold: number)
 	local Data = self.Profile.Data
-	local GoldCount = math.max(Gold, 0)
+	local GoldCount = math.floor(math.max(Gold, 0))
 	local OldCount = Data.Gold
 	Data.Gold = GoldCount
 	self.GoldChanged:Fire(GoldCount)

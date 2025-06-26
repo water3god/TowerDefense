@@ -358,7 +358,7 @@ end
 
 function GlobalWave:SetCoinsUser(UserId: number, Coins: number)
 	if self.Coins[UserId] then
-		self.Coins[UserId] = math.max(Coins, 0)
+		self.Coins[UserId] = math.floor(math.max(Coins, 0))
 	end
 	self.CoinsChanged:Fire(UserId, Coins)
 end
@@ -392,7 +392,7 @@ function GlobalWave:HasEnoughCoins(UserId: number, NeededCoins: number)
 end
 
 function GlobalWave:Damage(Damage: number)
-	self:SetHealth(self.BaseHealth - Damage)
+	self:SetHealth(math.floor(self.BaseHealth - Damage))
 end
 
 function GlobalWave:Heal(Healing: number)
