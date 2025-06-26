@@ -17,10 +17,10 @@ local GenerateId = require(Modules.GenerateId)
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
 
-local Network = ReplicatedStorage.Network
-local WarningEvents = require(Network.Warning)
-local SendWarning = WarningEvents.FromServer.SendWarning:Client()
-local WarningBindable = WarningEvents.ClientOnly.WarningBindable
+local Network = require(ReplicatedStorage.Network.Client)
+local ClientOnly = require(ReplicatedStorage.Network.ClientOnly)
+local SendWarning = Network.SendWarning
+local Warning = ClientOnly.Warning
 
 local OnWarning: Signal.Signal<string, Color3?> = Signal.new()
 
@@ -40,7 +40,7 @@ local WarningContext = React.createContext({
 	Add: (Text: string) -> (),
 })
 
-SendWarning:On(function(Message, Color)
+SendWarning.SetCallback(function(Message, Color)
 	OnWarning:Fire(Message, Color)
 end)
 
@@ -71,7 +71,7 @@ local function WarningProvider(props)
 		Add(Text, Color)
 	end, { Value })
 
-	Hooks.useEventConnection(WarningBindable, function(Text: string, Color: Color3?)
+	Hooks.useEventConnection(Warning, function(Text: string, Color: Color3?)
 		Add(Text, Color)
 	end, { Value })
 

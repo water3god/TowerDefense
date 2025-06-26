@@ -13,9 +13,8 @@ local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local GenerateId = require(Modules.GenerateId)
 
-local Network = ReplicatedStorage.Network
-local WarningEvents = require(Network.Warning)
-local SendWarning = WarningEvents.FromServer.SendWarning:Server()
+local Network = require(ReplicatedStorage.Network.Server)
+local SendWarning = Network.SendWarning
 
 local GlobalModules = ServerScriptService.GlobalModules
 local PlayerData = require(GlobalModules.PlayerData)
@@ -296,7 +295,7 @@ function Booth:AddPlayer(Player: Player)
 						})
 					)
 				then
-					SendWarning:Fire(Player, string.format("You do not have %s Unlocked!", MapInfo.Name))
+					SendWarning.Fire(Player, string.format("You do not have %s Unlocked!", MapInfo.Name))
 					return
 				end
 			else

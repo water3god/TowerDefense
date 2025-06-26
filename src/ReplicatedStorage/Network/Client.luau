@@ -334,27 +334,11 @@ end
 if RunService:IsServer() then
 	error("Cannot use the client module on the server!")
 end
-local remotes = ReplicatedStorage:WaitForChild("ZAP")
+local remotes = ReplicatedStorage:WaitForChild("Zap")
 
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
-export type WaveData = ({
-	["Wave"]: (number),
-	["BaseHealth"]: (number),
-	["MaxHealth"]: (number),
-	["Time"]: (number),
-	["StartTime"]: (number),
-})
-export type VoteData = ({
-	["Time"]: (number),
-	["StartTime"]: (number),
-	["CurrentCount"]: (number),
-	["NeededCount"]: (number),
-})
-export type Vote = (number)
-export type SortType = ("First" | "Last" | "Strongest" | "Weakest")
-export type Time = (number)
 export type Inventory = ({
 	["Units"]: ({ [(string)]: ({
 		["Unit"]: (string),
@@ -376,15 +360,10 @@ export type Inventory = ({
 		["PartialOneLose"]: ((boolean)?),
 	}) }),
 })
-export type RollData = ({
-	["SentTime"]: (number),
-	["Data"]: ({ (string) }),
-	["AutoRoll"]: (boolean),
-})
-export type Wave = (number)
-export type StageData = ({
-	["FastestTime"]: (number),
-	["FinishedCount"]: (number),
+export type PlacementData = ({
+	["Unit"]: (string),
+	["UnitPosition"]: (Vector3),
+	["RotationIndex"]: (number),
 })
 export type UnitInput = ({
 	["UniqueId"]: (string),
@@ -397,34 +376,6 @@ export type UnitInput = ({
 	["SpeedRatio"]: (number),
 	["Abilities"]: ({ (number) }),
 })
-export type Health = (number)
-export type SpeedChange = ({
-	["TimeStart"]: (number),
-	["Speed"]: (number),
-	["TimeEnd"]: ((number)?),
-})
-export type ProductData = ({
-	["ProductId"]: (number),
-	["IsGamepass"]: (boolean),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-})
-export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
-export type LevelData = ({
-	["Level"]: (number),
-	["XP"]: (number),
-	["NeededXP"]: (number),
-})
-export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
-export type BoothData = ({
-	["OwnerId"]: (number),
-	["MapId"]: (string),
-	["LevelId"]: (string),
-	["Difficulty"]: (string),
-	["Players"]: ({ (Player) }),
-	["StartTime"]: (number),
-	["EndTime"]: (number),
-})
 export type VisualUnitData = ({
 	["Unit"]: (string),
 	["Level"]: (number),
@@ -432,26 +383,19 @@ export type VisualUnitData = ({
 	["XP"]: (number),
 	["NeededXP"]: (number),
 })
-export type ResourceData = ({
-	["Resource"]: (string),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-	["PartialOneLose"]: ((boolean)?),
+export type SpeedChange = ({
+	["TimeStart"]: (number),
+	["Speed"]: (number),
+	["TimeEnd"]: ((number)?),
 })
-export type Difficulty = ("Normal" | "Hard" | "Insane")
-export type PlacementData = ({
-	["Unit"]: (string),
-	["UnitPosition"]: (Vector3),
-	["RotationIndex"]: (number),
-})
-export type AbilityIndex = (number)
-export type Level = (number)
-export type TimeData = ({
+export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
+export type WaveData = ({
+	["Wave"]: (number),
+	["BaseHealth"]: (number),
+	["MaxHealth"]: (number),
+	["Time"]: (number),
 	["StartTime"]: (number),
-	["EndTime"]: (number),
 })
-export type XP = (number)
-export type Item = ("Units" | "Products" | "Resources")
 export type UnitAttackInput = ({
 	["UniqueId"]: (string),
 	["Index"]: (number),
@@ -459,7 +403,24 @@ export type UnitAttackInput = ({
 	["Firetime"]: (number),
 	["SpeedRatio"]: (number),
 })
-export type ProductId = (number)
+export type Vote = (number)
+export type XP = (number)
+export type TimeData = ({
+	["StartTime"]: (number),
+	["EndTime"]: (number),
+})
+export type ProductData = ({
+	["ProductId"]: (number),
+	["IsGamepass"]: (boolean),
+	["Count"]: (number),
+	["UniqueId"]: (string),
+})
+export type Item = ("Units" | "Products" | "Resources")
+export type RollData = ({
+	["SentTime"]: (number),
+	["Data"]: ({ (string) }),
+	["AutoRoll"]: (boolean),
+})
 export type EnemyInput = ({
 	["UniqueId"]: (string),
 	["ModelName"]: (string),
@@ -480,6 +441,45 @@ export type EnemyInput = ({
 		["TimeEnd"]: ((number)?),
 	}) }),
 })
+export type ResourceData = ({
+	["Resource"]: (string),
+	["Count"]: (number),
+	["UniqueId"]: (string),
+	["PartialOneLose"]: ((boolean)?),
+})
+export type AbilityIndex = (number)
+export type Difficulty = ("Normal" | "Hard" | "Insane")
+export type VoteData = ({
+	["Time"]: (number),
+	["StartTime"]: (number),
+	["CurrentCount"]: (number),
+	["NeededCount"]: (number),
+})
+export type LevelData = ({
+	["Level"]: (number),
+	["XP"]: (number),
+	["NeededXP"]: (number),
+})
+export type StageData = ({
+	["FastestTime"]: (number),
+	["FinishedCount"]: (number),
+})
+export type Level = (number)
+export type BoothData = ({
+	["OwnerId"]: (number),
+	["MapId"]: (string),
+	["LevelId"]: (string),
+	["Difficulty"]: (string),
+	["Players"]: ({ (Player) }),
+	["StartTime"]: (number),
+	["EndTime"]: (number),
+})
+export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
+export type SortType = ("First" | "Last" | "Strongest" | "Weakest")
+export type Time = (number)
+export type ProductId = (number)
+export type Health = (number)
+export type Wave = (number)
 
 local function SendEvents()
 	if outgoing_used ~= 0 then
@@ -992,7 +992,11 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			local value, value2
 			local len_21 = buffer.readu16(incoming_buff, read(2))
 			value = buffer.readstring(incoming_buff, read(len_21), len_21)
-			value2 = Color3.fromRGB(buffer.readu8(incoming_buff, read(1)), buffer.readu8(incoming_buff, read(1)), buffer.readu8(incoming_buff, read(1)))
+			if buffer.readu8(incoming_buff, read(1)) == 1 then
+				value2 = Color3.fromRGB(buffer.readu8(incoming_buff, read(1)), buffer.readu8(incoming_buff, read(1)), buffer.readu8(incoming_buff, read(1)))
+			else
+				value2 = nil
+			end
 			if reliable_events[43] then
 				task.spawn(reliable_events[43], value, value2)
 			else
@@ -1908,7 +1912,7 @@ local returns = {
 		end,
 	},
 	SendWarning = {
-		SetCallback = function(Callback: (Value: (string), Value2: (Color3)) -> ()): () -> ()
+		SetCallback = function(Callback: (Value: (string), Value2: ((Color3)?)) -> ()): () -> ()
 			reliable_events[43] = Callback
 			for _, value in reliable_event_queue[43] do
 				task.spawn(Callback, unpack(value))
@@ -2370,7 +2374,7 @@ local returns = {
 		end,
 	},
 	BoothWaiting = {
-		SetCallback = function(Callback: (Value: ({
+		SetCallback = function(Callback: (BoothData: ({
 			["OwnerId"]: (number),
 			["MapId"]: (string),
 			["LevelId"]: (string),

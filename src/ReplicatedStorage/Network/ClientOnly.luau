@@ -13,7 +13,7 @@ local Packages = ReplicatedStorage.Packages
 local Signal = require(Packages.Signal)
 
 local ClientOnly = {
-	Warning = Signal.new() :: Signal.Signal<string, Color3>,
+	Warning = Signal.new() :: Signal.Signal<string, Color3?>,
 	TPGuiSet = Signal.new() :: Signal.Signal<{ MapName: string, ImageId: string }>,
 }
 

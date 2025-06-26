@@ -2,6 +2,8 @@
 
 opt server_output = "./src/ReplicatedStorage/Network/Server.luau"
 opt client_output = "./src/ReplicatedStorage/Network/Client.luau"
+opt types_output = "./src/ReplicatedStorage/Network/Types.luau"
+opt remote_folder = "Zap"
 
 type Level = u16
 type XP = f64
@@ -97,7 +99,9 @@ event BoothWaiting = {
 	from: Server,
 	type: Reliable,
 	call: SingleAsync,
-	data: BoothData,
+	data: (
+		BoothData: BoothData,
+	),
 }
 
 event BoothPlayerChanged = {
@@ -745,7 +749,7 @@ event SendWarning = {
 	call: SingleAsync,
 	data: (
 		string,
-		Color3,
+		Color3?,
 	),
 }
 

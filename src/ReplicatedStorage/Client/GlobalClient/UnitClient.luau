@@ -83,8 +83,8 @@ local Upgrade = OtherEvents.Upgrade
 local ChangePriority = OtherEvents.ChangePriority
 local UseAbility = OtherEvents.UseAbility
 
-local WarningEvents = require(ReplicatedStorage.Network.Warning)
-local WarningBindable = WarningEvents.ClientOnly.WarningBindable
+local WarningEvents = require(ReplicatedStorage.Network.ClientOnly)
+local SendWarning = WarningEvents.Warning
 
 export type Unit = Types.Unit
 export type UnitModule = Types.UnitModule
@@ -966,7 +966,7 @@ function UnitModule.InitPlacement(Unit: string)
 			Data.Clicked:Fire()
 			InitTrove:Destroy()
 		else
-			WarningBindable:Fire(string.format("Invalid Placement!"))
+			SendWarning:Fire(string.format("Invalid Placement!"))
 		end
 	end
 

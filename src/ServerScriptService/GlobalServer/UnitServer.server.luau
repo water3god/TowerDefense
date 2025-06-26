@@ -22,9 +22,8 @@ local Upgrade = UnitClient.Upgrade
 local UseAbility = UnitClient.UseAbility
 local Sell = UnitClient.Sell
 
-local Network = ReplicatedStorage.Network
-local WarningEvent = require(Network.Warning)
-local SendWarning = WarningEvent.FromServer.SendWarning:Server()
+local Network = require(ReplicatedStorage.Network.Server)
+local SendWarning = Network.SendWarning
 
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
@@ -142,10 +141,10 @@ local function PlaceUnit(Player: Player, Wave: GlobalWave.GlobalWave, Data: Plac
 				}, UnitUnitData)
 				Wave:SubtractCoinsFromUser(Player.UserId, Cost)
 			else
-				SendWarning:Fire(Player, "Incorrect Placement!")
+				SendWarning.Fire(Player, "Incorrect Placement!")
 			end
 		else
-			SendWarning:Fire(Player, string.format("You are missing %u Coins!", Cost - PlayerCoins))
+			SendWarning.Fire(Player, string.format("You are missing %u Coins!", Cost - PlayerCoins))
 		end
 	end
 end

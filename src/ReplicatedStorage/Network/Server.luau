@@ -521,10 +521,10 @@ if RunService:IsClient() then
 	error("Cannot use the server module on the client!")
 end
 
-local remotes = ReplicatedStorage:FindFirstChild("ZAP")
+local remotes = ReplicatedStorage:FindFirstChild("Zap")
 if remotes == nil then
 	remotes = Instance.new("Folder")
-	remotes.Name = "ZAP"
+	remotes.Name = "Zap"
 	remotes.Parent = ReplicatedStorage
 end
 
@@ -548,22 +548,6 @@ end
 Players.PlayerRemoving:Connect(function(player)
 	player_map[player] = nil
 end)
-export type WaveData = ({
-	["Wave"]: (number),
-	["BaseHealth"]: (number),
-	["MaxHealth"]: (number),
-	["Time"]: (number),
-	["StartTime"]: (number),
-})
-export type VoteData = ({
-	["Time"]: (number),
-	["StartTime"]: (number),
-	["CurrentCount"]: (number),
-	["NeededCount"]: (number),
-})
-export type Vote = (number)
-export type SortType = ("First" | "Last" | "Strongest" | "Weakest")
-export type Time = (number)
 export type Inventory = ({
 	["Units"]: ({ [(string)]: ({
 		["Unit"]: (string),
@@ -585,15 +569,10 @@ export type Inventory = ({
 		["PartialOneLose"]: ((boolean)?),
 	}) }),
 })
-export type RollData = ({
-	["SentTime"]: (number),
-	["Data"]: ({ (string) }),
-	["AutoRoll"]: (boolean),
-})
-export type Wave = (number)
-export type StageData = ({
-	["FastestTime"]: (number),
-	["FinishedCount"]: (number),
+export type PlacementData = ({
+	["Unit"]: (string),
+	["UnitPosition"]: (Vector3),
+	["RotationIndex"]: (number),
 })
 export type UnitInput = ({
 	["UniqueId"]: (string),
@@ -606,34 +585,6 @@ export type UnitInput = ({
 	["SpeedRatio"]: (number),
 	["Abilities"]: ({ (number) }),
 })
-export type Health = (number)
-export type SpeedChange = ({
-	["TimeStart"]: (number),
-	["Speed"]: (number),
-	["TimeEnd"]: ((number)?),
-})
-export type ProductData = ({
-	["ProductId"]: (number),
-	["IsGamepass"]: (boolean),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-})
-export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
-export type LevelData = ({
-	["Level"]: (number),
-	["XP"]: (number),
-	["NeededXP"]: (number),
-})
-export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
-export type BoothData = ({
-	["OwnerId"]: (number),
-	["MapId"]: (string),
-	["LevelId"]: (string),
-	["Difficulty"]: (string),
-	["Players"]: ({ (Player) }),
-	["StartTime"]: (number),
-	["EndTime"]: (number),
-})
 export type VisualUnitData = ({
 	["Unit"]: (string),
 	["Level"]: (number),
@@ -641,26 +592,19 @@ export type VisualUnitData = ({
 	["XP"]: (number),
 	["NeededXP"]: (number),
 })
-export type ResourceData = ({
-	["Resource"]: (string),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-	["PartialOneLose"]: ((boolean)?),
+export type SpeedChange = ({
+	["TimeStart"]: (number),
+	["Speed"]: (number),
+	["TimeEnd"]: ((number)?),
 })
-export type Difficulty = ("Normal" | "Hard" | "Insane")
-export type PlacementData = ({
-	["Unit"]: (string),
-	["UnitPosition"]: (Vector3),
-	["RotationIndex"]: (number),
-})
-export type AbilityIndex = (number)
-export type Level = (number)
-export type TimeData = ({
+export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
+export type WaveData = ({
+	["Wave"]: (number),
+	["BaseHealth"]: (number),
+	["MaxHealth"]: (number),
+	["Time"]: (number),
 	["StartTime"]: (number),
-	["EndTime"]: (number),
 })
-export type XP = (number)
-export type Item = ("Units" | "Products" | "Resources")
 export type UnitAttackInput = ({
 	["UniqueId"]: (string),
 	["Index"]: (number),
@@ -668,7 +612,24 @@ export type UnitAttackInput = ({
 	["Firetime"]: (number),
 	["SpeedRatio"]: (number),
 })
-export type ProductId = (number)
+export type Vote = (number)
+export type XP = (number)
+export type TimeData = ({
+	["StartTime"]: (number),
+	["EndTime"]: (number),
+})
+export type ProductData = ({
+	["ProductId"]: (number),
+	["IsGamepass"]: (boolean),
+	["Count"]: (number),
+	["UniqueId"]: (string),
+})
+export type Item = ("Units" | "Products" | "Resources")
+export type RollData = ({
+	["SentTime"]: (number),
+	["Data"]: ({ (string) }),
+	["AutoRoll"]: (boolean),
+})
 export type EnemyInput = ({
 	["UniqueId"]: (string),
 	["ModelName"]: (string),
@@ -689,6 +650,45 @@ export type EnemyInput = ({
 		["TimeEnd"]: ((number)?),
 	}) }),
 })
+export type ResourceData = ({
+	["Resource"]: (string),
+	["Count"]: (number),
+	["UniqueId"]: (string),
+	["PartialOneLose"]: ((boolean)?),
+})
+export type AbilityIndex = (number)
+export type Difficulty = ("Normal" | "Hard" | "Insane")
+export type VoteData = ({
+	["Time"]: (number),
+	["StartTime"]: (number),
+	["CurrentCount"]: (number),
+	["NeededCount"]: (number),
+})
+export type LevelData = ({
+	["Level"]: (number),
+	["XP"]: (number),
+	["NeededXP"]: (number),
+})
+export type StageData = ({
+	["FastestTime"]: (number),
+	["FinishedCount"]: (number),
+})
+export type Level = (number)
+export type BoothData = ({
+	["OwnerId"]: (number),
+	["MapId"]: (string),
+	["LevelId"]: (string),
+	["Difficulty"]: (string),
+	["Players"]: ({ (Player) }),
+	["StartTime"]: (number),
+	["EndTime"]: (number),
+})
+export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
+export type SortType = ("First" | "Last" | "Strongest" | "Weakest")
+export type Time = (number)
+export type ProductId = (number)
+export type Health = (number)
+export type Wave = (number)
 
 local function SendEvents()
 	for player, outgoing in player_map do
@@ -4272,7 +4272,7 @@ local returns = {
 		end,
 	},
 	SendWarning = {
-		Fire = function(Player: Player, Value: (string), Value2: (Color3))
+		Fire = function(Player: Player, Value: (string), Value2: ((Color3)?))
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 43)
@@ -4281,15 +4281,22 @@ local returns = {
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_141)
 			alloc(len_141)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_141)
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, Value2.R * 255)
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, Value2.G * 255)
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, Value2.B * 255)
+			if Value2 == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, Value2.R * 255)
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, Value2.G * 255)
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, Value2.B * 255)
+			end
 			player_map[Player] = save()
 		end,
-		FireAll = function(Value: (string), Value2: (Color3))
+		FireAll = function(Value: (string), Value2: ((Color3)?))
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 43)
@@ -4298,12 +4305,19 @@ local returns = {
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_142)
 			alloc(len_142)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_142)
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, Value2.R * 255)
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, Value2.G * 255)
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, Value2.B * 255)
+			if Value2 == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, Value2.R * 255)
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, Value2.G * 255)
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, Value2.B * 255)
+			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				load_player(player)
@@ -4313,7 +4327,7 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireExcept = function(Except: Player, Value: (string), Value2: (Color3))
+		FireExcept = function(Except: Player, Value: (string), Value2: ((Color3)?))
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 43)
@@ -4322,12 +4336,19 @@ local returns = {
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_143)
 			alloc(len_143)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_143)
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, Value2.R * 255)
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, Value2.G * 255)
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, Value2.B * 255)
+			if Value2 == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, Value2.R * 255)
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, Value2.G * 255)
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, Value2.B * 255)
+			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -4339,7 +4360,7 @@ local returns = {
 				end
 			end
 		end,
-		FireList = function(List: { [unknown]: Player }, Value: (string), Value2: (Color3))
+		FireList = function(List: { [unknown]: Player }, Value: (string), Value2: ((Color3)?))
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 43)
@@ -4348,12 +4369,19 @@ local returns = {
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_144)
 			alloc(len_144)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_144)
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, Value2.R * 255)
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, Value2.G * 255)
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, Value2.B * 255)
+			if Value2 == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, Value2.R * 255)
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, Value2.G * 255)
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, Value2.B * 255)
+			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -4363,7 +4391,7 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireSet = function(Set: { [Player]: any }, Value: (string), Value2: (Color3))
+		FireSet = function(Set: { [Player]: any }, Value: (string), Value2: ((Color3)?))
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 43)
@@ -4372,12 +4400,19 @@ local returns = {
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_145)
 			alloc(len_145)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_145)
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, Value2.R * 255)
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, Value2.G * 255)
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, Value2.B * 255)
+			if Value2 == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, Value2.R * 255)
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, Value2.G * 255)
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, Value2.B * 255)
+			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -7430,7 +7465,7 @@ local returns = {
 		end,
 	},
 	BoothWaiting = {
-		Fire = function(Player: Player, Value: ({
+		Fire = function(Player: Player, BoothData: ({
 			["OwnerId"]: (number),
 			["MapId"]: (string),
 			["LevelId"]: (string),
@@ -7443,37 +7478,37 @@ local returns = {
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
 			alloc(4)
-			buffer.writeu32(outgoing_buff, outgoing_apos, Value["OwnerId"])
-			local len_286 = #Value["MapId"]
+			buffer.writeu32(outgoing_buff, outgoing_apos, BoothData["OwnerId"])
+			local len_286 = #BoothData["MapId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_286)
 			alloc(len_286)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["MapId"], len_286)
-			local len_287 = #Value["LevelId"]
+			buffer.writestring(outgoing_buff, outgoing_apos, BoothData["MapId"], len_286)
+			local len_287 = #BoothData["LevelId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_287)
 			alloc(len_287)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["LevelId"], len_287)
-			local len_288 = #Value["Difficulty"]
+			buffer.writestring(outgoing_buff, outgoing_apos, BoothData["LevelId"], len_287)
+			local len_288 = #BoothData["Difficulty"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_288)
 			alloc(len_288)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["Difficulty"], len_288)
-			local len_289 = #Value["Players"]
+			buffer.writestring(outgoing_buff, outgoing_apos, BoothData["Difficulty"], len_288)
+			local len_289 = #BoothData["Players"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_289)
 			for i_42 = 1, len_289 do
-				local val_43 = Value["Players"][i_42]
+				local val_43 = BoothData["Players"][i_42]
 				assert(val_43:IsA("Player"), "received instance is not of the Player class!")
 				table.insert(outgoing_inst, val_43)
 			end
 			alloc(8)
-			buffer.writef64(outgoing_buff, outgoing_apos, Value["StartTime"])
+			buffer.writef64(outgoing_buff, outgoing_apos, BoothData["StartTime"])
 			alloc(8)
-			buffer.writef64(outgoing_buff, outgoing_apos, Value["EndTime"])
+			buffer.writef64(outgoing_buff, outgoing_apos, BoothData["EndTime"])
 			player_map[Player] = save()
 		end,
-		FireAll = function(Value: ({
+		FireAll = function(BoothData: ({
 			["OwnerId"]: (number),
 			["MapId"]: (string),
 			["LevelId"]: (string),
@@ -7486,34 +7521,34 @@ local returns = {
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
 			alloc(4)
-			buffer.writeu32(outgoing_buff, outgoing_apos, Value["OwnerId"])
-			local len_290 = #Value["MapId"]
+			buffer.writeu32(outgoing_buff, outgoing_apos, BoothData["OwnerId"])
+			local len_290 = #BoothData["MapId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_290)
 			alloc(len_290)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["MapId"], len_290)
-			local len_291 = #Value["LevelId"]
+			buffer.writestring(outgoing_buff, outgoing_apos, BoothData["MapId"], len_290)
+			local len_291 = #BoothData["LevelId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_291)
 			alloc(len_291)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["LevelId"], len_291)
-			local len_292 = #Value["Difficulty"]
+			buffer.writestring(outgoing_buff, outgoing_apos, BoothData["LevelId"], len_291)
+			local len_292 = #BoothData["Difficulty"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_292)
 			alloc(len_292)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["Difficulty"], len_292)
-			local len_293 = #Value["Players"]
+			buffer.writestring(outgoing_buff, outgoing_apos, BoothData["Difficulty"], len_292)
+			local len_293 = #BoothData["Players"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_293)
 			for i_43 = 1, len_293 do
-				local val_44 = Value["Players"][i_43]
+				local val_44 = BoothData["Players"][i_43]
 				assert(val_44:IsA("Player"), "received instance is not of the Player class!")
 				table.insert(outgoing_inst, val_44)
 			end
 			alloc(8)
-			buffer.writef64(outgoing_buff, outgoing_apos, Value["StartTime"])
+			buffer.writef64(outgoing_buff, outgoing_apos, BoothData["StartTime"])
 			alloc(8)
-			buffer.writef64(outgoing_buff, outgoing_apos, Value["EndTime"])
+			buffer.writef64(outgoing_buff, outgoing_apos, BoothData["EndTime"])
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				load_player(player)
@@ -7523,7 +7558,7 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireExcept = function(Except: Player, Value: ({
+		FireExcept = function(Except: Player, BoothData: ({
 			["OwnerId"]: (number),
 			["MapId"]: (string),
 			["LevelId"]: (string),
@@ -7536,34 +7571,34 @@ local returns = {
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
 			alloc(4)
-			buffer.writeu32(outgoing_buff, outgoing_apos, Value["OwnerId"])
-			local len_294 = #Value["MapId"]
+			buffer.writeu32(outgoing_buff, outgoing_apos, BoothData["OwnerId"])
+			local len_294 = #BoothData["MapId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_294)
 			alloc(len_294)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["MapId"], len_294)
-			local len_295 = #Value["LevelId"]
+			buffer.writestring(outgoing_buff, outgoing_apos, BoothData["MapId"], len_294)
+			local len_295 = #BoothData["LevelId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_295)
 			alloc(len_295)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["LevelId"], len_295)
-			local len_296 = #Value["Difficulty"]
+			buffer.writestring(outgoing_buff, outgoing_apos, BoothData["LevelId"], len_295)
+			local len_296 = #BoothData["Difficulty"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_296)
 			alloc(len_296)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["Difficulty"], len_296)
-			local len_297 = #Value["Players"]
+			buffer.writestring(outgoing_buff, outgoing_apos, BoothData["Difficulty"], len_296)
+			local len_297 = #BoothData["Players"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_297)
 			for i_44 = 1, len_297 do
-				local val_45 = Value["Players"][i_44]
+				local val_45 = BoothData["Players"][i_44]
 				assert(val_45:IsA("Player"), "received instance is not of the Player class!")
 				table.insert(outgoing_inst, val_45)
 			end
 			alloc(8)
-			buffer.writef64(outgoing_buff, outgoing_apos, Value["StartTime"])
+			buffer.writef64(outgoing_buff, outgoing_apos, BoothData["StartTime"])
 			alloc(8)
-			buffer.writef64(outgoing_buff, outgoing_apos, Value["EndTime"])
+			buffer.writef64(outgoing_buff, outgoing_apos, BoothData["EndTime"])
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -7575,7 +7610,7 @@ local returns = {
 				end
 			end
 		end,
-		FireList = function(List: { [unknown]: Player }, Value: ({
+		FireList = function(List: { [unknown]: Player }, BoothData: ({
 			["OwnerId"]: (number),
 			["MapId"]: (string),
 			["LevelId"]: (string),
@@ -7588,34 +7623,34 @@ local returns = {
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
 			alloc(4)
-			buffer.writeu32(outgoing_buff, outgoing_apos, Value["OwnerId"])
-			local len_298 = #Value["MapId"]
+			buffer.writeu32(outgoing_buff, outgoing_apos, BoothData["OwnerId"])
+			local len_298 = #BoothData["MapId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_298)
 			alloc(len_298)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["MapId"], len_298)
-			local len_299 = #Value["LevelId"]
+			buffer.writestring(outgoing_buff, outgoing_apos, BoothData["MapId"], len_298)
+			local len_299 = #BoothData["LevelId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_299)
 			alloc(len_299)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["LevelId"], len_299)
-			local len_300 = #Value["Difficulty"]
+			buffer.writestring(outgoing_buff, outgoing_apos, BoothData["LevelId"], len_299)
+			local len_300 = #BoothData["Difficulty"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_300)
 			alloc(len_300)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["Difficulty"], len_300)
-			local len_301 = #Value["Players"]
+			buffer.writestring(outgoing_buff, outgoing_apos, BoothData["Difficulty"], len_300)
+			local len_301 = #BoothData["Players"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_301)
 			for i_45 = 1, len_301 do
-				local val_46 = Value["Players"][i_45]
+				local val_46 = BoothData["Players"][i_45]
 				assert(val_46:IsA("Player"), "received instance is not of the Player class!")
 				table.insert(outgoing_inst, val_46)
 			end
 			alloc(8)
-			buffer.writef64(outgoing_buff, outgoing_apos, Value["StartTime"])
+			buffer.writef64(outgoing_buff, outgoing_apos, BoothData["StartTime"])
 			alloc(8)
-			buffer.writef64(outgoing_buff, outgoing_apos, Value["EndTime"])
+			buffer.writef64(outgoing_buff, outgoing_apos, BoothData["EndTime"])
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -7625,7 +7660,7 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireSet = function(Set: { [Player]: any }, Value: ({
+		FireSet = function(Set: { [Player]: any }, BoothData: ({
 			["OwnerId"]: (number),
 			["MapId"]: (string),
 			["LevelId"]: (string),
@@ -7638,34 +7673,34 @@ local returns = {
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
 			alloc(4)
-			buffer.writeu32(outgoing_buff, outgoing_apos, Value["OwnerId"])
-			local len_302 = #Value["MapId"]
+			buffer.writeu32(outgoing_buff, outgoing_apos, BoothData["OwnerId"])
+			local len_302 = #BoothData["MapId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_302)
 			alloc(len_302)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["MapId"], len_302)
-			local len_303 = #Value["LevelId"]
+			buffer.writestring(outgoing_buff, outgoing_apos, BoothData["MapId"], len_302)
+			local len_303 = #BoothData["LevelId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_303)
 			alloc(len_303)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["LevelId"], len_303)
-			local len_304 = #Value["Difficulty"]
+			buffer.writestring(outgoing_buff, outgoing_apos, BoothData["LevelId"], len_303)
+			local len_304 = #BoothData["Difficulty"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_304)
 			alloc(len_304)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["Difficulty"], len_304)
-			local len_305 = #Value["Players"]
+			buffer.writestring(outgoing_buff, outgoing_apos, BoothData["Difficulty"], len_304)
+			local len_305 = #BoothData["Players"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_305)
 			for i_46 = 1, len_305 do
-				local val_47 = Value["Players"][i_46]
+				local val_47 = BoothData["Players"][i_46]
 				assert(val_47:IsA("Player"), "received instance is not of the Player class!")
 				table.insert(outgoing_inst, val_47)
 			end
 			alloc(8)
-			buffer.writef64(outgoing_buff, outgoing_apos, Value["StartTime"])
+			buffer.writef64(outgoing_buff, outgoing_apos, BoothData["StartTime"])
 			alloc(8)
-			buffer.writef64(outgoing_buff, outgoing_apos, Value["EndTime"])
+			buffer.writef64(outgoing_buff, outgoing_apos, BoothData["EndTime"])
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
