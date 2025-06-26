@@ -8,6 +8,7 @@ local RunService = game:GetService("RunService")
 
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
+local Signal = require(Packages.Signal)
 local React = require(Packages.React)
 local e = React.createElement
 
@@ -16,10 +17,12 @@ local GenerateId = require(Modules.GenerateId)
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
 
-local Remotes = ReplicatedStorage.Remotes
-local WarningEvents = Remotes.Core.Warning
-local SendWarning = WarningEvents.SendWarning
-local WarningBindable = WarningEvents.WarningBindable
+local Network = ReplicatedStorage.Network
+local WarningEvents = require(Network.Warning)
+local SendWarning = WarningEvents.FromServer.SendWarning:Client()
+local WarningBindable = WarningEvents.ClientOnly.WarningBindable
+
+local OnWarning: Signal.Signal<string, Color3?> = Signal.new()
 
 -- Reference UI --
 local Gui = ReplicatedStorage.Gui
@@ -36,6 +39,10 @@ local WarningContext = React.createContext({
 	Warnings: { [string]: { Text: string, Color: Color3, StartTime: number } },
 	Add: (Text: string) -> (),
 })
+
+SendWarning:On(function(Message, Color)
+	OnWarning:Fire(Message, Color)
+end)
 
 local function WarningProvider(props)
 	local Value, SetValue = React.useState({} :: { [string]: { Text: string, Color: Color3, StartTime: number } })
@@ -60,11 +67,11 @@ local function WarningProvider(props)
 		end
 	end, { Value })
 
-	Hooks.useEventConnection(SendWarning.OnClientEvent, function(Text: string, Color: Color3?)
+	Hooks.useEventConnection(OnWarning, function(Text: string, Color: Color3?)
 		Add(Text, Color)
 	end, { Value })
 
-	Hooks.useEventConnection(WarningBindable.Event, function(Text: string, Color: Color3?)
+	Hooks.useEventConnection(WarningBindable, function(Text: string, Color: Color3?)
 		Add(Text, Color)
 	end, { Value })
 

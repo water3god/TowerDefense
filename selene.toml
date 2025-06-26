@@ -2,3 +2,6 @@ std = "roblox"
 
 [lints]
 incorrect_standard_library_use = "allow"
+
+[config]
+global_usage = {ignore_pattern = "__DEV__"}

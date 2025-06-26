@@ -103,6 +103,11 @@ version = "4.0.2"
 dependencies = [["Promise", "evaera/promise@4.0.0"]]
 
 [[package]]
+name = "megamonsta2/red"
+version = "2.3.3"
+dependencies = [["Future", "red-blox/future@1.0.1"], ["Guard", "red-blox/guard@1.0.1"], ["Signal", "red-blox/signal@2.0.2"], ["Spawn", "red-blox/spawn@1.1.0"]]
+
+[[package]]
 name = "pepeeltoro41/ui-labs"
 version = "2.3.8"
 dependencies = []
@@ -116,11 +121,6 @@ dependencies = [["Spawn", "red-blox/spawn@1.1.0"]]
 name = "red-blox/guard"
 version = "1.0.1"
 dependencies = []
-
-[[package]]
-name = "red-blox/red"
-version = "2.3.2"
-dependencies = [["Future", "red-blox/future@1.0.1"], ["Guard", "red-blox/guard@1.0.1"], ["Signal", "red-blox/signal@2.0.2"], ["Spawn", "red-blox/spawn@1.1.0"]]
 
 [[package]]
 name = "red-blox/signal"
@@ -140,7 +140,7 @@ dependencies = []
 [[package]]
 name = "rogershi/main"
 version = "0.1.0"
-dependencies = [["BufferUtil", "sleitnick/buffer-util@0.3.1"], ["Concur", "sleitnick/concur@0.1.2"], ["Guard", "red-blox/guard@1.0.1"], ["Input", "sleitnick/input@2.3.0"], ["Log", "sleitnick/log@0.1.1"], ["Promise", "lukadev-0/typed-promise@4.0.2"], ["React", "jsdotlua/react@17.2.1"], ["ReactRoblox", "jsdotlua/react-roblox@17.2.1"], ["ReactSpring", "chriscerie/react-spring@2.0.0"], ["Red", "red-blox/red@2.3.2"], ["Signal", "sleitnick/signal@2.0.3"], ["Streamable", "sleitnick/streamable@1.2.4"], ["TableUtil", "sleitnick/table-util@1.2.1"], ["Timer", "sleitnick/timer@1.1.2"], ["Trove", "sleitnick/trove@1.5.0"], ["UI-LABS", "pepeeltoro41/ui-labs@2.3.8"], ["WaitFor", "sleitnick/wait-for@1.0.0"]]
+dependencies = [["BufferUtil", "sleitnick/buffer-util@0.3.1"], ["Concur", "sleitnick/concur@0.1.2"], ["Guard", "red-blox/guard@1.0.1"], ["Input", "sleitnick/input@2.3.0"], ["Log", "sleitnick/log@0.1.1"], ["Promise", "lukadev-0/typed-promise@4.0.2"], ["React", "jsdotlua/react@17.2.1"], ["ReactRoblox", "jsdotlua/react-roblox@17.2.1"], ["ReactSpring", "chriscerie/react-spring@2.0.0"], ["Red", "megamonsta2/red@2.3.3"], ["Signal", "sleitnick/signal@2.0.3"], ["Streamable", "sleitnick/streamable@1.2.4"], ["TableUtil", "sleitnick/table-util@1.2.1"], ["Timer", "sleitnick/timer@1.1.2"], ["Trove", "sleitnick/trove@1.5.1"], ["UI-LABS", "pepeeltoro41/ui-labs@2.3.8"], ["WaitFor", "sleitnick/wait-for@1.0.0"]]
 
 [[package]]
 name = "sleitnick/buffer-util"
@@ -155,7 +155,7 @@ dependencies = []
 [[package]]
 name = "sleitnick/input"
 version = "2.3.0"
-dependencies = [["Signal", "sleitnick/signal@2.0.3"], ["Trove", "sleitnick/trove@1.5.0"]]
+dependencies = [["Signal", "sleitnick/signal@2.0.3"], ["Trove", "sleitnick/trove@1.5.1"]]
 
 [[package]]
 name = "sleitnick/log"
@@ -194,7 +194,7 @@ dependencies = []
 
 [[package]]
 name = "sleitnick/trove"
-version = "1.5.0"
+version = "1.5.1"
 dependencies = []
 
 [[package]]

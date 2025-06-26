@@ -3,7 +3,8 @@ export type Object = REQUIRED_MODULE.Object
 export type Binding<T> = REQUIRED_MODULE.Binding<T>
 export type BindingUpdater<T> = REQUIRED_MODULE.BindingUpdater<T>
 export type LazyComponent<T, P> = REQUIRED_MODULE.LazyComponent<T, P>
-export type StatelessFunctionalComponent<P> = REQUIRED_MODULE.StatelessFunctionalComponent<P>
+export type StatelessFunctionalComponent<P> =
+REQUIRED_MODULE.StatelessFunctionalComponent<P>
 export type ComponentType<P> = REQUIRED_MODULE.ComponentType<P>
 export type AbstractComponent<Config, Instance> = REQUIRED_MODULE.AbstractComponent<Config, Instance>
 export type ElementType = REQUIRED_MODULE.ElementType 
@@ -22,7 +23,8 @@ export type ReactChild = REQUIRED_MODULE.ReactChild
 export type FC<P> = REQUIRED_MODULE.FC<P>
 export type ReactNode = REQUIRED_MODULE.ReactNode 
 export type React_AbstractComponent<Props, Instance> = REQUIRED_MODULE.React_AbstractComponent<Props, Instance>
-export type React_FowardRefComponent<Props, Instance> = REQUIRED_MODULE.React_FowardRefComponent<Props, Instance>
+export type React_FowardRefComponent<Props, Instance> =
+REQUIRED_MODULE.React_FowardRefComponent<Props, Instance>
 export type React_MemoComponent<Config, T> = REQUIRED_MODULE.React_MemoComponent<Config, T>
 export type React_Component<Props, State> = REQUIRED_MODULE.React_Component<Props, State>
 export type React_ComponentType<P> = REQUIRED_MODULE.React_ComponentType<P>

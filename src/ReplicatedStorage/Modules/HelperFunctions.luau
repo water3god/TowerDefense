@@ -619,6 +619,8 @@ function Funcs.EmitParticle(
 	return Part
 end
 
+Funcs.CreateRaw = CreateRaw
+
 -- Debug Functions --
 
 Funcs.Debug = {}

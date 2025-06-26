@@ -83,8 +83,8 @@ local Upgrade = OtherEvents.Upgrade
 local ChangePriority = OtherEvents.ChangePriority
 local UseAbility = OtherEvents.UseAbility
 
-local WarningEvents = Remotes.Core.Warning
-local WarningBindable = WarningEvents.WarningBindable
+local WarningEvents = require(ReplicatedStorage.Network.Warning)
+local WarningBindable = WarningEvents.ClientOnly.WarningBindable
 
 export type Unit = Types.Unit
 export type UnitModule = Types.UnitModule
