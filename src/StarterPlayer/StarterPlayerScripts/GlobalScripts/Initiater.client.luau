@@ -4,6 +4,9 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+_G.__DEV__ = RunService:IsStudio()
 
 local Player = Players.LocalPlayer
 local PlayerGui = Player.PlayerGui

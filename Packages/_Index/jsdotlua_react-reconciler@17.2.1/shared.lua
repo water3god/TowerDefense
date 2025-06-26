@@ -27,7 +27,7 @@ export type MutableSource<Source> = REQUIRED_MODULE.MutableSource<Source>
 export type Wakeable = REQUIRED_MODULE.Wakeable 
 export type Thenable<R> = REQUIRED_MODULE.Thenable<R>
 export type Source = REQUIRED_MODULE.Source 
-export type ReactElement<P , T > = REQUIRED_MODULE.ReactElement<P , T >
+export type ReactElement<P , T = any> = REQUIRED_MODULE.ReactElement<P , T >
 export type OpaqueIDType = REQUIRED_MODULE.OpaqueIDType 
 export type Dispatcher = REQUIRED_MODULE.Dispatcher 
 export type React_Ref<ElementType> = REQUIRED_MODULE.React_Ref<ElementType>

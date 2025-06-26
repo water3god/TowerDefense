@@ -148,7 +148,6 @@ event EnemyDestroyEvent = {
 		boolean,
 	),
 }
-
 event EnemyHealthEvent = {
 	from: Server,
 	type: Reliable,
@@ -575,7 +574,6 @@ event SpeedRatioEvent = {
 		},
 	),
 }
-
 event UnitUpgradeEvent = {
 	from: Server,
 	type: Reliable,

@@ -10,7 +10,6 @@ local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
 local e = React.createElement
 local Signal = require(Packages.Signal)
-local Red = require(Packages.Red)
 
 local Player = Players.LocalPlayer
 

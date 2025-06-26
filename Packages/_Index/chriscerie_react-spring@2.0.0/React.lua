@@ -18,7 +18,7 @@ export type ElementConfig<T> = REQUIRED_MODULE.ElementConfig<T>
 export type ElementRef<C> = REQUIRED_MODULE.ElementRef<C>
 export type ComponentClass<P> = REQUIRED_MODULE.ComponentClass<P>
 export type PureComponent<Props, State > = REQUIRED_MODULE.PureComponent<Props, State >
-export type ReactElement<Props , ElementType > = REQUIRED_MODULE.ReactElement<Props , ElementType >
+export type ReactElement<Props , ElementType = any> = REQUIRED_MODULE.ReactElement<Props , ElementType >
 export type ReactChild = REQUIRED_MODULE.ReactChild 
 export type FC<P> = REQUIRED_MODULE.FC<P>
 export type ReactNode = REQUIRED_MODULE.ReactNode 
