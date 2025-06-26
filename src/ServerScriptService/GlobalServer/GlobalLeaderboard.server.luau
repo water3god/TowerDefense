@@ -7,6 +7,10 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local DataStoreService = game:GetService("DataStoreService")
 
+if game.GameId == 0 then
+	return
+end
+
 local Packages = ReplicatedStorage.Packages
 local Timer = require(Packages.Timer)
 

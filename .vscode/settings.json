@@ -3,5 +3,15 @@
   "[luau]": {
     "editor.defaultFormatter": "JohnnyMorganz.stylua",
     "editor.formatOnSave": true
+  },
+
+  "emeraldwalk.runonsave": {
+    "commands": [
+      {
+        "match": "zap\\.zap$",
+        "cmd": "zap zap.zap",
+        "runIn": "terminal"
+      }
+    ]
   }
 }

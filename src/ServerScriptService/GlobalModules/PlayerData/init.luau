@@ -249,12 +249,19 @@ function PlayerData.new(Player: Player)
 	self.SettingSignals = {}
 	self.Player = Player
 
-	local Profile = MainDatastore:StartSessionAsync("PlayerData9" .. Player.UserId, {
-		Cancel = function()
-			return Player.Parent ~= Players
-		end,
-	})
-	self.Profile = Profile :: any
+	if game.PlaceId == 0 then
+		self.Profile = MainDatastore.Mock:StartSessionAsync("PlayerData9" .. Player.UserId, {
+			Cancel = function()
+				return Player.Parent ~= Players
+			end,
+		}) :: any
+	else
+		self.Profile = MainDatastore:StartSessionAsync("PlayerData9" .. Player.UserId, {
+			Cancel = function()
+				return Player.Parent ~= Players
+			end,
+		}) :: any
+	end
 
 	if self.Profile then
 		self.Profile:AddUserId(Player.UserId)
