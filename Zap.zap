@@ -75,7 +75,6 @@ event StoryDataSync = {
 	call: SingleAsync,
 	data: map { [string]: map { [u8]: map { [Difficulty]: StageData } } },
 }
-
 event BoothChoosing = {
 	from: Server,
 	type: Reliable,
@@ -113,7 +112,6 @@ event BoothPlayerChanged = {
 		boolean,
 	),
 }
-
 -- Enemy --
 
 type SpeedChange = struct {
@@ -221,7 +219,6 @@ type LevelData = struct {
 	XP: XP,
 	NeededXP: XP,
 }
-
 type Item = enum { Units, Products, Resources }
 
 event EquipUnit = {
@@ -344,7 +341,6 @@ event StopAutoRoll = {
 	type: Reliable,
 	call: SingleAsync,
 }
-
 -- Settings --
 
 event ChangeSettingClient = {
@@ -380,11 +376,9 @@ event SettingSync = {
 	call: SingleAsync,
 	data: map { [string]: unknown },
 }
-
 -- Trade --
 
 -- TBD NOT DONE --
-
 type TradeStatus = enum { InTrade, Finalized, Accepted }
 type TradeStatusMessage = enum { Trading, CanTrade, TradeDisabled }
 
