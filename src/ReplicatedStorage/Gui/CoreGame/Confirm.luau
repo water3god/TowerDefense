@@ -164,6 +164,7 @@ local function CreateConfirm(props: props)
 					Position = UDim2.fromScale(0.5, 0.425),
 					Size = UDim2.fromScale(0.9, 0.25),
 					ZIndex = 2,
+					AutoLocalize = false,
 				},
 			}),
 			NoButton = e(CreateBasicButton, {

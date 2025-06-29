@@ -5,6 +5,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
+local LocalizationService = game:GetService("LocalizationService")
 
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
@@ -158,6 +159,41 @@ function Hooks.useCharacter()
 	end, {})
 
 	return Character
+end
+
+function Hooks.useTranslator()
+	local translator, SetTranslator = React.useState(nil :: Translator?)
+
+	React.useEffect(function()
+		local Success, Translator = pcall(function()
+			return LocalizationService:GetTranslatorForPlayerAsync(Players.LocalPlayer)
+		end)
+		if not Success then
+			while not Success do
+				task.wait(20)
+				Success, Translator = pcall(function()
+					return LocalizationService:GetTranslatorForPlayerAsync(Players.LocalPlayer)
+				end)
+			end
+		end
+
+		SetTranslator(Translator)
+	end, {})
+
+	React.useEffect(function()
+		if translator then
+			local connection = translator:GetPropertyChangedSignal("LocaleId"):Connect(function()
+				SetTranslator(translator)
+			end)
+
+			return function()
+				connection:Disconnect()
+			end
+		end
+		return function() end
+	end, { translator })
+
+	return translator
 end
 
 local useState = React.useState

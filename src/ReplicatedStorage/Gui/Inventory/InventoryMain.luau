@@ -39,6 +39,7 @@ local Main = require(CoreGame.Main)
 local Confirm = require(CoreGame.Confirm)
 local Title = require(CoreGame.Title)
 local BaseButton = require(CoreGame.BaseButton)
+local Hooks = require(CoreGame.Hooks)
 
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
@@ -46,7 +47,6 @@ local RarityInfo = require(Shared.RarityInfo)
 local ProductInfo = require(Shared.ProductInfo)
 local GameInfo = require(Shared.GameInfo)
 local Types = require(Shared.Types)
-
 export type Properties = {
 	CloseClick: () -> ()?,
 	native: { [any]: any }?,
@@ -57,18 +57,20 @@ local NormalFilters = { "Rarity", "Name" }
 
 local FilterFunctions = {}
 
-type FData = Types.VisualUnitData
+type FData = {
+	Name: string,
+	Level: number,
+	Rarity: string,
+}
 
 do
 	local Data = UnitInfo.UnitInfo
 	function FilterFunctions.Rarity(a: FData, b: FData)
-		local RarityA = Data[a.Unit].Rarity
-		local RarityB = Data[b.Unit].Rarity
-		local PriorityA = RarityInfo[RarityA :: any].Priority
-		local PriorityB = RarityInfo[RarityB :: any].Priority
+		local PriorityA = RarityInfo[a.Rarity :: any].Priority
+		local PriorityB = RarityInfo[b.Rarity :: any].Priority
 
 		if PriorityA == PriorityB then
-			return a.Unit < b.Unit
+			return a.Name < b.Name
 		else
 			return PriorityA > PriorityB
 		end
@@ -76,17 +78,17 @@ do
 
 	function FilterFunctions.Level(a: FData, b: FData)
 		if a.Level == b.Level then
-			return a.Unit < b.Unit
+			return a.Name < b.Name
 		else
 			return a.Level > b.Level
 		end
 	end
 
 	function FilterFunctions.Name(a: FData, b: FData)
-		if a.Unit == b.Unit and a.Level then
+		if a.Name == b.Name and a.Level then
 			return a.Level > b.Level
 		else
-			return a.Unit < b.Unit
+			return a.Name < b.Name
 		end
 	end
 end
@@ -286,6 +288,8 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 	local BulkEnabled, SetBulkEnabled = React.useState(false)
 	local IndEnabled, SetIndEnabled = React.useState(false)
 
+	local Translator = Hooks.useTranslator()
+
 	React.useEffect(function()
 		SetBulkEnabled(false)
 		SetIndEnabled(false)
@@ -464,22 +468,47 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		local Sorts = {}
 		if OpenFrame == "Unit" then
 			for _, Data in pairs(InventoryData.Units) do
-				table.insert(Sorts, Data)
+				table.insert(Sorts, {
+					Name = Translator and Translator:Translate(game, Data.Unit) or Data.Unit,
+					Level = Data.Level,
+					Rarity = UnitInfo.UnitInfo[Data.Unit].Rarity :: string,
+					UniqueId = Data.UniqueId,
+				})
 			end
 		elseif OpenFrame == "Product" then
 			for _, Data in pairs(InventoryData.Products) do
-				table.insert(Sorts, Data)
+				local Product = if Data.IsGamepass
+					then PurchaseData.GamepassData[Data.ProductId]
+					else PurchaseData.ProductData[Data.ProductId]
+				local Name = Product.ProductInfo.Name
+				table.insert(Sorts, {
+					Name = Translator and Translator:Translate(game, Name) or Name,
+					Level = 1,
+					Rarity = Product.Rarity,
+					UniqueId = Data.UniqueId,
+				})
 			end
 		elseif OpenFrame == "Resource" then
 			for _, Data in pairs(InventoryData.Resources) do
-				table.insert(Sorts, Data)
+				table.insert(Sorts, {
+					Name = Translator and Translator:Translate(game, Data.Resource) or Data.Resource,
+					Level = 1,
+					Rarity = GameInfo.RewardInfo[Data.Resource].Rarity :: any,
+					UniqueId = Data.UniqueId,
+				})
 			end
 		end
 
 		table.sort(Sorts, FilterFunctions[FilterMethod])
 
-		return Sorts
-	end, { InventoryData, FilterMethod :: any, OpenFrame :: any })
+		local Data = {}
+
+		for i, DataItem in ipairs(Sorts) do
+			Data[DataItem.UniqueId] = i
+		end
+
+		return Data
+	end, { InventoryData, FilterMethod :: any, OpenFrame :: any, Translator :: any })
 
 	React.useEffect(function()
 		if OpenFrame == "Unit" then
@@ -497,6 +526,14 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		end
 	end, { InventoryData })
 
+	local function Translate(String: string)
+		if Translator then
+			return Translator:Translate(game, String)
+		else
+			return String
+		end
+	end
+
 	local InventoryNodes = React.useMemo(function()
 		local Table: { [string]: React.Node } = {}
 
@@ -512,7 +549,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 
 		local function HandleUnitData(Data: Types.VisualUnitData)
 			if Filter ~= "" then
-				if not string.lower(Data.Unit):match(string.lower(Filter)) then
+				if not string.lower(Translate(Data.Unit)):match(string.lower(Filter)) then
 					return
 				end
 			end
@@ -525,7 +562,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 				IsEquipped = IsEquipped(Data.UniqueId),
 				XVisible = if table.find(SellingItems, Data.UniqueId) then true else false,
 				native = {
-					LayoutOrder = table.find(SortData, Data) or 1,
+					LayoutOrder = SortData[Data.UniqueId] or 1,
 				},
 			})
 			Table[Data.UniqueId] = Unit
@@ -541,7 +578,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			end
 
 			if Filter ~= "" then
-				if not string.lower(Name):match(string.lower(Filter)) then
+				if not string.lower(Translate(Name)):match(string.lower(Filter)) then
 					return
 				end
 			end
@@ -554,7 +591,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 				UniqueId = Data.UniqueId,
 				XVisible = if table.find(SellingItems, Data.UniqueId) then true else false,
 				native = {
-					LayoutOrder = table.find(SortData, Data) or 1,
+					LayoutOrder = SortData[Data.UniqueId] or 1,
 				},
 			})
 			Table[Data.UniqueId] = Product
@@ -562,7 +599,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 
 		local function HandleResourceData(Data: Types.ResourceData)
 			if Filter ~= "" then
-				if not string.lower(Data.Resource):match(string.lower(Filter)) then
+				if not string.lower(Translate(Data.Resource)):match(string.lower(Filter)) then
 					return
 				end
 			end
@@ -574,7 +611,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 				UniqueId = Data.UniqueId,
 				XVisible = if table.find(SellingItems, Data.UniqueId) then true else false,
 				native = {
-					LayoutOrder = table.find(SortData, Data) or 1,
+					LayoutOrder = SortData[Data.UniqueId] or 1,
 				},
 			})
 			Table[Data.UniqueId] = Resource
@@ -603,6 +640,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		FilterMethod :: any,
 		OpenFrame :: any,
 		EquippedUnits :: any,
+		Translator :: any,
 	})
 
 	local UseProduct = React.useCallback(function(ProductId: number, IsGamepass: boolean)
@@ -632,7 +670,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			local UnitName = ClickedUnitData.CurrentUnit.Unit
 			local Rarity = UnitInfo.UnitInfo[UnitName].Rarity
 			local Cost = RarityInfo[Rarity :: any].Value
-			return string.format("Are you sure you want to Sell %s for %u Gold?", UnitName, Cost)
+			return string.format(Translate("Are you sure you want to Sell %s for %u Gold?"), UnitName, Cost)
 		else
 			return ""
 		end
@@ -648,11 +686,15 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 				TotalCost += RarityInfo[Rarity :: any].Value
 			end
 
-			return string.format("Are you sure you want to Sell %u Units for %u Gold?", #SellingItems, TotalCost)
+			return string.format(
+				Translate("Are you sure you want to Sell %u Units for %u Gold?"),
+				#SellingItems,
+				TotalCost
+			)
 		else
 			return ""
 		end
-	end, { SellingItems })
+	end, { SellingItems, Translator })
 
 	local UnitCountText = React.useMemo(function()
 		if OpenFrame == "Unit" then
