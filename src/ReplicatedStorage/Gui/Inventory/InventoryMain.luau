@@ -64,7 +64,6 @@ type FData = {
 }
 
 do
-	local Data = UnitInfo.UnitInfo
 	function FilterFunctions.Rarity(a: FData, b: FData)
 		local PriorityA = RarityInfo[a.Rarity :: any].Priority
 		local PriorityB = RarityInfo[b.Rarity :: any].Priority
@@ -643,9 +642,14 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		Translator :: any,
 	})
 
-	local UseProduct = React.useCallback(function(ProductId: number, IsGamepass: boolean)
-		PurchaseService.UsePurchase(ProductId, IsGamepass)
-	end, {})
+	local UseProduct = React.useCallback(function()
+		if ClickedProductData then
+			local ProductId = ClickedProductData.CurrentUnit.ProductId
+			local IsGamepass = ClickedProductData.CurrentUnit.IsGamepass
+
+			PurchaseService.UsePurchase(ProductId, IsGamepass)
+		end
+	end, { ClickedProductData })
 
 	local FilterMethodCallback = React.useCallback(function()
 		if OpenFrame == "Unit" then
@@ -734,14 +738,13 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			local IsEquippedBool = if OpenFrame == "Unit" and HoveredId and IsEquipped(HoveredId) then true else false
 
 			local FirstClick = nil
-			local SecondClick = nil
 
 			if OpenFrame == "Unit" then
 				FirstClick = OnEquip
-				SecondClick = IndSellClick
+			elseif OpenFrame == "Product" then
+				FirstClick = UseProduct
 			else
 				FirstClick = function() end
-				SecondClick = function() end
 			end
 
 			local Name = ""
@@ -770,7 +773,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 					Visible = if HoveredId then true else false,
 					IsEquipped = IsEquippedBool,
 					OnFirstClick = FirstClick,
-					OnSellClick = SecondClick,
+					OnSellClick = IndSellClick,
 				}
 			end
 

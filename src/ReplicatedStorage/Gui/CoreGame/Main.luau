@@ -132,7 +132,7 @@ do
 			elseif Instance.GuiState == Enum.GuiState.Press then
 				API.stop()
 				API.start({
-					Scale = 1,
+					Scale = 0.95,
 				})
 				SFXService.PlaySoundGlobalWithId("rbxassetid://72255888882620", function(Sound: Sound)
 					Sound.Volume = 0.1

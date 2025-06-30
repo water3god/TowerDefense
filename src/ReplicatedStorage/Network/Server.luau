@@ -548,80 +548,17 @@ end
 Players.PlayerRemoving:Connect(function(player)
 	player_map[player] = nil
 end)
-export type Health = (number)
-export type ProductId = (number)
-export type RollData = ({
-	["SentTime"]: (number),
-	["Data"]: ({ (string) }),
-	["AutoRoll"]: (boolean),
-})
-export type Wave = (number)
-export type Vote = (number)
-export type Level = (number)
-export type Difficulty = ("Normal" | "Hard" | "Insane")
-export type UnitAttackInput = ({
-	["UniqueId"]: (string),
-	["Index"]: (number),
-	["EnemyId"]: (string),
-	["Firetime"]: (number),
-	["SpeedRatio"]: (number),
-})
 export type ResourceData = ({
 	["Resource"]: (string),
 	["Count"]: (number),
 	["UniqueId"]: (string),
 	["PartialOneLose"]: ((boolean)?),
 })
-export type EnemyInput = ({
-	["UniqueId"]: (string),
-	["ModelName"]: (string),
-	["Health"]: (number),
-	["MaxHealth"]: (number),
-	["Speed"]: (number),
-	["IsBoss"]: (boolean),
-	["Ally"]: (boolean),
-	["OriginalSpeed"]: (number),
-	["VectorOffset"]: (Vector3),
-	["BezierId"]: (string),
-	["TimePosition"]: (number),
-	["Time"]: (number),
-	["AdornmentName"]: ((string)?),
-	["SpeedChanges"]: ({ ({
-		["TimeStart"]: (number),
-		["Speed"]: (number),
-		["TimeEnd"]: ((number)?),
-	}) }),
+export type TimeData = ({
+	["StartTime"]: (number),
+	["EndTime"]: (number),
 })
-export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
-export type AbilityIndex = (number)
-export type SpeedChange = ({
-	["TimeStart"]: (number),
-	["Speed"]: (number),
-	["TimeEnd"]: ((number)?),
-})
-export type XP = (number)
-export type VisualUnitData = ({
-	["Unit"]: (string),
-	["Level"]: (number),
-	["UniqueId"]: (string),
-	["XP"]: (number),
-	["NeededXP"]: (number),
-})
-export type SortType = ("First" | "Last" | "Strongest" | "Weakest")
 export type Item = ("Units" | "Products" | "Resources")
-export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
-export type Time = (number)
-export type PlacementData = ({
-	["Unit"]: (string),
-	["UnitPosition"]: (Vector3),
-	["RotationIndex"]: (number),
-})
-export type ProductData = ({
-	["ProductId"]: (number),
-	["IsGamepass"]: (boolean),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-})
 export type UnitInput = ({
 	["UniqueId"]: (string),
 	["UnitName"]: (string),
@@ -633,9 +570,39 @@ export type UnitInput = ({
 	["SpeedRatio"]: (number),
 	["Abilities"]: ({ (number) }),
 })
+export type RollData = ({
+	["SentTime"]: (number),
+	["Data"]: ({ (string) }),
+	["AutoRoll"]: (boolean),
+})
+export type Health = (number)
 export type StageData = ({
 	["FastestTime"]: (number),
 	["FinishedCount"]: (number),
+})
+export type Wave = (number)
+export type PlacementData = ({
+	["Unit"]: (string),
+	["UnitPosition"]: (Vector3),
+	["RotationIndex"]: (number),
+})
+export type Difficulty = ("Normal" | "Hard" | "Insane")
+export type Level = (number)
+export type VisualUnitData = ({
+	["Unit"]: (string),
+	["Level"]: (number),
+	["UniqueId"]: (string),
+	["XP"]: (number),
+	["NeededXP"]: (number),
+})
+export type BoothData = ({
+	["OwnerId"]: (number),
+	["MapId"]: (string),
+	["LevelId"]: (string),
+	["Difficulty"]: (string),
+	["Players"]: ({ (Player) }),
+	["StartTime"]: (number),
+	["EndTime"]: (number),
 })
 export type Inventory = ({
 	["Units"]: ({ [(string)]: ({
@@ -658,18 +625,13 @@ export type Inventory = ({
 		["PartialOneLose"]: ((boolean)?),
 	}) }),
 })
-export type BoothData = ({
-	["OwnerId"]: (number),
-	["MapId"]: (string),
-	["LevelId"]: (string),
-	["Difficulty"]: (string),
-	["Players"]: ({ (Player) }),
+export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
+export type WaveData = ({
+	["Wave"]: (number),
+	["BaseHealth"]: (number),
+	["MaxHealth"]: (number),
+	["Time"]: (number),
 	["StartTime"]: (number),
-	["EndTime"]: (number),
-})
-export type TimeData = ({
-	["StartTime"]: (number),
-	["EndTime"]: (number),
 })
 export type LevelData = ({
 	["Level"]: (number),
@@ -682,13 +644,51 @@ export type VoteData = ({
 	["CurrentCount"]: (number),
 	["NeededCount"]: (number),
 })
-export type WaveData = ({
-	["Wave"]: (number),
-	["BaseHealth"]: (number),
-	["MaxHealth"]: (number),
-	["Time"]: (number),
-	["StartTime"]: (number),
+export type Vote = (number)
+export type Time = (number)
+export type SpeedChange = ({
+	["TimeStart"]: (number),
+	["Speed"]: (number),
+	["TimeEnd"]: ((number)?),
 })
+export type AbilityIndex = (number)
+export type UnitAttackInput = ({
+	["UniqueId"]: (string),
+	["Index"]: (number),
+	["EnemyId"]: (string),
+	["Firetime"]: (number),
+	["SpeedRatio"]: (number),
+})
+export type XP = (number)
+export type EnemyInput = ({
+	["UniqueId"]: (string),
+	["ModelName"]: (string),
+	["Health"]: (number),
+	["MaxHealth"]: (number),
+	["Speed"]: (number),
+	["IsBoss"]: (boolean),
+	["Ally"]: (boolean),
+	["OriginalSpeed"]: (number),
+	["VectorOffset"]: (Vector3),
+	["BezierId"]: (string),
+	["TimePosition"]: (number),
+	["Time"]: (number),
+	["AdornmentName"]: ((string)?),
+	["SpeedChanges"]: ({ ({
+		["TimeStart"]: (number),
+		["Speed"]: (number),
+		["TimeEnd"]: ((number)?),
+	}) }),
+})
+export type ProductId = (number)
+export type ProductData = ({
+	["ProductId"]: (number),
+	["IsGamepass"]: (boolean),
+	["Count"]: (number),
+	["UniqueId"]: (string),
+})
+export type SortType = ("First" | "Last" | "Strongest" | "Weakest")
+export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
 
 local function SendEvents()
 	for player, outgoing in player_map do

@@ -102,6 +102,18 @@ function Hooks.LayoutOrder(): () -> number
 	end
 end
 
+function Hooks.useMemoWithCleanup<T>(compute: () -> T, cleanup: (T) -> (), dependencies: { any }): T
+	local value = React.useMemo(compute, dependencies)
+
+	React.useEffect(function()
+		return function()
+			cleanup(value)
+		end
+	end, { value })
+
+	return value
+end
+
 function Hooks.useEventConnection<T...>(
 	event: RBXScriptSignal<T...> | Signal.Signal<T...>, -- Can also include | Signal.Signal<T...> if you're using a custom signal type
 	callback: (T...) -> (),
