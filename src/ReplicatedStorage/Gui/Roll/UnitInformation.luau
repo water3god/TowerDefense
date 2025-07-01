@@ -65,7 +65,7 @@ local Data: {
 		},
 	},
 	Rome = {
-		Color = Color3.new(0.831373, 0.145098, 0.145098),
+		Color = Color3.new(0.862745, 0.654902, 0.121569),
 		Index = 3,
 		Units = {
 			"Pompey",

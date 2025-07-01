@@ -170,6 +170,7 @@ local function CreateInfoFrame(Properties: Properties)
 				Size = UDim2.fromScale(0.21, 0.12),
 				Visible = IsUnit,
 				Image = "rbxassetid://77078349522524",
+				ZIndex = 2,
 				[React.Event.MouseButton1Click] = Properties.OnInfoClick,
 			},
 		}, {
@@ -245,7 +246,7 @@ local function CreateInfoFrame(Properties: Properties)
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStroke, {
-				Stroke = 0.001,
+				Stroke = 0.0015,
 				GradColor = Properties.RarityInfo and Properties.RarityInfo.StrokeColor,
 			}),
 			UIGradient = e("UIGradient", {
@@ -261,7 +262,7 @@ local function CreateInfoFrame(Properties: Properties)
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStroke, {
-				Stroke = 0.0008,
+				Stroke = 0.001,
 				GradColor = Properties.RarityInfo and Properties.RarityInfo.StrokeColor,
 			}),
 			UIGradient = e("UIGradient", {
