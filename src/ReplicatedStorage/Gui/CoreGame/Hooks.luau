@@ -132,6 +132,16 @@ function Hooks.useEventConnection<T...>(
 	end, { event, cachedCallback } :: { unknown })
 end
 
+function Hooks.useZapConnection(callback: () -> () -> (), dependencies: { any })
+	local cachedCallback = React.useMemo(function()
+		return callback
+	end, dependencies)
+
+	React.useEffect(function()
+		return callback()
+	end, { callback, cachedCallback } :: { unknown })
+end
+
 --[[export type Client<T...> = { any }
 
 function Hooks.useRedConnection<T...>(event: Client<T...>, callback: (T...) -> (), dependencies: { any })

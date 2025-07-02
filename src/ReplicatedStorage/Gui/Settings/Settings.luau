@@ -288,7 +288,7 @@ local function CreateSettingsFrame(props: Properties)
 
 	return e(Main.Frame, {
 		native = Join({
-			Size = UDim2.fromScale(0.6, 0.8),
+			Size = UDim2.fromScale(0.5, 0.7),
 			BackgroundTransparency = 0,
 			BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
 		}, props.native),

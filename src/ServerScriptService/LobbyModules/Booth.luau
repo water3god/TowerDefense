@@ -13,7 +13,7 @@ local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local GenerateId = require(Modules.GenerateId)
 
-local Network = require(ReplicatedStorage.Network.Server)
+local Network = require(ReplicatedStorage.Network.Server2)
 local SendWarning = Network.SendWarning
 
 local GlobalModules = ServerScriptService.GlobalModules

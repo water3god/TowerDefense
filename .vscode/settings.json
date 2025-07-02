@@ -11,8 +11,8 @@
   "emeraldwalk.runonsave": {
     "commands": [
       {
-        "match": "zap\\.zap$",
-        "cmd": "zap zap.zap",
+        "match": "^Zap\\/[^\\/]+\\.zap$",
+        "cmd": "zap ${file}",
         "runIn": "terminal"
       }
     ]

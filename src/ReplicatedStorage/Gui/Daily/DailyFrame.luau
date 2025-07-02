@@ -43,8 +43,18 @@ export type Properties = {
 
 local function CreateDailyFrame(Properties)
 	local DailyData = React.useContext(DailyContext.Context)
+	local Time, _, SetTime = Hooks.UseTime()
 
-	local OnClick = React.useCallback(function(Day: number) end, {})
+	React.useEffect(function()
+		SetTime(DailyData.LastRedeemed + 60 * 60 * 24, DailyData.LastRedeemed)
+	end, { DailyData.LastRedeemed })
+
+	local OnClick = React.useCallback(function(Day: number)
+		if DailyData.Day < Day then
+			-- If the day is greater than the current day, we cannot redeem it yet.
+			return
+		end
+	end, { DailyData.Day })
 
 	local Dailys = React.useMemo(function()
 		local Frames: { [string]: React.Node } = {}
@@ -171,7 +181,9 @@ local function CreateDailyFrame(Properties)
 			native = {
 				Position = UDim2.fromScale(0.7, 0.175),
 				Size = UDim2.fromScale(0.8, 0.08),
-				Text = string.format("Time Left: %u", 3),
+				Text = Time:map(function(TimeValue: number)
+					return string.format("Time Left: %s", HelperFunctions.FormatTime(TimeValue))
+				end),
 			},
 		}),
 		List = e(Main.ScrollingFrame, {

@@ -17,7 +17,7 @@ local GenerateId = require(Modules.GenerateId)
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
 
-local Network = require(ReplicatedStorage.Network.Client)
+local Network = require(ReplicatedStorage.Network.Client2)
 local ClientOnly = require(ReplicatedStorage.Network.ClientOnly)
 local SendWarning = Network.SendWarning
 local Warning = ClientOnly.Warning

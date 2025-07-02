@@ -62,6 +62,9 @@ local Settings = require(SettingFolder.Settings)
 local StoreFolder = Gui.Store
 local Store = require(StoreFolder.Store)
 
+local TipsFolder = Gui.Tips
+local TipsGui = require(TipsFolder.TipsGui)
+
 -- Contexts --
 local InventoryContext = require(Inventory.InventoryContext)
 local TradeMenuContext = require(Trade.TradeContext)
@@ -74,6 +77,7 @@ local RollContext = require(Roll.RollContext)
 local WarningContext = require(WarningFolder.WarningContext)
 local SettingContext = require(SettingFolder.SettingsContext)
 local PurchaseContext = require(StoreFolder.PurchaseContext)
+local TipsContext = require(TipsFolder.TipsContext)
 
 local IsRunning = RunService:IsRunning()
 
@@ -678,6 +682,7 @@ local function Render()
 			InventoryContext.Provider,
 			EquippedUnitsContext.Provider,
 			PurchaseContext.Provider,
+			TipsContext.Provider,
 		},
 	}, {
 		FieldOfView = e("Folder", {
@@ -767,6 +772,7 @@ local function Render()
 				WaitingFrame = e(StoryContext.Provider, {}, {
 					WaitingFrame = e(WaitingFrame),
 				}),
+				TipsGui = e(TipsGui),
 			}),
 
 			BottomFrame = e(Bottom, {
@@ -848,7 +854,7 @@ local function Render()
 			}),
 		}),
 		SettingButton = e(MainButtonFrame, {
-			Position = UDim2.fromScale(0.9, 0.1),
+			Position = UDim2.fromScale(0.9, 0.05),
 			Size = UDim2.fromScale(0.1, 0.08),
 			Name = "Settings",
 			Icon = "rbxassetid://133964081103849",

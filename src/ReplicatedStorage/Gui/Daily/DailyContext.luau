@@ -17,6 +17,7 @@ local Gui = ReplicatedStorage.Gui
 local Default = {
 	Day = 1,
 	LastRedeemed = 1,
+	Redeem = function() end,
 }
 
 local DailyContext = React.createContext(Default)
@@ -28,6 +29,7 @@ local function DailyProvider(props)
 		SetValue({
 			Day = 1,
 			LastRedeemed = 1,
+			Redeem = function() end,
 		})
 	end, {})
 
