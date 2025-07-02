@@ -5,6 +5,11 @@
 -- Services --
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+
+if RunService:IsServer() then
+	error("This module should not be required on the server.")
+end
 
 local HelperFunctions = require(ReplicatedStorage.Modules.HelperFunctions)
 
