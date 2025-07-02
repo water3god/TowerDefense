@@ -22,7 +22,7 @@ local Upgrade = UnitClient.Upgrade
 local UseAbility = UnitClient.UseAbility
 local Sell = UnitClient.Sell
 
-local Network = require(ReplicatedStorage.Network.Server2)
+local Network = require(ReplicatedStorage.Network.Server)
 local SendWarning = Network.SendWarning
 
 local Shared = ReplicatedStorage.Shared

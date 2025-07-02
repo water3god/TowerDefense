@@ -1,9 +1,8 @@
 -- By Wa1er_God --
 
-opt server_output = "../src/ReplicatedStorage/Network/Server.luau"
-opt client_output = "../src/ReplicatedStorage/Network/Client.luau"
-opt types_output = "../src/ReplicatedStorage/Network/Types.luau"
-opt remote_folder = "Zap"
+opt server_output = "../src/ReplicatedStorage/Network/Server/Server1.luau"
+opt client_output = "../src/ReplicatedStorage/Network/Client/Client1.luau"
+opt remote_folder = "Zap1"
 
 type Level = u16
 type XP = f64
