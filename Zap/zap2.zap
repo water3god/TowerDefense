@@ -9,6 +9,60 @@ type Health = u32
 
 type Time = f64
 
+-- Marketplace --
+
+-- Maybe don't use --
+event ProductPurchased = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+}
+
+event UseProduct = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: (
+		ProductId,
+		boolean,
+	),
+}
+
+-- Roll --
+
+type RollData = struct {
+	SentTime: Time,
+	Data: string[],
+	AutoRoll: boolean,
+}
+
+event AutoRoll = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: boolean,
+}
+
+event RollEventServer = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: RollData,
+}
+
+event RollEventClient = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: u8,
+}
+
+event StopAutoRoll = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+}
+
 -- Settings --
 
 event ChangeSettingClient = {
@@ -282,31 +336,4 @@ event UseUnitAbility = {
 		string,
 		AbilityIndex,
 	),
-}
-
--- Game End --
-
-type Vote = u16
-
-event OnEnd = {
-	from: Server,
-	type: Reliable,
-	call: SingleAsync,
-	data: struct {
-		VotedCount: Vote,
-		Win: boolean,
-	},
-}
-
-event OnEndVote = {
-	from: Server,
-	type: Reliable,
-	call: SingleAsync,
-	data: Vote,
-}
-
-event EndVoteAction = {
-	from: Client,
-	type: Reliable,
-	call: SingleAsync,
 }

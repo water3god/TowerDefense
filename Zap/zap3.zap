@@ -9,10 +9,33 @@ type Health = u32
 
 type Time = f64
 
--- Votes --
+-- Game End --
 
 type Wave = u16
 type Vote = u16
+
+event OnEnd = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: struct {
+		VotedCount: Vote,
+		Win: boolean,
+	},
+}
+
+event OnEndVote = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: Vote,
+}
+
+event EndVoteAction = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+}
 
 type VoteData = struct {
 	Time: Time,

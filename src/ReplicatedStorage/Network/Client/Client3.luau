@@ -152,6 +152,15 @@ if not RunService:IsRunning() then
 		PlayerVoted = table.freeze({
 			SetCallback = noop
 		}),
+		OnEndVote = table.freeze({
+			SetCallback = noop
+		}),
+		OnEnd = table.freeze({
+			SetCallback = noop
+		}),
+		EndVoteAction = table.freeze({
+			Fire = noop
+		}),
 		DailySync = table.freeze({
 			SetCallback = noop
 		}),
@@ -174,7 +183,7 @@ local remotes = ReplicatedStorage:WaitForChild("Zap3")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
-export type Wave = (number)
+export type Level = (number)
 export type WaveData = ({
 	["Wave"]: (number),
 	["BaseHealth"]: (number),
@@ -182,18 +191,18 @@ export type WaveData = ({
 	["Time"]: (number),
 	["StartTime"]: (number),
 })
-export type XP = (number)
-export type Time = (number)
-export type Level = (number)
-export type ProductId = (number)
-export type Health = (number)
-export type Vote = (number)
 export type VoteData = ({
 	["Time"]: (number),
 	["StartTime"]: (number),
 	["CurrentCount"]: (number),
 	["NeededCount"]: (number),
 })
+export type XP = (number)
+export type ProductId = (number)
+export type Time = (number)
+export type Health = (number)
+export type Wave = (number)
+export type Vote = (number)
 
 local function SendEvents()
 	if outgoing_used ~= 0 then
@@ -211,20 +220,22 @@ end
 
 RunService.Heartbeat:Connect(SendEvents)
 
-local reliable_events = table.create(12)
-local reliable_event_queue: { [number]: { any } } = table.create(12)
+local reliable_events = table.create(14)
+local reliable_event_queue: { [number]: { any } } = table.create(14)
+reliable_event_queue[6] = {}
+reliable_event_queue[5] = {}
+reliable_event_queue[8] = {}
 reliable_event_queue[4] = {}
 reliable_event_queue[3] = {}
-reliable_event_queue[6] = {}
+reliable_event_queue[7] = {}
+reliable_event_queue[9] = {}
 reliable_event_queue[2] = {}
 reliable_event_queue[1] = {}
-reliable_event_queue[5] = {}
-reliable_event_queue[7] = {}
 reliable_event_queue[0] = {}
-reliable_event_queue[9] = {}
-reliable_event_queue[10] = {}
-reliable_event_queue[8] = {}
 reliable_event_queue[11] = {}
+reliable_event_queue[12] = {}
+reliable_event_queue[10] = {}
+reliable_event_queue[13] = {}
 reliable.OnClientEvent:Connect(function(buff, inst)
 	incoming_buff = buff
 	incoming_inst = inst
@@ -233,31 +244,31 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 	local len = buffer.len(buff)
 	while incoming_read < len do
 		local id = buffer.readu8(buff, read(1))
-		if id == 4 then
+		if id == 6 then
 			local value
 			value = buffer.readu16(incoming_buff, read(2))
-			if reliable_events[4] then
-				task.spawn(reliable_events[4], value)
+			if reliable_events[6] then
+				task.spawn(reliable_events[6], value)
 			else
-				table.insert(reliable_event_queue[4], value)
-				if #reliable_event_queue[4] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[4]} events in queue for WavePassed. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[6], value)
+				if #reliable_event_queue[6] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[6]} events in queue for WavePassed. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 3 then
+		elseif id == 5 then
 			local value
 			value = {}
 			value["BaseHealth"] = buffer.readu32(incoming_buff, read(4))
 			value["MaxHealth"] = buffer.readu32(incoming_buff, read(4))
-			if reliable_events[3] then
-				task.spawn(reliable_events[3], value)
+			if reliable_events[5] then
+				task.spawn(reliable_events[5], value)
 			else
-				table.insert(reliable_event_queue[3], value)
-				if #reliable_event_queue[3] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[3]} events in queue for WaveHealthChanged. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[5], value)
+				if #reliable_event_queue[5] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[5]} events in queue for WaveHealthChanged. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 6 then
+		elseif id == 8 then
 			local value, value2, value3, value4
 			value = buffer.readu8(incoming_buff, read(1)) == 1
 			if buffer.readu8(incoming_buff, read(1)) == 1 then
@@ -273,15 +284,15 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 				value3 = nil
 			end
 			value4 = buffer.readf64(incoming_buff, read(8))
-			if reliable_events[6] then
-				task.spawn(reliable_events[6], value, value2, value3, value4)
+			if reliable_events[8] then
+				task.spawn(reliable_events[8], value, value2, value3, value4)
 			else
-				table.insert(reliable_event_queue[6], { value, value2, value3, value4 })
-				if #reliable_event_queue[6] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[6]} events in queue for WaveEnded. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[8], { value, value2, value3, value4 })
+				if #reliable_event_queue[8] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[8]} events in queue for WaveEnded. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 2 then
+		elseif id == 4 then
 			local value
 			value = {}
 			value["Wave"] = buffer.readu16(incoming_buff, read(2))
@@ -289,15 +300,15 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			value["MaxHealth"] = buffer.readu32(incoming_buff, read(4))
 			value["Time"] = buffer.readf64(incoming_buff, read(8))
 			value["StartTime"] = buffer.readf64(incoming_buff, read(8))
-			if reliable_events[2] then
-				task.spawn(reliable_events[2], value)
+			if reliable_events[4] then
+				task.spawn(reliable_events[4], value)
 			else
-				table.insert(reliable_event_queue[2], value)
-				if #reliable_event_queue[2] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[2]} events in queue for WaveAdded. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[4], value)
+				if #reliable_event_queue[4] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[4]} events in queue for WaveAdded. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 1 then
+		elseif id == 3 then
 			local value
 			if buffer.readu8(incoming_buff, read(1)) == 1 then
 				value = {}
@@ -308,28 +319,28 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			else
 				value = nil
 			end
-			if reliable_events[1] then
-				task.spawn(reliable_events[1], value)
+			if reliable_events[3] then
+				task.spawn(reliable_events[3], value)
 			else
-				table.insert(reliable_event_queue[1], value)
-				if #reliable_event_queue[1] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[1]} events in queue for VoteRequest. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[3], value)
+				if #reliable_event_queue[3] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[3]} events in queue for VoteRequest. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 5 then
+		elseif id == 7 then
 			local value
 			value = {}
 			value["Time"] = buffer.readf64(incoming_buff, read(8))
 			value["StartTime"] = buffer.readf64(incoming_buff, read(8))
-			if reliable_events[5] then
-				task.spawn(reliable_events[5], value)
+			if reliable_events[7] then
+				task.spawn(reliable_events[7], value)
 			else
-				table.insert(reliable_event_queue[5], value)
-				if #reliable_event_queue[5] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[5]} events in queue for TimeChanged. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[7], value)
+				if #reliable_event_queue[7] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[7]} events in queue for TimeChanged. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 7 then
+		elseif id == 9 then
 			local value, value2
 			local len_1 = buffer.readu16(incoming_buff, read(2))
 			value = buffer.readstring(incoming_buff, read(len_1), len_1)
@@ -338,28 +349,52 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			else
 				value2 = nil
 			end
-			if reliable_events[7] then
-				task.spawn(reliable_events[7], value, value2)
+			if reliable_events[9] then
+				task.spawn(reliable_events[9], value, value2)
 			else
-				table.insert(reliable_event_queue[7], { value, value2 })
-				if #reliable_event_queue[7] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[7]} events in queue for SendWarning. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[9], { value, value2 })
+				if #reliable_event_queue[9] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[9]} events in queue for SendWarning. Did you forget to attach a listener?`)
+				end
+			end
+		elseif id == 2 then
+			local value
+			value = {}
+			value["CurrenctCount"] = buffer.readu16(incoming_buff, read(2))
+			value["NeededCount"] = buffer.readu16(incoming_buff, read(2))
+			if reliable_events[2] then
+				task.spawn(reliable_events[2], value)
+			else
+				table.insert(reliable_event_queue[2], value)
+				if #reliable_event_queue[2] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[2]} events in queue for PlayerVoted. Did you forget to attach a listener?`)
+				end
+			end
+		elseif id == 1 then
+			local value
+			value = buffer.readu16(incoming_buff, read(2))
+			if reliable_events[1] then
+				task.spawn(reliable_events[1], value)
+			else
+				table.insert(reliable_event_queue[1], value)
+				if #reliable_event_queue[1] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[1]} events in queue for OnEndVote. Did you forget to attach a listener?`)
 				end
 			end
 		elseif id == 0 then
 			local value
 			value = {}
-			value["CurrenctCount"] = buffer.readu16(incoming_buff, read(2))
-			value["NeededCount"] = buffer.readu16(incoming_buff, read(2))
+			value["VotedCount"] = buffer.readu16(incoming_buff, read(2))
+			value["Win"] = buffer.readu8(incoming_buff, read(1)) == 1
 			if reliable_events[0] then
 				task.spawn(reliable_events[0], value)
 			else
 				table.insert(reliable_event_queue[0], value)
 				if #reliable_event_queue[0] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[0]} events in queue for PlayerVoted. Did you forget to attach a listener?`)
+					warn(`[ZAP] {#reliable_event_queue[0]} events in queue for OnEnd. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 9 then
+		elseif id == 11 then
 			local value
 			value = {}
 			value["Day"] = buffer.readu8(incoming_buff, read(1))
@@ -385,39 +420,39 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 				end
 				value["Rewards"][key_1] = val_1
 			end
-			if reliable_events[9] then
-				task.spawn(reliable_events[9], value)
+			if reliable_events[11] then
+				task.spawn(reliable_events[11], value)
 			else
-				table.insert(reliable_event_queue[9], value)
-				if #reliable_event_queue[9] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[9]} events in queue for DailySync. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[11], value)
+				if #reliable_event_queue[11] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[11]} events in queue for DailySync. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 10 then
+		elseif id == 12 then
 			local value
 			value = {}
 			value["Day"] = buffer.readu8(incoming_buff, read(1))
 			value["LastRedeemed"] = buffer.readf64(incoming_buff, read(8))
+			if reliable_events[12] then
+				task.spawn(reliable_events[12], value)
+			else
+				table.insert(reliable_event_queue[12], value)
+				if #reliable_event_queue[12] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[12]} events in queue for DailyRedeemed. Did you forget to attach a listener?`)
+				end
+			end
+		elseif id == 10 then
+			local value
+			value = buffer.readf64(incoming_buff, read(8))
 			if reliable_events[10] then
 				task.spawn(reliable_events[10], value)
 			else
 				table.insert(reliable_event_queue[10], value)
 				if #reliable_event_queue[10] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[10]} events in queue for DailyRedeemed. Did you forget to attach a listener?`)
+					warn(`[ZAP] {#reliable_event_queue[10]} events in queue for CurrencyChanged. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 8 then
-			local value
-			value = buffer.readf64(incoming_buff, read(8))
-			if reliable_events[8] then
-				task.spawn(reliable_events[8], value)
-			else
-				table.insert(reliable_event_queue[8], value)
-				if #reliable_event_queue[8] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[8]} events in queue for CurrencyChanged. Did you forget to attach a listener?`)
-				end
-			end
-		elseif id == 11 then
+		elseif id == 13 then
 			local value
 			value = {}
 			for _ = 1, buffer.readu16(incoming_buff, read(2)) do
@@ -437,12 +472,12 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 				end
 				value[key_3] = val_3
 			end
-			if reliable_events[11] then
-				task.spawn(reliable_events[11], value)
+			if reliable_events[13] then
+				task.spawn(reliable_events[13], value)
 			else
-				table.insert(reliable_event_queue[11], value)
-				if #reliable_event_queue[11] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[11]} events in queue for AllEquippedSync. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[13], value)
+				if #reliable_event_queue[13] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[13]} events in queue for AllEquippedSync. Did you forget to attach a listener?`)
 				end
 			end
 		else
@@ -457,36 +492,9 @@ local returns = {
 	SendEvents = SendEvents,
 	WavePassed = {
 		SetCallback = function(Callback: (Value: (number)) -> ()): () -> ()
-			reliable_events[4] = Callback
-			for _, value in reliable_event_queue[4] do
-				task.spawn(Callback, value)
-			end
-			reliable_event_queue[4] = {}
-			return function()
-				reliable_events[4] = nil
-			end
-		end,
-	},
-	WaveHealthChanged = {
-		SetCallback = function(Callback: (Value: ({
-			["BaseHealth"]: (number),
-			["MaxHealth"]: (number),
-		})) -> ()): () -> ()
-			reliable_events[3] = Callback
-			for _, value in reliable_event_queue[3] do
-				task.spawn(Callback, value)
-			end
-			reliable_event_queue[3] = {}
-			return function()
-				reliable_events[3] = nil
-			end
-		end,
-	},
-	WaveEnded = {
-		SetCallback = function(Callback: (Value: (boolean), Value2: ((unknown)), Value3: ((unknown)), Value4: (number)) -> ()): () -> ()
 			reliable_events[6] = Callback
 			for _, value in reliable_event_queue[6] do
-				task.spawn(Callback, unpack(value))
+				task.spawn(Callback, value)
 			end
 			reliable_event_queue[6] = {}
 			return function()
@@ -494,51 +502,10 @@ local returns = {
 			end
 		end,
 	},
-	WaveAdded = {
+	WaveHealthChanged = {
 		SetCallback = function(Callback: (Value: ({
-			["Wave"]: (number),
 			["BaseHealth"]: (number),
 			["MaxHealth"]: (number),
-			["Time"]: (number),
-			["StartTime"]: (number),
-		})) -> ()): () -> ()
-			reliable_events[2] = Callback
-			for _, value in reliable_event_queue[2] do
-				task.spawn(Callback, value)
-			end
-			reliable_event_queue[2] = {}
-			return function()
-				reliable_events[2] = nil
-			end
-		end,
-	},
-	VoteSkip = {
-		Fire = function()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-		end,
-	},
-	VoteRequest = {
-		SetCallback = function(Callback: (Value: (({
-			["Time"]: (number),
-			["StartTime"]: (number),
-			["CurrentCount"]: (number),
-			["NeededCount"]: (number),
-		})?)) -> ()): () -> ()
-			reliable_events[1] = Callback
-			for _, value in reliable_event_queue[1] do
-				task.spawn(Callback, value)
-			end
-			reliable_event_queue[1] = {}
-			return function()
-				reliable_events[1] = nil
-			end
-		end,
-	},
-	TimeChanged = {
-		SetCallback = function(Callback: (Value: ({
-			["Time"]: (number),
-			["StartTime"]: (number),
 		})) -> ()): () -> ()
 			reliable_events[5] = Callback
 			for _, value in reliable_event_queue[5] do
@@ -550,17 +517,67 @@ local returns = {
 			end
 		end,
 	},
-	TeleportBack = {
-		Fire = function()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
+	WaveEnded = {
+		SetCallback = function(Callback: (Value: (boolean), Value2: ((unknown)), Value3: ((unknown)), Value4: (number)) -> ()): () -> ()
+			reliable_events[8] = Callback
+			for _, value in reliable_event_queue[8] do
+				task.spawn(Callback, unpack(value))
+			end
+			reliable_event_queue[8] = {}
+			return function()
+				reliable_events[8] = nil
+			end
 		end,
 	},
-	SendWarning = {
-		SetCallback = function(Callback: (Value: (string), Value2: ((Color3)?)) -> ()): () -> ()
+	WaveAdded = {
+		SetCallback = function(Callback: (Value: ({
+			["Wave"]: (number),
+			["BaseHealth"]: (number),
+			["MaxHealth"]: (number),
+			["Time"]: (number),
+			["StartTime"]: (number),
+		})) -> ()): () -> ()
+			reliable_events[4] = Callback
+			for _, value in reliable_event_queue[4] do
+				task.spawn(Callback, value)
+			end
+			reliable_event_queue[4] = {}
+			return function()
+				reliable_events[4] = nil
+			end
+		end,
+	},
+	VoteSkip = {
+		Fire = function()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+		end,
+	},
+	VoteRequest = {
+		SetCallback = function(Callback: (Value: (({
+			["Time"]: (number),
+			["StartTime"]: (number),
+			["CurrentCount"]: (number),
+			["NeededCount"]: (number),
+		})?)) -> ()): () -> ()
+			reliable_events[3] = Callback
+			for _, value in reliable_event_queue[3] do
+				task.spawn(Callback, value)
+			end
+			reliable_event_queue[3] = {}
+			return function()
+				reliable_events[3] = nil
+			end
+		end,
+	},
+	TimeChanged = {
+		SetCallback = function(Callback: (Value: ({
+			["Time"]: (number),
+			["StartTime"]: (number),
+		})) -> ()): () -> ()
 			reliable_events[7] = Callback
 			for _, value in reliable_event_queue[7] do
-				task.spawn(Callback, unpack(value))
+				task.spawn(Callback, value)
 			end
 			reliable_event_queue[7] = {}
 			return function()
@@ -568,16 +585,61 @@ local returns = {
 			end
 		end,
 	},
+	TeleportBack = {
+		Fire = function()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
+		end,
+	},
+	SendWarning = {
+		SetCallback = function(Callback: (Value: (string), Value2: ((Color3)?)) -> ()): () -> ()
+			reliable_events[9] = Callback
+			for _, value in reliable_event_queue[9] do
+				task.spawn(Callback, unpack(value))
+			end
+			reliable_event_queue[9] = {}
+			return function()
+				reliable_events[9] = nil
+			end
+		end,
+	},
 	RedeemDailyReward = {
 		Fire = function()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
 		end,
 	},
 	PlayerVoted = {
 		SetCallback = function(Callback: (Value: ({
 			["CurrenctCount"]: (number),
 			["NeededCount"]: (number),
+		})) -> ()): () -> ()
+			reliable_events[2] = Callback
+			for _, value in reliable_event_queue[2] do
+				task.spawn(Callback, value)
+			end
+			reliable_event_queue[2] = {}
+			return function()
+				reliable_events[2] = nil
+			end
+		end,
+	},
+	OnEndVote = {
+		SetCallback = function(Callback: (Value: (number)) -> ()): () -> ()
+			reliable_events[1] = Callback
+			for _, value in reliable_event_queue[1] do
+				task.spawn(Callback, value)
+			end
+			reliable_event_queue[1] = {}
+			return function()
+				reliable_events[1] = nil
+			end
+		end,
+	},
+	OnEnd = {
+		SetCallback = function(Callback: (Value: ({
+			["VotedCount"]: (number),
+			["Win"]: (boolean),
 		})) -> ()): () -> ()
 			reliable_events[0] = Callback
 			for _, value in reliable_event_queue[0] do
@@ -589,19 +651,25 @@ local returns = {
 			end
 		end,
 	},
+	EndVoteAction = {
+		Fire = function()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+		end,
+	},
 	DailySync = {
 		SetCallback = function(Callback: (Value: ({
 			["Day"]: (number),
 			["LastRedeemed"]: (number),
 			["Rewards"]: ({ [(number)]: ({ [(string)]: ((unknown)) }) }),
 		})) -> ()): () -> ()
-			reliable_events[9] = Callback
-			for _, value in reliable_event_queue[9] do
+			reliable_events[11] = Callback
+			for _, value in reliable_event_queue[11] do
 				task.spawn(Callback, value)
 			end
-			reliable_event_queue[9] = {}
+			reliable_event_queue[11] = {}
 			return function()
-				reliable_events[9] = nil
+				reliable_events[11] = nil
 			end
 		end,
 	},
@@ -610,6 +678,18 @@ local returns = {
 			["Day"]: (number),
 			["LastRedeemed"]: (number),
 		})) -> ()): () -> ()
+			reliable_events[12] = Callback
+			for _, value in reliable_event_queue[12] do
+				task.spawn(Callback, value)
+			end
+			reliable_event_queue[12] = {}
+			return function()
+				reliable_events[12] = nil
+			end
+		end,
+	},
+	CurrencyChanged = {
+		SetCallback = function(Callback: (Value: (number)) -> ()): () -> ()
 			reliable_events[10] = Callback
 			for _, value in reliable_event_queue[10] do
 				task.spawn(Callback, value)
@@ -620,27 +700,15 @@ local returns = {
 			end
 		end,
 	},
-	CurrencyChanged = {
-		SetCallback = function(Callback: (Value: (number)) -> ()): () -> ()
-			reliable_events[8] = Callback
-			for _, value in reliable_event_queue[8] do
-				task.spawn(Callback, value)
-			end
-			reliable_event_queue[8] = {}
-			return function()
-				reliable_events[8] = nil
-			end
-		end,
-	},
 	AllEquippedSync = {
 		SetCallback = function(Callback: (Value: ({ [(Player)]: ({ (string) }) })) -> ()): () -> ()
-			reliable_events[11] = Callback
-			for _, value in reliable_event_queue[11] do
+			reliable_events[13] = Callback
+			for _, value in reliable_event_queue[13] do
 				task.spawn(Callback, value)
 			end
-			reliable_event_queue[11] = {}
+			reliable_event_queue[13] = {}
 			return function()
-				reliable_events[11] = nil
+				reliable_events[13] = nil
 			end
 		end,
 	},

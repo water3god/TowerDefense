@@ -16,7 +16,7 @@ local WaveEnded = WaveEvents.WaveEnded
 local Passed = WaveEvents.Passed
 local Added = WaveEvents.Added
 
-local Network = require(ReplicatedStorage.Network.Server2)
+local Network = require(ReplicatedStorage.Network.Server)
 local SendWarning = Network.SendWarning
 
 local GlobalModules = ServerScriptService.GlobalModules

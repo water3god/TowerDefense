@@ -122,6 +122,9 @@ if not RunService:IsRunning() then
 		UseUnitAbility = table.freeze({
 			Fire = noop
 		}),
+		UseProduct = table.freeze({
+			Fire = noop
+		}),
 		UpgradeUnit = table.freeze({
 			Fire = noop
 		}),
@@ -167,6 +170,9 @@ if not RunService:IsRunning() then
 		TradeAccept = table.freeze({
 			Fire = noop
 		}),
+		StopAutoRoll = table.freeze({
+			Fire = noop
+		}),
 		SpeedRatioEvent = table.freeze({
 			SetCallback = noop
 		}),
@@ -179,19 +185,19 @@ if not RunService:IsRunning() then
 		SellUnit = table.freeze({
 			Fire = noop
 		}),
+		RollEventServer = table.freeze({
+			SetCallback = noop
+		}),
+		RollEventClient = table.freeze({
+			Fire = noop
+		}),
+		ProductPurchased = table.freeze({
+			SetCallback = noop
+		}),
 		ProductChanged = table.freeze({
 			SetCallback = noop
 		}),
 		PlaceUnit = table.freeze({
-			Fire = noop
-		}),
-		OnEndVote = table.freeze({
-			SetCallback = noop
-		}),
-		OnEnd = table.freeze({
-			SetCallback = noop
-		}),
-		EndVoteAction = table.freeze({
 			Fire = noop
 		}),
 		ChangeUnitPriority = table.freeze({
@@ -209,6 +215,9 @@ if not RunService:IsRunning() then
 		ChangeProduct = table.freeze({
 			Fire = noop
 		}),
+		AutoRoll = table.freeze({
+			Fire = noop
+		}),
 	}) :: Events
 end
 if RunService:IsServer() then
@@ -219,10 +228,22 @@ local remotes = ReplicatedStorage:WaitForChild("Zap2")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
-export type Health = (number)
-export type Level = (number)
-export type SortType = ("First" | "Last" | "Strongest" | "Weakest")
 export type AbilityIndex = (number)
+export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
+export type UnitAttackInput = ({
+	["UniqueId"]: (string),
+	["Index"]: (number),
+	["EnemyId"]: (string),
+	["Firetime"]: (number),
+	["SpeedRatio"]: (number),
+})
+export type ProductId = (number)
+export type PlacementData = ({
+	["Unit"]: (string),
+	["UnitPosition"]: (Vector3),
+	["RotationIndex"]: (number),
+})
+export type XP = (number)
 export type UnitInput = ({
 	["UniqueId"]: (string),
 	["UnitName"]: (string),
@@ -235,23 +256,15 @@ export type UnitInput = ({
 	["Abilities"]: ({ (number) }),
 })
 export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
-export type ProductId = (number)
-export type UnitAttackInput = ({
-	["UniqueId"]: (string),
-	["Index"]: (number),
-	["EnemyId"]: (string),
-	["Firetime"]: (number),
-	["SpeedRatio"]: (number),
-})
-export type XP = (number)
-export type PlacementData = ({
-	["Unit"]: (string),
-	["UnitPosition"]: (Vector3),
-	["RotationIndex"]: (number),
-})
-export type Vote = (number)
-export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
+export type SortType = ("First" | "Last" | "Strongest" | "Weakest")
+export type Level = (number)
 export type Time = (number)
+export type Health = (number)
+export type RollData = ({
+	["SentTime"]: (number),
+	["Data"]: ({ (string) }),
+	["AutoRoll"]: (boolean),
+})
 
 local function SendEvents()
 	if outgoing_used ~= 0 then
@@ -271,7 +284,9 @@ RunService.Heartbeat:Connect(SendEvents)
 
 local reliable_events = table.create(17)
 local reliable_event_queue: { [number]: { any } } = table.create(17)
+reliable_event_queue[16] = {}
 reliable_event_queue[14] = {}
+reliable_event_queue[13] = {}
 reliable_event_queue[12] = {}
 reliable_event_queue[11] = {}
 reliable_event_queue[10] = {}
@@ -279,15 +294,13 @@ reliable_event_queue[9] = {}
 reliable_event_queue[8] = {}
 reliable_event_queue[7] = {}
 reliable_event_queue[6] = {}
-reliable_event_queue[5] = {}
-reliable_event_queue[4] = {}
-reliable_event_queue[3] = 0
-reliable_event_queue[13] = {}
-reliable_event_queue[1] = {}
-reliable_event_queue[2] = 0
-reliable_event_queue[16] = {}
+reliable_event_queue[5] = 0
 reliable_event_queue[15] = {}
-reliable_event_queue[0] = {}
+reliable_event_queue[3] = {}
+reliable_event_queue[1] = {}
+reliable_event_queue[0] = 0
+reliable_event_queue[4] = 0
+reliable_event_queue[2] = {}
 reliable.OnClientEvent:Connect(function(buff, inst)
 	incoming_buff = buff
 	incoming_inst = inst
@@ -296,21 +309,21 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 	local len = buffer.len(buff)
 	while incoming_read < len do
 		local id = buffer.readu8(buff, read(1))
-		if id == 14 then
+		if id == 16 then
 			local value
 			value = {}
 			local len_1 = buffer.readu16(incoming_buff, read(2))
 			value["UniqueId"] = buffer.readstring(incoming_buff, read(len_1), len_1)
 			value["Level"] = buffer.readu16(incoming_buff, read(2))
-			if reliable_events[14] then
-				task.spawn(reliable_events[14], value)
+			if reliable_events[16] then
+				task.spawn(reliable_events[16], value)
 			else
-				table.insert(reliable_event_queue[14], value)
-				if #reliable_event_queue[14] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[14]} events in queue for UnitUpgradeEvent. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[16], value)
+				if #reliable_event_queue[16] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[16]} events in queue for UnitUpgradeEvent. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 12 then
+		elseif id == 14 then
 			local value
 			value = {}
 			local len_2 = buffer.readu16(incoming_buff, read(2))
@@ -328,15 +341,15 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			else
 				error("Invalid enumerator")
 			end
-			if reliable_events[12] then
-				task.spawn(reliable_events[12], value)
+			if reliable_events[14] then
+				task.spawn(reliable_events[14], value)
 			else
-				table.insert(reliable_event_queue[12], value)
-				if #reliable_event_queue[12] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[12]} events in queue for UnitPriorityChanged. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[14], value)
+				if #reliable_event_queue[14] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[14]} events in queue for UnitPriorityChanged. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 11 then
+		elseif id == 13 then
 			local value, value2
 			value = {}
 			for _ = 1, buffer.readu16(incoming_buff, read(2)) do
@@ -377,15 +390,15 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 				value[key_1] = val_1
 			end
 			value2 = buffer.readu8(incoming_buff, read(1)) == 1
-			if reliable_events[11] then
-				task.spawn(reliable_events[11], value, value2)
+			if reliable_events[13] then
+				task.spawn(reliable_events[13], value, value2)
 			else
-				table.insert(reliable_event_queue[11], { value, value2 })
-				if #reliable_event_queue[11] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[11]} events in queue for UnitPlacementEvent. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[13], { value, value2 })
+				if #reliable_event_queue[13] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[13]} events in queue for UnitPlacementEvent. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 10 then
+		elseif id == 12 then
 			local value
 			value = {}
 			local len_8 = buffer.readu16(incoming_buff, read(2))
@@ -395,15 +408,15 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 				val_3 = buffer.readstring(incoming_buff, read(len_9), len_9)
 				value[i_2] = val_3
 			end
-			if reliable_events[10] then
-				task.spawn(reliable_events[10], value)
+			if reliable_events[12] then
+				task.spawn(reliable_events[12], value)
 			else
-				table.insert(reliable_event_queue[10], value)
-				if #reliable_event_queue[10] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[10]} events in queue for UnitDestroyEvent. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[12], value)
+				if #reliable_event_queue[12] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[12]} events in queue for UnitDestroyEvent. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 9 then
+		elseif id == 11 then
 			local value
 			value = {}
 			local len_10 = buffer.readu16(incoming_buff, read(2))
@@ -413,15 +426,15 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			value["EnemyId"] = buffer.readstring(incoming_buff, read(len_11), len_11)
 			value["Firetime"] = buffer.readf64(incoming_buff, read(8))
 			value["SpeedRatio"] = buffer.readf32(incoming_buff, read(4))
-			if reliable_events[9] then
-				task.spawn(reliable_events[9], value)
+			if reliable_events[11] then
+				task.spawn(reliable_events[11], value)
 			else
-				table.insert(reliable_event_queue[9], value)
-				if #reliable_event_queue[9] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[9]} events in queue for UnitAttack. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[11], value)
+				if #reliable_event_queue[11] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[11]} events in queue for UnitAttack. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 8 then
+		elseif id == 10 then
 			local value, value2, value3, value4, value5, value6, value7
 			local len_12 = buffer.readu16(incoming_buff, read(2))
 			value = buffer.readstring(incoming_buff, read(len_12), len_12)
@@ -448,29 +461,29 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 				value6 = nil
 			end
 			value7 = buffer.readf32(incoming_buff, read(4))
-			if reliable_events[8] then
-				task.spawn(reliable_events[8], value, value2, value3, value4, value5, value6, value7)
+			if reliable_events[10] then
+				task.spawn(reliable_events[10], value, value2, value3, value4, value5, value6, value7)
 			else
-				table.insert(reliable_event_queue[8], { value, value2, value3, value4, value5, value6, value7 })
-				if #reliable_event_queue[8] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[8]} events in queue for UnitAnimationEvent. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[10], { value, value2, value3, value4, value5, value6, value7 })
+				if #reliable_event_queue[10] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[10]} events in queue for UnitAnimationEvent. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 7 then
+		elseif id == 9 then
 			local value, value2, value3
 			local len_14 = buffer.readu16(incoming_buff, read(2))
 			value = buffer.readstring(incoming_buff, read(len_14), len_14)
 			value2 = buffer.readu8(incoming_buff, read(1))
 			value3 = buffer.readf64(incoming_buff, read(8))
-			if reliable_events[7] then
-				task.spawn(reliable_events[7], value, value2, value3)
+			if reliable_events[9] then
+				task.spawn(reliable_events[9], value, value2, value3)
 			else
-				table.insert(reliable_event_queue[7], { value, value2, value3 })
-				if #reliable_event_queue[7] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[7]} events in queue for UnitAbilityEvent. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[9], { value, value2, value3 })
+				if #reliable_event_queue[9] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[9]} events in queue for UnitAbilityEvent. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 6 then
+		elseif id == 8 then
 			local value
 			value = {}
 			for _ = 1, buffer.readu16(incoming_buff, read(2)) do
@@ -491,15 +504,15 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 				end
 				value[key_2] = val_4
 			end
-			if reliable_events[6] then
-				task.spawn(reliable_events[6], value)
+			if reliable_events[8] then
+				task.spawn(reliable_events[8], value)
 			else
-				table.insert(reliable_event_queue[6], value)
-				if #reliable_event_queue[6] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[6]} events in queue for TradeSync. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[8], value)
+				if #reliable_event_queue[8] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[8]} events in queue for TradeSync. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 5 then
+		elseif id == 7 then
 			local value
 			value = {}
 			incoming_ipos = incoming_ipos + 1
@@ -510,40 +523,40 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			value["Player2"] = incoming_inst[incoming_ipos]
 			assert(value["Player2"] ~= nil, "received instance is nil!")
 			assert(value["Player2"]:IsA("Player"), "received instance is not of the Player class!")
-			if reliable_events[5] then
-				task.spawn(reliable_events[5], value)
+			if reliable_events[7] then
+				task.spawn(reliable_events[7], value)
 			else
-				table.insert(reliable_event_queue[5], value)
-				if #reliable_event_queue[5] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[5]} events in queue for TradeStart. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[7], value)
+				if #reliable_event_queue[7] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[7]} events in queue for TradeStart. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 4 then
+		elseif id == 6 then
 			local value, value2
 			incoming_ipos = incoming_ipos + 1
 			value = incoming_inst[incoming_ipos]
 			assert(value ~= nil, "received instance is nil!")
 			assert(value:IsA("Player"), "received instance is not of the Player class!")
 			value2 = buffer.readf64(incoming_buff, read(8))
-			if reliable_events[4] then
-				task.spawn(reliable_events[4], value, value2)
+			if reliable_events[6] then
+				task.spawn(reliable_events[6], value, value2)
 			else
-				table.insert(reliable_event_queue[4], { value, value2 })
-				if #reliable_event_queue[4] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[4]} events in queue for TradeRequestServer. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[6], { value, value2 })
+				if #reliable_event_queue[6] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[6]} events in queue for TradeRequestServer. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 3 then
+		elseif id == 5 then
 			local value
-			if reliable_events[3] then
-				task.spawn(reliable_events[3], value)
+			if reliable_events[5] then
+				task.spawn(reliable_events[5], value)
 			else
-				reliable_event_queue[3] += 1
-				if reliable_event_queue[3] > 16 then
-					warn(`[ZAP] {reliable_event_queue[3]} events in queue for TradeEnd. Did you forget to attach a listener?`)
+				reliable_event_queue[5] += 1
+				if reliable_event_queue[5] > 16 then
+					warn(`[ZAP] {reliable_event_queue[5]} events in queue for TradeEnd. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 13 then
+		elseif id == 15 then
 			local value, value2, value3
 			local len_15 = buffer.readu16(incoming_buff, read(2))
 			value = buffer.readstring(incoming_buff, read(len_15), len_15)
@@ -552,15 +565,15 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			value3 = {}
 			value3["SpeedRatio"] = buffer.readf32(incoming_buff, read(4))
 			value3["EndTime"] = buffer.readf64(incoming_buff, read(8))
-			if reliable_events[13] then
-				task.spawn(reliable_events[13], value, value2, value3)
+			if reliable_events[15] then
+				task.spawn(reliable_events[15], value, value2, value3)
 			else
-				table.insert(reliable_event_queue[13], { value, value2, value3 })
-				if #reliable_event_queue[13] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[13]} events in queue for SpeedRatioEvent. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[15], { value, value2, value3 })
+				if #reliable_event_queue[15] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[15]} events in queue for SpeedRatioEvent. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 1 then
+		elseif id == 3 then
 			local value
 			value = {}
 			local len_17 = buffer.readu16(incoming_buff, read(2))
@@ -574,64 +587,71 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 				end
 				value[i_3] = val_5
 			end
+			if reliable_events[3] then
+				task.spawn(reliable_events[3], value)
+			else
+				table.insert(reliable_event_queue[3], value)
+				if #reliable_event_queue[3] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[3]} events in queue for SendSettings. Did you forget to attach a listener?`)
+				end
+			end
+		elseif id == 1 then
+			local value
+			value = {}
+			value["SentTime"] = buffer.readf64(incoming_buff, read(8))
+			value["Data"] = {}
+			local len_18 = buffer.readu16(incoming_buff, read(2))
+			for i_4 = 1, len_18 do
+				local val_6
+				local len_19 = buffer.readu16(incoming_buff, read(2))
+				val_6 = buffer.readstring(incoming_buff, read(len_19), len_19)
+				value["Data"][i_4] = val_6
+			end
+			value["AutoRoll"] = buffer.readu8(incoming_buff, read(1)) == 1
 			if reliable_events[1] then
 				task.spawn(reliable_events[1], value)
 			else
 				table.insert(reliable_event_queue[1], value)
 				if #reliable_event_queue[1] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[1]} events in queue for SendSettings. Did you forget to attach a listener?`)
-				end
-			end
-		elseif id == 2 then
-			local value
-			if reliable_events[2] then
-				task.spawn(reliable_events[2], value)
-			else
-				reliable_event_queue[2] += 1
-				if reliable_event_queue[2] > 16 then
-					warn(`[ZAP] {reliable_event_queue[2]} events in queue for ProductChanged. Did you forget to attach a listener?`)
-				end
-			end
-		elseif id == 16 then
-			local value
-			value = buffer.readu16(incoming_buff, read(2))
-			if reliable_events[16] then
-				task.spawn(reliable_events[16], value)
-			else
-				table.insert(reliable_event_queue[16], value)
-				if #reliable_event_queue[16] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[16]} events in queue for OnEndVote. Did you forget to attach a listener?`)
-				end
-			end
-		elseif id == 15 then
-			local value
-			value = {}
-			value["VotedCount"] = buffer.readu16(incoming_buff, read(2))
-			value["Win"] = buffer.readu8(incoming_buff, read(1)) == 1
-			if reliable_events[15] then
-				task.spawn(reliable_events[15], value)
-			else
-				table.insert(reliable_event_queue[15], value)
-				if #reliable_event_queue[15] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[15]} events in queue for OnEnd. Did you forget to attach a listener?`)
+					warn(`[ZAP] {#reliable_event_queue[1]} events in queue for RollEventServer. Did you forget to attach a listener?`)
 				end
 			end
 		elseif id == 0 then
+			local value
+			if reliable_events[0] then
+				task.spawn(reliable_events[0], value)
+			else
+				reliable_event_queue[0] += 1
+				if reliable_event_queue[0] > 16 then
+					warn(`[ZAP] {reliable_event_queue[0]} events in queue for ProductPurchased. Did you forget to attach a listener?`)
+				end
+			end
+		elseif id == 4 then
+			local value
+			if reliable_events[4] then
+				task.spawn(reliable_events[4], value)
+			else
+				reliable_event_queue[4] += 1
+				if reliable_event_queue[4] > 16 then
+					warn(`[ZAP] {reliable_event_queue[4]} events in queue for ProductChanged. Did you forget to attach a listener?`)
+				end
+			end
+		elseif id == 2 then
 			local value, value2
-			local len_18 = buffer.readu16(incoming_buff, read(2))
-			value = buffer.readstring(incoming_buff, read(len_18), len_18)
+			local len_20 = buffer.readu16(incoming_buff, read(2))
+			value = buffer.readstring(incoming_buff, read(len_20), len_20)
 			if buffer.readu8(incoming_buff, read(1)) == 1 then
 				incoming_ipos = incoming_ipos + 1
 				value2 = incoming_inst[incoming_ipos]
 			else
 				value2 = nil
 			end
-			if reliable_events[0] then
-				task.spawn(reliable_events[0], value, value2)
+			if reliable_events[2] then
+				task.spawn(reliable_events[2], value, value2)
 			else
-				table.insert(reliable_event_queue[0], { value, value2 })
-				if #reliable_event_queue[0] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[0]} events in queue for ChangeSettingServer. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[2], { value, value2 })
+				if #reliable_event_queue[2] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[2]} events in queue for ChangeSettingServer. Did you forget to attach a listener?`)
 				end
 			end
 		else
@@ -647,25 +667,35 @@ local returns = {
 	UseUnitAbility = {
 		Fire = function(Value: (string), Value2: (number))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
-			local len_19 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
+			local len_21 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_19)
-			alloc(len_19)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_19)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_21)
+			alloc(len_21)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_21)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value2)
+		end,
+	},
+	UseProduct = {
+		Fire = function(Value: (number), Value2: (boolean))
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			alloc(8)
+			buffer.writef64(outgoing_buff, outgoing_apos, Value)
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, Value2 and 1 or 0)
 		end,
 	},
 	UpgradeUnit = {
 		Fire = function(Value: (string))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
-			local len_20 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
+			local len_22 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_20)
-			alloc(len_20)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_20)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_22)
+			alloc(len_22)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_22)
 		end,
 	},
 	UnitUpgradeEvent = {
@@ -673,13 +703,13 @@ local returns = {
 			["UniqueId"]: (string),
 			["Level"]: (number),
 		})) -> ()): () -> ()
-			reliable_events[14] = Callback
-			for _, value in reliable_event_queue[14] do
+			reliable_events[16] = Callback
+			for _, value in reliable_event_queue[16] do
 				task.spawn(Callback, value)
 			end
-			reliable_event_queue[14] = {}
+			reliable_event_queue[16] = {}
 			return function()
-				reliable_events[14] = nil
+				reliable_events[16] = nil
 			end
 		end,
 	},
@@ -688,13 +718,13 @@ local returns = {
 			["UniqueId"]: (string),
 			["Priority"]: ("First" | "Last" | "Strongest" | "Weakest"),
 		})) -> ()): () -> ()
-			reliable_events[12] = Callback
-			for _, value in reliable_event_queue[12] do
+			reliable_events[14] = Callback
+			for _, value in reliable_event_queue[14] do
 				task.spawn(Callback, value)
 			end
-			reliable_event_queue[12] = {}
+			reliable_event_queue[14] = {}
 			return function()
-				reliable_events[12] = nil
+				reliable_events[14] = nil
 			end
 		end,
 	},
@@ -710,165 +740,6 @@ local returns = {
 			["SpeedRatio"]: (number),
 			["Abilities"]: ({ (number) }),
 		}) }), Value2: (boolean)) -> ()): () -> ()
-			reliable_events[11] = Callback
-			for _, value in reliable_event_queue[11] do
-				task.spawn(Callback, unpack(value))
-			end
-			reliable_event_queue[11] = {}
-			return function()
-				reliable_events[11] = nil
-			end
-		end,
-	},
-	UnitDestroyEvent = {
-		SetCallback = function(Callback: (Value: ({ (string) })) -> ()): () -> ()
-			reliable_events[10] = Callback
-			for _, value in reliable_event_queue[10] do
-				task.spawn(Callback, value)
-			end
-			reliable_event_queue[10] = {}
-			return function()
-				reliable_events[10] = nil
-			end
-		end,
-	},
-	UnitChanged = {
-		Fire = function(Value: ((unknown)), Value2: (Player), Value3: (string))
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
-			if Value == nil then
-				alloc(1)
-				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-			else
-				alloc(1)
-				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-				table.insert(outgoing_inst, Value)
-			end
-			assert(Value2:IsA("Player"), "received instance is not of the Player class!")
-			table.insert(outgoing_inst, Value2)
-			local len_21 = #Value3
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_21)
-			alloc(len_21)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value3, len_21)
-		end,
-	},
-	UnitAttack = {
-		SetCallback = function(Callback: (Value: ({
-			["UniqueId"]: (string),
-			["Index"]: (number),
-			["EnemyId"]: (string),
-			["Firetime"]: (number),
-			["SpeedRatio"]: (number),
-		})) -> ()): () -> ()
-			reliable_events[9] = Callback
-			for _, value in reliable_event_queue[9] do
-				task.spawn(Callback, value)
-			end
-			reliable_event_queue[9] = {}
-			return function()
-				reliable_events[9] = nil
-			end
-		end,
-	},
-	UnitAnimationEvent = {
-		SetCallback = function(Callback: (Value: (string), Value2: (string), Value3: ((number)?), Value4: ((number)?), Value5: ((number)?), Value6: ((number)?), Value7: (number)) -> ()): () -> ()
-			reliable_events[8] = Callback
-			for _, value in reliable_event_queue[8] do
-				task.spawn(Callback, unpack(value))
-			end
-			reliable_event_queue[8] = {}
-			return function()
-				reliable_events[8] = nil
-			end
-		end,
-	},
-	UnitAbilityEvent = {
-		SetCallback = function(Callback: (Value: (string), Value2: (number), Value3: (number)) -> ()): () -> ()
-			reliable_events[7] = Callback
-			for _, value in reliable_event_queue[7] do
-				task.spawn(Callback, unpack(value))
-			end
-			reliable_event_queue[7] = {}
-			return function()
-				reliable_events[7] = nil
-			end
-		end,
-	},
-	TradeSync = {
-		SetCallback = function(Callback: (Value: ({ [(number)]: ({
-			["Status"]: ("Trading" | "CanTrade" | "TradeDisabled"),
-		}) })) -> ()): () -> ()
-			reliable_events[6] = Callback
-			for _, value in reliable_event_queue[6] do
-				task.spawn(Callback, value)
-			end
-			reliable_event_queue[6] = {}
-			return function()
-				reliable_events[6] = nil
-			end
-		end,
-	},
-	TradeStart = {
-		SetCallback = function(Callback: (Value: ({
-			["Player1"]: (Player),
-			["Player2"]: (Player),
-		})) -> ()): () -> ()
-			reliable_events[5] = Callback
-			for _, value in reliable_event_queue[5] do
-				task.spawn(Callback, value)
-			end
-			reliable_event_queue[5] = {}
-			return function()
-				reliable_events[5] = nil
-			end
-		end,
-	},
-	TradeRequestServer = {
-		SetCallback = function(Callback: (Value: (Player), Value2: (number)) -> ()): () -> ()
-			reliable_events[4] = Callback
-			for _, value in reliable_event_queue[4] do
-				task.spawn(Callback, unpack(value))
-			end
-			reliable_event_queue[4] = {}
-			return function()
-				reliable_events[4] = nil
-			end
-		end,
-	},
-	TradeRequestClient = {
-		Fire = function(Value: (Player))
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
-			assert(Value:IsA("Player"), "received instance is not of the Player class!")
-			table.insert(outgoing_inst, Value)
-		end,
-	},
-	TradeEnd = {
-		SetCallback = function(Callback: () -> ()): () -> ()
-			reliable_events[3] = Callback
-			for _ = 1, reliable_event_queue[3] do
-				task.spawn(Callback)
-			end
-			reliable_event_queue[3] = 0
-			return function()
-				reliable_events[3] = nil
-			end
-		end,
-	},
-	TradeAccept = {
-		Fire = function(Value: (Player))
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
-			assert(Value:IsA("Player"), "received instance is not of the Player class!")
-			table.insert(outgoing_inst, Value)
-		end,
-	},
-	SpeedRatioEvent = {
-		SetCallback = function(Callback: (Value: (string), Value2: (string), Value3: ({
-			["SpeedRatio"]: (number),
-			["EndTime"]: (number),
-		})) -> ()): () -> ()
 			reliable_events[13] = Callback
 			for _, value in reliable_event_queue[13] do
 				task.spawn(Callback, unpack(value))
@@ -879,19 +750,184 @@ local returns = {
 			end
 		end,
 	},
+	UnitDestroyEvent = {
+		SetCallback = function(Callback: (Value: ({ (string) })) -> ()): () -> ()
+			reliable_events[12] = Callback
+			for _, value in reliable_event_queue[12] do
+				task.spawn(Callback, value)
+			end
+			reliable_event_queue[12] = {}
+			return function()
+				reliable_events[12] = nil
+			end
+		end,
+	},
+	UnitChanged = {
+		Fire = function(Value: ((unknown)), Value2: (Player), Value3: (string))
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
+			if Value == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				table.insert(outgoing_inst, Value)
+			end
+			assert(Value2:IsA("Player"), "received instance is not of the Player class!")
+			table.insert(outgoing_inst, Value2)
+			local len_23 = #Value3
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_23)
+			alloc(len_23)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value3, len_23)
+		end,
+	},
+	UnitAttack = {
+		SetCallback = function(Callback: (Value: ({
+			["UniqueId"]: (string),
+			["Index"]: (number),
+			["EnemyId"]: (string),
+			["Firetime"]: (number),
+			["SpeedRatio"]: (number),
+		})) -> ()): () -> ()
+			reliable_events[11] = Callback
+			for _, value in reliable_event_queue[11] do
+				task.spawn(Callback, value)
+			end
+			reliable_event_queue[11] = {}
+			return function()
+				reliable_events[11] = nil
+			end
+		end,
+	},
+	UnitAnimationEvent = {
+		SetCallback = function(Callback: (Value: (string), Value2: (string), Value3: ((number)?), Value4: ((number)?), Value5: ((number)?), Value6: ((number)?), Value7: (number)) -> ()): () -> ()
+			reliable_events[10] = Callback
+			for _, value in reliable_event_queue[10] do
+				task.spawn(Callback, unpack(value))
+			end
+			reliable_event_queue[10] = {}
+			return function()
+				reliable_events[10] = nil
+			end
+		end,
+	},
+	UnitAbilityEvent = {
+		SetCallback = function(Callback: (Value: (string), Value2: (number), Value3: (number)) -> ()): () -> ()
+			reliable_events[9] = Callback
+			for _, value in reliable_event_queue[9] do
+				task.spawn(Callback, unpack(value))
+			end
+			reliable_event_queue[9] = {}
+			return function()
+				reliable_events[9] = nil
+			end
+		end,
+	},
+	TradeSync = {
+		SetCallback = function(Callback: (Value: ({ [(number)]: ({
+			["Status"]: ("Trading" | "CanTrade" | "TradeDisabled"),
+		}) })) -> ()): () -> ()
+			reliable_events[8] = Callback
+			for _, value in reliable_event_queue[8] do
+				task.spawn(Callback, value)
+			end
+			reliable_event_queue[8] = {}
+			return function()
+				reliable_events[8] = nil
+			end
+		end,
+	},
+	TradeStart = {
+		SetCallback = function(Callback: (Value: ({
+			["Player1"]: (Player),
+			["Player2"]: (Player),
+		})) -> ()): () -> ()
+			reliable_events[7] = Callback
+			for _, value in reliable_event_queue[7] do
+				task.spawn(Callback, value)
+			end
+			reliable_event_queue[7] = {}
+			return function()
+				reliable_events[7] = nil
+			end
+		end,
+	},
+	TradeRequestServer = {
+		SetCallback = function(Callback: (Value: (Player), Value2: (number)) -> ()): () -> ()
+			reliable_events[6] = Callback
+			for _, value in reliable_event_queue[6] do
+				task.spawn(Callback, unpack(value))
+			end
+			reliable_event_queue[6] = {}
+			return function()
+				reliable_events[6] = nil
+			end
+		end,
+	},
+	TradeRequestClient = {
+		Fire = function(Value: (Player))
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
+			assert(Value:IsA("Player"), "received instance is not of the Player class!")
+			table.insert(outgoing_inst, Value)
+		end,
+	},
+	TradeEnd = {
+		SetCallback = function(Callback: () -> ()): () -> ()
+			reliable_events[5] = Callback
+			for _ = 1, reliable_event_queue[5] do
+				task.spawn(Callback)
+			end
+			reliable_event_queue[5] = 0
+			return function()
+				reliable_events[5] = nil
+			end
+		end,
+	},
+	TradeAccept = {
+		Fire = function(Value: (Player))
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
+			assert(Value:IsA("Player"), "received instance is not of the Player class!")
+			table.insert(outgoing_inst, Value)
+		end,
+	},
+	StopAutoRoll = {
+		Fire = function()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
+		end,
+	},
+	SpeedRatioEvent = {
+		SetCallback = function(Callback: (Value: (string), Value2: (string), Value3: ({
+			["SpeedRatio"]: (number),
+			["EndTime"]: (number),
+		})) -> ()): () -> ()
+			reliable_events[15] = Callback
+			for _, value in reliable_event_queue[15] do
+				task.spawn(Callback, unpack(value))
+			end
+			reliable_event_queue[15] = {}
+			return function()
+				reliable_events[15] = nil
+			end
+		end,
+	},
 	SettingSync = {
 		Fire = function(Value: ({ [(string)]: ((unknown)) }))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
 			local len_pos_1 = alloc(2)
-			local len_22 = 0
+			local len_24 = 0
 			for k_1, v_1 in Value do
-				len_22 = len_22 + 1
-				local len_23 = #k_1
+				len_24 = len_24 + 1
+				local len_25 = #k_1
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_23)
-				alloc(len_23)
-				buffer.writestring(outgoing_buff, outgoing_apos, k_1, len_23)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_25)
+				alloc(len_25)
+				buffer.writestring(outgoing_buff, outgoing_apos, k_1, len_25)
 				if v_1 == nil then
 					alloc(1)
 					buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -901,11 +937,38 @@ local returns = {
 					table.insert(outgoing_inst, v_1)
 				end
 			end
-			buffer.writeu16(outgoing_buff, len_pos_1, len_22)
+			buffer.writeu16(outgoing_buff, len_pos_1, len_24)
 		end,
 	},
 	SendSettings = {
 		SetCallback = function(Callback: (Value: ({ ((unknown)) })) -> ()): () -> ()
+			reliable_events[3] = Callback
+			for _, value in reliable_event_queue[3] do
+				task.spawn(Callback, value)
+			end
+			reliable_event_queue[3] = {}
+			return function()
+				reliable_events[3] = nil
+			end
+		end,
+	},
+	SellUnit = {
+		Fire = function(Value: (string))
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
+			local len_26 = #Value
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_26)
+			alloc(len_26)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_26)
+		end,
+	},
+	RollEventServer = {
+		SetCallback = function(Callback: (Value: ({
+			["SentTime"]: (number),
+			["Data"]: ({ (string) }),
+			["AutoRoll"]: (boolean),
+		})) -> ()): () -> ()
 			reliable_events[1] = Callback
 			for _, value in reliable_event_queue[1] do
 				task.spawn(Callback, value)
@@ -916,26 +979,35 @@ local returns = {
 			end
 		end,
 	},
-	SellUnit = {
-		Fire = function(Value: (string))
+	RollEventClient = {
+		Fire = function(Value: (number))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
-			local len_24 = #Value
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_24)
-			alloc(len_24)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_24)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, Value)
+		end,
+	},
+	ProductPurchased = {
+		SetCallback = function(Callback: () -> ()): () -> ()
+			reliable_events[0] = Callback
+			for _ = 1, reliable_event_queue[0] do
+				task.spawn(Callback)
+			end
+			reliable_event_queue[0] = 0
+			return function()
+				reliable_events[0] = nil
+			end
 		end,
 	},
 	ProductChanged = {
 		SetCallback = function(Callback: () -> ()): () -> ()
-			reliable_events[2] = Callback
-			for _ = 1, reliable_event_queue[2] do
+			reliable_events[4] = Callback
+			for _ = 1, reliable_event_queue[4] do
 				task.spawn(Callback)
 			end
-			reliable_event_queue[2] = 0
+			reliable_event_queue[4] = 0
 			return function()
-				reliable_events[2] = nil
+				reliable_events[4] = nil
 			end
 		end,
 	},
@@ -946,12 +1018,12 @@ local returns = {
 			["RotationIndex"]: (number),
 		}))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
-			local len_25 = #Value["Unit"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
+			local len_27 = #Value["Unit"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_25)
-			alloc(len_25)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["Unit"], len_25)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_27)
+			alloc(len_27)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["Unit"], len_27)
 			alloc(4)
 			buffer.writef32(outgoing_buff, outgoing_apos, Value["UnitPosition"].X)
 			alloc(4)
@@ -962,87 +1034,54 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["RotationIndex"])
 		end,
 	},
-	OnEndVote = {
-		SetCallback = function(Callback: (Value: (number)) -> ()): () -> ()
-			reliable_events[16] = Callback
-			for _, value in reliable_event_queue[16] do
-				task.spawn(Callback, value)
-			end
-			reliable_event_queue[16] = {}
-			return function()
-				reliable_events[16] = nil
-			end
-		end,
-	},
-	OnEnd = {
-		SetCallback = function(Callback: (Value: ({
-			["VotedCount"]: (number),
-			["Win"]: (boolean),
-		})) -> ()): () -> ()
-			reliable_events[15] = Callback
-			for _, value in reliable_event_queue[15] do
-				task.spawn(Callback, value)
-			end
-			reliable_event_queue[15] = {}
-			return function()
-				reliable_events[15] = nil
-			end
-		end,
-	},
-	EndVoteAction = {
-		Fire = function()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
-		end,
-	},
 	ChangeUnitPriority = {
 		Fire = function(Value: (string))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
-			local len_26 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
+			local len_28 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_26)
-			alloc(len_26)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_26)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_28)
+			alloc(len_28)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_28)
 		end,
 	},
 	ChangeUnit = {
 		Fire = function(Value: (string), Value2: (string))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
-			local len_27 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
+			local len_29 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_27)
-			alloc(len_27)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_27)
-			local len_28 = #Value2
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_29)
+			alloc(len_29)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_29)
+			local len_30 = #Value2
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_28)
-			alloc(len_28)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_28)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_30)
+			alloc(len_30)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_30)
 		end,
 	},
 	ChangeSettingServer = {
 		SetCallback = function(Callback: (Value: (string), Value2: ((unknown))) -> ()): () -> ()
-			reliable_events[0] = Callback
-			for _, value in reliable_event_queue[0] do
+			reliable_events[2] = Callback
+			for _, value in reliable_event_queue[2] do
 				task.spawn(Callback, unpack(value))
 			end
-			reliable_event_queue[0] = {}
+			reliable_event_queue[2] = {}
 			return function()
-				reliable_events[0] = nil
+				reliable_events[2] = nil
 			end
 		end,
 	},
 	ChangeSettingClient = {
 		Fire = function(Value: (string), Value2: ((unknown)))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-			local len_29 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
+			local len_31 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_29)
-			alloc(len_29)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_29)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_31)
+			alloc(len_31)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_31)
 			if Value2 == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -1056,7 +1095,15 @@ local returns = {
 	ChangeProduct = {
 		Fire = function()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+		end,
+	},
+	AutoRoll = {
+		Fire = function(Value: (boolean))
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, Value and 1 or 0)
 		end,
 	},
 }
