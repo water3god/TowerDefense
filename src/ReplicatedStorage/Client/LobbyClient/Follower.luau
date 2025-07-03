@@ -167,7 +167,7 @@ function Follower.new(Data: Input): Follower
 	end
 
 	self.Trove:BindToRenderStep("Follower" .. self.UniqueId, Enum.RenderPriority.Character.Value, function()
-		if not self.Character.HumanoidRootPart then
+		if not self.Character:FindFirstChild("HumanoidRootPart") then
 			return
 		end
 
