@@ -10,15 +10,16 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local RunService = game:GetService("RunService")
 
-local UnitEvents = ReplicatedStorage.Remotes.Unit
-local AttackEvent = UnitEvents.Attack
-local PlacementEvent = UnitEvents.PlacementEvent
-local DestroyEvent = UnitEvents.DestroyEvent
-local UpgradeEvent = UnitEvents.Upgrade
-local PriorityChanged = UnitEvents.PriorityChanged
-local AbilityEvent = UnitEvents.AbilityEvent
-local AnimationEvent = UnitEvents.AnimationEvent
-local SpeedRatioEvent = UnitEvents.SpeedRatioEvent
+local Network = require(ReplicatedStorage.Network.Server)
+
+local AttackEvent = Network.UnitAttack
+local PlacementEvent = Network.UnitPlacementEvent
+local DestroyEvent = Network.UnitDestroyEvent
+local UpgradeEvent = Network.UnitUpgradeEvent
+local PriorityChanged = Network.UnitPriorityChanged
+local AbilityEvent = Network.UnitAbilityEvent
+local AnimationEvent = Network.UnitAnimationEvent
+local SpeedRatioEvent = Network.SpeedRatioEvent
 
 local Packages = ReplicatedStorage.Packages
 local Trove = require(Packages.Trove)
@@ -206,7 +207,7 @@ local function SendInfo(UnitInput: { [string]: Unit }, PlayerInput: { Player }, 
 		}
 	end
 
-	HelperFunctions.FireClients(PlacementEvent, PlayerInput, Data, New)
+	PlacementEvent.FireList(PlayerInput, Data, New)
 end
 
 local function SyncFuncs(Table: { [number]: any })
@@ -302,7 +303,7 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 	SendInfo({ [self.UniqueId] = self }, self.ReplicateTo, true)
 
 	self.AbilityUsed:Connect(function(Index: number, TimeUsed: number)
-		HelperFunctions.FireClients(AbilityEvent, self.ReplicateTo, self.UniqueId, Index, TimeUsed)
+		AbilityEvent:FireList(self.UniqueId, Index, TimeUsed)
 	end)
 
 	local function OnLevel(Level: number)
@@ -370,9 +371,9 @@ end
 
 function Unit:ChangePriority()
 	self.AttackPriority = UnitInfo.GetNextSortType(self.AttackPriority)
-	HelperFunctions.FireClients(PriorityChanged, self.ReplicateTo, {
+	PriorityChanged.FireList(self.ReplicateTo, {
 		UniqueId = self.UniqueId,
-		Priority = self.AttackPriority,
+		Priority = self.AttackPriority :: any,
 	})
 end
 
@@ -411,7 +412,7 @@ function Unit:Attack()
 		SpeedRatio: number,
 	}
 
-	HelperFunctions.FireClients(AttackEvent, self.ReplicateTo, Data)
+	AttackEvent.FireList(self.ReplicateTo, Data)
 
 	if AttackFuncs then
 		AttackFuncs[self.AttackIndex](self, Damage)
@@ -438,7 +439,7 @@ function Unit:Upgrade()
 		Level = self.Level,
 	}
 
-	HelperFunctions.FireClients(UpgradeEvent, self.ReplicateTo, Data)
+	UpgradeEvent.FireList(self.ReplicateTo, Data)
 end
 
 function Unit:UseAbility(Index: number)
@@ -464,7 +465,7 @@ function Unit:PlayAnimation(
 	FadeTime: number?,
 	Length: number?
 )
-	HelperFunctions.FireClients(AnimationEvent, self.ReplicateTo, {
+	AnimationEvent.FireList(self.ReplicateTo, {
 		UniqueId = self.UniqueId,
 		AnimationName = AnimationName,
 		SecondsAfter = SecondsAfter,
@@ -476,7 +477,7 @@ function Unit:PlayAnimation(
 end
 
 function Unit:StopAnimation(AnimationName: string)
-	HelperFunctions.FireClients(AnimationEvent, self.ReplicateTo, {
+	AnimationEvent.FireList(self.ReplicateTo, {
 		UniqueId = self.UniqueId,
 		AnimationName = AnimationName,
 		SentTime = workspace:GetServerTimeNow(),
@@ -526,7 +527,7 @@ function Unit:ChangeSpeedRatio(Name: string, SpeedRatio: number, Duration: numbe
 	self:CancelPromise(PromiseName)
 	local Data = { SpeedRatio = SpeedRatio, EndTime = workspace:GetServerTimeNow() + Duration }
 	self.SpeedRatioData[Name] = Data
-	HelperFunctions.FireClients(SpeedRatioEvent, self.ReplicateTo, self.UniqueId, Name, Data)
+	SpeedRatioEvent.FireList(self.ReplicateTo, self.UniqueId, Name, Data)
 	self:_CalculateSpeedRatio()
 	self:AddPromise(
 		Promise.delay(Duration):andThen(function()
@@ -596,7 +597,7 @@ end
 
 function Unit:Delete()
 	self.Destroying:Fire()
-	HelperFunctions.FireClients(DestroyEvent, self.ReplicateTo, { self.UniqueId })
+	DestroyEvent.FireList(self.ReplicateTo, { self.UniqueId })
 	Units[self.UniqueId] = nil
 	GenerateId.RemoveId(self.UniqueId)
 	self._Trove:Destroy()
@@ -641,7 +642,7 @@ function Unit.SyncUnits(PlayerList: { Player }, UnitList: { [string]: Unit }, Sp
 		for Id, _ in pairs(UnitList) do
 			table.insert(Data, Id)
 		end
-		HelperFunctions.FireClients(DestroyEvent, PlayerList, Data)
+		DestroyEvent.FireList(PlayerList, Data)
 	end
 end
 

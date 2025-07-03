@@ -5,12 +5,13 @@ local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
-local EnemyEvents = ReplicatedStorage.Remotes.Enemy
-local SpawnEvent = EnemyEvents.SpawnEvent
-local LocationEvent = EnemyEvents.LocationEvent
-local SpeedEvent = EnemyEvents.SpeedEvent
-local HealthEvent = EnemyEvents.HealthEvent
-local DestroyEvent = EnemyEvents.DestroyEvent
+local Network = require(ReplicatedStorage.Network.Server)
+
+local SpawnEvent = Network.EnemySpawnEvent
+local LocationEvent = Network.EnemyLocationEvent
+local SpeedEvent = Network.EnemySpeedEvent
+local HealthEvent = Network.EnemyHealthEvent
+local DestroyEvent = Network.EnemyDestroyEvent
 
 local Modules = ReplicatedStorage.Modules
 local BezierPath = require(Modules.BezierPath)
@@ -44,7 +45,7 @@ local Beziers = Enemy.GetBeziers()
 
 SafePlayerAdded:Connect(function(Player: Player)
 	for UniqueId, Bezier in pairs(Beziers) do
-		LocationEvent:FireAllClients(UniqueId, Bezier.Waypoints)
+		LocationEvent.FireAll(UniqueId, Bezier.Waypoints)
 	end
 
 	local FullEnemyTable = {}
@@ -55,18 +56,18 @@ SafePlayerAdded:Connect(function(Player: Player)
 		FullEnemyTable[self.UniqueId] = Table
 	end
 
-	SpawnEvent:FireClient(Player, FullEnemyTable, false)
+	SpawnEvent.Fire(Player, FullEnemyTable :: any, false)
 end)
 
 Enemy.Spawned:Connect(function(NewEnemy: Enemy.Enemy)
 	local Data = {}
 	AddInfoToSpawn(Data, NewEnemy)
-	HelperFunctions.FireClients(SpawnEvent, NewEnemy.ReplicateTo, { Data }, true)
+	SpawnEvent.FireList(NewEnemy.ReplicateTo, { Data } :: any, true)
 
 	local UniqueId: string = NewEnemy.UniqueId
 
 	NewEnemy.SpeedChanged:Connect(function(Speed: number)
-		HelperFunctions.FireClients(SpeedEvent, NewEnemy.ReplicateTo, {
+		SpeedEvent.FireList(NewEnemy.ReplicateTo, {
 			UniqueId = NewEnemy.UniqueId,
 			Speed = Speed,
 			Time = workspace:GetServerTimeNow(),
@@ -74,7 +75,7 @@ Enemy.Spawned:Connect(function(NewEnemy: Enemy.Enemy)
 	end)
 
 	local function HandleHealth(Health: number, MaxHealth: number)
-		HelperFunctions.FireClients(HealthEvent, NewEnemy.ReplicateTo, NewEnemy.UniqueId, Health, MaxHealth)
+		HealthEvent.FireList(NewEnemy.ReplicateTo, NewEnemy.UniqueId, Health, MaxHealth)
 	end
 
 	NewEnemy.HealthChanged:Connect(function(Health: number)
@@ -86,16 +87,16 @@ Enemy.Spawned:Connect(function(NewEnemy: Enemy.Enemy)
 	end)
 
 	NewEnemy.Destroying:Once(function(Animate: boolean)
-		HelperFunctions.FireClients(DestroyEvent, NewEnemy.ReplicateTo, { UniqueId }, Animate)
+		DestroyEvent.FireList(NewEnemy.ReplicateTo, { UniqueId }, Animate)
 	end)
 end)
 
 Enemy.BezierAdded:Connect(function(Bezier: BezierPath.Path, UniqueId: string)
-	LocationEvent:FireAllClients(UniqueId, Bezier.Waypoints)
+	LocationEvent.FireAll(UniqueId, Bezier.Waypoints)
 end)
 
 Enemy.BezierRemoving:Connect(function(UniqueId: string)
-	LocationEvent:FireAllClients(UniqueId)
+	LocationEvent.FireAll(UniqueId)
 end)
 
 local function CalculateTimePosition(EnemyInput: Enemy.Enemy)

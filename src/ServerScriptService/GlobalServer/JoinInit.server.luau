@@ -12,7 +12,8 @@ if require(ReplicatedStorage.Shared.IsLobby) then
 	return
 end
 
-local StartGame = ReplicatedStorage.Remotes.Waves.Server.StartGame
+local ServerOnly = require(ReplicatedStorage.Network.ServerOnly)
+local StartGame = ServerOnly.StartGame
 
 local Shared = ReplicatedStorage.Shared
 local Constants = require(Shared.Constants)
@@ -104,7 +105,7 @@ local function Init(DataInput: Types.RecieveData?)
 	end
 end
 
-StartGame.Event:Connect(Init)
+StartGame:Connect(Init)
 
 if game["Run Service"]:IsStudio() then
 	local Ids = { 343804839 }

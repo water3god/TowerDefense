@@ -168,7 +168,7 @@ event EnemyLocationEvent = {
 	call: SingleAsync,
 	data: (
 		string,
-		Vector3[],
+		Vector3[]?,
 	),
 }
 

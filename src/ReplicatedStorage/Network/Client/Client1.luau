@@ -195,11 +195,60 @@ local remotes = ReplicatedStorage:WaitForChild("Zap1")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
-export type XP = (number)
+export type Time = (number)
+export type StageData = ({
+	["FastestTime"]: (number),
+	["FinishedCount"]: (number),
+})
+export type Level = (number)
+export type ProductId = (number)
 export type SpeedChangeData = ({
 	["TimeStart"]: (number),
 	["Speed"]: (number),
 	["TimeEnd"]: ((number)?),
+})
+export type ResourceData = ({
+	["Resource"]: (string),
+	["Count"]: (number),
+	["UniqueId"]: (string),
+	["PartialOneLose"]: ((boolean)?),
+})
+export type Item = ("Units" | "Products" | "Resources")
+export type XP = (number)
+export type Health = (number)
+export type BoothData = ({
+	["OwnerId"]: (number),
+	["MapId"]: (string),
+	["LevelId"]: (string),
+	["Difficulty"]: (string),
+	["Players"]: ({ (Player) }),
+	["StartTime"]: (number),
+	["EndTime"]: (number),
+})
+export type SpeedChange = ({
+	["UniqueId"]: (string),
+	["Speed"]: (number),
+	["Time"]: (number),
+})
+export type EnemyInput = ({
+	["UniqueId"]: (string),
+	["ModelName"]: (string),
+	["Health"]: (number),
+	["MaxHealth"]: (number),
+	["Speed"]: (number),
+	["IsBoss"]: (boolean),
+	["Ally"]: (boolean),
+	["OriginalSpeed"]: (number),
+	["VectorOffset"]: (Vector3),
+	["BezierId"]: (string),
+	["TimePosition"]: (number),
+	["Time"]: (number),
+	["AdornmentName"]: ((string)?),
+	["SpeedChanges"]: ({ ({
+		["TimeStart"]: (number),
+		["Speed"]: (number),
+		["TimeEnd"]: ((number)?),
+	}) }),
 })
 export type LevelData = ({
 	["Level"]: (number),
@@ -207,16 +256,12 @@ export type LevelData = ({
 	["NeededXP"]: (number),
 })
 export type Difficulty = ("Normal" | "Hard" | "Insane")
-export type Health = (number)
-export type Item = ("Units" | "Products" | "Resources")
-export type StageData = ({
-	["FastestTime"]: (number),
-	["FinishedCount"]: (number),
-})
-export type SpeedChange = ({
+export type VisualUnitData = ({
+	["Unit"]: (string),
+	["Level"]: (number),
 	["UniqueId"]: (string),
-	["Speed"]: (number),
-	["Time"]: (number),
+	["XP"]: (number),
+	["NeededXP"]: (number),
 })
 export type Inventory = ({
 	["Units"]: ({ [(string)]: ({
@@ -239,57 +284,12 @@ export type Inventory = ({
 		["PartialOneLose"]: ((boolean)?),
 	}) }),
 })
-export type BoothData = ({
-	["OwnerId"]: (number),
-	["MapId"]: (string),
-	["LevelId"]: (string),
-	["Difficulty"]: (string),
-	["Players"]: ({ (Player) }),
-	["StartTime"]: (number),
-	["EndTime"]: (number),
-})
-export type VisualUnitData = ({
-	["Unit"]: (string),
-	["Level"]: (number),
-	["UniqueId"]: (string),
-	["XP"]: (number),
-	["NeededXP"]: (number),
-})
-export type Time = (number)
-export type Level = (number)
 export type ProductData = ({
 	["ProductId"]: (number),
 	["IsGamepass"]: (boolean),
 	["Count"]: (number),
 	["UniqueId"]: (string),
 })
-export type EnemyInput = ({
-	["UniqueId"]: (string),
-	["ModelName"]: (string),
-	["Health"]: (number),
-	["MaxHealth"]: (number),
-	["Speed"]: (number),
-	["IsBoss"]: (boolean),
-	["Ally"]: (boolean),
-	["OriginalSpeed"]: (number),
-	["VectorOffset"]: (Vector3),
-	["BezierId"]: (string),
-	["TimePosition"]: (number),
-	["Time"]: (number),
-	["AdornmentName"]: ((string)?),
-	["SpeedChanges"]: ({ ({
-		["TimeStart"]: (number),
-		["Speed"]: (number),
-		["TimeEnd"]: ((number)?),
-	}) }),
-})
-export type ResourceData = ({
-	["Resource"]: (string),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-	["PartialOneLose"]: ((boolean)?),
-})
-export type ProductId = (number)
 export type TimeData = ({
 	["StartTime"]: (number),
 	["EndTime"]: (number),
@@ -611,12 +611,16 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			local value, value2
 			local len_23 = buffer.readu16(incoming_buff, read(2))
 			value = buffer.readstring(incoming_buff, read(len_23), len_23)
-			value2 = {}
-			local len_24 = buffer.readu16(incoming_buff, read(2))
-			for i_3 = 1, len_24 do
-				local val_10
-				val_10 = Vector3.new(buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)))
-				value2[i_3] = val_10
+			if buffer.readu8(incoming_buff, read(1)) == 1 then
+				value2 = {}
+				local len_24 = buffer.readu16(incoming_buff, read(2))
+				for i_3 = 1, len_24 do
+					local val_10
+					val_10 = Vector3.new(buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)))
+					value2[i_3] = val_10
+				end
+			else
+				value2 = nil
 			end
 			if reliable_events[9] then
 				task.spawn(reliable_events[9], value, value2)
@@ -960,7 +964,7 @@ local returns = {
 		end,
 	},
 	EnemyLocationEvent = {
-		SetCallback = function(Callback: (Value: (string), Value2: ({ (Vector3) })) -> ()): () -> ()
+		SetCallback = function(Callback: (Value: (string), Value2: (({ (Vector3) })?)) -> ()): () -> ()
 			reliable_events[9] = Callback
 			for _, value in reliable_event_queue[9] do
 				task.spawn(Callback, unpack(value))

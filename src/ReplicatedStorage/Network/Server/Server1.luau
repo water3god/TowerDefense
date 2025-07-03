@@ -288,11 +288,60 @@ end
 Players.PlayerRemoving:Connect(function(player)
 	player_map[player] = nil
 end)
-export type XP = (number)
+export type Time = (number)
+export type StageData = ({
+	["FastestTime"]: (number),
+	["FinishedCount"]: (number),
+})
+export type Level = (number)
+export type ProductId = (number)
 export type SpeedChangeData = ({
 	["TimeStart"]: (number),
 	["Speed"]: (number),
 	["TimeEnd"]: ((number)?),
+})
+export type ResourceData = ({
+	["Resource"]: (string),
+	["Count"]: (number),
+	["UniqueId"]: (string),
+	["PartialOneLose"]: ((boolean)?),
+})
+export type Item = ("Units" | "Products" | "Resources")
+export type XP = (number)
+export type Health = (number)
+export type BoothData = ({
+	["OwnerId"]: (number),
+	["MapId"]: (string),
+	["LevelId"]: (string),
+	["Difficulty"]: (string),
+	["Players"]: ({ (Player) }),
+	["StartTime"]: (number),
+	["EndTime"]: (number),
+})
+export type SpeedChange = ({
+	["UniqueId"]: (string),
+	["Speed"]: (number),
+	["Time"]: (number),
+})
+export type EnemyInput = ({
+	["UniqueId"]: (string),
+	["ModelName"]: (string),
+	["Health"]: (number),
+	["MaxHealth"]: (number),
+	["Speed"]: (number),
+	["IsBoss"]: (boolean),
+	["Ally"]: (boolean),
+	["OriginalSpeed"]: (number),
+	["VectorOffset"]: (Vector3),
+	["BezierId"]: (string),
+	["TimePosition"]: (number),
+	["Time"]: (number),
+	["AdornmentName"]: ((string)?),
+	["SpeedChanges"]: ({ ({
+		["TimeStart"]: (number),
+		["Speed"]: (number),
+		["TimeEnd"]: ((number)?),
+	}) }),
 })
 export type LevelData = ({
 	["Level"]: (number),
@@ -300,16 +349,12 @@ export type LevelData = ({
 	["NeededXP"]: (number),
 })
 export type Difficulty = ("Normal" | "Hard" | "Insane")
-export type Health = (number)
-export type Item = ("Units" | "Products" | "Resources")
-export type StageData = ({
-	["FastestTime"]: (number),
-	["FinishedCount"]: (number),
-})
-export type SpeedChange = ({
+export type VisualUnitData = ({
+	["Unit"]: (string),
+	["Level"]: (number),
 	["UniqueId"]: (string),
-	["Speed"]: (number),
-	["Time"]: (number),
+	["XP"]: (number),
+	["NeededXP"]: (number),
 })
 export type Inventory = ({
 	["Units"]: ({ [(string)]: ({
@@ -332,57 +377,12 @@ export type Inventory = ({
 		["PartialOneLose"]: ((boolean)?),
 	}) }),
 })
-export type BoothData = ({
-	["OwnerId"]: (number),
-	["MapId"]: (string),
-	["LevelId"]: (string),
-	["Difficulty"]: (string),
-	["Players"]: ({ (Player) }),
-	["StartTime"]: (number),
-	["EndTime"]: (number),
-})
-export type VisualUnitData = ({
-	["Unit"]: (string),
-	["Level"]: (number),
-	["UniqueId"]: (string),
-	["XP"]: (number),
-	["NeededXP"]: (number),
-})
-export type Time = (number)
-export type Level = (number)
 export type ProductData = ({
 	["ProductId"]: (number),
 	["IsGamepass"]: (boolean),
 	["Count"]: (number),
 	["UniqueId"]: (string),
 })
-export type EnemyInput = ({
-	["UniqueId"]: (string),
-	["ModelName"]: (string),
-	["Health"]: (number),
-	["MaxHealth"]: (number),
-	["Speed"]: (number),
-	["IsBoss"]: (boolean),
-	["Ally"]: (boolean),
-	["OriginalSpeed"]: (number),
-	["VectorOffset"]: (Vector3),
-	["BezierId"]: (string),
-	["TimePosition"]: (number),
-	["Time"]: (number),
-	["AdornmentName"]: ((string)?),
-	["SpeedChanges"]: ({ ({
-		["TimeStart"]: (number),
-		["Speed"]: (number),
-		["TimeEnd"]: ((number)?),
-	}) }),
-})
-export type ResourceData = ({
-	["Resource"]: (string),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-	["PartialOneLose"]: ((boolean)?),
-})
-export type ProductId = (number)
 export type TimeData = ({
 	["StartTime"]: (number),
 	["EndTime"]: (number),
@@ -2754,7 +2754,7 @@ local returns = {
 		end,
 	},
 	EnemyLocationEvent = {
-		Fire = function(Player: Player, Value: (string), Value2: ({ (Vector3) }))
+		Fire = function(Player: Player, Value: (string), Value2: (({ (Vector3) })?))
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
@@ -2763,21 +2763,28 @@ local returns = {
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_152)
 			alloc(len_152)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_152)
-			local len_153 = #Value2
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_153)
-			for i_12 = 1, len_153 do
-				local val_12 = Value2[i_12]
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, val_12.X)
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, val_12.Y)
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, val_12.Z)
+			if Value2 == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				local len_153 = #Value2
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_153)
+				for i_12 = 1, len_153 do
+					local val_12 = Value2[i_12]
+					alloc(4)
+					buffer.writef32(outgoing_buff, outgoing_apos, val_12.X)
+					alloc(4)
+					buffer.writef32(outgoing_buff, outgoing_apos, val_12.Y)
+					alloc(4)
+					buffer.writef32(outgoing_buff, outgoing_apos, val_12.Z)
+				end
 			end
 			player_map[Player] = save()
 		end,
-		FireAll = function(Value: (string), Value2: ({ (Vector3) }))
+		FireAll = function(Value: (string), Value2: (({ (Vector3) })?))
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
@@ -2786,17 +2793,24 @@ local returns = {
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_154)
 			alloc(len_154)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_154)
-			local len_155 = #Value2
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_155)
-			for i_13 = 1, len_155 do
-				local val_13 = Value2[i_13]
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, val_13.X)
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, val_13.Y)
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, val_13.Z)
+			if Value2 == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				local len_155 = #Value2
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_155)
+				for i_13 = 1, len_155 do
+					local val_13 = Value2[i_13]
+					alloc(4)
+					buffer.writef32(outgoing_buff, outgoing_apos, val_13.X)
+					alloc(4)
+					buffer.writef32(outgoing_buff, outgoing_apos, val_13.Y)
+					alloc(4)
+					buffer.writef32(outgoing_buff, outgoing_apos, val_13.Z)
+				end
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
@@ -2807,7 +2821,7 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireExcept = function(Except: Player, Value: (string), Value2: ({ (Vector3) }))
+		FireExcept = function(Except: Player, Value: (string), Value2: (({ (Vector3) })?))
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
@@ -2816,17 +2830,24 @@ local returns = {
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_156)
 			alloc(len_156)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_156)
-			local len_157 = #Value2
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_157)
-			for i_14 = 1, len_157 do
-				local val_14 = Value2[i_14]
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, val_14.X)
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, val_14.Y)
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, val_14.Z)
+			if Value2 == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				local len_157 = #Value2
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_157)
+				for i_14 = 1, len_157 do
+					local val_14 = Value2[i_14]
+					alloc(4)
+					buffer.writef32(outgoing_buff, outgoing_apos, val_14.X)
+					alloc(4)
+					buffer.writef32(outgoing_buff, outgoing_apos, val_14.Y)
+					alloc(4)
+					buffer.writef32(outgoing_buff, outgoing_apos, val_14.Z)
+				end
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
@@ -2839,7 +2860,7 @@ local returns = {
 				end
 			end
 		end,
-		FireList = function(List: { [unknown]: Player }, Value: (string), Value2: ({ (Vector3) }))
+		FireList = function(List: { [unknown]: Player }, Value: (string), Value2: (({ (Vector3) })?))
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
@@ -2848,17 +2869,24 @@ local returns = {
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_158)
 			alloc(len_158)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_158)
-			local len_159 = #Value2
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_159)
-			for i_15 = 1, len_159 do
-				local val_15 = Value2[i_15]
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, val_15.X)
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, val_15.Y)
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, val_15.Z)
+			if Value2 == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				local len_159 = #Value2
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_159)
+				for i_15 = 1, len_159 do
+					local val_15 = Value2[i_15]
+					alloc(4)
+					buffer.writef32(outgoing_buff, outgoing_apos, val_15.X)
+					alloc(4)
+					buffer.writef32(outgoing_buff, outgoing_apos, val_15.Y)
+					alloc(4)
+					buffer.writef32(outgoing_buff, outgoing_apos, val_15.Z)
+				end
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
@@ -2869,7 +2897,7 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireSet = function(Set: { [Player]: any }, Value: (string), Value2: ({ (Vector3) }))
+		FireSet = function(Set: { [Player]: any }, Value: (string), Value2: (({ (Vector3) })?))
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
@@ -2878,17 +2906,24 @@ local returns = {
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_160)
 			alloc(len_160)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_160)
-			local len_161 = #Value2
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_161)
-			for i_16 = 1, len_161 do
-				local val_16 = Value2[i_16]
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, val_16.X)
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, val_16.Y)
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, val_16.Z)
+			if Value2 == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				local len_161 = #Value2
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_161)
+				for i_16 = 1, len_161 do
+					local val_16 = Value2[i_16]
+					alloc(4)
+					buffer.writef32(outgoing_buff, outgoing_apos, val_16.X)
+					alloc(4)
+					buffer.writef32(outgoing_buff, outgoing_apos, val_16.Y)
+					alloc(4)
+					buffer.writef32(outgoing_buff, outgoing_apos, val_16.Z)
+				end
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do

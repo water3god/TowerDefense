@@ -11,9 +11,12 @@ local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 local PlayerGui = Player.PlayerGui
 
-local BoothEvents = ReplicatedStorage.Remotes.Booth
-local TPGuiSet = BoothEvents.ServerFires.TPGuiSet
-local TPGuiSetClient = BoothEvents.ClientOnly.TPGuiSet
+local NetworkFolder = ReplicatedStorage:WaitForChild("Network")
+local Network = require(NetworkFolder:WaitForChild("Client"))
+local ClientOnly = require(NetworkFolder:WaitForChild("ClientOnly"))
+
+local TPGuiSet = Network.TPGuiSet
+local TPGuiSetClient = ClientOnly.TPGuiSet
 
 local LoadingGui = ReplicatedFirst:WaitForChild("LoadingScript"):WaitForChild("LoadingGui")
 
@@ -33,5 +36,5 @@ local function GuiSet(Data: { MapName: string, ImageId: string })
 		:Play()
 end
 
-TPGuiSet.OnClientEvent:Connect(GuiSet)
-TPGuiSetClient.Event:Connect(GuiSet)
+TPGuiSet.SetCallback(GuiSet)
+TPGuiSetClient:Connect(GuiSet)

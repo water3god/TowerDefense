@@ -8,10 +8,11 @@ local Players = game:GetService("Players")
 local Packages = ReplicatedStorage.Packages
 local Trove = require(Packages.Trove)
 
-local VotesEvents = ReplicatedStorage.Remotes.Waves.Votes
-local VoteRequest = VotesEvents.VoteRequest -- Fires from Server --
-local Vote = VotesEvents.Vote -- Fire from Client --
-local PlayerVoted = VotesEvents.PlayerVoted
+local Network = require(ReplicatedStorage.Network.Server)
+
+local VoteRequest = Network.VoteRequest -- Fires from Server --
+local Vote = Network.VoteSkip -- Fire from Client --
+local PlayerVoted = Network.PlayerVoted
 
 local GlobalWave = require(script.Parent)
 
@@ -49,7 +50,7 @@ local function Check(Wave: GlobalWave.GlobalWave)
 		local OldNCount = VoteData.NeededCount
 
 		if CurrentCount ~= OldCCount or NeededCount ~= OldNCount then
-			PlayerVoted:FireAllClients({ CurrentCount = CurrentCount, NeededCount = NeededCount })
+			PlayerVoted.FireAll({ CurrentCount = CurrentCount, NeededCount = NeededCount })
 		end
 
 		VoteData.CurrentCount = CurrentCount
@@ -81,14 +82,14 @@ local function FireClientInfo(Info: { Time: number, StartTime: number })
 	end))
 
 	VoteTrove:Add(function()
-		VoteRequest:FireAllClients(nil)
+		VoteRequest.FireAll(nil)
 		VoteData = nil
 	end)
 
-	VoteRequest:FireAllClients(VoteData)
+	VoteRequest.FireAll(VoteData)
 
 	VoteTrove:Connect(Players.PlayerAdded, function(Player)
-		VoteRequest:FireClient(Player, VoteData)
+		VoteRequest.Fire(Player, VoteData)
 	end)
 end
 
@@ -117,7 +118,7 @@ end
 
 GlobalWave.Added:Connect(OnAdded)
 
-Vote.OnServerEvent:Connect(function(Player: Player)
+Vote.SetCallback(function(Player: Player)
 	if not VoteData then
 		return
 	end
