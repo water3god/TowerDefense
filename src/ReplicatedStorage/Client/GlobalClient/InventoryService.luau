@@ -7,17 +7,15 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Packages = ReplicatedStorage.Packages
 local Signal = require(Packages.Signal)
 
-local Remotes = ReplicatedStorage.Remotes
-local InventoryEvents = Remotes.Inventory
-local InventorySync = InventoryEvents.InventorySync
-local ItemChanged = InventoryEvents.ItemChanged
-local UnitEquipped = InventoryEvents.UnitEquipped
-local EquipUnit = InventoryEvents.EquipUnit
-local Sell = InventoryEvents.Sell
+local Network = require(ReplicatedStorage.Network.Client)
+local InventorySync = Network.InventorySync
+local ItemChanged = Network.ItemChanged
+local UnitEquipped = Network.UnitEquipped
+local EquipUnit = Network.EquipUnit
+local Sell = Network.ItemSell
 
-local LevelEvents = Remotes.Level
-local LevelChangedEvent = LevelEvents.LevelChanged
-local XPChangedEvent = LevelEvents.XPChanged
+local LevelChangedEvent = Network.LevelChanged
+local XPChangedEvent = Network.LevelXPChanged
 
 local Shared = ReplicatedStorage.Shared
 local Types = require(Shared.Types)
@@ -58,7 +56,7 @@ local XPChanged = Signal.new()
 
 local IsSynced = false
 
-ItemChanged.OnClientEvent:Connect(function(Type: string, UniqueId: string, Data: any)
+ItemChanged.SetCallback(function(Type: string, UniqueId: string, Data: any)
 	CurrentInventory[Type][UniqueId] = Data
 	if Type == "Units" then
 		if Data == nil then
@@ -115,32 +113,30 @@ Data.IsSynced = IsSynced
 Data.EquippedUnits = {} :: { string }
 Data.MaxUnitCount = 100
 
-UnitEquipped.OnClientEvent:Connect(function(SentData: { UniqueId: string, Index: number, Equip: boolean })
+UnitEquipped.SetCallback(function(SentData: { UniqueId: string, Index: number, Equip: boolean })
 	Data.EquippedUnits[SentData.Index] = if SentData.Equip then SentData.UniqueId else nil :: any
 	UnitEquipChanged:Fire(SentData)
 end)
 
-InventorySync.OnClientEvent:Connect(
-	function(SentData: any, EquippedUnits: { string }, LevelData: any, MaxUnitCount: number)
-		Data.IsSynced = true
-		CurrentInventory = SentData
-		Data.EquippedUnits = EquippedUnits
+InventorySync.SetCallback(function(SentData: any, EquippedUnits: { string }, LevelData: any, MaxUnitCount: number)
+	Data.IsSynced = true
+	CurrentInventory = SentData
+	Data.EquippedUnits = EquippedUnits
 
-		Data.Level = LevelData.Level
-		Data.XP = LevelData.XP
-		Data.NeededXP = LevelData.NeededXP
+	Data.Level = LevelData.Level
+	Data.XP = LevelData.XP
+	Data.NeededXP = LevelData.NeededXP
 
-		Data.MaxUnitCount = MaxUnitCount
-		Synced:Fire()
-	end
-)
+	Data.MaxUnitCount = MaxUnitCount
+	Synced:Fire()
+end)
 
-LevelChangedEvent.OnClientEvent:Connect(function(Level: number)
+LevelChangedEvent.SetCallback(function(Level: number)
 	Data.Level = Level
 	LevelChanged:Fire(Level)
 end)
 
-XPChangedEvent.OnClientEvent:Connect(function(XP: number)
+XPChangedEvent.SetCallback(function(XP: number)
 	Data.XP = XP
 	XPChanged:Fire(XP)
 end)
@@ -159,19 +155,19 @@ function Data.UnitIsEquipped(UniqueId: string): number?
 end
 
 function Data.EquipUnit(Id: string, Equip: boolean)
-	EquipUnit:FireServer({ UniqueId = Id, Equip = Equip })
+	EquipUnit.Fire({ UniqueId = Id, Equip = Equip })
 end
 
 function Data.SellUnits(Ids: { string })
-	Sell:FireServer("Unit", Ids)
+	Sell.Fire("Unit", Ids)
 end
 
 function Data.SellProducts(Ids: { string })
-	Sell:FireServer("Product", Ids)
+	Sell.Fire("Product", Ids)
 end
 
 function Data.SellResources(Ids: { string })
-	Sell:FireServer("Resource", Ids)
+	Sell.Fire("Resource", Ids)
 end
 
 function Data.RequestForItem(Type: string?)

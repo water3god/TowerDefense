@@ -8,15 +8,14 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local HelperFunctions = require(ReplicatedStorage.Modules.HelperFunctions)
 
-local Remotes = ReplicatedStorage.Remotes
-local WaveEvents = Remotes.Waves
-local HealthChanged = WaveEvents.HealthChanged
-local TimeChanged = WaveEvents.TimeChanged
-local WaveEnded = WaveEvents.WaveEnded
-local Passed = WaveEvents.Passed
-local Added = WaveEvents.Added
-
 local Network = require(ReplicatedStorage.Network.Server)
+
+local HealthChanged = Network.WaveHealthChanged
+local TimeChanged = Network.TimeChanged
+local WaveEnded = Network.WaveEnded
+local Passed = Network.WavePassed
+local Added = Network.WaveAdded
+
 local SendWarning = Network.SendWarning
 
 local GlobalModules = ServerScriptService.GlobalModules
@@ -35,7 +34,7 @@ local function SerializeWave(Wave: GlobalWave.GlobalWave)
 end
 
 local function SendHealthInfo(Wave: GlobalWave.GlobalWave)
-	HealthChanged:FireAllClients({
+	HealthChanged.FireAll({
 		BaseHealth = Wave.BaseHealth,
 		MaxHealth = Wave.MaxHealth,
 	})
@@ -58,17 +57,17 @@ end
 
 local function OnAdded(Wave: GlobalWave.GlobalWave)
 	local SerializedWave = SerializeWave(Wave)
-	Added:FireAllClients(SerializedWave)
+	Added.FireAll(SerializedWave)
 
 	Wave.TimeChanged:Connect(function(Time: number, StartTime: number)
-		TimeChanged:FireAllClients({
+		TimeChanged.FireAll({
 			Time = Time,
 			StartTime = StartTime,
 		})
 	end)
 
 	Wave.Passed:Connect(function()
-		Passed:FireAllClients(Wave.Wave)
+		Passed.FireAll(Wave.Wave)
 		if Wave.Wave ~= 1 then
 			SendWarning.FireAll(
 				string.format("Wave Bonus: %u Coins", Wave.Data.Data[Wave.Wave].CoinBonus),
@@ -148,7 +147,7 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 				OtherSendData.NewXP = PlayerDataModule.Profile.Data.XP
 				OtherSendData.NewLevel = PlayerDataModule.Profile.Data.Level
 
-				WaveEnded:FireClient(Player, Win, SendData, OtherSendData, WavePercentage)
+				WaveEnded.Fire(Player, Win, SendData, OtherSendData, WavePercentage)
 			end
 		end
 	end)
@@ -166,7 +165,7 @@ local function OnPlayerAdded(Player: Player)
 
 	if NewWave then
 		local SerializedWave = SerializeWave(NewWave)
-		Added:FireClient(Player, SerializedWave)
+		Added.Fire(Player, SerializedWave)
 	end
 end
 

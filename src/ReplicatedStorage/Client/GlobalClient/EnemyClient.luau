@@ -5,12 +5,12 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
-local EnemyEvents = ReplicatedStorage.Remotes.Enemy
-local SpawnEvent = EnemyEvents.SpawnEvent
-local SpeedEvent = EnemyEvents.SpeedEvent
-local HealthEvent = EnemyEvents.HealthEvent
-local LocationEvent = EnemyEvents.LocationEvent
-local DestroyEvent = EnemyEvents.DestroyEvent
+local Network = require(ReplicatedStorage.Network.Client)
+local SpawnEvent = Network.EnemySpawnEvent
+local SpeedEvent = Network.EnemySpeedEvent
+local HealthEvent = Network.EnemyHealthEvent
+local LocationEvent = Network.EnemyLocationEvent
+local DestroyEvent = Network.EnemyDestroyEvent
 
 local Packages = ReplicatedStorage.Packages
 local Timer = require(ReplicatedStorage.Packages.Timer)
@@ -240,7 +240,7 @@ function EnemyModule.GetEnemies()
 	return Enemies
 end
 
-LocationEvent.OnClientEvent:Connect(function(UniqueId: string, Waypoints: { Vector3 }?)
+LocationEvent.SetCallback(function(UniqueId: string, Waypoints: { Vector3 }?)
 	if Waypoints then
 		if not Beziers[UniqueId] then
 			Beziers[UniqueId] = BezierPath.new(Waypoints, Constants.BEZIERCURVE)
@@ -252,7 +252,7 @@ LocationEvent.OnClientEvent:Connect(function(UniqueId: string, Waypoints: { Vect
 	end
 end)
 
-SpawnEvent.OnClientEvent:Connect(function(Data: { [string]: Types.EnemyInput }, SpectateFire: boolean)
+SpawnEvent.SetCallback(function(Data: { [string]: Types.EnemyInput }, SpectateFire: boolean)
 	for _, EnemyInput in pairs(Data) do
 		if not Enemies[EnemyInput.UniqueId] then
 			NewEnemy(EnemyInput, SpectateFire)
@@ -264,7 +264,7 @@ SpawnEvent.OnClientEvent:Connect(function(Data: { [string]: Types.EnemyInput }, 
 	end
 end)
 
-SpeedEvent.OnClientEvent:Connect(function(Data: { UniqueId: string, Speed: number, Time: number })
+SpeedEvent.SetCallback(function(Data: { UniqueId: string, Speed: number, Time: number })
 	local Enemy = Enemies[Data.UniqueId]
 
 	if Enemy then
@@ -278,7 +278,7 @@ SpeedEvent.OnClientEvent:Connect(function(Data: { UniqueId: string, Speed: numbe
 	end
 end)
 
-HealthEvent.OnClientEvent:Connect(function(UniqueId: string, Health: number, MaxHealth: number)
+HealthEvent.SetCallback(function(UniqueId: string, Health: number, MaxHealth: number)
 	local Enemy = Enemies[UniqueId]
 
 	if Enemy then
@@ -294,7 +294,7 @@ HealthEvent.OnClientEvent:Connect(function(UniqueId: string, Health: number, Max
 	end
 end)
 
-DestroyEvent.OnClientEvent:Connect(function(UniqueIds: { string }, Animate: boolean)
+DestroyEvent.SetCallback(function(UniqueIds: { string }, Animate: boolean)
 	for _, Id in ipairs(UniqueIds) do
 		local Enemy = Enemies[Id]
 		if Enemy then

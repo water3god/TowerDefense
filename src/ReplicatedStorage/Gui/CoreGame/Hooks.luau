@@ -132,14 +132,18 @@ function Hooks.useEventConnection<T...>(
 	end, { event, cachedCallback } :: { unknown })
 end
 
-function Hooks.useZapConnection(callback: () -> () -> (), dependencies: { any })
+function Hooks.useZapConnection(
+	Event: { SetCallback: (...any) -> (...any) -> () },
+	Callback: (...any) -> (),
+	dependencies: { any }
+)
 	local cachedCallback = React.useMemo(function()
-		return callback
+		return Callback
 	end, dependencies)
 
 	React.useEffect(function()
-		return callback()
-	end, { callback, cachedCallback } :: { unknown })
+		return Event.SetCallback(cachedCallback)
+	end, { Event, cachedCallback } :: { unknown })
 end
 
 --[[export type Client<T...> = { any }

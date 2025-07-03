@@ -32,7 +32,10 @@ event UseProduct = {
 
 type RollData = struct {
 	SentTime: Time,
-	Data: string[],
+	Data: struct {
+		Name: string,
+		Id: string,
+	}[],
 	AutoRoll: boolean,
 }
 
@@ -57,7 +60,13 @@ event RollEventClient = {
 	data: u8,
 }
 
-event StopAutoRoll = {
+event StopAutoRollServer = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+}
+
+event StopAutoRollClient = {
 	from: Client,
 	type: Reliable,
 	call: SingleAsync,
@@ -89,7 +98,7 @@ event SendSettings = {
 	from: Server,
 	type: Reliable,
 	call: SingleAsync,
-	data: unknown[],
+	data: unknown,
 }
 
 event SettingSync = {
@@ -176,12 +185,12 @@ event TradeSync = {
 }
 
 event UnitChanged = {
-	from: Client,
+	from: Server,
 	type: Reliable,
 	call: SingleAsync,
 	data: (
-		unknown,
 		Instance(Player),
+		unknown,
 		string,
 	),
 }
@@ -233,13 +242,16 @@ event UnitAnimationEvent = {
 	type: Reliable,
 	call: SingleAsync,
 	data: (
-		string,
-		string,
-		f32?,
-		f32?,
-		f32?,
-		f32?,
-		f32,
+		struct {
+			UniqueId: string,
+			AnimationName: string,
+			SecondsAfter: f32?,
+			SpeedRatio: f32?,
+			FadeTime: f32?,
+			Length: f32?,
+			SentTime: f32,
+		},
+		boolean,
 	),
 }
 

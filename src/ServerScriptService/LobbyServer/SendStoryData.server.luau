@@ -10,17 +10,16 @@ if not require(ReplicatedStorage.Shared.IsLobby) then
 	return
 end
 
-local Remotes = ReplicatedStorage.Remotes
-local BoothEvents = Remotes.Booth
-local DataEvents = BoothEvents.DataEvents
-local DataSync = DataEvents.DataSync
+local Network = require(ReplicatedStorage.Network.Server)
+
+local DataSync = Network.StoryDataSync
 
 local GlobalModules = ServerScriptService.GlobalModules
 local PlayerData = require(GlobalModules.PlayerData)
 
 local function HandleData(Data: PlayerData.PlayerData)
 	local function SendData()
-		DataSync:FireClient(Data.Player, Data.Profile.Data.CompletedMaps)
+		DataSync.Fire(Data.Player, Data.Profile.Data.CompletedMaps)
 	end
 
 	SendData()

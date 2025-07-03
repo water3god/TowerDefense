@@ -14,19 +14,19 @@ local Signal = require(Packages.Signal)
 
 local Types = require(ReplicatedStorage.Shared.Types)
 
-local Remotes = ReplicatedStorage.Remotes
-local TradeEvents = Remotes.Trade
+local Network = require(ReplicatedStorage.Network.Client)
 
-local ChangeProduct = TradeEvents.ChangeProduct
-local ChangeUnit = TradeEvents.ChangeUnit
-local TradeAccept = TradeEvents.TradeAccept
-local TradeEnd = TradeEvents.TradeEnd
-local TradeRequest = TradeEvents.TradeRequest
-local TradeStart = TradeEvents.TradeStart
-local TradeSync = TradeEvents.TradeSync
+local ChangeProduct = Network.ChangeProduct
+local ChangeUnit = Network.ChangeUnit
+local TradeAccept = Network.TradeAccept
+local TradeEnd = Network.TradeEnd
+local TradeRequestClient = Network.TradeRequestClient
+local TradeRequestServer = Network.TradeRequestServer
+local TradeStart = Network.TradeStart
+local TradeSync = Network.TradeSync
 
-local UnitChanged = TradeEvents.UnitChanged
-local ProductChanged = TradeEvents.ProductChanged
+local UnitChanged = Network.UnitChanged
+local ProductChanged = Network.ProductChanged
 
 local Data = {}
 
@@ -57,11 +57,11 @@ export type VisualUnitData = Types.VisualUnitData
 export type TradeStatusMessage = Types.TradeStatusMessage
 
 function Data.SendTradeRequest(PlayerInput: Player)
-	TradeRequest:FireServer(PlayerInput)
+	TradeRequestClient.Fire(PlayerInput)
 end
 
 function Data.AcceptTrade(PlayerInput: Player)
-	TradeAccept:FireServer(PlayerInput)
+	TradeAccept.Fire(PlayerInput)
 end
 
 function Data.GetTradeData()
@@ -69,22 +69,22 @@ function Data.GetTradeData()
 end
 
 function Data.AddUnit(UniqueId: string)
-	ChangeUnit:FireServer(UniqueId, "Add")
+	ChangeUnit.Fire(UniqueId, "Add")
 end
 
 function Data.RemoveUnit(UniqueId: string)
-	ChangeUnit:FireServer(UniqueId, "Remove")
+	ChangeUnit.Fire(UniqueId, "Remove")
 end
 
 function Data.AddProduct()
-	ChangeProduct:FireServer()
+	ChangeProduct.Fire()
 end
 
 function Data.RemoveProduct()
-	ChangeProduct:FireServer()
+	ChangeProduct.Fire()
 end
 
-TradeStart.OnClientEvent:Connect(function(PlayerData: { Player1: Player, Player2: Player })
+TradeStart.SetCallback(function(PlayerData: { Player1: Player, Player2: Player })
 	CurrentTradeData = {
 		OtherPlayer = if Player == PlayerData.Player1 then PlayerData.Player1 else PlayerData.Player2,
 		YourUnits = {},
@@ -97,12 +97,12 @@ TradeStart.OnClientEvent:Connect(function(PlayerData: { Player1: Player, Player2
 	Data.NewTrade:Fire(CurrentTradeData)
 end)
 
-TradeEnd.OnClientEvent:Connect(function()
+TradeEnd.SetCallback(function()
 	CurrentTradeData = nil
 	Data.Ended:Fire()
 end)
 
-TradeSync.OnClientEvent:Connect(function(SentData: { [number]: { Status: Types.TradeStatusMessage } })
+TradeSync.SetCallback(function(SentData: { [number]: { Status: Types.TradeStatusMessage } })
 	for UserId, DataSent in pairs(SentData) do
 		if tonumber(UserId) == Player.UserId then
 			continue
@@ -120,7 +120,7 @@ TradeSync.OnClientEvent:Connect(function(SentData: { [number]: { Status: Types.T
 	end
 end)
 
-UnitChanged.OnClientEvent:Connect(function(SentData: any, OtherPlayer: Player, OtherStatus: string)
+UnitChanged.SetCallback(function(OtherPlayer: Player, SentData: any, OtherStatus: string)
 	if not OtherPlayer then
 		return
 	end
@@ -148,9 +148,9 @@ UnitChanged.OnClientEvent:Connect(function(SentData: any, OtherPlayer: Player, O
 	end
 end)
 
-ProductChanged.OnClientEvent:Connect(function() end)
+ProductChanged.SetCallback(function() end)
 
-TradeRequest.OnClientEvent:Connect(function(OtherPlayer: Player, Time: number)
+TradeRequestServer.SetCallback(function(OtherPlayer: Player, Time: number)
 	Data.TradeRequests[OtherPlayer] = Time
 	Data.NewTradeRequest:Fire(OtherPlayer, Time)
 

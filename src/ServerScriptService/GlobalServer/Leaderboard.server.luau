@@ -17,19 +17,19 @@ local GlobalModules = ServerScriptService.GlobalModules
 local PlayerData = require(GlobalModules.PlayerData)
 
 SafePlayerAdded:Connect(function(Player: Player)
-	local PlayerData = PlayerData.GetPlayerDataAsync(Player)
+	local Data = PlayerData.GetPlayerDataAsync(Player)
 
-	if PlayerData then
+	if Data then
 		local Leaderstats = Instance.new("Folder")
 		Leaderstats.Name = "leaderstats"
 		Leaderstats.Parent = Player
 
 		local RollCount = Instance.new("IntValue")
 		RollCount.Name = "Roll Count"
-		RollCount.Value = PlayerData.Profile.Data.RollCount
+		RollCount.Value = Data.Profile.Data.RollCount
 		RollCount.Parent = Leaderstats
 
-		PlayerData.Rolled:Connect(function(Value)
+		Data.Rolled:Connect(function(Value)
 			RollCount.Value = Value
 		end)
 	end

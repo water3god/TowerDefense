@@ -12,20 +12,16 @@ end
 local GlobalModules = ServerScriptService.GlobalModules
 local PlayerData = require(GlobalModules.PlayerData)
 
-local Remotes = ReplicatedStorage.Remotes
+local Network = require(ReplicatedStorage.Network.Server)
 
-local InventoryEvents = Remotes.Inventory
-local ItemChanged = InventoryEvents.ItemChanged
-local InventorySync = InventoryEvents.InventorySync
-local UnitEquipped = InventoryEvents.UnitEquipped
-local EquipUnit = InventoryEvents.EquipUnit
-local Sell = InventoryEvents.Sell
+local EquipUnit = Network.EquipUnit
+local Sell = Network.ItemSell
 
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
 local RarityInfo = require(Shared.RarityInfo)
 
-EquipUnit.OnServerEvent:Connect(function(Player: Player, Data: { UniqueId: string, Equip: boolean })
+EquipUnit.SetCallback(function(Player: Player, Data: { UniqueId: string, Equip: boolean })
 	if typeof(Data) ~= "table" then
 		return
 	end
@@ -51,7 +47,7 @@ EquipUnit.OnServerEvent:Connect(function(Player: Player, Data: { UniqueId: strin
 	end
 end)
 
-Sell.OnServerEvent:Connect(function(Player: Player, Type: string, Data: { string })
+Sell.SetCallback(function(Player: Player, Type: string, Data: { string })
 	if typeof(Data) ~= "table" then
 		return
 	end

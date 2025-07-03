@@ -7,9 +7,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local Players = game:GetService("Players")
 
-local Remotes = ReplicatedStorage.Remotes
-local Core = Remotes.Core
-local CurrencyChanged = Core.CurrencyChanged
+local Network = require(ReplicatedStorage.Network.Server)
+local CurrencyChanged = Network.CurrencyChanged
 
 local Shared = ReplicatedStorage.Shared
 local IsLobby = require(Shared.IsLobby)
@@ -24,10 +23,10 @@ local SafePlayerAdded = require(SafePlayer.SafePlayerAdded)
 
 if IsLobby then
 	local function HandlePlayerData(Data: PlayerData.PlayerData)
-		CurrencyChanged:FireClient(Data.Player, Data.Profile.Data.Gold)
+		CurrencyChanged.Fire(Data.Player, Data.Profile.Data.Gold)
 
 		Data.GoldChanged:Connect(function(Gold: number)
-			CurrencyChanged:FireClient(Data.Player, Gold)
+			CurrencyChanged.Fire(Data.Player, Gold)
 		end)
 	end
 
@@ -37,25 +36,25 @@ if IsLobby then
 
 	PlayerData.DataAdded:Connect(HandlePlayerData)
 else
-	local function SendPlayerData(GlobalWave: GlobalWave.GlobalWave, Player: Player)
-		local CoinCount = GlobalWave.Coins[Player.UserId]
+	local function SendPlayerData(Wave: GlobalWave.GlobalWave, Player: Player)
+		local CoinCount = Wave.Coins[Player.UserId]
 		if CoinCount then
-			CurrencyChanged:FireClient(Player, CoinCount)
+			CurrencyChanged.Fire(Player, CoinCount)
 		end
 	end
 
-	local function OnGlobalWave(GlobalWave: GlobalWave.GlobalWave)
+	local function OnGlobalWave(Wave: GlobalWave.GlobalWave)
 		for _, Player in ipairs(Players:GetPlayers()) do
-			if GlobalWave.Coins[Player.UserId] then
-				SendPlayerData(GlobalWave, Player)
+			if Wave.Coins[Player.UserId] then
+				SendPlayerData(Wave, Player)
 			end
 		end
 
-		GlobalWave.CoinsChanged:Connect(function(UserId: number, Coins: number)
+		Wave.CoinsChanged:Connect(function(UserId: number, Coins: number)
 			local Player = Players:GetPlayerByUserId(UserId)
 
 			if Player then
-				CurrencyChanged:FireClient(Player, Coins)
+				CurrencyChanged.Fire(Player, Coins)
 			end
 		end)
 	end
@@ -69,10 +68,10 @@ else
 	GlobalWave.Added:Connect(OnGlobalWave)
 
 	SafePlayerAdded:Connect(function(Player: Player)
-		local Wave = GlobalWave.GetWave()
+		local OtherWave = GlobalWave.GetWave()
 
-		if Wave and Wave.Coins[Player.UserId] then
-			CurrencyChanged:FireClient(Player, Wave.Coins[Player.UserId])
+		if OtherWave and OtherWave.Coins[Player.UserId] then
+			CurrencyChanged.Fire(Player, OtherWave.Coins[Player.UserId])
 		end
 	end, true)
 end

@@ -7,11 +7,11 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Packages = ReplicatedStorage.Packages
 local Signal = require(Packages.Signal)
 
-local Remotes = ReplicatedStorage.Remotes
-local SettingsEvents = Remotes.Settings
-local ChangeSetting = SettingsEvents.ChangeSetting
-local SettingSync = SettingsEvents.SettingSync
-local SendSettings = SettingsEvents.SendSettings
+local Network = require(ReplicatedStorage.Network.Client)
+local ChangeSettingClient = Network.ChangeSettingClient
+local ChangeSettingServer = Network.ChangeSettingServer
+local SettingSync = Network.SettingSync
+local SendSettings = Network.SendSettings
 
 local Shared = ReplicatedStorage.Shared
 local SettingsData = require(Shared.Settings)
@@ -61,7 +61,7 @@ function SettingService.ChangeSetting(Setting: string, Value: any)
 	if SettingChangedSignals[Setting] then
 		SettingChangedSignals[Setting]:Fire(Value)
 	end
-	ChangeSetting:FireServer(Setting, Value)
+	ChangeSettingClient.Fire(Setting, Value)
 end
 
 function SettingService.ChangeSettingClient(Setting: string, Value: any)
@@ -80,7 +80,7 @@ function SettingService.SyncSetting(Setting: string)
 		if not SettingService.IsSynced then
 			SettingService.Synced:Wait()
 		end
-		ChangeSetting:FireServer(Setting, PlayerSettings[Setting])
+		ChangeSettingClient.Fire(Setting, PlayerSettings[Setting])
 	end)
 end
 
@@ -90,10 +90,10 @@ function SettingService.SyncSettings()
 		SentData[Setting] = PlayerSettings[Setting]
 	end
 
-	SettingSync:FireServer(SentData)
+	SettingSync.Fire(SentData)
 end
 
-ChangeSetting.OnClientEvent:Connect(function(Setting: string, Value: any)
+ChangeSettingServer.SetCallback(function(Setting: string, Value: any)
 	local Index = table.find(SettingCache, Setting)
 	if Index then
 		table.remove(SettingCache, Index)
@@ -105,7 +105,7 @@ ChangeSetting.OnClientEvent:Connect(function(Setting: string, Value: any)
 	PlayerSettings[Setting] = Value
 end)
 
-SendSettings.OnClientEvent:Connect(function(Settings: any)
+SendSettings.SetCallback(function(Settings: any)
 	PlayerSettings = Settings
 	SettingService.IsSynced = true
 

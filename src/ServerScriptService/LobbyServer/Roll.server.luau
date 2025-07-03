@@ -14,12 +14,12 @@ local Modules = ReplicatedStorage.Modules
 local RandomGenerate = require(Modules.RandomGenerate)
 local HelperFunctions = require(Modules.HelperFunctions)
 
-local Remotes = ReplicatedStorage.Remotes
-
-local RollEvents = Remotes.Roll
-local AutoRoll = RollEvents.AutoRoll
-local RollEvent = RollEvents.RollEvent
-local StopAutoRoll = RollEvents.StopAutoRoll
+local Network = require(ReplicatedStorage.Network.Server)
+local AutoRoll = Network.AutoRoll
+local RollEventServer = Network.RollEventServer
+local RollEventClient = Network.RollEventClient
+local StopAutoRollServer = Network.StopAutoRollServer
+local StopAutoRollClient = Network.StopAutoRollClient
 
 local Shared = ReplicatedStorage.Shared
 local IsLobby = require(Shared.IsLobby)
@@ -42,7 +42,7 @@ end
 
 local InAutoRolls: { [Player]: boolean } = {}
 
-AutoRoll.OnServerEvent:Connect(function(Player: Player, Enabled: boolean)
+AutoRoll.SetCallback(function(Player: Player, Enabled: boolean)
 	if typeof(Enabled) ~= "boolean" then
 		return
 	end
@@ -71,7 +71,7 @@ local function Roll(Data: PlayerData.PlayerData, Count: number, Auto: boolean)
 	end
 
 	if #SendData > 0 then
-		RollEvent:FireClient(Data.Player, {
+		RollEventServer.Fire(Data.Player, {
 			SentTime = workspace:GetServerTimeNow(),
 			Data = SendData,
 			AutoRoll = Auto,
@@ -123,7 +123,7 @@ local function InitTimer(Data: PlayerData.PlayerData, Count: number)
 		if InAutoRolls[Data.Player] then
 			InAutoRolls[Data.Player] = false
 		end
-		StopAutoRoll:FireClient(Data.Player)
+		StopAutoRollServer.Fire(Data.Player)
 	end)
 
 	TimerTrove:Connect(Data.Player.Destroying, function()
@@ -141,7 +141,7 @@ local function InitTimer(Data: PlayerData.PlayerData, Count: number)
 	return Time
 end
 
-RollEvent.OnServerEvent:Connect(function(Player: Player, Count: number)
+RollEventClient.SetCallback(function(Player: Player, Count: number)
 	if typeof(Count) ~= "number" then
 		return
 	end
@@ -173,11 +173,11 @@ RollEvent.OnServerEvent:Connect(function(Player: Player, Count: number)
 	end
 end)
 
-StopAutoRoll.OnServerEvent:Connect(function(Player)
+StopAutoRollClient.SetCallback(function(Player)
 	if Delays[Player].Timer then
 		Delays[Player].Timer:Destroy()
 		InAutoRolls[Player] = false
-		StopAutoRoll:FireClient(Player)
+		StopAutoRollServer.Fire(Player)
 	end
 end)
 

@@ -113,10 +113,16 @@ event BoothPlayerChanged = {
 }
 -- Enemy --
 
-type SpeedChange = struct {
+type SpeedChangeData = struct {
 	TimeStart: Time,
 	Speed: f64,
 	TimeEnd: Time?,
+}
+
+type SpeedChange = struct {
+	UniqueId: string,
+	Speed: f32,
+	Time: f64,
 }
 
 type EnemyInput = struct {
@@ -133,7 +139,7 @@ type EnemyInput = struct {
 	TimePosition: Time,
 	Time: Time,
 	AdornmentName: string?,
-	SpeedChanges: SpeedChange[],
+	SpeedChanges: SpeedChangeData[],
 }
 
 event EnemyDestroyEvent = {
@@ -171,7 +177,7 @@ event EnemySpawnEvent = {
 	type: Reliable,
 	call: SingleAsync,
 	data: (
-		EnemyInput,
+		map { [string]: EnemyInput },
 		boolean,
 	),
 }
@@ -257,7 +263,10 @@ event ItemSell = {
 	from: Client,
 	type: Reliable,
 	call: SingleAsync,
-	data: string[],
+	data: (
+		string,
+		string[],
+	),
 }
 
 event UnitEquipped = {

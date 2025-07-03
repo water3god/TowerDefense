@@ -11,17 +11,19 @@ if not require(ReplicatedStorage.Shared.IsLobby) then
 	return
 end
 
-local TradeEvents = ReplicatedStorage.Remotes.Trade
-local ChangeProduct = TradeEvents.ChangeProduct
-local ChangeUnit = TradeEvents.ChangeUnit
-local TradeStart = TradeEvents.TradeStart
-local TradeEnd = TradeEvents.TradeEnd
-local TradeRequest = TradeEvents.TradeRequest
-local TradeAccept = TradeEvents.TradeAccept
-local TradeSync = TradeEvents.TradeSync
+local Network = require(ReplicatedStorage.Network.Server)
 
-local UnitChanged = TradeEvents.UnitChanged
-local ProductChanged = TradeEvents.ProductChanged
+local ChangeProduct = Network.ChangeProduct
+local ChangeUnit = Network.ChangeUnit
+local TradeStart = Network.TradeStart
+local TradeEnd = Network.TradeEnd
+local TradeRequestServer = Network.TradeRequestServer
+local TradeRequestClient = Network.TradeRequestClient
+local TradeAccept = Network.TradeAccept
+local TradeSync = Network.TradeSync
+
+local UnitChanged = Network.UnitChanged
+local ProductChanged = Network.ProductChanged
 
 local Packages = ReplicatedStorage.Packages
 local Trove = require(Packages.Trove)
@@ -63,17 +65,17 @@ local function UpdateStatus(TradeDatas: { Player })
 		for _, Player in pairs(TradeDatas) do
 			local Data = PlayerTradeData[Player]
 			SentData[Player.UserId] = {
-				Status = GetStatusFromData(Data),
+				Status = GetStatusFromData(Data) :: Status,
 			}
 		end
 	end
 
 	if HelperFunctions.Len(SentData) ~= 0 then
-		TradeSync:FireAllClients(SentData)
+		TradeSync.FireAll(SentData)
 	end
 end
 
-TradeRequest.OnServerEvent:Connect(function(Player: Player, OtherPlayer: Player)
+TradeRequestClient.SetCallback(function(Player: Player, OtherPlayer: Player)
 	if not OtherPlayer then
 		return
 	end
@@ -90,7 +92,7 @@ TradeRequest.OnServerEvent:Connect(function(Player: Player, OtherPlayer: Player)
 
 	local Time = workspace:GetServerTimeNow()
 
-	TradeRequest:FireClient(OtherPlayer, Player, Time)
+	TradeRequestServer.Fire(OtherPlayer, Player, Time)
 	Data.LastTradedPlayers[Player] = Time
 
 	local thread: thread = nil
@@ -109,7 +111,7 @@ TradeRequest.OnServerEvent:Connect(function(Player: Player, OtherPlayer: Player)
 	Data.Trove:Add(thread)
 end)
 
-TradeAccept.OnServerEvent:Connect(function(Player: Player, OtherPlayer: Player)
+TradeAccept.SetCallback(function(Player: Player, OtherPlayer: Player)
 	if not OtherPlayer:IsA("Player") then
 		return
 	end
@@ -144,12 +146,12 @@ TradeAccept.OnServerEvent:Connect(function(Player: Player, OtherPlayer: Player)
 			Player2 = NewTrade.Player2,
 		}
 
-		TradeStart:FireClient(NewTrade.Player1, SentData)
-		TradeStart:FireClient(NewTrade.Player2, SentData)
+		TradeStart.Fire(NewTrade.Player1, SentData)
+		TradeStart.Fire(NewTrade.Player2, SentData)
 
 		NewTrade.Destroying:Once(function()
-			TradeEnd:FireClient(NewTrade.Player1)
-			TradeEnd:FireClient(NewTrade.Player2)
+			TradeEnd.Fire(NewTrade.Player1)
+			TradeEnd.Fire(NewTrade.Player2)
 			print("Trade Completed")
 			Data.Trade = nil
 
@@ -165,20 +167,20 @@ TradeAccept.OnServerEvent:Connect(function(Player: Player, OtherPlayer: Player)
 				local UnitData = PData:GetUnitFromId(Unit)
 
 				if UnitData then
-					UnitChanged:FireClient(NewTrade.Player1, NewPlayer, UnitData, "Added")
-					UnitChanged:FireClient(NewTrade.Player2, NewPlayer, UnitData, "Added")
+					UnitChanged.Fire(NewTrade.Player1, NewPlayer, UnitData, "Added")
+					UnitChanged.Fire(NewTrade.Player2, NewPlayer, UnitData, "Added")
 				end
 			end
 		end)
 
 		NewTrade.UnitRemoving:Connect(function(Unit: string, NewPlayer: Player)
-			UnitChanged:FireClient(NewTrade.Player1, NewPlayer, Unit, "Removing")
-			UnitChanged:FireClient(NewTrade.Player2, NewPlayer, Unit, "Removing")
+			UnitChanged.Fire(NewTrade.Player1, NewPlayer, Unit, "Removing")
+			UnitChanged.Fire(NewTrade.Player2, NewPlayer, Unit, "Removing")
 		end)
 	end
 end)
 
-ChangeUnit.OnServerEvent:Connect(function(Player: Player, Id: string, Type: string)
+ChangeUnit.SetCallback(function(Player: Player, Id: string, Type: string)
 	if not Player:IsA("Instance") or typeof(Id) ~= "string" or typeof(Type) ~= "string" then
 		return
 	end
@@ -194,7 +196,7 @@ ChangeUnit.OnServerEvent:Connect(function(Player: Player, Id: string, Type: stri
 	end
 end)
 
-ChangeProduct.OnServerEvent:Connect(function(NewPlayer: Player) end)
+ChangeProduct.SetCallback(function(NewPlayer: Player) end)
 
 local function OnDestroying(Player: Player, TradeData: TradeData)
 	for OtherPlayer, OtherData in pairs(PlayerTradeData) do
@@ -239,19 +241,19 @@ local function OnAdded(Data: PlayerData.PlayerData)
 
 	for Player, OtherTradeData in pairs(PlayerTradeData) do
 		SentData[Player.UserId] = {
-			Status = GetStatusFromData(OtherTradeData),
+			Status = GetStatusFromData(OtherTradeData) :: Status,
 		}
 	end
 
-	TradeSync:FireClient(Data.Player, SentData)
+	TradeSync.Fire(Data.Player, SentData)
 
 	local OtherSentData = {
 		[Data.Player.UserId] = {
-			Status = GetStatusFromData(TradeData),
+			Status = GetStatusFromData(TradeData) :: Status,
 		},
 	}
 
-	TradeSync:FireAllClients(OtherSentData)
+	TradeSync.FireAll(OtherSentData)
 end
 
 for _, Data in pairs(PlayerData.GetDatas()) do

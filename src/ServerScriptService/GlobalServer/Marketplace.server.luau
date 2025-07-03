@@ -9,9 +9,8 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
-local Remotes = ReplicatedStorage.Remotes
-local MarketplaceEvents = Remotes.Marketplace
-local UseProduct = MarketplaceEvents.UseProduct
+local Network = require(ReplicatedStorage.Network.Server)
+local UseProduct = Network.UseProduct
 
 local Shared = ReplicatedStorage.Shared
 local ProductInfo = require(Shared.ProductInfo)
@@ -70,7 +69,7 @@ MarketplaceService.ProcessReceipt = function(ReceiptInfo: ReceiptInfo): Enum.Pro
 	return Enum.ProductPurchaseDecision.NotProcessedYet
 end
 
-UseProduct.OnServerEvent:Connect(function(Player: Player, ProductId: number, IsGamepass: boolean)
+UseProduct.SetCallback(function(Player: Player, ProductId: number, IsGamepass: boolean)
 	if typeof(ProductId) ~= "number" or typeof(IsGamepass) ~= "boolean" then
 		return
 	end

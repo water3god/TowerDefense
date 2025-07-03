@@ -157,7 +157,11 @@ if not RunService:IsRunning() then
 			FireSet = noop
 		}),
 		UnitChanged = table.freeze({
-			SetCallback = noop
+			Fire = noop,
+			FireAll = noop,
+			FireExcept = noop,
+			FireList = noop,
+			FireSet = noop
 		}),
 		UnitAttack = table.freeze({
 			Fire = noop,
@@ -214,7 +218,14 @@ if not RunService:IsRunning() then
 		TradeAccept = table.freeze({
 			SetCallback = noop
 		}),
-		StopAutoRoll = table.freeze({
+		StopAutoRollServer = table.freeze({
+			Fire = noop,
+			FireAll = noop,
+			FireExcept = noop,
+			FireList = noop,
+			FireSet = noop
+		}),
+		StopAutoRollClient = table.freeze({
 			SetCallback = noop
 		}),
 		SpeedRatioEvent = table.freeze({
@@ -321,22 +332,7 @@ end
 Players.PlayerRemoving:Connect(function(player)
 	player_map[player] = nil
 end)
-export type AbilityIndex = (number)
-export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
-export type UnitAttackInput = ({
-	["UniqueId"]: (string),
-	["Index"]: (number),
-	["EnemyId"]: (string),
-	["Firetime"]: (number),
-	["SpeedRatio"]: (number),
-})
-export type ProductId = (number)
-export type PlacementData = ({
-	["Unit"]: (string),
-	["UnitPosition"]: (Vector3),
-	["RotationIndex"]: (number),
-})
-export type XP = (number)
+export type SortType = ("First" | "Last" | "Strongest" | "Weakest")
 export type UnitInput = ({
 	["UniqueId"]: (string),
 	["UnitName"]: (string),
@@ -348,16 +344,34 @@ export type UnitInput = ({
 	["SpeedRatio"]: (number),
 	["Abilities"]: ({ (number) }),
 })
-export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
-export type SortType = ("First" | "Last" | "Strongest" | "Weakest")
-export type Level = (number)
-export type Time = (number)
-export type Health = (number)
 export type RollData = ({
 	["SentTime"]: (number),
-	["Data"]: ({ (string) }),
+	["Data"]: ({ ({
+		["Name"]: (string),
+		["Id"]: (string),
+	}) }),
 	["AutoRoll"]: (boolean),
 })
+export type UnitAttackInput = ({
+	["UniqueId"]: (string),
+	["Index"]: (number),
+	["EnemyId"]: (string),
+	["Firetime"]: (number),
+	["SpeedRatio"]: (number),
+})
+export type PlacementData = ({
+	["Unit"]: (string),
+	["UnitPosition"]: (Vector3),
+	["RotationIndex"]: (number),
+})
+export type XP = (number)
+export type ProductId = (number)
+export type AbilityIndex = (number)
+export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
+export type Time = (number)
+export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
+export type Health = (number)
+export type Level = (number)
 
 local function SendEvents()
 	for player, outgoing in player_map do
@@ -377,7 +391,7 @@ end
 
 RunService.Heartbeat:Connect(SendEvents)
 
-local reliable_events = table.create(16)
+local reliable_events = table.create(15)
 reliable.OnServerEvent:Connect(function(player, buff, inst)
 	incoming_buff = buff
 	incoming_inst = inst
@@ -386,13 +400,13 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 	local len = buffer.len(buff)
 	while incoming_read < len do
 		local id = buffer.readu8(buff, read(1))
-		if id == 15 then
+		if id == 14 then
 			local value, value2
 			local len_1 = buffer.readu16(incoming_buff, read(2))
 			value = buffer.readstring(incoming_buff, read(len_1), len_1)
 			value2 = buffer.readu8(incoming_buff, read(1))
-			if reliable_events[15] then
-				task.spawn(reliable_events[15], player, value, value2)
+			if reliable_events[14] then
+				task.spawn(reliable_events[14], player, value, value2)
 			end
 		elseif id == 0 then
 			local value, value2
@@ -401,29 +415,12 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 			if reliable_events[0] then
 				task.spawn(reliable_events[0], player, value, value2)
 			end
-		elseif id == 14 then
+		elseif id == 13 then
 			local value
 			local len_2 = buffer.readu16(incoming_buff, read(2))
 			value = buffer.readstring(incoming_buff, read(len_2), len_2)
-			if reliable_events[14] then
-				task.spawn(reliable_events[14], player, value)
-			end
-		elseif id == 10 then
-			local value, value2, value3
-			if buffer.readu8(incoming_buff, read(1)) == 1 then
-				incoming_ipos = incoming_ipos + 1
-				value = incoming_inst[incoming_ipos]
-			else
-				value = nil
-			end
-			incoming_ipos = incoming_ipos + 1
-			value2 = incoming_inst[incoming_ipos]
-			assert(value2 ~= nil, "received instance is nil!")
-			assert(value2:IsA("Player"), "received instance is not of the Player class!")
-			local len_3 = buffer.readu16(incoming_buff, read(2))
-			value3 = buffer.readstring(incoming_buff, read(len_3), len_3)
-			if reliable_events[10] then
-				task.spawn(reliable_events[10], player, value, value2, value3)
+			if reliable_events[13] then
+				task.spawn(reliable_events[13], player, value)
 			end
 		elseif id == 9 then
 			local value
@@ -454,8 +451,8 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 			for _ = 1, buffer.readu16(incoming_buff, read(2)) do
 				local key_1
 				local val_1
-				local len_4 = buffer.readu16(incoming_buff, read(2))
-				key_1 = buffer.readstring(incoming_buff, read(len_4), len_4)
+				local len_3 = buffer.readu16(incoming_buff, read(2))
+				key_1 = buffer.readstring(incoming_buff, read(len_3), len_3)
 				if buffer.readu8(incoming_buff, read(1)) == 1 then
 					incoming_ipos = incoming_ipos + 1
 					val_1 = incoming_inst[incoming_ipos]
@@ -467,12 +464,12 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 			if reliable_events[5] then
 				task.spawn(reliable_events[5], player, value)
 			end
-		elseif id == 13 then
+		elseif id == 12 then
 			local value
-			local len_5 = buffer.readu16(incoming_buff, read(2))
-			value = buffer.readstring(incoming_buff, read(len_5), len_5)
-			if reliable_events[13] then
-				task.spawn(reliable_events[13], player, value)
+			local len_4 = buffer.readu16(incoming_buff, read(2))
+			value = buffer.readstring(incoming_buff, read(len_4), len_4)
+			if reliable_events[12] then
+				task.spawn(reliable_events[12], player, value)
 			end
 		elseif id == 2 then
 			local value
@@ -480,36 +477,36 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 			if reliable_events[2] then
 				task.spawn(reliable_events[2], player, value)
 			end
-		elseif id == 12 then
-			local value
-			value = {}
-			local len_6 = buffer.readu16(incoming_buff, read(2))
-			value["Unit"] = buffer.readstring(incoming_buff, read(len_6), len_6)
-			value["UnitPosition"] = Vector3.new(buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)))
-			value["RotationIndex"] = buffer.readu8(incoming_buff, read(1))
-			if reliable_events[12] then
-				task.spawn(reliable_events[12], player, value)
-			end
 		elseif id == 11 then
 			local value
-			local len_7 = buffer.readu16(incoming_buff, read(2))
-			value = buffer.readstring(incoming_buff, read(len_7), len_7)
+			value = {}
+			local len_5 = buffer.readu16(incoming_buff, read(2))
+			value["Unit"] = buffer.readstring(incoming_buff, read(len_5), len_5)
+			value["UnitPosition"] = Vector3.new(buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)))
+			value["RotationIndex"] = buffer.readu8(incoming_buff, read(1))
 			if reliable_events[11] then
 				task.spawn(reliable_events[11], player, value)
 			end
+		elseif id == 10 then
+			local value
+			local len_6 = buffer.readu16(incoming_buff, read(2))
+			value = buffer.readstring(incoming_buff, read(len_6), len_6)
+			if reliable_events[10] then
+				task.spawn(reliable_events[10], player, value)
+			end
 		elseif id == 7 then
 			local value, value2
+			local len_7 = buffer.readu16(incoming_buff, read(2))
+			value = buffer.readstring(incoming_buff, read(len_7), len_7)
 			local len_8 = buffer.readu16(incoming_buff, read(2))
-			value = buffer.readstring(incoming_buff, read(len_8), len_8)
-			local len_9 = buffer.readu16(incoming_buff, read(2))
-			value2 = buffer.readstring(incoming_buff, read(len_9), len_9)
+			value2 = buffer.readstring(incoming_buff, read(len_8), len_8)
 			if reliable_events[7] then
 				task.spawn(reliable_events[7], player, value, value2)
 			end
 		elseif id == 4 then
 			local value, value2
-			local len_10 = buffer.readu16(incoming_buff, read(2))
-			value = buffer.readstring(incoming_buff, read(len_10), len_10)
+			local len_9 = buffer.readu16(incoming_buff, read(2))
+			value = buffer.readstring(incoming_buff, read(len_9), len_9)
 			if buffer.readu8(incoming_buff, read(1)) == 1 then
 				incoming_ipos = incoming_ipos + 1
 				value2 = incoming_inst[incoming_ipos]
@@ -542,9 +539,9 @@ local returns = {
 	SendEvents = SendEvents,
 	UseUnitAbility = {
 		SetCallback = function(Callback: (Player: Player, Value: (string), Value2: (number)) -> ()): () -> ()
-			reliable_events[15] = Callback
+			reliable_events[14] = Callback
 			return function()
-				reliable_events[15] = nil
+				reliable_events[14] = nil
 			end
 		end,
 	},
@@ -558,9 +555,9 @@ local returns = {
 	},
 	UpgradeUnit = {
 		SetCallback = function(Callback: (Player: Player, Value: (string)) -> ()): () -> ()
-			reliable_events[14] = Callback
+			reliable_events[13] = Callback
 			return function()
-				reliable_events[14] = nil
+				reliable_events[13] = nil
 			end
 		end,
 	},
@@ -571,12 +568,12 @@ local returns = {
 		}))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 16)
-			local len_11 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 18)
+			local len_10 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_11)
-			alloc(len_11)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_11)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_10)
+			alloc(len_10)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_10)
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value["Level"])
 			player_map[Player] = save()
@@ -587,12 +584,12 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 16)
-			local len_12 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 18)
+			local len_11 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_12)
-			alloc(len_12)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_12)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_11)
+			alloc(len_11)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_11)
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value["Level"])
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -610,12 +607,12 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 16)
-			local len_13 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 18)
+			local len_12 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_13)
-			alloc(len_13)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_13)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_12)
+			alloc(len_12)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_12)
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value["Level"])
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -635,12 +632,12 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 16)
-			local len_14 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 18)
+			local len_13 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_14)
-			alloc(len_14)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_14)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_13)
+			alloc(len_13)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_13)
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value["Level"])
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -658,12 +655,12 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 16)
-			local len_15 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 18)
+			local len_14 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_15)
-			alloc(len_15)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_15)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_14)
+			alloc(len_14)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_14)
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value["Level"])
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -683,12 +680,12 @@ local returns = {
 		}))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
-			local len_16 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 16)
+			local len_15 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_16)
-			alloc(len_16)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_16)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_15)
+			alloc(len_15)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_15)
 			if Value["Priority"] == "First" then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -712,7 +709,43 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 16)
+			local len_16 = #Value["UniqueId"]
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_16)
+			alloc(len_16)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_16)
+			if Value["Priority"] == "First" then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			elseif Value["Priority"] == "Last" then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+			elseif Value["Priority"] == "Strongest" then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 2)
+			elseif Value["Priority"] == "Weakest" then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 3)
+			else
+				error("Invalid enumerator")
+			end
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in Players:GetPlayers() do
+				load_player(player)
+				alloc(used)
+				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+				player_map[player] = save()
+			end
+		end,
+		FireExcept = function(Except: Player, Value: ({
+			["UniqueId"]: (string),
+			["Priority"]: ("First" | "Last" | "Strongest" | "Weakest"),
+		}))
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 16)
 			local len_17 = #Value["UniqueId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_17)
@@ -735,42 +768,6 @@ local returns = {
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
-				load_player(player)
-				alloc(used)
-				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
-				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
-				player_map[player] = save()
-			end
-		end,
-		FireExcept = function(Except: Player, Value: ({
-			["UniqueId"]: (string),
-			["Priority"]: ("First" | "Last" | "Strongest" | "Weakest"),
-		}))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
-			local len_18 = #Value["UniqueId"]
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_18)
-			alloc(len_18)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_18)
-			if Value["Priority"] == "First" then
-				alloc(1)
-				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-			elseif Value["Priority"] == "Last" then
-				alloc(1)
-				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-			elseif Value["Priority"] == "Strongest" then
-				alloc(1)
-				buffer.writeu8(outgoing_buff, outgoing_apos, 2)
-			elseif Value["Priority"] == "Weakest" then
-				alloc(1)
-				buffer.writeu8(outgoing_buff, outgoing_apos, 3)
-			else
-				error("Invalid enumerator")
-			end
-			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
-			for _, player in Players:GetPlayers() do
 				if player ~= Except then
 					load_player(player)
 					alloc(used)
@@ -786,12 +783,12 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
-			local len_19 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 16)
+			local len_18 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_19)
-			alloc(len_19)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_19)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_18)
+			alloc(len_18)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_18)
 			if Value["Priority"] == "First" then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -822,12 +819,12 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
-			local len_20 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 16)
+			local len_19 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_20)
-			alloc(len_20)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_20)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_19)
+			alloc(len_19)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_19)
 			if Value["Priority"] == "First" then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -867,26 +864,26 @@ local returns = {
 		}) }), Value2: (boolean))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
 			local len_pos_1 = alloc(2)
-			local len_21 = 0
+			local len_20 = 0
 			for k_1, v_1 in Value do
-				len_21 = len_21 + 1
-				local len_22 = #k_1
+				len_20 = len_20 + 1
+				local len_21 = #k_1
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_21)
+				alloc(len_21)
+				buffer.writestring(outgoing_buff, outgoing_apos, k_1, len_21)
+				local len_22 = #v_1["UniqueId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_22)
 				alloc(len_22)
-				buffer.writestring(outgoing_buff, outgoing_apos, k_1, len_22)
-				local len_23 = #v_1["UniqueId"]
+				buffer.writestring(outgoing_buff, outgoing_apos, v_1["UniqueId"], len_22)
+				local len_23 = #v_1["UnitName"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_23)
 				alloc(len_23)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_1["UniqueId"], len_23)
-				local len_24 = #v_1["UnitName"]
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_24)
-				alloc(len_24)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_1["UnitName"], len_24)
+				buffer.writestring(outgoing_buff, outgoing_apos, v_1["UnitName"], len_23)
 				local axis_1, angle_1 = v_1["CFrame"]:ToAxisAngle()
 				axis_1 = axis_1 * angle_1
 				alloc(4)
@@ -910,27 +907,27 @@ local returns = {
 					alloc(8)
 					buffer.writef64(outgoing_buff, outgoing_apos, v_1["OwnerId"])
 				end
-				local len_25 = #v_1["AttackPriority"]
+				local len_24 = #v_1["AttackPriority"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_25)
-				alloc(len_25)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_1["AttackPriority"], len_25)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_24)
+				alloc(len_24)
+				buffer.writestring(outgoing_buff, outgoing_apos, v_1["AttackPriority"], len_24)
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, v_1["Level"])
 				alloc(4)
 				buffer.writef32(outgoing_buff, outgoing_apos, v_1["CollisionRadius"])
 				alloc(4)
 				buffer.writef32(outgoing_buff, outgoing_apos, v_1["SpeedRatio"])
-				local len_26 = #v_1["Abilities"]
+				local len_25 = #v_1["Abilities"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_26)
-				for i_1 = 1, len_26 do
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_25)
+				for i_1 = 1, len_25 do
 					local val_2 = v_1["Abilities"][i_1]
 					alloc(8)
 					buffer.writef64(outgoing_buff, outgoing_apos, val_2)
 				end
 			end
-			buffer.writeu16(outgoing_buff, len_pos_1, len_21)
+			buffer.writeu16(outgoing_buff, len_pos_1, len_20)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value2 and 1 or 0)
 			player_map[Player] = save()
@@ -948,26 +945,26 @@ local returns = {
 		}) }), Value2: (boolean))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
 			local len_pos_2 = alloc(2)
-			local len_27 = 0
+			local len_26 = 0
 			for k_2, v_2 in Value do
-				len_27 = len_27 + 1
-				local len_28 = #k_2
+				len_26 = len_26 + 1
+				local len_27 = #k_2
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_27)
+				alloc(len_27)
+				buffer.writestring(outgoing_buff, outgoing_apos, k_2, len_27)
+				local len_28 = #v_2["UniqueId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_28)
 				alloc(len_28)
-				buffer.writestring(outgoing_buff, outgoing_apos, k_2, len_28)
-				local len_29 = #v_2["UniqueId"]
+				buffer.writestring(outgoing_buff, outgoing_apos, v_2["UniqueId"], len_28)
+				local len_29 = #v_2["UnitName"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_29)
 				alloc(len_29)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_2["UniqueId"], len_29)
-				local len_30 = #v_2["UnitName"]
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_30)
-				alloc(len_30)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_2["UnitName"], len_30)
+				buffer.writestring(outgoing_buff, outgoing_apos, v_2["UnitName"], len_29)
 				local axis_2, angle_2 = v_2["CFrame"]:ToAxisAngle()
 				axis_2 = axis_2 * angle_2
 				alloc(4)
@@ -991,27 +988,27 @@ local returns = {
 					alloc(8)
 					buffer.writef64(outgoing_buff, outgoing_apos, v_2["OwnerId"])
 				end
-				local len_31 = #v_2["AttackPriority"]
+				local len_30 = #v_2["AttackPriority"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_31)
-				alloc(len_31)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_2["AttackPriority"], len_31)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_30)
+				alloc(len_30)
+				buffer.writestring(outgoing_buff, outgoing_apos, v_2["AttackPriority"], len_30)
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, v_2["Level"])
 				alloc(4)
 				buffer.writef32(outgoing_buff, outgoing_apos, v_2["CollisionRadius"])
 				alloc(4)
 				buffer.writef32(outgoing_buff, outgoing_apos, v_2["SpeedRatio"])
-				local len_32 = #v_2["Abilities"]
+				local len_31 = #v_2["Abilities"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_32)
-				for i_2 = 1, len_32 do
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_31)
+				for i_2 = 1, len_31 do
 					local val_3 = v_2["Abilities"][i_2]
 					alloc(8)
 					buffer.writef64(outgoing_buff, outgoing_apos, val_3)
 				end
 			end
-			buffer.writeu16(outgoing_buff, len_pos_2, len_27)
+			buffer.writeu16(outgoing_buff, len_pos_2, len_26)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value2 and 1 or 0)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -1036,26 +1033,26 @@ local returns = {
 		}) }), Value2: (boolean))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
 			local len_pos_3 = alloc(2)
-			local len_33 = 0
+			local len_32 = 0
 			for k_3, v_3 in Value do
-				len_33 = len_33 + 1
-				local len_34 = #k_3
+				len_32 = len_32 + 1
+				local len_33 = #k_3
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_33)
+				alloc(len_33)
+				buffer.writestring(outgoing_buff, outgoing_apos, k_3, len_33)
+				local len_34 = #v_3["UniqueId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_34)
 				alloc(len_34)
-				buffer.writestring(outgoing_buff, outgoing_apos, k_3, len_34)
-				local len_35 = #v_3["UniqueId"]
+				buffer.writestring(outgoing_buff, outgoing_apos, v_3["UniqueId"], len_34)
+				local len_35 = #v_3["UnitName"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_35)
 				alloc(len_35)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_3["UniqueId"], len_35)
-				local len_36 = #v_3["UnitName"]
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_36)
-				alloc(len_36)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_3["UnitName"], len_36)
+				buffer.writestring(outgoing_buff, outgoing_apos, v_3["UnitName"], len_35)
 				local axis_3, angle_3 = v_3["CFrame"]:ToAxisAngle()
 				axis_3 = axis_3 * angle_3
 				alloc(4)
@@ -1079,27 +1076,27 @@ local returns = {
 					alloc(8)
 					buffer.writef64(outgoing_buff, outgoing_apos, v_3["OwnerId"])
 				end
-				local len_37 = #v_3["AttackPriority"]
+				local len_36 = #v_3["AttackPriority"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_37)
-				alloc(len_37)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_3["AttackPriority"], len_37)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_36)
+				alloc(len_36)
+				buffer.writestring(outgoing_buff, outgoing_apos, v_3["AttackPriority"], len_36)
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, v_3["Level"])
 				alloc(4)
 				buffer.writef32(outgoing_buff, outgoing_apos, v_3["CollisionRadius"])
 				alloc(4)
 				buffer.writef32(outgoing_buff, outgoing_apos, v_3["SpeedRatio"])
-				local len_38 = #v_3["Abilities"]
+				local len_37 = #v_3["Abilities"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_38)
-				for i_3 = 1, len_38 do
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_37)
+				for i_3 = 1, len_37 do
 					local val_4 = v_3["Abilities"][i_3]
 					alloc(8)
 					buffer.writef64(outgoing_buff, outgoing_apos, val_4)
 				end
 			end
-			buffer.writeu16(outgoing_buff, len_pos_3, len_33)
+			buffer.writeu16(outgoing_buff, len_pos_3, len_32)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value2 and 1 or 0)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -1126,26 +1123,26 @@ local returns = {
 		}) }), Value2: (boolean))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
 			local len_pos_4 = alloc(2)
-			local len_39 = 0
+			local len_38 = 0
 			for k_4, v_4 in Value do
-				len_39 = len_39 + 1
-				local len_40 = #k_4
+				len_38 = len_38 + 1
+				local len_39 = #k_4
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_39)
+				alloc(len_39)
+				buffer.writestring(outgoing_buff, outgoing_apos, k_4, len_39)
+				local len_40 = #v_4["UniqueId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_40)
 				alloc(len_40)
-				buffer.writestring(outgoing_buff, outgoing_apos, k_4, len_40)
-				local len_41 = #v_4["UniqueId"]
+				buffer.writestring(outgoing_buff, outgoing_apos, v_4["UniqueId"], len_40)
+				local len_41 = #v_4["UnitName"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_41)
 				alloc(len_41)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_4["UniqueId"], len_41)
-				local len_42 = #v_4["UnitName"]
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_42)
-				alloc(len_42)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_4["UnitName"], len_42)
+				buffer.writestring(outgoing_buff, outgoing_apos, v_4["UnitName"], len_41)
 				local axis_4, angle_4 = v_4["CFrame"]:ToAxisAngle()
 				axis_4 = axis_4 * angle_4
 				alloc(4)
@@ -1169,27 +1166,27 @@ local returns = {
 					alloc(8)
 					buffer.writef64(outgoing_buff, outgoing_apos, v_4["OwnerId"])
 				end
-				local len_43 = #v_4["AttackPriority"]
+				local len_42 = #v_4["AttackPriority"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_43)
-				alloc(len_43)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_4["AttackPriority"], len_43)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_42)
+				alloc(len_42)
+				buffer.writestring(outgoing_buff, outgoing_apos, v_4["AttackPriority"], len_42)
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, v_4["Level"])
 				alloc(4)
 				buffer.writef32(outgoing_buff, outgoing_apos, v_4["CollisionRadius"])
 				alloc(4)
 				buffer.writef32(outgoing_buff, outgoing_apos, v_4["SpeedRatio"])
-				local len_44 = #v_4["Abilities"]
+				local len_43 = #v_4["Abilities"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_44)
-				for i_4 = 1, len_44 do
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_43)
+				for i_4 = 1, len_43 do
 					local val_5 = v_4["Abilities"][i_4]
 					alloc(8)
 					buffer.writef64(outgoing_buff, outgoing_apos, val_5)
 				end
 			end
-			buffer.writeu16(outgoing_buff, len_pos_4, len_39)
+			buffer.writeu16(outgoing_buff, len_pos_4, len_38)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value2 and 1 or 0)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -1214,26 +1211,26 @@ local returns = {
 		}) }), Value2: (boolean))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
 			local len_pos_5 = alloc(2)
-			local len_45 = 0
+			local len_44 = 0
 			for k_5, v_5 in Value do
-				len_45 = len_45 + 1
-				local len_46 = #k_5
+				len_44 = len_44 + 1
+				local len_45 = #k_5
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_45)
+				alloc(len_45)
+				buffer.writestring(outgoing_buff, outgoing_apos, k_5, len_45)
+				local len_46 = #v_5["UniqueId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_46)
 				alloc(len_46)
-				buffer.writestring(outgoing_buff, outgoing_apos, k_5, len_46)
-				local len_47 = #v_5["UniqueId"]
+				buffer.writestring(outgoing_buff, outgoing_apos, v_5["UniqueId"], len_46)
+				local len_47 = #v_5["UnitName"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_47)
 				alloc(len_47)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_5["UniqueId"], len_47)
-				local len_48 = #v_5["UnitName"]
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_48)
-				alloc(len_48)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_5["UnitName"], len_48)
+				buffer.writestring(outgoing_buff, outgoing_apos, v_5["UnitName"], len_47)
 				local axis_5, angle_5 = v_5["CFrame"]:ToAxisAngle()
 				axis_5 = axis_5 * angle_5
 				alloc(4)
@@ -1257,27 +1254,27 @@ local returns = {
 					alloc(8)
 					buffer.writef64(outgoing_buff, outgoing_apos, v_5["OwnerId"])
 				end
-				local len_49 = #v_5["AttackPriority"]
+				local len_48 = #v_5["AttackPriority"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_49)
-				alloc(len_49)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_5["AttackPriority"], len_49)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_48)
+				alloc(len_48)
+				buffer.writestring(outgoing_buff, outgoing_apos, v_5["AttackPriority"], len_48)
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, v_5["Level"])
 				alloc(4)
 				buffer.writef32(outgoing_buff, outgoing_apos, v_5["CollisionRadius"])
 				alloc(4)
 				buffer.writef32(outgoing_buff, outgoing_apos, v_5["SpeedRatio"])
-				local len_50 = #v_5["Abilities"]
+				local len_49 = #v_5["Abilities"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_50)
-				for i_5 = 1, len_50 do
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_49)
+				for i_5 = 1, len_49 do
 					local val_6 = v_5["Abilities"][i_5]
 					alloc(8)
 					buffer.writef64(outgoing_buff, outgoing_apos, val_6)
 				end
 			end
-			buffer.writeu16(outgoing_buff, len_pos_5, len_45)
+			buffer.writeu16(outgoing_buff, len_pos_5, len_44)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value2 and 1 or 0)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -1294,34 +1291,34 @@ local returns = {
 		Fire = function(Player: Player, Value: ({ (string) }))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
-			local len_51 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
+			local len_50 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_51)
-			for i_6 = 1, len_51 do
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_50)
+			for i_6 = 1, len_50 do
 				local val_7 = Value[i_6]
-				local len_52 = #val_7
+				local len_51 = #val_7
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_52)
-				alloc(len_52)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_7, len_52)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_51)
+				alloc(len_51)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_7, len_51)
 			end
 			player_map[Player] = save()
 		end,
 		FireAll = function(Value: ({ (string) }))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
-			local len_53 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
+			local len_52 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_53)
-			for i_7 = 1, len_53 do
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_52)
+			for i_7 = 1, len_52 do
 				local val_8 = Value[i_7]
-				local len_54 = #val_8
+				local len_53 = #val_8
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_54)
-				alloc(len_54)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_8, len_54)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_53)
+				alloc(len_53)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_8, len_53)
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
@@ -1335,17 +1332,17 @@ local returns = {
 		FireExcept = function(Except: Player, Value: ({ (string) }))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
-			local len_55 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
+			local len_54 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_55)
-			for i_8 = 1, len_55 do
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_54)
+			for i_8 = 1, len_54 do
 				local val_9 = Value[i_8]
-				local len_56 = #val_9
+				local len_55 = #val_9
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_56)
-				alloc(len_56)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_9, len_56)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_55)
+				alloc(len_55)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_9, len_55)
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
@@ -1361,17 +1358,17 @@ local returns = {
 		FireList = function(List: { [unknown]: Player }, Value: ({ (string) }))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
-			local len_57 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
+			local len_56 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_57)
-			for i_9 = 1, len_57 do
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_56)
+			for i_9 = 1, len_56 do
 				local val_10 = Value[i_9]
-				local len_58 = #val_10
+				local len_57 = #val_10
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_58)
-				alloc(len_58)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_10, len_58)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_57)
+				alloc(len_57)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_10, len_57)
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
@@ -1385,17 +1382,17 @@ local returns = {
 		FireSet = function(Set: { [Player]: any }, Value: ({ (string) }))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
-			local len_59 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
+			local len_58 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_59)
-			for i_10 = 1, len_59 do
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_58)
+			for i_10 = 1, len_58 do
 				local val_11 = Value[i_10]
-				local len_60 = #val_11
+				local len_59 = #val_11
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_60)
-				alloc(len_60)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_11, len_60)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_59)
+				alloc(len_59)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_11, len_59)
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
@@ -1408,10 +1405,139 @@ local returns = {
 		end,
 	},
 	UnitChanged = {
-		SetCallback = function(Callback: (Player: Player, Value: ((unknown)), Value2: (Player), Value3: (string)) -> ()): () -> ()
-			reliable_events[10] = Callback
-			return function()
-				reliable_events[10] = nil
+		Fire = function(Player: Player, Value: (Player), Value2: ((unknown)), Value3: (string))
+			load_player(Player)
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
+			assert(Value:IsA("Player"), "received instance is not of the Player class!")
+			table.insert(outgoing_inst, Value)
+			if Value2 == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				table.insert(outgoing_inst, Value2)
+			end
+			local len_60 = #Value3
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_60)
+			alloc(len_60)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value3, len_60)
+			player_map[Player] = save()
+		end,
+		FireAll = function(Value: (Player), Value2: ((unknown)), Value3: (string))
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
+			assert(Value:IsA("Player"), "received instance is not of the Player class!")
+			table.insert(outgoing_inst, Value)
+			if Value2 == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				table.insert(outgoing_inst, Value2)
+			end
+			local len_61 = #Value3
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_61)
+			alloc(len_61)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value3, len_61)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in Players:GetPlayers() do
+				load_player(player)
+				alloc(used)
+				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+				player_map[player] = save()
+			end
+		end,
+		FireExcept = function(Except: Player, Value: (Player), Value2: ((unknown)), Value3: (string))
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
+			assert(Value:IsA("Player"), "received instance is not of the Player class!")
+			table.insert(outgoing_inst, Value)
+			if Value2 == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				table.insert(outgoing_inst, Value2)
+			end
+			local len_62 = #Value3
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_62)
+			alloc(len_62)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value3, len_62)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in Players:GetPlayers() do
+				if player ~= Except then
+					load_player(player)
+					alloc(used)
+					buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+					table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+					player_map[player] = save()
+				end
+			end
+		end,
+		FireList = function(List: { [unknown]: Player }, Value: (Player), Value2: ((unknown)), Value3: (string))
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
+			assert(Value:IsA("Player"), "received instance is not of the Player class!")
+			table.insert(outgoing_inst, Value)
+			if Value2 == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				table.insert(outgoing_inst, Value2)
+			end
+			local len_63 = #Value3
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_63)
+			alloc(len_63)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value3, len_63)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in List do
+				load_player(player)
+				alloc(used)
+				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+				player_map[player] = save()
+			end
+		end,
+		FireSet = function(Set: { [Player]: any }, Value: (Player), Value2: ((unknown)), Value3: (string))
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
+			assert(Value:IsA("Player"), "received instance is not of the Player class!")
+			table.insert(outgoing_inst, Value)
+			if Value2 == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				table.insert(outgoing_inst, Value2)
+			end
+			local len_64 = #Value3
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_64)
+			alloc(len_64)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value3, len_64)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for player in Set do
+				load_player(player)
+				alloc(used)
+				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+				player_map[player] = save()
 			end
 		end,
 	},
@@ -1425,19 +1551,19 @@ local returns = {
 		}))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
-			local len_61 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
+			local len_65 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_61)
-			alloc(len_61)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_61)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_65)
+			alloc(len_65)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_65)
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value["Index"])
-			local len_62 = #Value["EnemyId"]
+			local len_66 = #Value["EnemyId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_62)
-			alloc(len_62)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["EnemyId"], len_62)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_66)
+			alloc(len_66)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["EnemyId"], len_66)
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value["Firetime"])
 			alloc(4)
@@ -1453,19 +1579,19 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
-			local len_63 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
+			local len_67 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_63)
-			alloc(len_63)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_63)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_67)
+			alloc(len_67)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_67)
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value["Index"])
-			local len_64 = #Value["EnemyId"]
+			local len_68 = #Value["EnemyId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_64)
-			alloc(len_64)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["EnemyId"], len_64)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_68)
+			alloc(len_68)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["EnemyId"], len_68)
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value["Firetime"])
 			alloc(4)
@@ -1488,19 +1614,19 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
-			local len_65 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
+			local len_69 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_65)
-			alloc(len_65)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_65)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_69)
+			alloc(len_69)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_69)
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value["Index"])
-			local len_66 = #Value["EnemyId"]
+			local len_70 = #Value["EnemyId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_66)
-			alloc(len_66)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["EnemyId"], len_66)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_70)
+			alloc(len_70)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["EnemyId"], len_70)
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value["Firetime"])
 			alloc(4)
@@ -1525,19 +1651,19 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
-			local len_67 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
+			local len_71 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_67)
-			alloc(len_67)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_67)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_71)
+			alloc(len_71)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_71)
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value["Index"])
-			local len_68 = #Value["EnemyId"]
+			local len_72 = #Value["EnemyId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_68)
-			alloc(len_68)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["EnemyId"], len_68)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_72)
+			alloc(len_72)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["EnemyId"], len_72)
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value["Firetime"])
 			alloc(4)
@@ -1560,19 +1686,19 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
-			local len_69 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
+			local len_73 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_69)
-			alloc(len_69)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_69)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_73)
+			alloc(len_73)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_73)
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value["Index"])
-			local len_70 = #Value["EnemyId"]
+			local len_74 = #Value["EnemyId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_70)
-			alloc(len_70)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["EnemyId"], len_70)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_74)
+			alloc(len_74)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["EnemyId"], len_74)
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value["Firetime"])
 			alloc(4)
@@ -1588,112 +1714,132 @@ local returns = {
 		end,
 	},
 	UnitAnimationEvent = {
-		Fire = function(Player: Player, Value: (string), Value2: (string), Value3: ((number)?), Value4: ((number)?), Value5: ((number)?), Value6: ((number)?), Value7: (number))
+		Fire = function(Player: Player, Value: ({
+			["UniqueId"]: (string),
+			["AnimationName"]: (string),
+			["SecondsAfter"]: ((number)?),
+			["SpeedRatio"]: ((number)?),
+			["FadeTime"]: ((number)?),
+			["Length"]: ((number)?),
+			["SentTime"]: (number),
+		}), Value2: (boolean))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
-			local len_71 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
+			local len_75 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_71)
-			alloc(len_71)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_71)
-			local len_72 = #Value2
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_75)
+			alloc(len_75)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_75)
+			local len_76 = #Value["AnimationName"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_72)
-			alloc(len_72)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_72)
-			if Value3 == nil then
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_76)
+			alloc(len_76)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["AnimationName"], len_76)
+			if Value["SecondsAfter"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value3)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["SecondsAfter"])
 			end
-			if Value4 == nil then
+			if Value["SpeedRatio"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value4)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["SpeedRatio"])
 			end
-			if Value5 == nil then
+			if Value["FadeTime"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value5)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["FadeTime"])
 			end
-			if Value6 == nil then
+			if Value["Length"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value6)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["Length"])
 			end
 			alloc(4)
-			buffer.writef32(outgoing_buff, outgoing_apos, Value7)
+			buffer.writef32(outgoing_buff, outgoing_apos, Value["SentTime"])
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, Value2 and 1 or 0)
 			player_map[Player] = save()
 		end,
-		FireAll = function(Value: (string), Value2: (string), Value3: ((number)?), Value4: ((number)?), Value5: ((number)?), Value6: ((number)?), Value7: (number))
+		FireAll = function(Value: ({
+			["UniqueId"]: (string),
+			["AnimationName"]: (string),
+			["SecondsAfter"]: ((number)?),
+			["SpeedRatio"]: ((number)?),
+			["FadeTime"]: ((number)?),
+			["Length"]: ((number)?),
+			["SentTime"]: (number),
+		}), Value2: (boolean))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
-			local len_73 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
+			local len_77 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_73)
-			alloc(len_73)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_73)
-			local len_74 = #Value2
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_77)
+			alloc(len_77)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_77)
+			local len_78 = #Value["AnimationName"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_74)
-			alloc(len_74)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_74)
-			if Value3 == nil then
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_78)
+			alloc(len_78)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["AnimationName"], len_78)
+			if Value["SecondsAfter"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value3)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["SecondsAfter"])
 			end
-			if Value4 == nil then
+			if Value["SpeedRatio"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value4)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["SpeedRatio"])
 			end
-			if Value5 == nil then
+			if Value["FadeTime"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value5)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["FadeTime"])
 			end
-			if Value6 == nil then
+			if Value["Length"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value6)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["Length"])
 			end
 			alloc(4)
-			buffer.writef32(outgoing_buff, outgoing_apos, Value7)
+			buffer.writef32(outgoing_buff, outgoing_apos, Value["SentTime"])
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, Value2 and 1 or 0)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				load_player(player)
@@ -1703,58 +1849,68 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireExcept = function(Except: Player, Value: (string), Value2: (string), Value3: ((number)?), Value4: ((number)?), Value5: ((number)?), Value6: ((number)?), Value7: (number))
+		FireExcept = function(Except: Player, Value: ({
+			["UniqueId"]: (string),
+			["AnimationName"]: (string),
+			["SecondsAfter"]: ((number)?),
+			["SpeedRatio"]: ((number)?),
+			["FadeTime"]: ((number)?),
+			["Length"]: ((number)?),
+			["SentTime"]: (number),
+		}), Value2: (boolean))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
-			local len_75 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
+			local len_79 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_75)
-			alloc(len_75)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_75)
-			local len_76 = #Value2
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_79)
+			alloc(len_79)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_79)
+			local len_80 = #Value["AnimationName"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_76)
-			alloc(len_76)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_76)
-			if Value3 == nil then
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_80)
+			alloc(len_80)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["AnimationName"], len_80)
+			if Value["SecondsAfter"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value3)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["SecondsAfter"])
 			end
-			if Value4 == nil then
+			if Value["SpeedRatio"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value4)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["SpeedRatio"])
 			end
-			if Value5 == nil then
+			if Value["FadeTime"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value5)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["FadeTime"])
 			end
-			if Value6 == nil then
+			if Value["Length"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value6)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["Length"])
 			end
 			alloc(4)
-			buffer.writef32(outgoing_buff, outgoing_apos, Value7)
+			buffer.writef32(outgoing_buff, outgoing_apos, Value["SentTime"])
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, Value2 and 1 or 0)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -1766,58 +1922,68 @@ local returns = {
 				end
 			end
 		end,
-		FireList = function(List: { [unknown]: Player }, Value: (string), Value2: (string), Value3: ((number)?), Value4: ((number)?), Value5: ((number)?), Value6: ((number)?), Value7: (number))
+		FireList = function(List: { [unknown]: Player }, Value: ({
+			["UniqueId"]: (string),
+			["AnimationName"]: (string),
+			["SecondsAfter"]: ((number)?),
+			["SpeedRatio"]: ((number)?),
+			["FadeTime"]: ((number)?),
+			["Length"]: ((number)?),
+			["SentTime"]: (number),
+		}), Value2: (boolean))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
-			local len_77 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
+			local len_81 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_77)
-			alloc(len_77)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_77)
-			local len_78 = #Value2
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_81)
+			alloc(len_81)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_81)
+			local len_82 = #Value["AnimationName"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_78)
-			alloc(len_78)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_78)
-			if Value3 == nil then
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_82)
+			alloc(len_82)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["AnimationName"], len_82)
+			if Value["SecondsAfter"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value3)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["SecondsAfter"])
 			end
-			if Value4 == nil then
+			if Value["SpeedRatio"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value4)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["SpeedRatio"])
 			end
-			if Value5 == nil then
+			if Value["FadeTime"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value5)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["FadeTime"])
 			end
-			if Value6 == nil then
+			if Value["Length"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value6)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["Length"])
 			end
 			alloc(4)
-			buffer.writef32(outgoing_buff, outgoing_apos, Value7)
+			buffer.writef32(outgoing_buff, outgoing_apos, Value["SentTime"])
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, Value2 and 1 or 0)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -1827,58 +1993,68 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireSet = function(Set: { [Player]: any }, Value: (string), Value2: (string), Value3: ((number)?), Value4: ((number)?), Value5: ((number)?), Value6: ((number)?), Value7: (number))
+		FireSet = function(Set: { [Player]: any }, Value: ({
+			["UniqueId"]: (string),
+			["AnimationName"]: (string),
+			["SecondsAfter"]: ((number)?),
+			["SpeedRatio"]: ((number)?),
+			["FadeTime"]: ((number)?),
+			["Length"]: ((number)?),
+			["SentTime"]: (number),
+		}), Value2: (boolean))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
-			local len_79 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
+			local len_83 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_79)
-			alloc(len_79)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_79)
-			local len_80 = #Value2
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_83)
+			alloc(len_83)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_83)
+			local len_84 = #Value["AnimationName"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_80)
-			alloc(len_80)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_80)
-			if Value3 == nil then
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_84)
+			alloc(len_84)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["AnimationName"], len_84)
+			if Value["SecondsAfter"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value3)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["SecondsAfter"])
 			end
-			if Value4 == nil then
+			if Value["SpeedRatio"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value4)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["SpeedRatio"])
 			end
-			if Value5 == nil then
+			if Value["FadeTime"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value5)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["FadeTime"])
 			end
-			if Value6 == nil then
+			if Value["Length"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value6)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["Length"])
 			end
 			alloc(4)
-			buffer.writef32(outgoing_buff, outgoing_apos, Value7)
+			buffer.writef32(outgoing_buff, outgoing_apos, Value["SentTime"])
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, Value2 and 1 or 0)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -1893,12 +2069,12 @@ local returns = {
 		Fire = function(Player: Player, Value: (string), Value2: (number), Value3: (number))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
-			local len_81 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
+			local len_85 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_81)
-			alloc(len_81)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_81)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_85)
+			alloc(len_85)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_85)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value2)
 			alloc(8)
@@ -1908,12 +2084,12 @@ local returns = {
 		FireAll = function(Value: (string), Value2: (number), Value3: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
-			local len_82 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
+			local len_86 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_82)
-			alloc(len_82)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_82)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_86)
+			alloc(len_86)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_86)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value2)
 			alloc(8)
@@ -1930,12 +2106,12 @@ local returns = {
 		FireExcept = function(Except: Player, Value: (string), Value2: (number), Value3: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
-			local len_83 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
+			local len_87 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_83)
-			alloc(len_83)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_83)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_87)
+			alloc(len_87)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_87)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value2)
 			alloc(8)
@@ -1954,12 +2130,12 @@ local returns = {
 		FireList = function(List: { [unknown]: Player }, Value: (string), Value2: (number), Value3: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
-			local len_84 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
+			local len_88 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_84)
-			alloc(len_84)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_84)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_88)
+			alloc(len_88)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_88)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value2)
 			alloc(8)
@@ -1976,12 +2152,12 @@ local returns = {
 		FireSet = function(Set: { [Player]: any }, Value: (string), Value2: (number), Value3: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
-			local len_85 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
+			local len_89 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_85)
-			alloc(len_85)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_85)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_89)
+			alloc(len_89)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_89)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value2)
 			alloc(8)
@@ -2002,11 +2178,11 @@ local returns = {
 		}) }))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
 			local len_pos_6 = alloc(2)
-			local len_86 = 0
+			local len_90 = 0
 			for k_6, v_6 in Value do
-				len_86 = len_86 + 1
+				len_90 = len_90 + 1
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, k_6)
 				if v_6["Status"] == "Trading" then
@@ -2022,7 +2198,7 @@ local returns = {
 					error("Invalid enumerator")
 				end
 			end
-			buffer.writeu16(outgoing_buff, len_pos_6, len_86)
+			buffer.writeu16(outgoing_buff, len_pos_6, len_90)
 			player_map[Player] = save()
 		end,
 		FireAll = function(Value: ({ [(number)]: ({
@@ -2030,11 +2206,11 @@ local returns = {
 		}) }))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
 			local len_pos_7 = alloc(2)
-			local len_87 = 0
+			local len_91 = 0
 			for k_7, v_7 in Value do
-				len_87 = len_87 + 1
+				len_91 = len_91 + 1
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, k_7)
 				if v_7["Status"] == "Trading" then
@@ -2050,7 +2226,7 @@ local returns = {
 					error("Invalid enumerator")
 				end
 			end
-			buffer.writeu16(outgoing_buff, len_pos_7, len_87)
+			buffer.writeu16(outgoing_buff, len_pos_7, len_91)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				load_player(player)
@@ -2065,11 +2241,11 @@ local returns = {
 		}) }))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
 			local len_pos_8 = alloc(2)
-			local len_88 = 0
+			local len_92 = 0
 			for k_8, v_8 in Value do
-				len_88 = len_88 + 1
+				len_92 = len_92 + 1
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, k_8)
 				if v_8["Status"] == "Trading" then
@@ -2085,7 +2261,7 @@ local returns = {
 					error("Invalid enumerator")
 				end
 			end
-			buffer.writeu16(outgoing_buff, len_pos_8, len_88)
+			buffer.writeu16(outgoing_buff, len_pos_8, len_92)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -2102,11 +2278,11 @@ local returns = {
 		}) }))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
 			local len_pos_9 = alloc(2)
-			local len_89 = 0
+			local len_93 = 0
 			for k_9, v_9 in Value do
-				len_89 = len_89 + 1
+				len_93 = len_93 + 1
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, k_9)
 				if v_9["Status"] == "Trading" then
@@ -2122,7 +2298,7 @@ local returns = {
 					error("Invalid enumerator")
 				end
 			end
-			buffer.writeu16(outgoing_buff, len_pos_9, len_89)
+			buffer.writeu16(outgoing_buff, len_pos_9, len_93)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -2137,11 +2313,11 @@ local returns = {
 		}) }))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
 			local len_pos_10 = alloc(2)
-			local len_90 = 0
+			local len_94 = 0
 			for k_10, v_10 in Value do
-				len_90 = len_90 + 1
+				len_94 = len_94 + 1
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, k_10)
 				if v_10["Status"] == "Trading" then
@@ -2157,7 +2333,7 @@ local returns = {
 					error("Invalid enumerator")
 				end
 			end
-			buffer.writeu16(outgoing_buff, len_pos_10, len_90)
+			buffer.writeu16(outgoing_buff, len_pos_10, len_94)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -2175,7 +2351,7 @@ local returns = {
 		}))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
 			assert(Value["Player1"]:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value["Player1"])
 			assert(Value["Player2"]:IsA("Player"), "received instance is not of the Player class!")
@@ -2188,7 +2364,7 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
 			assert(Value["Player1"]:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value["Player1"])
 			assert(Value["Player2"]:IsA("Player"), "received instance is not of the Player class!")
@@ -2208,7 +2384,7 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
 			assert(Value["Player1"]:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value["Player1"])
 			assert(Value["Player2"]:IsA("Player"), "received instance is not of the Player class!")
@@ -2230,7 +2406,7 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
 			assert(Value["Player1"]:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value["Player1"])
 			assert(Value["Player2"]:IsA("Player"), "received instance is not of the Player class!")
@@ -2250,7 +2426,7 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
 			assert(Value["Player1"]:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value["Player1"])
 			assert(Value["Player2"]:IsA("Player"), "received instance is not of the Player class!")
@@ -2269,7 +2445,7 @@ local returns = {
 		Fire = function(Player: Player, Value: (Player), Value2: (number))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
 			assert(Value:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value)
 			alloc(8)
@@ -2279,7 +2455,7 @@ local returns = {
 		FireAll = function(Value: (Player), Value2: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
 			assert(Value:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value)
 			alloc(8)
@@ -2296,7 +2472,7 @@ local returns = {
 		FireExcept = function(Except: Player, Value: (Player), Value2: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
 			assert(Value:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value)
 			alloc(8)
@@ -2315,7 +2491,7 @@ local returns = {
 		FireList = function(List: { [unknown]: Player }, Value: (Player), Value2: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
 			assert(Value:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value)
 			alloc(8)
@@ -2332,7 +2508,7 @@ local returns = {
 		FireSet = function(Set: { [Player]: any }, Value: (Player), Value2: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
 			assert(Value:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value)
 			alloc(8)
@@ -2359,13 +2535,13 @@ local returns = {
 		Fire = function(Player: Player)
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
 			player_map[Player] = save()
 		end,
 		FireAll = function()
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				load_player(player)
@@ -2378,7 +2554,7 @@ local returns = {
 		FireExcept = function(Except: Player)
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -2393,7 +2569,7 @@ local returns = {
 		FireList = function(List: { [unknown]: Player })
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -2406,7 +2582,7 @@ local returns = {
 		FireSet = function(Set: { [Player]: any })
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -2425,7 +2601,69 @@ local returns = {
 			end
 		end,
 	},
-	StopAutoRoll = {
+	StopAutoRollServer = {
+		Fire = function(Player: Player)
+			load_player(Player)
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
+			player_map[Player] = save()
+		end,
+		FireAll = function()
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in Players:GetPlayers() do
+				load_player(player)
+				alloc(used)
+				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+				player_map[player] = save()
+			end
+		end,
+		FireExcept = function(Except: Player)
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in Players:GetPlayers() do
+				if player ~= Except then
+					load_player(player)
+					alloc(used)
+					buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+					table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+					player_map[player] = save()
+				end
+			end
+		end,
+		FireList = function(List: { [unknown]: Player })
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in List do
+				load_player(player)
+				alloc(used)
+				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+				player_map[player] = save()
+			end
+		end,
+		FireSet = function(Set: { [Player]: any })
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for player in Set do
+				load_player(player)
+				alloc(used)
+				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+				player_map[player] = save()
+			end
+		end,
+	},
+	StopAutoRollClient = {
 		SetCallback = function(Callback: (Player: Player) -> ()): () -> ()
 			reliable_events[3] = Callback
 			return function()
@@ -2440,17 +2678,17 @@ local returns = {
 		}))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
-			local len_91 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 17)
+			local len_95 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_91)
-			alloc(len_91)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_91)
-			local len_92 = #Value2
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_95)
+			alloc(len_95)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_95)
+			local len_96 = #Value2
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_92)
-			alloc(len_92)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_92)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_96)
+			alloc(len_96)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_96)
 			alloc(4)
 			buffer.writef32(outgoing_buff, outgoing_apos, Value3["SpeedRatio"])
 			alloc(8)
@@ -2463,17 +2701,17 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
-			local len_93 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 17)
+			local len_97 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_93)
-			alloc(len_93)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_93)
-			local len_94 = #Value2
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_97)
+			alloc(len_97)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_97)
+			local len_98 = #Value2
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_94)
-			alloc(len_94)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_94)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_98)
+			alloc(len_98)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_98)
 			alloc(4)
 			buffer.writef32(outgoing_buff, outgoing_apos, Value3["SpeedRatio"])
 			alloc(8)
@@ -2493,17 +2731,17 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
-			local len_95 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 17)
+			local len_99 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_95)
-			alloc(len_95)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_95)
-			local len_96 = #Value2
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_99)
+			alloc(len_99)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_99)
+			local len_100 = #Value2
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_96)
-			alloc(len_96)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_96)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_100)
+			alloc(len_100)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_100)
 			alloc(4)
 			buffer.writef32(outgoing_buff, outgoing_apos, Value3["SpeedRatio"])
 			alloc(8)
@@ -2525,17 +2763,17 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
-			local len_97 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 17)
+			local len_101 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_97)
-			alloc(len_97)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_97)
-			local len_98 = #Value2
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_101)
+			alloc(len_101)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_101)
+			local len_102 = #Value2
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_98)
-			alloc(len_98)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_98)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_102)
+			alloc(len_102)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_102)
 			alloc(4)
 			buffer.writef32(outgoing_buff, outgoing_apos, Value3["SpeedRatio"])
 			alloc(8)
@@ -2555,17 +2793,17 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
-			local len_99 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 17)
+			local len_103 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_99)
-			alloc(len_99)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_99)
-			local len_100 = #Value2
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_103)
+			alloc(len_103)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_103)
+			local len_104 = #Value2
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_100)
-			alloc(len_100)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_100)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_104)
+			alloc(len_104)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_104)
 			alloc(4)
 			buffer.writef32(outgoing_buff, outgoing_apos, Value3["SpeedRatio"])
 			alloc(8)
@@ -2589,43 +2827,31 @@ local returns = {
 		end,
 	},
 	SendSettings = {
-		Fire = function(Player: Player, Value: ({ ((unknown)) }))
+		Fire = function(Player: Player, Value: ((unknown)))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
-			local len_101 = #Value
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_101)
-			for i_11 = 1, len_101 do
-				local val_12 = Value[i_11]
-				if val_12 == nil then
-					alloc(1)
-					buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-				else
-					alloc(1)
-					buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-					table.insert(outgoing_inst, val_12)
-				end
+			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
+			if Value == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				table.insert(outgoing_inst, Value)
 			end
 			player_map[Player] = save()
 		end,
-		FireAll = function(Value: ({ ((unknown)) }))
+		FireAll = function(Value: ((unknown)))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
-			local len_102 = #Value
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_102)
-			for i_12 = 1, len_102 do
-				local val_13 = Value[i_12]
-				if val_13 == nil then
-					alloc(1)
-					buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-				else
-					alloc(1)
-					buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-					table.insert(outgoing_inst, val_13)
-				end
+			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
+			if Value == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				table.insert(outgoing_inst, Value)
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
@@ -2636,23 +2862,17 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireExcept = function(Except: Player, Value: ({ ((unknown)) }))
+		FireExcept = function(Except: Player, Value: ((unknown)))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
-			local len_103 = #Value
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_103)
-			for i_13 = 1, len_103 do
-				local val_14 = Value[i_13]
-				if val_14 == nil then
-					alloc(1)
-					buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-				else
-					alloc(1)
-					buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-					table.insert(outgoing_inst, val_14)
-				end
+			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
+			if Value == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				table.insert(outgoing_inst, Value)
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
@@ -2665,23 +2885,17 @@ local returns = {
 				end
 			end
 		end,
-		FireList = function(List: { [unknown]: Player }, Value: ({ ((unknown)) }))
+		FireList = function(List: { [unknown]: Player }, Value: ((unknown)))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
-			local len_104 = #Value
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_104)
-			for i_14 = 1, len_104 do
-				local val_15 = Value[i_14]
-				if val_15 == nil then
-					alloc(1)
-					buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-				else
-					alloc(1)
-					buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-					table.insert(outgoing_inst, val_15)
-				end
+			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
+			if Value == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				table.insert(outgoing_inst, Value)
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
@@ -2692,23 +2906,17 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireSet = function(Set: { [Player]: any }, Value: ({ ((unknown)) }))
+		FireSet = function(Set: { [Player]: any }, Value: ((unknown)))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
-			local len_105 = #Value
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_105)
-			for i_15 = 1, len_105 do
-				local val_16 = Value[i_15]
-				if val_16 == nil then
-					alloc(1)
-					buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-				else
-					alloc(1)
-					buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-					table.insert(outgoing_inst, val_16)
-				end
+			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
+			if Value == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				table.insert(outgoing_inst, Value)
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
@@ -2722,16 +2930,19 @@ local returns = {
 	},
 	SellUnit = {
 		SetCallback = function(Callback: (Player: Player, Value: (string)) -> ()): () -> ()
-			reliable_events[13] = Callback
+			reliable_events[12] = Callback
 			return function()
-				reliable_events[13] = nil
+				reliable_events[12] = nil
 			end
 		end,
 	},
 	RollEventServer = {
 		Fire = function(Player: Player, Value: ({
 			["SentTime"]: (number),
-			["Data"]: ({ (string) }),
+			["Data"]: ({ ({
+				["Name"]: (string),
+				["Id"]: (string),
+			}) }),
 			["AutoRoll"]: (boolean),
 		}))
 			load_player(Player)
@@ -2739,16 +2950,21 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value["SentTime"])
-			local len_106 = #Value["Data"]
+			local len_105 = #Value["Data"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_106)
-			for i_16 = 1, len_106 do
-				local val_17 = Value["Data"][i_16]
-				local len_107 = #val_17
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_105)
+			for i_11 = 1, len_105 do
+				local val_12 = Value["Data"][i_11]
+				local len_106 = #val_12["Name"]
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_106)
+				alloc(len_106)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_12["Name"], len_106)
+				local len_107 = #val_12["Id"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_107)
 				alloc(len_107)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_17, len_107)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_12["Id"], len_107)
 			end
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["AutoRoll"] and 1 or 0)
@@ -2756,7 +2972,10 @@ local returns = {
 		end,
 		FireAll = function(Value: ({
 			["SentTime"]: (number),
-			["Data"]: ({ (string) }),
+			["Data"]: ({ ({
+				["Name"]: (string),
+				["Id"]: (string),
+			}) }),
 			["AutoRoll"]: (boolean),
 		}))
 			load_empty()
@@ -2767,13 +2986,18 @@ local returns = {
 			local len_108 = #Value["Data"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_108)
-			for i_17 = 1, len_108 do
-				local val_18 = Value["Data"][i_17]
-				local len_109 = #val_18
+			for i_12 = 1, len_108 do
+				local val_13 = Value["Data"][i_12]
+				local len_109 = #val_13["Name"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_109)
 				alloc(len_109)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_18, len_109)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_13["Name"], len_109)
+				local len_110 = #val_13["Id"]
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_110)
+				alloc(len_110)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_13["Id"], len_110)
 			end
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["AutoRoll"] and 1 or 0)
@@ -2788,7 +3012,10 @@ local returns = {
 		end,
 		FireExcept = function(Except: Player, Value: ({
 			["SentTime"]: (number),
-			["Data"]: ({ (string) }),
+			["Data"]: ({ ({
+				["Name"]: (string),
+				["Id"]: (string),
+			}) }),
 			["AutoRoll"]: (boolean),
 		}))
 			load_empty()
@@ -2796,16 +3023,21 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value["SentTime"])
-			local len_110 = #Value["Data"]
+			local len_111 = #Value["Data"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_110)
-			for i_18 = 1, len_110 do
-				local val_19 = Value["Data"][i_18]
-				local len_111 = #val_19
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_111)
+			for i_13 = 1, len_111 do
+				local val_14 = Value["Data"][i_13]
+				local len_112 = #val_14["Name"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_111)
-				alloc(len_111)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_19, len_111)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_112)
+				alloc(len_112)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_14["Name"], len_112)
+				local len_113 = #val_14["Id"]
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_113)
+				alloc(len_113)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_14["Id"], len_113)
 			end
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["AutoRoll"] and 1 or 0)
@@ -2822,7 +3054,10 @@ local returns = {
 		end,
 		FireList = function(List: { [unknown]: Player }, Value: ({
 			["SentTime"]: (number),
-			["Data"]: ({ (string) }),
+			["Data"]: ({ ({
+				["Name"]: (string),
+				["Id"]: (string),
+			}) }),
 			["AutoRoll"]: (boolean),
 		}))
 			load_empty()
@@ -2830,16 +3065,21 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value["SentTime"])
-			local len_112 = #Value["Data"]
+			local len_114 = #Value["Data"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_112)
-			for i_19 = 1, len_112 do
-				local val_20 = Value["Data"][i_19]
-				local len_113 = #val_20
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_114)
+			for i_14 = 1, len_114 do
+				local val_15 = Value["Data"][i_14]
+				local len_115 = #val_15["Name"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_113)
-				alloc(len_113)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_20, len_113)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_115)
+				alloc(len_115)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_15["Name"], len_115)
+				local len_116 = #val_15["Id"]
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_116)
+				alloc(len_116)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_15["Id"], len_116)
 			end
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["AutoRoll"] and 1 or 0)
@@ -2854,7 +3094,10 @@ local returns = {
 		end,
 		FireSet = function(Set: { [Player]: any }, Value: ({
 			["SentTime"]: (number),
-			["Data"]: ({ (string) }),
+			["Data"]: ({ ({
+				["Name"]: (string),
+				["Id"]: (string),
+			}) }),
 			["AutoRoll"]: (boolean),
 		}))
 			load_empty()
@@ -2862,16 +3105,21 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value["SentTime"])
-			local len_114 = #Value["Data"]
+			local len_117 = #Value["Data"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_114)
-			for i_20 = 1, len_114 do
-				local val_21 = Value["Data"][i_20]
-				local len_115 = #val_21
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_117)
+			for i_15 = 1, len_117 do
+				local val_16 = Value["Data"][i_15]
+				local len_118 = #val_16["Name"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_115)
-				alloc(len_115)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_21, len_115)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_118)
+				alloc(len_118)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_16["Name"], len_118)
+				local len_119 = #val_16["Id"]
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_119)
+				alloc(len_119)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_16["Id"], len_119)
 			end
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["AutoRoll"] and 1 or 0)
@@ -2959,13 +3207,13 @@ local returns = {
 		Fire = function(Player: Player)
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
 			player_map[Player] = save()
 		end,
 		FireAll = function()
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				load_player(player)
@@ -2978,7 +3226,7 @@ local returns = {
 		FireExcept = function(Except: Player)
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -2993,7 +3241,7 @@ local returns = {
 		FireList = function(List: { [unknown]: Player })
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -3006,7 +3254,7 @@ local returns = {
 		FireSet = function(Set: { [Player]: any })
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -3023,17 +3271,17 @@ local returns = {
 			["UnitPosition"]: (Vector3),
 			["RotationIndex"]: (number),
 		})) -> ()): () -> ()
-			reliable_events[12] = Callback
+			reliable_events[11] = Callback
 			return function()
-				reliable_events[12] = nil
+				reliable_events[11] = nil
 			end
 		end,
 	},
 	ChangeUnitPriority = {
 		SetCallback = function(Callback: (Player: Player, Value: (string)) -> ()): () -> ()
-			reliable_events[11] = Callback
+			reliable_events[10] = Callback
 			return function()
-				reliable_events[11] = nil
+				reliable_events[10] = nil
 			end
 		end,
 	},
@@ -3049,12 +3297,12 @@ local returns = {
 		Fire = function(Player: Player, Value: (string), Value2: ((unknown)))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
-			local len_116 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
+			local len_120 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_116)
-			alloc(len_116)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_116)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_120)
+			alloc(len_120)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_120)
 			if Value2 == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -3068,12 +3316,12 @@ local returns = {
 		FireAll = function(Value: (string), Value2: ((unknown)))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
-			local len_117 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
+			local len_121 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_117)
-			alloc(len_117)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_117)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_121)
+			alloc(len_121)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_121)
 			if Value2 == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -3094,12 +3342,12 @@ local returns = {
 		FireExcept = function(Except: Player, Value: (string), Value2: ((unknown)))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
-			local len_118 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
+			local len_122 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_118)
-			alloc(len_118)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_118)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_122)
+			alloc(len_122)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_122)
 			if Value2 == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -3122,12 +3370,12 @@ local returns = {
 		FireList = function(List: { [unknown]: Player }, Value: (string), Value2: ((unknown)))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
-			local len_119 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
+			local len_123 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_119)
-			alloc(len_119)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_119)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_123)
+			alloc(len_123)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_123)
 			if Value2 == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -3148,12 +3396,12 @@ local returns = {
 		FireSet = function(Set: { [Player]: any }, Value: (string), Value2: ((unknown)))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
-			local len_120 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
+			local len_124 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_120)
-			alloc(len_120)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_120)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_124)
+			alloc(len_124)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_124)
 			if Value2 == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)

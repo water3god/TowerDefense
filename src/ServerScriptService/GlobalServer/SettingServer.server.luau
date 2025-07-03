@@ -8,16 +8,13 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local GlobalModules = ServerScriptService.GlobalModules
 local PlayerData = require(GlobalModules.PlayerData)
 
-local Remotes = ReplicatedStorage.Remotes
+local Network = require(ReplicatedStorage.Network.Server)
+local ChangeSettingServer = Network.ChangeSettingServer
+local ChangeSettingClient = Network.ChangeSettingClient
+local SendSettings = Network.SendSettings
+local SettingSync = Network.SettingSync
 
--- Settings --
-
-local SettingsEvents = Remotes.Settings
-local ChangeSetting = SettingsEvents.ChangeSetting
-local SendSettings = SettingsEvents.SendSettings
-local SettingSync = SettingsEvents.SettingSync
-
-ChangeSetting.OnServerEvent:Connect(function(Player: Player, Setting: string, Value: any)
+ChangeSettingClient.SetCallback(function(Player: Player, Setting: string, Value: any)
 	if typeof(Setting) ~= "string" then
 		return
 	end
@@ -29,7 +26,7 @@ ChangeSetting.OnServerEvent:Connect(function(Player: Player, Setting: string, Va
 	end
 end)
 
-SettingSync.OnServerEvent:Connect(function(Player: Player, Data: any)
+SettingSync.SetCallback(function(Player: Player, Data: any)
 	if typeof(Data) ~= "table" then
 		return
 	end
@@ -46,9 +43,9 @@ end)
 local function OnDataAdded(Data: PlayerData.PlayerData)
 	local Player = Data.Player
 	local GivenData = Data.Profile.Data
-	SendSettings:FireClient(Player, GivenData.Settings)
+	SendSettings.Fire(Player, GivenData.Settings)
 	Data.SettingChanged:Connect(function(Setting: string, Value: any)
-		ChangeSetting:FireClient(Player, Setting, Value)
+		ChangeSettingServer.Fire(Player, Setting, Value)
 	end)
 end
 

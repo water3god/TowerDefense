@@ -4,17 +4,17 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local WaveEvents = ReplicatedStorage.Remotes.Waves
-local HealthChanged = WaveEvents.HealthChanged
-local TimeChanged = WaveEvents.TimeChanged
-local WaveEnded = WaveEvents.WaveEnded
-local Passed = WaveEvents.Passed
-local Added = WaveEvents.Added
+local Network = require(ReplicatedStorage.Network.Client)
 
-local VoteEvents = WaveEvents.Votes
-local PlayerVoted = VoteEvents.PlayerVoted
-local VoteRequest = VoteEvents.VoteRequest
-local Vote = VoteEvents.Vote
+local HealthChanged = Network.WaveHealthChanged
+local TimeChanged = Network.TimeChanged
+local WaveEnded = Network.WaveEnded
+local Passed = Network.WavePassed
+local Added = Network.WaveAdded
+
+local PlayerVoted = Network.PlayerVoted
+local VoteRequest = Network.VoteRequest
+local Vote = Network.VoteSkip
 
 local Packages = ReplicatedStorage.Packages
 local Signal = require(Packages.Signal)
@@ -91,16 +91,16 @@ local Module: {
 			return VoteData
 		end,
 		Vote = function()
-			Vote:FireServer()
+			Vote.Fire()
 		end,
 	}
 
-Added.OnClientEvent:Connect(function(Data: WaveData)
+Added.SetCallback(function(Data: WaveData)
 	WaveData = Data
 	Module.Added:Fire(Data)
 end)
 
-HealthChanged.OnClientEvent:Connect(function(Data: { BaseHealth: number, MaxHealth: number })
+HealthChanged.SetCallback(function(Data: { BaseHealth: number, MaxHealth: number })
 	if WaveData then
 		WaveData.BaseHealth = Data.BaseHealth
 		WaveData.MaxHealth = Data.MaxHealth
@@ -108,14 +108,14 @@ HealthChanged.OnClientEvent:Connect(function(Data: { BaseHealth: number, MaxHeal
 	end
 end)
 
-Passed.OnClientEvent:Connect(function(Wave: number)
+Passed.SetCallback(function(Wave: number)
 	if WaveData then
 		WaveData.Wave = Wave
 		Module.Passed:Fire(Wave)
 	end
 end)
 
-TimeChanged.OnClientEvent:Connect(function(Data: { Time: number, StartTime: number })
+TimeChanged.SetCallback(function(Data: { Time: number, StartTime: number })
 	if WaveData then
 		WaveData.Time = Data.Time
 		WaveData.StartTime = Data.StartTime
@@ -123,7 +123,7 @@ TimeChanged.OnClientEvent:Connect(function(Data: { Time: number, StartTime: numb
 	end
 end)
 
-WaveEnded.OnClientEvent:Connect(function(Win: boolean, Data: GameInfo.ResourceData, OtherData, Percentage: number)
+WaveEnded.SetCallback(function(Win: boolean, Data: GameInfo.ResourceData, OtherData: MainXPData, Percentage: number)
 	Module.Win = Win
 	Module.EndData = Data
 	Module.MainXPData = OtherData
@@ -136,7 +136,7 @@ end)
 
 -- Votes --
 
-VoteRequest.OnClientEvent:Connect(function(SentData: VoteData?)
+VoteRequest.SetCallback(function(SentData: VoteData?)
 	if SentData then
 		VoteData = SentData
 		Module.VoteData.VoteStarted:Fire(SentData)
@@ -146,7 +146,7 @@ VoteRequest.OnClientEvent:Connect(function(SentData: VoteData?)
 	end
 end)
 
-PlayerVoted.OnClientEvent:Connect(function(Data: { CurrentCount: number, NeededCount: number })
+PlayerVoted.SetCallback(function(Data: { CurrentCount: number, NeededCount: number })
 	if VoteData then
 		VoteData.CurrentCount = Data.CurrentCount
 		VoteData.NeededCount = Data.NeededCount

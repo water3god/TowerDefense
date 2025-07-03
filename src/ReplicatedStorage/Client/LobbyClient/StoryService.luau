@@ -10,24 +10,22 @@ local Players = game:GetService("Players")
 local Packages = ReplicatedStorage.Packages
 local Signal = require(Packages.Signal)
 
-local Remotes = ReplicatedStorage.Remotes
-local BoothEvents = Remotes.Booth
+local Network = require(ReplicatedStorage.Network.Client)
 
-local ClientFires = BoothEvents.ClientFires
-local ChooseMap = ClientFires.ChooseMap
-local LeaveBooth = ClientFires.LeaveBooth
-local OwnerStart = ClientFires.OwnerStart
+local ChooseMap = Network.ChooseMap
+local LeaveBooth = Network.LeaveBooth
+local OwnerStart = Network.OwnerStart
 
-local ServerFires = BoothEvents.ServerFires
-local BoothChoosing = ServerFires.BoothChoosing
-local BoothMapLoading = ServerFires.BoothMapLoading
-local BoothRestarted = ServerFires.BoothRestarted
-local BoothWaiting = ServerFires.BoothWaiting
-local PlayerChanged = ServerFires.PlayerChanged
---local TPGuiSet = ServerFires.TPGuiSet
+local BoothChoosing = Network.BoothChoosing
+local BoothMapLoading = Network.BoothMapLoading
+local BoothRestarted = Network.BoothRestarted
+local BoothWaiting = Network.BoothWaiting
+local PlayerChanged = Network.BoothPlayerChanged
 
-local DataEvents = BoothEvents.DataEvents
-local DataSync = DataEvents.DataSync
+local DataSync = Network.StoryDataSync
+
+local Shared = ReplicatedStorage.Shared
+local GameInfo = require(Shared.GameInfo)
 
 export type TimeData = {
 	StartTime: number,
@@ -45,7 +43,7 @@ export type BoothData = {
 export type MapCrossData = {
 	MapId: string,
 	LevelId: string,
-	Difficulty: string,
+	Difficulty: GameInfo.Difficulty,
 }
 
 export type StageData = {
@@ -54,7 +52,7 @@ export type StageData = {
 }
 
 -- First is MapId, then is Stage number, then Difficulty
-export type MapData = { [string]: { [number]: { [string]: StageData } } }
+export type MapData = { [string]: { [number]: { [GameInfo.Difficulty]: StageData } } }
 
 local Module: {
 	MapData: MapData,
@@ -84,35 +82,35 @@ local Module: {
 		BoothWaiting = Signal.new(),
 		PlayerChanged = Signal.new(),
 		ChooseMap = function(Data: MapCrossData)
-			ChooseMap:FireServer(Data)
+			ChooseMap.Fire(Data)
 		end,
 		LeaveBooth = function()
-			LeaveBooth:FireServer()
+			LeaveBooth.Fire()
 		end,
 		OwnerStart = function()
-			OwnerStart:FireServer()
+			OwnerStart.Fire()
 		end,
 	}
 
-BoothChoosing.OnClientEvent:Connect(function(Data)
+BoothChoosing.SetCallback(function(Data)
 	Module.BoothChoosing:Fire(Data)
 end)
 
-BoothMapLoading.OnClientEvent:Connect(function()
+BoothMapLoading.SetCallback(function()
 	Module.BoothMapLoading:Fire()
 end)
 
-BoothRestarted.OnClientEvent:Connect(function()
+BoothRestarted.SetCallback(function()
 	Module.BoothRestarted:Fire()
 	Module.Data = nil
 end)
 
-BoothWaiting.OnClientEvent:Connect(function(Data: any)
+BoothWaiting.SetCallback(function(Data: any)
 	Module.Data = Data
 	Module.BoothWaiting:Fire(Data)
 end)
 
-PlayerChanged.OnClientEvent:Connect(function(PlayerId: number, Added: boolean)
+PlayerChanged.SetCallback(function(PlayerId: number, Added: boolean)
 	local Changed = false
 	local Player = Players:GetPlayerByUserId(PlayerId)
 	if Module.Data then
@@ -135,7 +133,7 @@ PlayerChanged.OnClientEvent:Connect(function(PlayerId: number, Added: boolean)
 	Module.PlayerChanged:Fire(PlayerId, Added, Changed)
 end)
 
-DataSync.OnClientEvent:Connect(function(Data: MapData)
+DataSync.SetCallback(function(Data: MapData)
 	Module.MapData = Data
 	Module.MapDataChanged:Fire(Data)
 end)

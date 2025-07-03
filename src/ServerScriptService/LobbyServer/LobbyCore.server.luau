@@ -28,20 +28,8 @@ local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local ObserveTag = require(Modules.ObserveTag)
 
-local BoothEvents = ReplicatedStorage.Remotes.Booth
-
-local ServerFires = BoothEvents.ServerFires
-local BoothChoosing = ServerFires.BoothChoosing
-local BoothMapLoading = ServerFires.BoothMapLoading
-local BoothRestarted = ServerFires.BoothRestarted
-local BoothWaiting = ServerFires.BoothWaiting
-local PlayerChanged = ServerFires.PlayerChanged
-local TPGuiSet = ServerFires.TPGuiSet
-
-local ClientFires = BoothEvents.ClientFires
-local ChooseMap = ClientFires.ChooseMap
-local LeaveBooth = ClientFires.LeaveBooth
-local OwnerStart = ClientFires.OwnerStart
+local NetworkFolder = ReplicatedStorage.Network
+local Network = require(NetworkFolder.Server)
 
 local Shared = ReplicatedStorage.Shared
 local GameInfo = require(Shared.GameInfo)
@@ -58,6 +46,11 @@ local _BoothsInstance = workspace.MainMap.Medieval.Booths
 
 local MapStore = MemoryStoreService:GetHashMap(Constants.INFORMATIONHASHMAP)
 
+type TimeData = {
+	StartTime: number,
+	EndTime: number,
+}
+
 local function AddTimeData(Table: any, BoothData: Booth.Booth)
 	Table.StartTime = BoothData.StartTime
 	Table.EndTime = BoothData.StartTime + BoothData.TimeLeft
@@ -73,7 +66,7 @@ local function SendWaitingData(Players: { Player }, BoothInfo: Booth.Booth)
 			Players = Players,
 		}
 		AddTimeData(BoothData, BoothInfo)
-		HelperFunctions.FireClients(BoothWaiting, Players, BoothData)
+		Network.BoothWaiting.FireList(Players, BoothData :: typeof(BoothData) & TimeData)
 	end
 end
 
@@ -101,7 +94,7 @@ local function TpToMap(Data: Types.SentData)
 	local MapInfo, LevelInfo = GameInfo.GetDataFromInfo(Data.MapId, Data.LevelId)
 	if MapInfo and LevelInfo then
 		local FullName = GameInfo.GetFullName(MapInfo.Name, LevelInfo.Index, LevelInfo.Name)
-		HelperFunctions.FireClients(TPGuiSet, Data.Players, { MapName = FullName, ImageId = MapInfo.Image })
+		Network.TPGuiSet.FireList(Data.Players, { MapName = FullName, ImageId = MapInfo.Image })
 	else
 		error("Is Nil while sending mapdata")
 	end
@@ -139,20 +132,20 @@ local function InitLoadingBooth(Model: typeof(_BoothsInstance.Booth1))
 	}))
 
 	NewBooth.PlayerAdded:Connect(function(Player: Player)
-		HelperFunctions.FireClients(PlayerChanged, NewBooth.Players, Player.UserId, true)
+		Network.BoothPlayerChanged.FireList(NewBooth.Players, Player.UserId, true)
 		if NewBooth.Status == "LoadingPlayers" then
 			SendWaitingData({ Player }, NewBooth)
 		end
 	end)
 
 	NewBooth.PlayerRemoving:Connect(function(Player: Player)
-		HelperFunctions.FireClients(PlayerChanged, NewBooth.Players, Player.UserId, false)
+		Network.BoothPlayerChanged.FireList(NewBooth.Players, Player.UserId, false)
 	end)
 
 	NewBooth.StartedChoosing:Connect(function(Player: Player)
 		local Data = {}
 		AddTimeData(Data, NewBooth)
-		BoothChoosing:FireClient(Player, Data)
+		Network.BoothChoosing.Fire(Player, Data :: TimeData)
 	end)
 
 	NewBooth.StartedWaiting:Connect(function()
@@ -160,14 +153,14 @@ local function InitLoadingBooth(Model: typeof(_BoothsInstance.Booth1))
 	end)
 
 	NewBooth.MapLoading:Connect(function()
-		HelperFunctions.FireClients(BoothMapLoading, NewBooth.Players)
+		Network.BoothMapLoading.FireList(NewBooth.Players)
 		if NewBooth.Data then
 			TpToMap(NewBooth.Data)
 		end
 	end)
 
 	NewBooth.BoothEnded:Connect(function()
-		HelperFunctions.FireClients(BoothRestarted, NewBooth.Players)
+		Network.BoothRestarted.FireList(NewBooth.Players)
 	end)
 end
 
@@ -179,25 +172,34 @@ ObserveTag.ObserveTag(START_POINT_TAG, function(Model: Instance)
 	return function() end
 end)
 
-ChooseMap.OnServerEvent:Connect(function(Player: Player, Data: { MapId: string, LevelId: string, Difficulty: string })
-	if typeof(Data) ~= "table" then
-		return
-	end
-	if typeof(Data.MapId) ~= "string" or typeof(Data.LevelId) ~= "string" or typeof(Data.Difficulty) ~= "string" then
-		return
-	end
-	if not GameInfo.GetDataFromInfo(Data.MapId, Data.LevelId) then
-		return
-	end
+Network.ChooseMap.SetCallback(
+	function(Player: Player, Data: { MapId: string, LevelId: string, Difficulty: GameInfo.Difficulty | string })
+		if typeof(Data) ~= "table" then
+			return
+		end
+		if
+			typeof(Data.MapId) ~= "string"
+			or typeof(Data.LevelId) ~= "string"
+			or typeof(Data.Difficulty) ~= "string"
+		then
+			return
+		end
+		if not GameInfo.GetDataFromInfo(Data.MapId, Data.LevelId) then
+			return
+		end
+		if not table.find(GameInfo.Difficulty, Data.Difficulty) then
+			return
+		end
 
-	local CurrentBooth = Booth.GetBoothFromPlayer(Player)
+		local CurrentBooth = Booth.GetBoothFromPlayer(Player)
 
-	if CurrentBooth then
-		CurrentBooth:ChooseMap(Data.MapId, Data.LevelId, Data.Difficulty)
+		if CurrentBooth then
+			CurrentBooth:ChooseMap(Data.MapId, Data.LevelId, Data.Difficulty)
+		end
 	end
-end)
+)
 
-LeaveBooth.OnServerEvent:Connect(function(Player: Player)
+Network.LeaveBooth.SetCallback(function(Player: Player)
 	local CurrentBooth = Booth.GetBoothFromPlayer(Player)
 
 	if CurrentBooth then
@@ -205,7 +207,7 @@ LeaveBooth.OnServerEvent:Connect(function(Player: Player)
 	end
 end)
 
-OwnerStart.OnServerEvent:Connect(function(Player: Player)
+Network.OwnerStart.SetCallback(function(Player: Player)
 	local CurrentBooth = Booth.GetBoothFromPlayer(Player)
 
 	if CurrentBooth then

@@ -10,11 +10,10 @@ local TeleportService = game:GetService("TeleportService")
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 
-local Remotes = ReplicatedStorage.Remotes
-local Core = Remotes.Core
-local TeleportBack = Core.TeleportBack
+local Network = require(ReplicatedStorage.Network.Server)
+local TeleportBack = Network.TeleportBack
 
-TeleportBack.OnServerEvent:Connect(function(Player: Player, Lobby: boolean)
+TeleportBack.SetCallback(function(Player: Player, Lobby: boolean)
 	if typeof(Lobby) == "boolean" then
 		if Lobby then
 			HelperFunctions.SafeTeleport(function()

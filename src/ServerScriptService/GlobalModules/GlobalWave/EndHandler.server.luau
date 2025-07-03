@@ -8,14 +8,15 @@ local Players = game:GetService("Players")
 local Packages = ReplicatedStorage.Packages
 local Trove = require(Packages.Trove)
 
-local WavesEvents = ReplicatedStorage.Remotes.Waves
+local NetworkFolder = ReplicatedStorage.Network
+local Network = require(NetworkFolder.Server)
+local ServerOnly = require(NetworkFolder.ServerOnly)
 
-local GameEndEvents = WavesEvents.GameEnd
-local OnVote = GameEndEvents.OnVote
-local OnEnd = GameEndEvents.OnEnd
-local Vote = GameEndEvents.Vote
+local OnVote = Network.OnEndVote
+local OnEnd = Network.OnEnd
+local Vote = Network.EndVoteAction
 
-local StartGame = WavesEvents.Server.StartGame
+local StartGame = ServerOnly.StartGame
 
 local GlobalWave = require(script.Parent)
 
@@ -39,7 +40,7 @@ local function Update()
 		end
 
 		if OldCount ~= Data.VotedCount then
-			OnVote:FireAllClients(Data.VotedCount)
+			OnVote.FireAll(Data.VotedCount)
 		end
 	end
 end
@@ -52,10 +53,10 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 			Players = {},
 		}
 
-		OnEnd:FireAllClients(Data)
+		OnEnd.FireAll(Data :: Data)
 
 		EndedTrove:Connect(Players.PlayerAdded, function(Player: Player)
-			OnEnd:FireClient(Player, Data)
+			OnEnd.Fire(Player, Data :: Data)
 		end)
 
 		EndedTrove:Connect(Players.PlayerRemoving, function(Player: Player)
@@ -85,7 +86,7 @@ end
 
 GlobalWave.Added:Connect(OnAdded)
 
-Vote.OnServerEvent:Connect(function(Player: Player)
+Vote.SetCallback(function(Player: Player)
 	if Data then
 		if not table.find(Data.Players, Player) then
 			table.insert(Data.Players, Player)

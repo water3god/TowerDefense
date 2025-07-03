@@ -18,7 +18,7 @@
         },
         "Map": {
           "$className": "Folder",
-           "$ignoreUnknownInstances": true
+          "$ignoreUnknownInstances": true
         }
       },
       "GlobalWorkspace": {
@@ -66,16 +66,8 @@
         "$properties": {
           "Density": 0.3,
           "Offset": 0.25,
-          "Color": [
-            0.78,
-            0.78,
-            0.78
-          ],
-          "Decay": [
-            0.415686,
-            0.439216,
-            0.490196
-          ],
+          "Color": [0.78, 0.78, 0.78],
+          "Decay": [0.415686, 0.439216, 0.490196],
           "Glare": 0,
           "Haze": 0
         }
@@ -119,10 +111,6 @@
         "$className": "Folder",
         "$ignoreUnknownInstances": true,
         "$path": "Packages"
-      },
-      "Remotes": {
-        "$ignoreUnknownInstances": false,
-        "$path": "Models/Remotes.rbxm"
       },
       "Animations": {
         "$ignoreUnknownInstances": false,
@@ -176,7 +164,7 @@
       "$properties": {
         "ChatVersion": "TextChatService"
       },
-       "$ignoreUnknownInstances": true
+      "$ignoreUnknownInstances": true
     },
     "HttpService": {
       "$properties": {

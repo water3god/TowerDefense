@@ -13,9 +13,9 @@ local Player = Players.LocalPlayer
 local Packages = ReplicatedStorage.Packages
 local Signal = require(Packages.Signal)
 
-local Remotes = ReplicatedStorage.Remotes
-local MarketplaceFolder = Remotes.Marketplace
-local UseProduct = MarketplaceFolder.UseProduct
+local Network = require(ReplicatedStorage.Network.Client)
+
+local UseProduct = Network.UseProduct
 
 local Shared = ReplicatedStorage.Shared
 local ProductInfo = require(Shared.ProductInfo)
@@ -93,7 +93,7 @@ local Module: {
 		Loaded = Signal.new(),
 		IsLoaded = false,
 		UsePurchase = function(ProductId, IsGamepass)
-			UseProduct:FireServer(ProductId, IsGamepass)
+			UseProduct.Fire(ProductId, IsGamepass)
 		end,
 	}
 

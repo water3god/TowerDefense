@@ -13,17 +13,14 @@ end
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 
-local Remotes = ReplicatedStorage.Remotes
-local UnitClient = Remotes.UnitClient
-
-local ChangePriority = UnitClient.ChangePriority
-local Placement = UnitClient.Placement
-local Upgrade = UnitClient.Upgrade
-local UseAbility = UnitClient.UseAbility
-local Sell = UnitClient.Sell
-
 local Network = require(ReplicatedStorage.Network.Server)
 local SendWarning = Network.SendWarning
+
+local ChangePriority = Network.ChangeUnitPriority
+local Placement = Network.PlaceUnit
+local Upgrade = Network.UpgradeUnit
+local UseAbility = Network.UseUnitAbility
+local Sell = Network.SellUnit
 
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
@@ -57,7 +54,7 @@ local function CloneCylinder(Radius: number)
 	return CylinderCache[Radius]
 end
 
-ChangePriority.OnServerEvent:Connect(function(Player: Player, UniqueId: string)
+ChangePriority.SetCallback(function(Player: Player, UniqueId: string)
 	if typeof(UniqueId) ~= "string" then
 		return
 	end
@@ -160,7 +157,7 @@ local function OnPlacement(Player: Player, Data: PlacementData)
 	end
 end
 
-Placement.OnServerEvent:Connect(function(Player: Player, Data: PlacementData)
+Placement.SetCallback(function(Player: Player, Data: PlacementData)
 	if typeof(Data) ~= "table" then
 		return
 	end
@@ -181,7 +178,7 @@ Placement.OnServerEvent:Connect(function(Player: Player, Data: PlacementData)
 	OnPlacement(Player, Data)
 end)
 
-Upgrade.OnServerEvent:Connect(function(Player: Player, UniqueId: string)
+Upgrade.SetCallback(function(Player: Player, UniqueId: string)
 	if typeof(UniqueId) ~= "string" then
 		return
 	end
@@ -193,7 +190,7 @@ Upgrade.OnServerEvent:Connect(function(Player: Player, UniqueId: string)
 	end
 end)
 
-UseAbility.OnServerEvent:Connect(function(Player: Player, UniqueId: string, Index: number)
+UseAbility.SetCallback(function(Player: Player, UniqueId: string, Index: number)
 	if typeof(UniqueId) ~= "string" or typeof(Index) ~= "number" then
 		return
 	end
@@ -205,7 +202,7 @@ UseAbility.OnServerEvent:Connect(function(Player: Player, UniqueId: string, Inde
 	end
 end)
 
-Sell.OnServerEvent:Connect(function(Player: Player, UniqueId: string)
+Sell.SetCallback(function(Player: Player, UniqueId: string)
 	if typeof(UniqueId) ~= "string" then
 		return
 	end

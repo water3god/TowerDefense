@@ -183,6 +183,9 @@ local remotes = ReplicatedStorage:WaitForChild("Zap3")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
+export type Wave = (number)
+export type ProductId = (number)
+export type Time = (number)
 export type Level = (number)
 export type WaveData = ({
 	["Wave"]: (number),
@@ -197,12 +200,29 @@ export type VoteData = ({
 	["CurrentCount"]: (number),
 	["NeededCount"]: (number),
 })
-export type XP = (number)
-export type ProductId = (number)
-export type Time = (number)
-export type Health = (number)
-export type Wave = (number)
+export type MainXPData = ({
+	["OldXP"]: (number),
+	["NewXP"]: (number),
+	["OldLevel"]: (number),
+	["NewLevel"]: (number),
+})
+export type ResourceData = ({
+	["Units"]: ({ (string) }),
+	["Resources"]: ({ ({
+		["Resource"]: (string),
+		["Count"]: (number),
+	}) }),
+	["ExistingUnits"]: ({ ({
+		["Name"]: (string),
+		["OldLevel"]: (number),
+		["NewLevel"]: (number),
+		["OldXP"]: (number),
+		["NewXP"]: (number),
+	}) }),
+})
 export type Vote = (number)
+export type XP = (number)
+export type Health = (number)
 
 local function SendEvents()
 	if outgoing_used ~= 0 then
@@ -271,18 +291,43 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 		elseif id == 8 then
 			local value, value2, value3, value4
 			value = buffer.readu8(incoming_buff, read(1)) == 1
-			if buffer.readu8(incoming_buff, read(1)) == 1 then
-				incoming_ipos = incoming_ipos + 1
-				value2 = incoming_inst[incoming_ipos]
-			else
-				value2 = nil
+			value2 = {}
+			value2["Units"] = {}
+			local len_1 = buffer.readu16(incoming_buff, read(2))
+			for i_1 = 1, len_1 do
+				local val_1
+				local len_2 = buffer.readu16(incoming_buff, read(2))
+				val_1 = buffer.readstring(incoming_buff, read(len_2), len_2)
+				value2["Units"][i_1] = val_1
 			end
-			if buffer.readu8(incoming_buff, read(1)) == 1 then
-				incoming_ipos = incoming_ipos + 1
-				value3 = incoming_inst[incoming_ipos]
-			else
-				value3 = nil
+			value2["Resources"] = {}
+			local len_3 = buffer.readu16(incoming_buff, read(2))
+			for i_2 = 1, len_3 do
+				local val_2
+				val_2 = {}
+				local len_4 = buffer.readu16(incoming_buff, read(2))
+				val_2["Resource"] = buffer.readstring(incoming_buff, read(len_4), len_4)
+				val_2["Count"] = buffer.readu32(incoming_buff, read(4))
+				value2["Resources"][i_2] = val_2
 			end
+			value2["ExistingUnits"] = {}
+			local len_5 = buffer.readu16(incoming_buff, read(2))
+			for i_3 = 1, len_5 do
+				local val_3
+				val_3 = {}
+				local len_6 = buffer.readu16(incoming_buff, read(2))
+				val_3["Name"] = buffer.readstring(incoming_buff, read(len_6), len_6)
+				val_3["OldLevel"] = buffer.readu16(incoming_buff, read(2))
+				val_3["NewLevel"] = buffer.readu16(incoming_buff, read(2))
+				val_3["OldXP"] = buffer.readf64(incoming_buff, read(8))
+				val_3["NewXP"] = buffer.readf64(incoming_buff, read(8))
+				value2["ExistingUnits"][i_3] = val_3
+			end
+			value3 = {}
+			value3["OldXP"] = buffer.readf64(incoming_buff, read(8))
+			value3["NewXP"] = buffer.readf64(incoming_buff, read(8))
+			value3["OldLevel"] = buffer.readu16(incoming_buff, read(2))
+			value3["NewLevel"] = buffer.readu16(incoming_buff, read(2))
 			value4 = buffer.readf64(incoming_buff, read(8))
 			if reliable_events[8] then
 				task.spawn(reliable_events[8], value, value2, value3, value4)
@@ -342,8 +387,8 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 9 then
 			local value, value2
-			local len_1 = buffer.readu16(incoming_buff, read(2))
-			value = buffer.readstring(incoming_buff, read(len_1), len_1)
+			local len_7 = buffer.readu16(incoming_buff, read(2))
+			value = buffer.readstring(incoming_buff, read(len_7), len_7)
 			if buffer.readu8(incoming_buff, read(1)) == 1 then
 				value2 = Color3.fromRGB(buffer.readu8(incoming_buff, read(1)), buffer.readu8(incoming_buff, read(1)), buffer.readu8(incoming_buff, read(1)))
 			else
@@ -360,7 +405,7 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 		elseif id == 2 then
 			local value
 			value = {}
-			value["CurrenctCount"] = buffer.readu16(incoming_buff, read(2))
+			value["CurrentCount"] = buffer.readu16(incoming_buff, read(2))
 			value["NeededCount"] = buffer.readu16(incoming_buff, read(2))
 			if reliable_events[2] then
 				task.spawn(reliable_events[2], value)
@@ -386,6 +431,16 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			value = {}
 			value["VotedCount"] = buffer.readu16(incoming_buff, read(2))
 			value["Win"] = buffer.readu8(incoming_buff, read(1)) == 1
+			value["Players"] = {}
+			local len_8 = buffer.readu16(incoming_buff, read(2))
+			for i_4 = 1, len_8 do
+				local val_4
+				incoming_ipos = incoming_ipos + 1
+				val_4 = incoming_inst[incoming_ipos]
+				assert(val_4 ~= nil, "received instance is nil!")
+				assert(val_4:IsA("Player"), "received instance is not of the Player class!")
+				value["Players"][i_4] = val_4
+			end
 			if reliable_events[0] then
 				task.spawn(reliable_events[0], value)
 			else
@@ -402,23 +457,23 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			value["Rewards"] = {}
 			for _ = 1, buffer.readu16(incoming_buff, read(2)) do
 				local key_1
-				local val_1
+				local val_5
 				key_1 = buffer.readu8(incoming_buff, read(1))
-				val_1 = {}
+				val_5 = {}
 				for _ = 1, buffer.readu16(incoming_buff, read(2)) do
 					local key_2
-					local val_2
-					local len_2 = buffer.readu16(incoming_buff, read(2))
-					key_2 = buffer.readstring(incoming_buff, read(len_2), len_2)
+					local val_6
+					local len_9 = buffer.readu16(incoming_buff, read(2))
+					key_2 = buffer.readstring(incoming_buff, read(len_9), len_9)
 					if buffer.readu8(incoming_buff, read(1)) == 1 then
 						incoming_ipos = incoming_ipos + 1
-						val_2 = incoming_inst[incoming_ipos]
+						val_6 = incoming_inst[incoming_ipos]
 					else
-						val_2 = nil
+						val_6 = nil
 					end
-					val_1[key_2] = val_2
+					val_5[key_2] = val_6
 				end
-				value["Rewards"][key_1] = val_1
+				value["Rewards"][key_1] = val_5
 			end
 			if reliable_events[11] then
 				task.spawn(reliable_events[11], value)
@@ -457,20 +512,20 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			value = {}
 			for _ = 1, buffer.readu16(incoming_buff, read(2)) do
 				local key_3
-				local val_3
+				local val_7
 				incoming_ipos = incoming_ipos + 1
 				key_3 = incoming_inst[incoming_ipos]
 				assert(key_3 ~= nil, "received instance is nil!")
 				assert(key_3:IsA("Player"), "received instance is not of the Player class!")
-				val_3 = {}
-				local len_3 = buffer.readu16(incoming_buff, read(2))
-				for i_1 = 1, len_3 do
-					local val_4
-					local len_4 = buffer.readu16(incoming_buff, read(2))
-					val_4 = buffer.readstring(incoming_buff, read(len_4), len_4)
-					val_3[i_1] = val_4
+				val_7 = {}
+				local len_10 = buffer.readu16(incoming_buff, read(2))
+				for i_5 = 1, len_10 do
+					local val_8
+					local len_11 = buffer.readu16(incoming_buff, read(2))
+					val_8 = buffer.readstring(incoming_buff, read(len_11), len_11)
+					val_7[i_5] = val_8
 				end
-				value[key_3] = val_3
+				value[key_3] = val_7
 			end
 			if reliable_events[13] then
 				task.spawn(reliable_events[13], value)
@@ -518,7 +573,25 @@ local returns = {
 		end,
 	},
 	WaveEnded = {
-		SetCallback = function(Callback: (Value: (boolean), Value2: ((unknown)), Value3: ((unknown)), Value4: (number)) -> ()): () -> ()
+		SetCallback = function(Callback: (Value: (boolean), Value2: ({
+			["Units"]: ({ (string) }),
+			["Resources"]: ({ ({
+				["Resource"]: (string),
+				["Count"]: (number),
+			}) }),
+			["ExistingUnits"]: ({ ({
+				["Name"]: (string),
+				["OldLevel"]: (number),
+				["NewLevel"]: (number),
+				["OldXP"]: (number),
+				["NewXP"]: (number),
+			}) }),
+		}), Value3: ({
+			["OldXP"]: (number),
+			["NewXP"]: (number),
+			["OldLevel"]: (number),
+			["NewLevel"]: (number),
+		}), Value4: (number)) -> ()): () -> ()
 			reliable_events[8] = Callback
 			for _, value in reliable_event_queue[8] do
 				task.spawn(Callback, unpack(value))
@@ -586,9 +659,11 @@ local returns = {
 		end,
 	},
 	TeleportBack = {
-		Fire = function()
+		Fire = function(Value: (boolean))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, Value and 1 or 0)
 		end,
 	},
 	SendWarning = {
@@ -604,14 +679,16 @@ local returns = {
 		end,
 	},
 	RedeemDailyReward = {
-		Fire = function()
+		Fire = function(Value: (number))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, Value)
 		end,
 	},
 	PlayerVoted = {
 		SetCallback = function(Callback: (Value: ({
-			["CurrenctCount"]: (number),
+			["CurrentCount"]: (number),
 			["NeededCount"]: (number),
 		})) -> ()): () -> ()
 			reliable_events[2] = Callback
@@ -640,6 +717,7 @@ local returns = {
 		SetCallback = function(Callback: (Value: ({
 			["VotedCount"]: (number),
 			["Win"]: (boolean),
+			["Players"]: ({ (Player) }),
 		})) -> ()): () -> ()
 			reliable_events[0] = Callback
 			for _, value in reliable_event_queue[0] do

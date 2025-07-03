@@ -21,6 +21,7 @@ export type ResourceData = {
 	Resource: string,
 	Count: number,
 	UniqueId: string,
+	PartialOneLose: boolean?,
 }
 
 export type StageData = {

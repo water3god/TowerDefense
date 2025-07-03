@@ -8,23 +8,19 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local GlobalModules = ServerScriptService.GlobalModules
 local PlayerData = require(GlobalModules.PlayerData)
 
-local Remotes = ReplicatedStorage.Remotes
+local Network = require(ReplicatedStorage.Network.Server)
 
--- Inventory --
+local ItemChanged = Network.ItemChanged
+local InventorySync = Network.InventorySync
+local UnitEquipped = Network.UnitEquipped
 
-local InventoryEvents = Remotes.Inventory
-local ItemChanged = InventoryEvents.ItemChanged
-local InventorySync = InventoryEvents.InventorySync
-local UnitEquipped = InventoryEvents.UnitEquipped
-
-local LevelEvents = Remotes.Level
-local LevelChangedEvent = LevelEvents.LevelChanged
-local XPChangedEvent = LevelEvents.XPChanged
+local LevelChangedEvent = Network.LevelChanged
+local XPChangedEvent = Network.LevelXPChanged
 
 local function OnDataAdded(Data: PlayerData.PlayerData)
 	local Player = Data.Player
 	local GivenData = Data.Profile.Data
-	InventorySync:FireClient(
+	InventorySync.Fire(
 		Player,
 		{
 			Units = GivenData.Units,
@@ -38,41 +34,41 @@ local function OnDataAdded(Data: PlayerData.PlayerData)
 	)
 
 	Data.UnitEquipped:Connect(function(Unit: string, Index: number)
-		UnitEquipped:FireClient(Player, { UniqueId = Unit, Index = Index, Equip = true })
+		UnitEquipped.Fire(Player, { UniqueId = Unit, Index = Index, Equip = true })
 	end)
 
 	Data.UnitUnequipped:Connect(function(Unit: string, Index: number)
-		UnitEquipped:FireClient(Player, { UniqueId = Unit, Index = Index, Equip = false })
+		UnitEquipped.Fire(Player, { UniqueId = Unit, Index = Index, Equip = false })
 	end)
 
 	Data.UnitAdded:Connect(function(Unit)
-		ItemChanged:FireClient(Player, "Units", Unit.UniqueId, Unit)
+		ItemChanged.Fire(Player, "Units", Unit.UniqueId, Unit)
 	end)
 
 	Data.UnitChanged:Connect(function(Unit)
-		ItemChanged:FireClient(Player, "Units", Unit.UniqueId, Unit)
+		ItemChanged.Fire(Player, "Units", Unit.UniqueId, Unit)
 	end)
 
 	Data.UnitRemoved:Connect(function(Unit)
-		ItemChanged:FireClient(Player, "Units", Unit.UniqueId, nil)
+		ItemChanged.Fire(Player, "Units", Unit.UniqueId, nil)
 	end)
 
 	Data.ProductChanged:Connect(function(Type, ProductData)
 		local IsNil = Type == "Removed"
-		ItemChanged:FireClient(Player, "Products", ProductData.UniqueId, not IsNil and ProductData)
+		ItemChanged.Fire(Player, "Products", ProductData.UniqueId, not IsNil and ProductData)
 	end)
 
 	Data.ResourceChanged:Connect(function(Type, ResourceData)
 		local IsNil = Type == "Removed"
-		ItemChanged:FireClient(Player, "Resources", ResourceData.UniqueId, not IsNil and ResourceData)
+		ItemChanged.Fire(Player, "Resources", ResourceData.UniqueId, not IsNil and ResourceData)
 	end)
 
 	Data.LeveledUp:Connect(function(Level: number)
-		LevelChangedEvent:FireClient(Player, Level)
+		LevelChangedEvent.Fire(Player, Level)
 	end)
 
 	Data.XPChanged:Connect(function(XP: number)
-		XPChangedEvent:FireClient(Player, XP)
+		XPChangedEvent.Fire(Player, XP)
 	end)
 end
 

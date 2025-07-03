@@ -17,15 +17,17 @@ local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
 
-local Remotes = ReplicatedStorage.Remotes
+local NetworkFolder = ReplicatedStorage.Network
+local Network = require(NetworkFolder.Client)
+local ClientOnly = require(NetworkFolder.ClientOnly)
 
-local GameEndEvents = Remotes.Waves.GameEnd
-local OnVote = GameEndEvents.OnVote
-local OnEnd = GameEndEvents.OnEnd
-local Vote = GameEndEvents.Vote
+local OnVote = Network.OnEndVote
+local OnEnd = Network.OnEnd
+local Vote = Network.EndVoteAction
 
-local TPGuiSet = Remotes.Booth.ClientOnly.TPGuiSet
-local TeleportBack = Remotes.Core.TeleportBack
+local TeleportBack = Network.TeleportBack
+
+local TPGuiSet = ClientOnly.TPGuiSet
 
 -- Reference UI --
 local Gui = ReplicatedStorage.Gui
@@ -357,13 +359,13 @@ local function CreateVoteFrame(Props: Props)
 	end, { Props.SetVisible })
 
 	local RestartClick = React.useCallback(function()
-		Vote:FireServer()
+		Vote.Fire()
 	end, {})
 
 	local ReturnClick = React.useCallback(function()
 		TPGuiSet:Fire({ MapName = "Lobby", ImageId = "rbxasseid://1" })
 		Promise.delay(3):andThen(function()
-			TeleportBack:FireServer(true)
+			TeleportBack.Fire(true)
 		end)
 	end, {})
 
@@ -661,7 +663,7 @@ local function VoteConnected(props)
 		SetEnabled(false)
 	end, {})
 
-	Hooks.useEventConnection(OnEnd.OnClientEvent, function(Data: { VotedCount: number, Win: boolean })
+	Hooks.useZapConnection(OnEnd, function(Data: { VotedCount: number, Win: boolean, Players: { Player } })
 		SetData(Join(PlayerData:getValue(), {
 			Votes = Data.VotedCount,
 		}) :: any)
@@ -669,7 +671,7 @@ local function VoteConnected(props)
 		SetEnabled(true)
 	end, {})
 
-	Hooks.useEventConnection(OnVote.OnClientEvent, function(VotedCount: number)
+	Hooks.useZapConnection(OnVote, function(VotedCount: number)
 		SetData(Join(PlayerData:getValue(), {
 			Votes = VotedCount,
 		}) :: any)

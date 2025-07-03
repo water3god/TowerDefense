@@ -13,30 +13,31 @@ local Modules = ReplicatedStorage.Modules
 local ObserveTag = require(Modules.ObserveTag)
 local HelperFunctions = require(Modules.HelperFunctions)
 
-local Remotes = ReplicatedStorage.Remotes
-local RollRemotes = Remotes.Roll
-local AutoRoll = RollRemotes.AutoRoll
-local RollEvent = RollRemotes.RollEvent
-local StopAutoRollEvent = RollRemotes.StopAutoRoll
+local Network = require(ReplicatedStorage.Network.Client)
+local AutoRoll = Network.AutoRoll
+local RollEventClient = Network.RollEventClient
+local RollEventServer = Network.RollEventServer
+local StopAutoRollClient = Network.StopAutoRollClient
+local StopAutoRollServer = Network.StopAutoRollServer
 
 local Player = Players.LocalPlayer
 
 export type RollData = {
 	SentTime: number,
-	Data: { string },
+	Data: { { Name: string, Id: string } },
 	AutoRoll: boolean,
 }
 
 local function SetAutoRoll(Enabled: boolean)
-	AutoRoll:FireServer(Enabled)
+	AutoRoll.Fire(Enabled)
 end
 
 local function StopAutoRoll()
-	StopAutoRollEvent:FireServer()
+	StopAutoRollClient.Fire()
 end
 
 local function Roll(Count: number)
-	RollEvent:FireServer(Count)
+	RollEventClient.Fire(Count)
 end
 
 local Module: {
@@ -62,7 +63,7 @@ local Module: {
 		StopAutoRoll = StopAutoRoll,
 	}
 
-local function HandleRoll(Data: { SentTime: number, Data: { string }, AutoRoll: boolean })
+local function HandleRoll(Data: { SentTime: number, Data: { { Name: string, Id: string } }, AutoRoll: boolean })
 	Module.Data = Data
 	Module.Rolled:Fire(Data)
 end
@@ -71,8 +72,8 @@ local function HandleStopAutoRoll()
 	Module.AutoRollStopped:Fire()
 end
 
-StopAutoRollEvent.OnClientEvent:Connect(HandleStopAutoRoll)
-RollEvent.OnClientEvent:Connect(HandleRoll)
+StopAutoRollServer.SetCallback(HandleStopAutoRoll)
+RollEventServer.SetCallback(HandleRoll)
 
 ObserveTag.ObserveTag("RollBooth", function(BasePart: Instance)
 	if BasePart:IsA("BasePart") then

@@ -12,9 +12,8 @@ local LocalPlayer = Players.LocalPlayer
 local Packages = ReplicatedStorage.Packages
 local Signal = require(Packages.Signal)
 
-local Remotes = ReplicatedStorage.Remotes
-local Core = Remotes.Core
-local AllEquippedSync = Core.AllEquippedSync
+local Network = require(ReplicatedStorage.Network.Client)
+local AllEquippedSync = Network.AllEquippedSync
 
 local Client = ReplicatedStorage.Client
 local GlobalClient = Client.GlobalClient
@@ -37,7 +36,7 @@ local Module: {
 		GetEquipped = GetEquipped,
 	}
 
-AllEquippedSync.OnClientEvent:Connect(function(Data: { [Player]: { string } })
+AllEquippedSync.SetCallback(function(Data: { [Player]: { string } })
 	for Player, EquippedUnits in pairs(Data) do
 		Equipped[Player] = EquippedUnits
 		Module.Changed:Fire(Player, EquippedUnits)

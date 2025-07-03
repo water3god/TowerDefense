@@ -64,24 +64,22 @@ local HelperFunctions = require(Modules.HelperFunctions)
 local Lerps = require(Modules.Lerps)
 local GenerateId = require(Modules.GenerateId)
 
-local Remotes = ReplicatedStorage.Remotes
-local Events = Remotes.Unit
+local Network = require(ReplicatedStorage.Network.Client)
 
-local Attack = Events.Attack
-local Destroy = Events.DestroyEvent
-local OnPlacement = Events.PlacementEvent
-local OnUpgrade = Events.Upgrade
-local PriorityChanged = Events.PriorityChanged
-local AbilityEvent = Events.AbilityEvent
-local AnimationEvent = Events.AnimationEvent
-local SpeedRatioEvent = Events.SpeedRatioEvent
+local Attack = Network.UnitAttack
+local OnPlacement = Network.UnitPlacementEvent
+local OnUpgrade = Network.UnitUpgradeEvent
+local PriorityChanged = Network.UnitPriorityChanged
+local AbilityEvent = Network.UnitAbilityEvent
+local AnimationEvent = Network.UnitAnimationEvent
+local SpeedRatioEvent = Network.SpeedRatioEvent
+local Destroy = Network.UnitDestroyEvent
 
-local OtherEvents = ReplicatedStorage.Remotes.UnitClient
-local PlaceUnit = OtherEvents.Placement
-local SellUnit = OtherEvents.Sell
-local Upgrade = OtherEvents.Upgrade
-local ChangePriority = OtherEvents.ChangePriority
-local UseAbility = OtherEvents.UseAbility
+local PlaceUnit = Network.PlaceUnit
+local SellUnit = Network.SellUnit
+local Upgrade = Network.UpgradeUnit
+local ChangePriority = Network.ChangeUnitPriority
+local UseAbility = Network.UseUnitAbility
 
 local WarningEvents = require(ReplicatedStorage.Network.ClientOnly)
 local SendWarning = WarningEvents.Warning
@@ -623,11 +621,11 @@ function UnitModule:CancelPromise(PromiseName: string)
 end
 
 function UnitModule:LevelUp()
-	Upgrade:FireServer(self.UniqueId)
+	Upgrade.Fire(self.UniqueId)
 end
 
 function UnitModule:ChangePriority()
-	ChangePriority:FireServer(self.UniqueId)
+	ChangePriority.Fire(self.UniqueId)
 	self.AttackPriority = UnitInfo.GetNextSortType(self.AttackPriority)
 	self.PriorityChanged:Fire(self.AttackPriority)
 end
@@ -656,11 +654,11 @@ function UnitModule:OnAttack(Input: Types.UnitAttackInput)
 end
 
 function UnitModule:UseAbility(Index: number)
-	UseAbility:FireServer(self.UniqueId, Index)
+	UseAbility.Fire(self.UniqueId, Index)
 end
 
 function UnitModule:Sell()
-	SellUnit:FireServer(self.UniqueId)
+	SellUnit.Fire(self.UniqueId)
 end
 
 function UnitModule:GetProperties()
@@ -958,7 +956,7 @@ function UnitModule.InitPlacement(Unit: string)
 		end
 
 		if UnitPosition and IsValid then
-			PlaceUnit:FireServer({
+			PlaceUnit.Fire({
 				Unit = Unit,
 				UnitPosition = UnitPosition,
 				RotationIndex = RotationIndex,
@@ -1064,13 +1062,13 @@ function UnitModule.InitPlacement(Unit: string)
 	return Data
 end
 
-OnPlacement.OnClientEvent:Connect(function(PlacementData: { [string]: Types.UnitInput }, New: boolean)
+OnPlacement.SetCallback(function(PlacementData: { [string]: Types.UnitInput }, New: boolean)
 	for _, NewInput in pairs(PlacementData) do
 		NewUnit(NewInput, New)
 	end
 end)
 
-Attack.OnClientEvent:Connect(function(Data: Types.UnitAttackInput)
+Attack.SetCallback(function(Data: Types.UnitAttackInput)
 	local Unit = UnitModule.GetUnit(Data.UniqueId)
 
 	if Unit then
@@ -1078,7 +1076,7 @@ Attack.OnClientEvent:Connect(function(Data: Types.UnitAttackInput)
 	end
 end)
 
-PriorityChanged.OnClientEvent:Connect(function(Data: { UniqueId: string, Priority: UnitInfo.SortType })
+PriorityChanged.SetCallback(function(Data: { UniqueId: string, Priority: UnitInfo.SortType })
 	local Unit = UnitModule.GetUnit(Data.UniqueId)
 
 	if Unit then
@@ -1089,7 +1087,7 @@ PriorityChanged.OnClientEvent:Connect(function(Data: { UniqueId: string, Priorit
 	end
 end)
 
-AnimationEvent.OnClientEvent:Connect(function(
+AnimationEvent.SetCallback(function(
 	Data: {
 		UniqueId: string,
 		AnimationName: string,
@@ -1114,34 +1112,32 @@ AnimationEvent.OnClientEvent:Connect(function(
 	end
 end)
 
-SpeedRatioEvent.OnClientEvent:Connect(
-	function(UniqueId: string, Name: string, Data: { SpeedRatio: number, EndTime: number })
-		local Unit = UnitModule.GetUnit(UniqueId)
+SpeedRatioEvent.SetCallback(function(UniqueId: string, Name: string, Data: { SpeedRatio: number, EndTime: number })
+	local Unit = UnitModule.GetUnit(UniqueId)
 
-		if Unit then
-			local PromiseName = "SpeedRatio" .. Name
+	if Unit then
+		local PromiseName = "SpeedRatio" .. Name
 
-			Unit:CancelPromise(PromiseName)
-			Unit.SpeedRatioData[Name] = Data
+		Unit:CancelPromise(PromiseName)
+		Unit.SpeedRatioData[Name] = Data
 
-			Unit:_CalculateSpeedRatio()
+		Unit:_CalculateSpeedRatio()
 
-			local Difference = Data.EndTime - workspace:GetServerTimeNow()
+		local Difference = Data.EndTime - workspace:GetServerTimeNow()
 
-			if Difference > 0 then
-				Unit:AddPromise(
-					Promise.delay(Data.EndTime - workspace:GetServerTimeNow()):andThen(function()
-						Unit.SpeedRatioData[Name] = nil
-						Unit:_CalculateSpeedRatio()
-					end),
-					PromiseName
-				)
-			end
+		if Difference > 0 then
+			Unit:AddPromise(
+				Promise.delay(Data.EndTime - workspace:GetServerTimeNow()):andThen(function()
+					Unit.SpeedRatioData[Name] = nil
+					Unit:_CalculateSpeedRatio()
+				end),
+				PromiseName
+			)
 		end
 	end
-)
+end)
 
-OnUpgrade.OnClientEvent:Connect(function(Data: { UniqueId: string, Level: number })
+OnUpgrade.SetCallback(function(Data: { UniqueId: string, Level: number })
 	local Unit = UnitModule.GetUnit(Data.UniqueId)
 
 	if Unit then
@@ -1149,7 +1145,7 @@ OnUpgrade.OnClientEvent:Connect(function(Data: { UniqueId: string, Level: number
 	end
 end)
 
-AbilityEvent.OnClientEvent:Connect(function(UniqueId: string, Index: number, TimeUsed: number)
+AbilityEvent.SetCallback(function(UniqueId: string, Index: number, TimeUsed: number)
 	local Unit = UnitModule.GetUnit(UniqueId)
 
 	if Unit then
@@ -1166,7 +1162,7 @@ AbilityEvent.OnClientEvent:Connect(function(UniqueId: string, Index: number, Tim
 	end
 end)
 
-Destroy.OnClientEvent:Connect(function(UniqueIds: { string })
+Destroy.SetCallback(function(UniqueIds: { string })
 	for _, Id in ipairs(UniqueIds) do
 		local Unit = Units[Id]
 		if Unit then

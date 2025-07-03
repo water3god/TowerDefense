@@ -21,6 +21,7 @@ event OnEnd = {
 	data: struct {
 		VotedCount: Vote,
 		Win: boolean,
+		Players: Instance(Player)[],
 	},
 }
 
@@ -49,7 +50,7 @@ event PlayerVoted = {
 	type: Reliable,
 	call: SingleAsync,
 	data: struct {
-		CurrenctCount: Vote,
+		CurrentCount: Vote,
 		NeededCount: Vote,
 	},
 }
@@ -73,6 +74,28 @@ type WaveData = struct {
 	MaxHealth: Health,
 	Time: Time,
 	StartTime: Time,
+}
+
+type ResourceData = struct {
+	Units: string[],
+	Resources: struct {
+		Resource: string,
+		Count: u32,
+	}[],
+	ExistingUnits: struct {
+		Name: string,
+		OldLevel: Level,
+		NewLevel: Level,
+		OldXP: XP,
+		NewXP: XP,
+	}[],
+}
+
+type MainXPData = struct {
+	OldXP: XP,
+	NewXP: XP,
+	OldLevel: Level,
+	NewLevel: Level,
 }
 
 event WaveAdded = {
@@ -115,8 +138,8 @@ event WaveEnded = {
 	call: SingleAsync,
 	data: (
 		boolean,
-		unknown,
-		unknown,
+		ResourceData,
+		MainXPData,
 		f64,
 	),
 }
@@ -148,6 +171,7 @@ event RedeemDailyReward = {
 	from: Client,
 	type: Reliable,
 	call: SingleAsync,
+	data: u8,
 }
 
 event DailySync = {
@@ -185,4 +209,5 @@ event TeleportBack = {
 	from: Client,
 	type: Reliable,
 	call: SingleAsync,
+	data: boolean,
 }
