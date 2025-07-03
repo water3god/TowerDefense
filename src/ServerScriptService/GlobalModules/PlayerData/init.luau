@@ -745,7 +745,8 @@ function PlayerData:AddUnitXP(UnitId: string, XP: number)
 	end
 end
 
-function PlayerData:AddXP(XP: number)
+function PlayerData:AddXP(XPInput: number)
+	local XP = math.floor(math.max(XPInput, 0))
 	local Data = self.Profile.Data
 
 	Data.XP += XP

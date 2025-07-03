@@ -195,58 +195,53 @@ local remotes = ReplicatedStorage:WaitForChild("Zap1")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
+export type StageData = ({
+	["FastestTime"]: (number),
+	["FinishedCount"]: (number),
+})
+export type ResourceData = ({
+	["Resource"]: (string),
+	["Count"]: (number),
+	["UniqueId"]: (string),
+	["PartialOneLose"]: ((boolean)?),
+})
 export type Item = ("Units" | "Products" | "Resources")
+export type Health = (number)
+export type LevelData = ({
+	["Level"]: (number),
+	["XP"]: (number),
+	["NeededXP"]: (number),
+})
+export type TimeData = ({
+	["StartTime"]: (number),
+	["EndTime"]: (number),
+})
+export type VisualUnitData = ({
+	["Unit"]: (string),
+	["Level"]: (number),
+	["UniqueId"]: (string),
+	["XP"]: (number),
+	["NeededXP"]: (number),
+})
+export type ProductId = (number)
 export type SpeedChange = ({
 	["UniqueId"]: (string),
 	["Speed"]: (number),
 	["Time"]: (number),
 })
-export type XP = (number)
-export type EnemyInput = ({
-	["UniqueId"]: (string),
-	["ModelName"]: (string),
-	["Health"]: (number),
-	["MaxHealth"]: (number),
+export type Level = (number)
+export type SpeedChangeData = ({
+	["TimeStart"]: (number),
 	["Speed"]: (number),
-	["IsBoss"]: (boolean),
-	["Ally"]: (boolean),
-	["OriginalSpeed"]: (number),
-	["VectorOffset"]: (Vector3),
-	["BezierId"]: (string),
-	["TimePosition"]: (number),
-	["Time"]: (number),
-	["AdornmentName"]: ((string)?),
-	["SpeedChanges"]: ({ ({
-		["TimeStart"]: (number),
-		["Speed"]: (number),
-		["TimeEnd"]: ((number)?),
-	}) }),
+	["TimeEnd"]: ((number)?),
 })
-export type Health = (number)
+export type Time = (number)
 export type BoothData = ({
 	["OwnerId"]: (number),
 	["MapId"]: (string),
 	["LevelId"]: (string),
 	["Difficulty"]: (string),
 	["Players"]: ({ (Player) }),
-	["StartTime"]: (number),
-	["EndTime"]: (number),
-})
-export type Level = (number)
-export type LevelData = ({
-	["Level"]: (number),
-	["XP"]: (number),
-	["NeededXP"]: (number),
-})
-export type Time = (number)
-export type Difficulty = ("Normal" | "Hard" | "Insane")
-export type ProductData = ({
-	["ProductId"]: (number),
-	["IsGamepass"]: (boolean),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-})
-export type TimeData = ({
 	["StartTime"]: (number),
 	["EndTime"]: (number),
 })
@@ -271,28 +266,33 @@ export type Inventory = ({
 		["PartialOneLose"]: ((boolean)?),
 	}) }),
 })
-export type StageData = ({
-	["FastestTime"]: (number),
-	["FinishedCount"]: (number),
+export type XP = (number)
+export type Difficulty = ("Normal" | "Hard" | "Insane")
+export type EnemyInput = ({
+	["UniqueId"]: (string),
+	["ModelName"]: (string),
+	["Health"]: (number),
+	["MaxHealth"]: (number),
+	["Speed"]: (number),
+	["IsBoss"]: (boolean),
+	["Ally"]: (boolean),
+	["OriginalSpeed"]: (number),
+	["VectorOffset"]: (Vector3),
+	["BezierId"]: (string),
+	["TimePosition"]: (number),
+	["Time"]: (number),
+	["AdornmentName"]: ((string)?),
+	["SpeedChanges"]: ({ ({
+		["TimeStart"]: (number),
+		["Speed"]: (number),
+		["TimeEnd"]: ((number)?),
+	}) }),
 })
-export type ResourceData = ({
-	["Resource"]: (string),
+export type ProductData = ({
+	["ProductId"]: (number),
+	["IsGamepass"]: (boolean),
 	["Count"]: (number),
 	["UniqueId"]: (string),
-	["PartialOneLose"]: ((boolean)?),
-})
-export type ProductId = (number)
-export type SpeedChangeData = ({
-	["TimeStart"]: (number),
-	["Speed"]: (number),
-	["TimeEnd"]: ((number)?),
-})
-export type VisualUnitData = ({
-	["Unit"]: (string),
-	["Level"]: (number),
-	["UniqueId"]: (string),
-	["XP"]: (number),
-	["NeededXP"]: (number),
 })
 
 local function SendEvents()
@@ -520,8 +520,12 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			local len_14 = buffer.readu16(incoming_buff, read(2))
 			for i_1 = 1, len_14 do
 				local val_7
-				local len_15 = buffer.readu16(incoming_buff, read(2))
-				val_7 = buffer.readstring(incoming_buff, read(len_15), len_15)
+				if buffer.readu8(incoming_buff, read(1)) == 1 then
+					local len_15 = buffer.readu16(incoming_buff, read(2))
+					val_7 = buffer.readstring(incoming_buff, read(len_15), len_15)
+				else
+					val_7 = nil
+				end
 				value2[i_1] = val_7
 			end
 			value3 = {}
@@ -885,7 +889,7 @@ local returns = {
 				["UniqueId"]: (string),
 				["PartialOneLose"]: ((boolean)?),
 			}) }),
-		}), Value2: ({ (string) }), Value3: ({
+		}), Value2: ({ ((string)?) }), Value3: ({
 			["Level"]: (number),
 			["XP"]: (number),
 			["NeededXP"]: (number),

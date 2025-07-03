@@ -15,11 +15,25 @@ local AllEquippedSync = Network.AllEquippedSync
 local CurrentData = {}
 
 local function Update(Data: PlayerData.PlayerData, Player: Player?)
-	CurrentData[Data.Player] = Data.Profile.Data.EquippedUnits
+	local SendData = {}
+
+	for Index, Id in pairs(Data.Profile.Data.EquippedUnits) do
+		local UnitData = Data:GetUnitFromId(Id)
+
+		if UnitData then
+			SendData[Index] = {
+				Id = Id,
+				Level = UnitData.Level,
+				UnitName = UnitData.Unit,
+			}
+		end
+	end
+
+	CurrentData[Data.Player] = SendData
 	if Player then
-		AllEquippedSync.FireExcept(Player, { [Data.Player] = Data.Profile.Data.EquippedUnits })
+		AllEquippedSync.FireExcept(Player, { [Data.Player] = SendData })
 	else
-		AllEquippedSync.FireAll({ [Data.Player] = Data.Profile.Data.EquippedUnits })
+		AllEquippedSync.FireAll({ [Data.Player] = SendData })
 	end
 end
 

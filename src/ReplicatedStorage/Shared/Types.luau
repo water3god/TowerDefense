@@ -276,6 +276,7 @@ export type UnitModule = {
 		UnitModel: Model & any,
 		Trove: Trove.Trove,
 		CenterPart: BasePart,
+		PlayWalk: (Enabled: boolean) -> (),
 	},
 	InitPlacement: (Unit: string) -> {
 		Trove: Trove.Trove,

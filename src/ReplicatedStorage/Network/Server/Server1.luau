@@ -288,58 +288,53 @@ end
 Players.PlayerRemoving:Connect(function(player)
 	player_map[player] = nil
 end)
+export type StageData = ({
+	["FastestTime"]: (number),
+	["FinishedCount"]: (number),
+})
+export type ResourceData = ({
+	["Resource"]: (string),
+	["Count"]: (number),
+	["UniqueId"]: (string),
+	["PartialOneLose"]: ((boolean)?),
+})
 export type Item = ("Units" | "Products" | "Resources")
+export type Health = (number)
+export type LevelData = ({
+	["Level"]: (number),
+	["XP"]: (number),
+	["NeededXP"]: (number),
+})
+export type TimeData = ({
+	["StartTime"]: (number),
+	["EndTime"]: (number),
+})
+export type VisualUnitData = ({
+	["Unit"]: (string),
+	["Level"]: (number),
+	["UniqueId"]: (string),
+	["XP"]: (number),
+	["NeededXP"]: (number),
+})
+export type ProductId = (number)
 export type SpeedChange = ({
 	["UniqueId"]: (string),
 	["Speed"]: (number),
 	["Time"]: (number),
 })
-export type XP = (number)
-export type EnemyInput = ({
-	["UniqueId"]: (string),
-	["ModelName"]: (string),
-	["Health"]: (number),
-	["MaxHealth"]: (number),
+export type Level = (number)
+export type SpeedChangeData = ({
+	["TimeStart"]: (number),
 	["Speed"]: (number),
-	["IsBoss"]: (boolean),
-	["Ally"]: (boolean),
-	["OriginalSpeed"]: (number),
-	["VectorOffset"]: (Vector3),
-	["BezierId"]: (string),
-	["TimePosition"]: (number),
-	["Time"]: (number),
-	["AdornmentName"]: ((string)?),
-	["SpeedChanges"]: ({ ({
-		["TimeStart"]: (number),
-		["Speed"]: (number),
-		["TimeEnd"]: ((number)?),
-	}) }),
+	["TimeEnd"]: ((number)?),
 })
-export type Health = (number)
+export type Time = (number)
 export type BoothData = ({
 	["OwnerId"]: (number),
 	["MapId"]: (string),
 	["LevelId"]: (string),
 	["Difficulty"]: (string),
 	["Players"]: ({ (Player) }),
-	["StartTime"]: (number),
-	["EndTime"]: (number),
-})
-export type Level = (number)
-export type LevelData = ({
-	["Level"]: (number),
-	["XP"]: (number),
-	["NeededXP"]: (number),
-})
-export type Time = (number)
-export type Difficulty = ("Normal" | "Hard" | "Insane")
-export type ProductData = ({
-	["ProductId"]: (number),
-	["IsGamepass"]: (boolean),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-})
-export type TimeData = ({
 	["StartTime"]: (number),
 	["EndTime"]: (number),
 })
@@ -364,28 +359,33 @@ export type Inventory = ({
 		["PartialOneLose"]: ((boolean)?),
 	}) }),
 })
-export type StageData = ({
-	["FastestTime"]: (number),
-	["FinishedCount"]: (number),
+export type XP = (number)
+export type Difficulty = ("Normal" | "Hard" | "Insane")
+export type EnemyInput = ({
+	["UniqueId"]: (string),
+	["ModelName"]: (string),
+	["Health"]: (number),
+	["MaxHealth"]: (number),
+	["Speed"]: (number),
+	["IsBoss"]: (boolean),
+	["Ally"]: (boolean),
+	["OriginalSpeed"]: (number),
+	["VectorOffset"]: (Vector3),
+	["BezierId"]: (string),
+	["TimePosition"]: (number),
+	["Time"]: (number),
+	["AdornmentName"]: ((string)?),
+	["SpeedChanges"]: ({ ({
+		["TimeStart"]: (number),
+		["Speed"]: (number),
+		["TimeEnd"]: ((number)?),
+	}) }),
 })
-export type ResourceData = ({
-	["Resource"]: (string),
+export type ProductData = ({
+	["ProductId"]: (number),
+	["IsGamepass"]: (boolean),
 	["Count"]: (number),
 	["UniqueId"]: (string),
-	["PartialOneLose"]: ((boolean)?),
-})
-export type ProductId = (number)
-export type SpeedChangeData = ({
-	["TimeStart"]: (number),
-	["Speed"]: (number),
-	["TimeEnd"]: ((number)?),
-})
-export type VisualUnitData = ({
-	["Unit"]: (string),
-	["Level"]: (number),
-	["UniqueId"]: (string),
-	["XP"]: (number),
-	["NeededXP"]: (number),
 })
 
 local function SendEvents()
@@ -1392,7 +1392,7 @@ local returns = {
 				["UniqueId"]: (string),
 				["PartialOneLose"]: ((boolean)?),
 			}) }),
-		}), Value2: ({ (string) }), Value3: ({
+		}), Value2: ({ ((string)?) }), Value3: ({
 			["Level"]: (number),
 			["XP"]: (number),
 			["NeededXP"]: (number),
@@ -1486,11 +1486,18 @@ local returns = {
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_58)
 			for i_2 = 1, len_58 do
 				local val_2 = Value2[i_2]
-				local len_59 = #val_2
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_59)
-				alloc(len_59)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_2, len_59)
+				if val_2 == nil then
+					alloc(1)
+					buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+				else
+					alloc(1)
+					buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+					local len_59 = #val_2
+					alloc(2)
+					buffer.writeu16(outgoing_buff, outgoing_apos, len_59)
+					alloc(len_59)
+					buffer.writestring(outgoing_buff, outgoing_apos, val_2, len_59)
+				end
 			end
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value3["Level"])
@@ -1522,7 +1529,7 @@ local returns = {
 				["UniqueId"]: (string),
 				["PartialOneLose"]: ((boolean)?),
 			}) }),
-		}), Value2: ({ (string) }), Value3: ({
+		}), Value2: ({ ((string)?) }), Value3: ({
 			["Level"]: (number),
 			["XP"]: (number),
 			["NeededXP"]: (number),
@@ -1616,11 +1623,18 @@ local returns = {
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_71)
 			for i_3 = 1, len_71 do
 				local val_3 = Value2[i_3]
-				local len_72 = #val_3
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_72)
-				alloc(len_72)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_3, len_72)
+				if val_3 == nil then
+					alloc(1)
+					buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+				else
+					alloc(1)
+					buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+					local len_72 = #val_3
+					alloc(2)
+					buffer.writeu16(outgoing_buff, outgoing_apos, len_72)
+					alloc(len_72)
+					buffer.writestring(outgoing_buff, outgoing_apos, val_3, len_72)
+				end
 			end
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value3["Level"])
@@ -1659,7 +1673,7 @@ local returns = {
 				["UniqueId"]: (string),
 				["PartialOneLose"]: ((boolean)?),
 			}) }),
-		}), Value2: ({ (string) }), Value3: ({
+		}), Value2: ({ ((string)?) }), Value3: ({
 			["Level"]: (number),
 			["XP"]: (number),
 			["NeededXP"]: (number),
@@ -1753,11 +1767,18 @@ local returns = {
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_84)
 			for i_4 = 1, len_84 do
 				local val_4 = Value2[i_4]
-				local len_85 = #val_4
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_85)
-				alloc(len_85)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_4, len_85)
+				if val_4 == nil then
+					alloc(1)
+					buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+				else
+					alloc(1)
+					buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+					local len_85 = #val_4
+					alloc(2)
+					buffer.writeu16(outgoing_buff, outgoing_apos, len_85)
+					alloc(len_85)
+					buffer.writestring(outgoing_buff, outgoing_apos, val_4, len_85)
+				end
 			end
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value3["Level"])
@@ -1798,7 +1819,7 @@ local returns = {
 				["UniqueId"]: (string),
 				["PartialOneLose"]: ((boolean)?),
 			}) }),
-		}), Value2: ({ (string) }), Value3: ({
+		}), Value2: ({ ((string)?) }), Value3: ({
 			["Level"]: (number),
 			["XP"]: (number),
 			["NeededXP"]: (number),
@@ -1892,11 +1913,18 @@ local returns = {
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_97)
 			for i_5 = 1, len_97 do
 				local val_5 = Value2[i_5]
-				local len_98 = #val_5
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_98)
-				alloc(len_98)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_5, len_98)
+				if val_5 == nil then
+					alloc(1)
+					buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+				else
+					alloc(1)
+					buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+					local len_98 = #val_5
+					alloc(2)
+					buffer.writeu16(outgoing_buff, outgoing_apos, len_98)
+					alloc(len_98)
+					buffer.writestring(outgoing_buff, outgoing_apos, val_5, len_98)
+				end
 			end
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value3["Level"])
@@ -1935,7 +1963,7 @@ local returns = {
 				["UniqueId"]: (string),
 				["PartialOneLose"]: ((boolean)?),
 			}) }),
-		}), Value2: ({ (string) }), Value3: ({
+		}), Value2: ({ ((string)?) }), Value3: ({
 			["Level"]: (number),
 			["XP"]: (number),
 			["NeededXP"]: (number),
@@ -2029,11 +2057,18 @@ local returns = {
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_110)
 			for i_6 = 1, len_110 do
 				local val_6 = Value2[i_6]
-				local len_111 = #val_6
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_111)
-				alloc(len_111)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_6, len_111)
+				if val_6 == nil then
+					alloc(1)
+					buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+				else
+					alloc(1)
+					buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+					local len_111 = #val_6
+					alloc(2)
+					buffer.writeu16(outgoing_buff, outgoing_apos, len_111)
+					alloc(len_111)
+					buffer.writestring(outgoing_buff, outgoing_apos, val_6, len_111)
+				end
 			end
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value3["Level"])

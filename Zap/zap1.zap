@@ -242,7 +242,7 @@ event InventorySync = {
 	call: SingleAsync,
 	data: (
 		Inventory,
-		string[],
+		string?[],
 		LevelData,
 		u16,
 	),

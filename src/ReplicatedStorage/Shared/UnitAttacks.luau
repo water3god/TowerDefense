@@ -411,6 +411,11 @@ local UnitAttacks: {
 				end,
 			},
 		},
+		["Leonidas"] = {
+			[0] = {
+				DefaultAttack,
+			},
+		},
 		["William the Conqueror"] = {
 			[0] = {
 				DefaultAttack,

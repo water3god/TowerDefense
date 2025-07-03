@@ -253,8 +253,8 @@ LocationEvent.SetCallback(function(UniqueId: string, Waypoints: { Vector3 }?)
 end)
 
 SpawnEvent.SetCallback(function(Data: { [string]: Types.EnemyInput }, SpectateFire: boolean)
-	for _, EnemyInput in pairs(Data) do
-		if not Enemies[EnemyInput.UniqueId] then
+	for UniqueId, EnemyInput in pairs(Data) do
+		if not Enemies[UniqueId] then
 			NewEnemy(EnemyInput, SpectateFire)
 		else
 			task.spawn(function()

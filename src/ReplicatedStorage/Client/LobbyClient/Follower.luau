@@ -23,9 +23,9 @@ local Player = Players.LocalPlayer
 
 local Positions = {
 	Vector3.new(1, 0, 0),
-	Vector3.new(0.5, 0, 0.5),
+	Vector3.new(0.75, 0, 0.75),
 	Vector3.new(0, 0, 1),
-	Vector3.new(-0.5, 0, 0.5),
+	Vector3.new(-0.75, 0, 0.75),
 	Vector3.new(-1, 0, 0),
 }
 
@@ -85,6 +85,9 @@ function Follower.new(Data: Input): Follower
 	self.Trove:Add(FollowerData.Trove)
 	self.Follower = FollowerData.UnitModel
 	self.CharRoot = FollowerData.CenterPart
+	self.CharRoot.Anchored = true
+
+	local PlayWalk = FollowerData.PlayWalk
 
 	local RootAttachment = self.CharRoot:FindFirstChild("RootAttachment") :: Attachment
 
@@ -94,6 +97,7 @@ function Follower.new(Data: Input): Follower
 	self.IdealPart = self.Trove:Add(HelperFunctions.CreateRaw())
 	self.IdealPart.Transparency = 1
 	self.IdealPart.Name = "IdealPart"
+	self.IdealPart.Anchored = false
 	self.IdealPart.Parent = self.Follower
 
 	local Attachment = self.Trove:Construct(Instance, "Attachment") :: Attachment
@@ -109,16 +113,16 @@ function Follower.new(Data: Input): Follower
 
 	self.AlignOrientation = self.Trove:Construct(Instance, "AlignOrientation") :: AlignOrientation
 	self.AlignOrientation.Name = "FollowerAlignOrientation"
-	self.AlignOrientation.RigidityEnabled = true
+
 	self.AlignOrientation.Attachment0 = Attachment
-	self.AlignOrientation.Attachment1 = RootAttachment
+	self.AlignOrientation.Mode = Enum.OrientationAlignmentMode.OneAttachment
 	self.AlignOrientation.Parent = self.CharRoot
 
 	self.AlignPosition = self.Trove:Construct(Instance, "AlignPosition") :: AlignPosition
 	self.AlignPosition.Name = "FollowerAlignPosition"
-	self.AlignPosition.RigidityEnabled = true
-	self.AlignOrientation.Attachment0 = Attachment
-	self.AlignOrientation.Attachment1 = RootAttachment
+
+	self.AlignPosition.Attachment0 = Attachment
+	self.AlignPosition.Mode = Enum.PositionAlignmentMode.OneAttachment
 	self.AlignPosition.Parent = self.CharRoot
 
 	for _, Descendant in ipairs(self.Follower:GetDescendants()) do
@@ -127,18 +131,63 @@ function Follower.new(Data: Input): Follower
 		end
 	end
 
+	local LastPosition = self.CharRoot.Position
+	local Count = 0
+	local InWalk = false
+
 	self.Trove:Connect(RunService.PostSimulation, function()
 		local CharCFrame = self.Character.HumanoidRootPart.CFrame
-		local Position = CharCFrame:VectorToWorldSpace(Positions[Data.Index])
-		local FollowerCFrame = CFrame.new(Position - Vector3.new(0, 3, 0)) * CharCFrame.Rotation
+		local AlteredCFrame = CharCFrame - CharCFrame:VectorToWorldSpace(Positions[Data.Index] * 6)
 
-		local Raycast = workspace:Raycast(FollowerCFrame.Position + Vector3.new(0, 1, 1), -Vector3.yAxis * 10, Params)
+		local Raycast = workspace:Raycast(AlteredCFrame.Position + Vector3.new(0, 1, 1), -Vector3.yAxis * 10, Params)
 
 		if Raycast and Raycast.Position then
-			self.IdealPart.Position = Raycast.Position
+			local NewCFrame = (CFrame.new(Raycast.Position)) * AlteredCFrame.Rotation
+			self.AlignPosition.Position = NewCFrame.Position
+			self.AlignOrientation.CFrame = NewCFrame
 		else
-			self.IdealPart.Position = FollowerCFrame.Position
+			local NewCFrame = CFrame.new(AlteredCFrame.Position) * AlteredCFrame.Rotation
+			self.AlignPosition.Position = NewCFrame.Position
+			self.AlignOrientation.CFrame = NewCFrame
 		end
+
+		local OtherRay = workspace:Raycast(self.IdealPart.Position + Vector3.new(0, 3, 0), -Vector3.yAxis * 10, Params)
+
+		if OtherRay and OtherRay.Position then
+			local Position = Vector3.new(self.IdealPart.CFrame.X, OtherRay.Position.Y, self.IdealPart.CFrame.Z)
+			self.CharRoot.CFrame = (CFrame.new(Position) + Vector3.new(0, 1.8, 0)) * self.IdealPart.CFrame.Rotation
+		else
+			self.CharRoot.CFrame = self.IdealPart.CFrame
+		end
+
+		local Movement = LastPosition - self.CharRoot.Position
+
+		if Movement.Magnitude > 0.1 then
+			if not InWalk then
+				Count += 1
+			else
+				Count = 0
+			end
+		else
+			if InWalk then
+				Count += 1
+			else
+				Count = 0
+			end
+		end
+
+		if Count > 10 then
+			if InWalk then
+				PlayWalk(false)
+				InWalk = false
+			else
+				PlayWalk(true)
+				InWalk = true
+			end
+			Count = 0
+		end
+
+		LastPosition = self.CharRoot.Position
 	end)
 
 	self.Trove:AddPromise(Promise.defer(function(resolve)

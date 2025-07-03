@@ -20,15 +20,20 @@ local GlobalClient = Client.GlobalClient
 local InventoryService = require(GlobalClient.InventoryService)
 
 local Equipped = {}
+export type UnitDataSent = {
+	Id: string,
+	Level: number,
+	UnitName: string,
+}
 
-local function GetEquipped(player: Player): { string }
+local function GetEquipped(player: Player): { UnitDataSent }
 	return Equipped[player] or {}
 end
 
 local Module: {
-	Equipped: { [Player]: { string } },
-	Changed: Signal.Signal<Player, { string }>,
-	GetEquipped: (Player: Player) -> { string },
+	Equipped: { [Player]: { UnitDataSent } },
+	Changed: Signal.Signal<Player, { UnitDataSent }>,
+	GetEquipped: (Player: Player) -> { UnitDataSent },
 } =
 	{
 		Equipped = Equipped,
@@ -36,23 +41,40 @@ local Module: {
 		GetEquipped = GetEquipped,
 	}
 
-AllEquippedSync.SetCallback(function(Data: { [Player]: { string } })
+AllEquippedSync.SetCallback(function(Data: { [Player]: { UnitDataSent } })
 	for Player, EquippedUnits in pairs(Data) do
 		Equipped[Player] = EquippedUnits
 		Module.Changed:Fire(Player, EquippedUnits)
 	end
 end)
 
+local function GetUnitData(Data: { string })
+	local NewData = {}
+	local Inventory = InventoryService:GetInventory()
+	for Index, Id in pairs(Data) do
+		local UnitData = Inventory.Units[Id]
+		if UnitData then
+			NewData[Index] = {
+				Id = Id,
+				Level = UnitData.Level,
+				UnitName = UnitData.Unit,
+			}
+		end
+	end
+
+	return NewData
+end
+
 task.spawn(function()
 	if not InventoryService.IsSynced then
 		InventoryService.Synced:Wait()
 	end
-	Equipped[LocalPlayer] = InventoryService.EquippedUnits
+	Equipped[LocalPlayer] = GetUnitData(InventoryService.EquippedUnits)
 	Module.Changed:Fire(LocalPlayer, Equipped[LocalPlayer])
 end)
 
 InventoryService.UnitEquipChanged:Connect(function()
-	Equipped[LocalPlayer] = InventoryService.EquippedUnits
+	Equipped[LocalPlayer] = GetUnitData(InventoryService.EquippedUnits)
 	Module.Changed:Fire(LocalPlayer, Equipped[LocalPlayer])
 end)
 

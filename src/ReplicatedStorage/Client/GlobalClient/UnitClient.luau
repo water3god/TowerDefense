@@ -15,6 +15,7 @@ local Player = Players.LocalPlayer
 local ModelStorage = ReplicatedStorage.ModelStorage
 local UnitsAnimations = ReplicatedStorage.Animations.Units
 local Default = UnitsAnimations.Default
+local DefaultWalk = UnitsAnimations.Walk
 local _Global = UnitsAnimations.Global
 
 local GlobalWorkspace = workspace.GlobalWorkspace
@@ -702,6 +703,19 @@ local function GetIdle(Unit: string)
 	return Default
 end
 
+local function GetWalk(Unit: string)
+	local AnimFolder = UnitsAnimations:FindFirstChild(Unit)
+	if AnimFolder then
+		local Walk = AnimFolder:FindFirstChild("Walk")
+
+		if Walk then
+			return Walk
+		end
+	end
+
+	return DefaultWalk
+end
+
 local DefaultCFrame = CFrame.new(0, -0.4, -2) * CFrame.Angles(0, math.rad(-180), 0)
 
 function UnitModule.InitCharacter(Unit: string, Position: CFrame?)
@@ -741,6 +755,18 @@ function UnitModule.InitCharacter(Unit: string, Position: CFrame?)
 
 	local Connection: RBXScriptConnection? = nil
 
+	local WalkAnim: AnimationTrack? = nil
+
+	local function PlayWalk(Enabled: boolean)
+		if WalkAnim then
+			if Enabled then
+				WalkAnim:Play()
+			else
+				WalkAnim:Stop()
+			end
+		end
+	end
+
 	Connection = InitTrove:Add(UnitModel:GetPropertyChangedSignal("Parent"):Connect(function()
 		if UnitModel.Parent ~= nil then
 			if Connection then
@@ -752,6 +778,10 @@ function UnitModule.InitCharacter(Unit: string, Position: CFrame?)
 				local Track = Animator:LoadAnimation(Animation)
 				Track:Play(0)
 			end
+			local Walk = GetWalk(Unit)
+			if Walk then
+				WalkAnim = Animator:LoadAnimation(Walk)
+			end
 		end
 	end))
 
@@ -759,6 +789,7 @@ function UnitModule.InitCharacter(Unit: string, Position: CFrame?)
 		UnitModel = UnitModel,
 		Trove = InitTrove,
 		CenterPart = CenterPart,
+		PlayWalk = PlayWalk,
 	}
 end
 
