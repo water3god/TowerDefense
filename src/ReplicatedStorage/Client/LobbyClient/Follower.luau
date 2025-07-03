@@ -5,7 +5,6 @@
 -- Services --
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
 
 local Packages = ReplicatedStorage.Packages
 local Trove = require(Packages.Trove)
@@ -83,15 +82,13 @@ function Follower.new(Data: Input): Follower
 	self.Destroying = self.Trove:Construct(Signal)
 
 	self.Character = Player.Character
-	local FollowerData = UnitClient.InitCharacter(Data.UnitName, self.Character.HumanoidRootPart.CFrame)
+	local FollowerData = UnitClient.InitCharacter(Data.UnitName)
 	self.Trove:Add(FollowerData.Trove)
 	self.Follower = FollowerData.UnitModel
 	self.CharRoot = FollowerData.CenterPart
 	self.CharRoot.Anchored = true
 
 	local PlayWalk = FollowerData.PlayWalk
-
-	local RootAttachment = self.CharRoot:FindFirstChild("RootAttachment") :: Attachment
 
 	self.Humanoid = self.Character.Humanoid
 	self.Animator = self.Character.Humanoid.Animator
@@ -106,12 +103,13 @@ function Follower.new(Data: Input): Follower
 	Attachment.Name = "FollowerAttachment"
 	Attachment.Parent = self.IdealPart
 
+	--[[
 	self.IKControl = self.Trove:Construct(Instance, "IKControl") :: IKControl
 	self.IKControl.Enabled = false
 	self.IKControl.Name = "FollowerIKControl"
 	self.IKControl.Type = Enum.IKControlType.Transform
 	self.IKControl.EndEffector = self.Character.LeftHand
-	self.IKControl.Parent = self.Follower
+	self.IKControl.Parent = self.Follower]]
 
 	self.AlignOrientation = self.Trove:Construct(Instance, "AlignOrientation") :: AlignOrientation
 	self.AlignOrientation.Name = "FollowerAlignOrientation"
@@ -169,6 +167,10 @@ function Follower.new(Data: Input): Follower
 	end
 
 	self.Trove:BindToRenderStep("Follower" .. self.UniqueId, Enum.RenderPriority.Character.Value, function()
+		if not self.Character.HumanoidRootPart then
+			return
+		end
+
 		local CharCFrame = self.Character.HumanoidRootPart.CFrame
 		local AlteredCFrame = CharCFrame - CharCFrame:VectorToWorldSpace(Positions[Data.Index] * 6)
 

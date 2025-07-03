@@ -6,9 +6,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 
-local Modules = ReplicatedStorage.Modules
-local HelperFunctions = require(Modules.HelperFunctions)
-
 local Client = ReplicatedStorage.Client
 local GlobalClient = Client.GlobalClient
 local AllEquipped = require(GlobalClient.AllEquipped)
