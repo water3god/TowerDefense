@@ -14,6 +14,7 @@ local Promise = require(Packages.Promise)
 
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
+local GenerateId = require(Modules.GenerateId)
 
 local Client = ReplicatedStorage.Client
 local GlobalClient = Client.GlobalClient
@@ -41,6 +42,7 @@ export type Input = {
 }
 
 type FollowerData = {
+	UniqueId: string,
 	Trove: Trove.Trove,
 
 	Character: Character,
@@ -75,13 +77,13 @@ Params.CollisionGroup = "Character"
 function Follower.new(Data: Input): Follower
 	local self = setmetatable({}, Follower) :: Follower
 
+	self.UniqueId = GenerateId.GenerateId()
 	self.Trove = Trove.new()
 
 	self.Destroying = self.Trove:Construct(Signal)
 
 	self.Character = Player.Character
-
-	local FollowerData = UnitClient.InitCharacter(Data.UnitName)
+	local FollowerData = UnitClient.InitCharacter(Data.UnitName, self.Character.HumanoidRootPart.CFrame)
 	self.Trove:Add(FollowerData.Trove)
 	self.Follower = FollowerData.UnitModel
 	self.CharRoot = FollowerData.CenterPart
@@ -135,31 +137,7 @@ function Follower.new(Data: Input): Follower
 	local Count = 0
 	local InWalk = false
 
-	self.Trove:Connect(RunService.PostSimulation, function()
-		local CharCFrame = self.Character.HumanoidRootPart.CFrame
-		local AlteredCFrame = CharCFrame - CharCFrame:VectorToWorldSpace(Positions[Data.Index] * 6)
-
-		local Raycast = workspace:Raycast(AlteredCFrame.Position + Vector3.new(0, 1, 1), -Vector3.yAxis * 10, Params)
-
-		if Raycast and Raycast.Position then
-			local NewCFrame = (CFrame.new(Raycast.Position)) * AlteredCFrame.Rotation
-			self.AlignPosition.Position = NewCFrame.Position
-			self.AlignOrientation.CFrame = NewCFrame
-		else
-			local NewCFrame = CFrame.new(AlteredCFrame.Position) * AlteredCFrame.Rotation
-			self.AlignPosition.Position = NewCFrame.Position
-			self.AlignOrientation.CFrame = NewCFrame
-		end
-
-		local OtherRay = workspace:Raycast(self.IdealPart.Position + Vector3.new(0, 3, 0), -Vector3.yAxis * 10, Params)
-
-		if OtherRay and OtherRay.Position then
-			local Position = Vector3.new(self.IdealPart.CFrame.X, OtherRay.Position.Y, self.IdealPart.CFrame.Z)
-			self.CharRoot.CFrame = (CFrame.new(Position) + Vector3.new(0, 1.8, 0)) * self.IdealPart.CFrame.Rotation
-		else
-			self.CharRoot.CFrame = self.IdealPart.CFrame
-		end
-
+	local function UpdateWalk()
 		local Movement = LastPosition - self.CharRoot.Position
 
 		if Movement.Magnitude > 0.1 then
@@ -188,6 +166,34 @@ function Follower.new(Data: Input): Follower
 		end
 
 		LastPosition = self.CharRoot.Position
+	end
+
+	self.Trove:BindToRenderStep("Follower" .. self.UniqueId, Enum.RenderPriority.Character.Value, function()
+		local CharCFrame = self.Character.HumanoidRootPart.CFrame
+		local AlteredCFrame = CharCFrame - CharCFrame:VectorToWorldSpace(Positions[Data.Index] * 6)
+
+		local Raycast = workspace:Raycast(AlteredCFrame.Position + Vector3.new(0, 1, 1), -Vector3.yAxis * 10, Params)
+
+		if Raycast and Raycast.Position then
+			local NewCFrame = (CFrame.new(Raycast.Position)) * AlteredCFrame.Rotation
+			self.AlignPosition.Position = NewCFrame.Position
+			self.AlignOrientation.CFrame = NewCFrame
+		else
+			local NewCFrame = CFrame.new(AlteredCFrame.Position) * AlteredCFrame.Rotation
+			self.AlignPosition.Position = NewCFrame.Position
+			self.AlignOrientation.CFrame = NewCFrame
+		end
+
+		local OtherRay = workspace:Raycast(self.IdealPart.Position + Vector3.new(0, 3, 0), -Vector3.yAxis * 10, Params)
+
+		if OtherRay and OtherRay.Position then
+			local Position = Vector3.new(self.IdealPart.CFrame.X, OtherRay.Position.Y, self.IdealPart.CFrame.Z)
+			self.CharRoot.CFrame = (CFrame.new(Position) + Vector3.new(0, 1.8, 0)) * self.IdealPart.CFrame.Rotation
+		else
+			self.CharRoot.CFrame = self.IdealPart.CFrame
+		end
+
+		UpdateWalk()
 	end)
 
 	self.Trove:AddPromise(Promise.defer(function(resolve)
@@ -199,6 +205,7 @@ function Follower.new(Data: Input): Follower
 end
 
 function Follower:Destroy()
+	GenerateId.RemoveId(self.UniqueId)
 	self.Trove:Destroy()
 	setmetatable(self :: any, nil)
 end

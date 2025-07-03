@@ -40,21 +40,22 @@ local function InitalizePlayer(Player: Player)
 
 		local Connection = AllEquipped.Changed:Connect(function(OtherPlayer, Data)
 			if OtherPlayer == Player then
-				for Key, FollowerData in pairs(FollowerCache[Player]) do
-					if not Data[Key] then
-						FollowerData.Follower:Destroy()
-					end
-					Data[Key] = nil
-				end
-
 				for Index, UnitData in pairs(Data) do
 					local CachedTable = FollowerCache[Player][Index]
-					if not CachedTable or not HelperFunctions.IsSameTable(CachedTable, UnitData) then
+					if not CachedTable or CachedTable.UniqueId ~= UnitData.Id then
 						if FollowerCache[Player][Index] then
 							FollowerCache[Player][Index].Follower:Destroy()
 						end
+
 						FollowerCache[Player][Index] =
 							{ UniqueId = UnitData.Id, Follower = CreateFollower(Character, UnitData, Index) }
+					end
+				end
+
+				for Key, FollowerData in pairs(FollowerCache[Player]) do
+					if not Data[Key] then
+						FollowerData.Follower:Destroy()
+						FollowerCache[Player][Key] = nil
 					end
 				end
 			end
