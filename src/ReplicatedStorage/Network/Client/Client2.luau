@@ -231,18 +231,24 @@ local remotes = ReplicatedStorage:WaitForChild("Zap2")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
-export type SortType = ("First" | "Last" | "Strongest" | "Weakest")
-export type UnitInput = ({
+export type ProductId = (number)
+export type Time = (number)
+export type AbilityIndex = (number)
+export type UnitAttackInput = ({
 	["UniqueId"]: (string),
-	["UnitName"]: (string),
-	["CFrame"]: (CFrame),
-	["OwnerId"]: ((number)?),
-	["AttackPriority"]: (string),
-	["Level"]: (number),
-	["CollisionRadius"]: (number),
+	["Index"]: (number),
+	["EnemyId"]: (string),
+	["Firetime"]: (number),
 	["SpeedRatio"]: (number),
-	["Abilities"]: ({ (number) }),
 })
+export type SortType = ("First" | "Last" | "Strongest" | "Weakest")
+export type PlacementData = ({
+	["Unit"]: (string),
+	["UnitPosition"]: (Vector3),
+	["RotationIndex"]: (number),
+})
+export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
+export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
 export type RollData = ({
 	["SentTime"]: (number),
 	["Data"]: ({ ({
@@ -251,24 +257,17 @@ export type RollData = ({
 	}) }),
 	["AutoRoll"]: (boolean),
 })
-export type UnitAttackInput = ({
+export type UnitInput = ({
 	["UniqueId"]: (string),
-	["Index"]: (number),
-	["EnemyId"]: (string),
-	["Firetime"]: (number),
+	["UnitName"]: (string),
+	["CFrame"]: (CFrame),
+	["OwnerId"]: ((number)?),
+	["AttackPriority"]: (string),
+	["Level"]: (number),
 	["SpeedRatio"]: (number),
-})
-export type PlacementData = ({
-	["Unit"]: (string),
-	["UnitPosition"]: (Vector3),
-	["RotationIndex"]: (number),
+	["Abilities"]: ({ (number) }),
 })
 export type XP = (number)
-export type ProductId = (number)
-export type AbilityIndex = (number)
-export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
-export type Time = (number)
-export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
 export type Health = (number)
 export type Level = (number)
 
@@ -386,7 +385,6 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 				local len_6 = buffer.readu16(incoming_buff, read(2))
 				val_1["AttackPriority"] = buffer.readstring(incoming_buff, read(len_6), len_6)
 				val_1["Level"] = buffer.readu16(incoming_buff, read(2))
-				val_1["CollisionRadius"] = buffer.readf32(incoming_buff, read(4))
 				val_1["SpeedRatio"] = buffer.readf32(incoming_buff, read(4))
 				val_1["Abilities"] = {}
 				local len_7 = buffer.readu16(incoming_buff, read(2))
@@ -775,7 +773,6 @@ local returns = {
 			["OwnerId"]: ((number)?),
 			["AttackPriority"]: (string),
 			["Level"]: (number),
-			["CollisionRadius"]: (number),
 			["SpeedRatio"]: (number),
 			["Abilities"]: ({ (number) }),
 		}) }), Value2: (boolean)) -> ()): () -> ()

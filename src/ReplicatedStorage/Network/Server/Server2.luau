@@ -332,18 +332,24 @@ end
 Players.PlayerRemoving:Connect(function(player)
 	player_map[player] = nil
 end)
-export type SortType = ("First" | "Last" | "Strongest" | "Weakest")
-export type UnitInput = ({
+export type ProductId = (number)
+export type Time = (number)
+export type AbilityIndex = (number)
+export type UnitAttackInput = ({
 	["UniqueId"]: (string),
-	["UnitName"]: (string),
-	["CFrame"]: (CFrame),
-	["OwnerId"]: ((number)?),
-	["AttackPriority"]: (string),
-	["Level"]: (number),
-	["CollisionRadius"]: (number),
+	["Index"]: (number),
+	["EnemyId"]: (string),
+	["Firetime"]: (number),
 	["SpeedRatio"]: (number),
-	["Abilities"]: ({ (number) }),
 })
+export type SortType = ("First" | "Last" | "Strongest" | "Weakest")
+export type PlacementData = ({
+	["Unit"]: (string),
+	["UnitPosition"]: (Vector3),
+	["RotationIndex"]: (number),
+})
+export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
+export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
 export type RollData = ({
 	["SentTime"]: (number),
 	["Data"]: ({ ({
@@ -352,24 +358,17 @@ export type RollData = ({
 	}) }),
 	["AutoRoll"]: (boolean),
 })
-export type UnitAttackInput = ({
+export type UnitInput = ({
 	["UniqueId"]: (string),
-	["Index"]: (number),
-	["EnemyId"]: (string),
-	["Firetime"]: (number),
+	["UnitName"]: (string),
+	["CFrame"]: (CFrame),
+	["OwnerId"]: ((number)?),
+	["AttackPriority"]: (string),
+	["Level"]: (number),
 	["SpeedRatio"]: (number),
-})
-export type PlacementData = ({
-	["Unit"]: (string),
-	["UnitPosition"]: (Vector3),
-	["RotationIndex"]: (number),
+	["Abilities"]: ({ (number) }),
 })
 export type XP = (number)
-export type ProductId = (number)
-export type AbilityIndex = (number)
-export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
-export type Time = (number)
-export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
 export type Health = (number)
 export type Level = (number)
 
@@ -858,7 +857,6 @@ local returns = {
 			["OwnerId"]: ((number)?),
 			["AttackPriority"]: (string),
 			["Level"]: (number),
-			["CollisionRadius"]: (number),
 			["SpeedRatio"]: (number),
 			["Abilities"]: ({ (number) }),
 		}) }), Value2: (boolean))
@@ -915,8 +913,6 @@ local returns = {
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, v_1["Level"])
 				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, v_1["CollisionRadius"])
-				alloc(4)
 				buffer.writef32(outgoing_buff, outgoing_apos, v_1["SpeedRatio"])
 				local len_25 = #v_1["Abilities"]
 				alloc(2)
@@ -939,7 +935,6 @@ local returns = {
 			["OwnerId"]: ((number)?),
 			["AttackPriority"]: (string),
 			["Level"]: (number),
-			["CollisionRadius"]: (number),
 			["SpeedRatio"]: (number),
 			["Abilities"]: ({ (number) }),
 		}) }), Value2: (boolean))
@@ -996,8 +991,6 @@ local returns = {
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, v_2["Level"])
 				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, v_2["CollisionRadius"])
-				alloc(4)
 				buffer.writef32(outgoing_buff, outgoing_apos, v_2["SpeedRatio"])
 				local len_31 = #v_2["Abilities"]
 				alloc(2)
@@ -1027,7 +1020,6 @@ local returns = {
 			["OwnerId"]: ((number)?),
 			["AttackPriority"]: (string),
 			["Level"]: (number),
-			["CollisionRadius"]: (number),
 			["SpeedRatio"]: (number),
 			["Abilities"]: ({ (number) }),
 		}) }), Value2: (boolean))
@@ -1084,8 +1076,6 @@ local returns = {
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, v_3["Level"])
 				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, v_3["CollisionRadius"])
-				alloc(4)
 				buffer.writef32(outgoing_buff, outgoing_apos, v_3["SpeedRatio"])
 				local len_37 = #v_3["Abilities"]
 				alloc(2)
@@ -1117,7 +1107,6 @@ local returns = {
 			["OwnerId"]: ((number)?),
 			["AttackPriority"]: (string),
 			["Level"]: (number),
-			["CollisionRadius"]: (number),
 			["SpeedRatio"]: (number),
 			["Abilities"]: ({ (number) }),
 		}) }), Value2: (boolean))
@@ -1174,8 +1163,6 @@ local returns = {
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, v_4["Level"])
 				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, v_4["CollisionRadius"])
-				alloc(4)
 				buffer.writef32(outgoing_buff, outgoing_apos, v_4["SpeedRatio"])
 				local len_43 = #v_4["Abilities"]
 				alloc(2)
@@ -1205,7 +1192,6 @@ local returns = {
 			["OwnerId"]: ((number)?),
 			["AttackPriority"]: (string),
 			["Level"]: (number),
-			["CollisionRadius"]: (number),
 			["SpeedRatio"]: (number),
 			["Abilities"]: ({ (number) }),
 		}) }), Value2: (boolean))
@@ -1261,8 +1247,6 @@ local returns = {
 				buffer.writestring(outgoing_buff, outgoing_apos, v_5["AttackPriority"], len_48)
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, v_5["Level"])
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, v_5["CollisionRadius"])
 				alloc(4)
 				buffer.writef32(outgoing_buff, outgoing_apos, v_5["SpeedRatio"])
 				local len_49 = #v_5["Abilities"]

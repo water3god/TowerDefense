@@ -207,7 +207,6 @@ type UnitInput = struct {
 	OwnerId: f64?,
 	AttackPriority: string,
 	Level: Level,
-	CollisionRadius: f32,
 	SpeedRatio: f32,
 	Abilities: f64[],
 }

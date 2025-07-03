@@ -40,8 +40,6 @@ type EnemyData = {
 	UniqueId: string,
 	Trove: Trove.Trove,
 
-	Players: { Player }?,
-
 	CFrame: CFrame,
 	TimePosition: number,
 
@@ -156,7 +154,7 @@ function Enemy.new(Input: EnemyInput)
 	self.IsBoss = Input.EnemyInfo.IsBoss
 	self.Ally = Input.EnemyInfo.Ally
 
-	self.Players = Input.Players or Players:GetPlayers()
+	self.ReplicateTo = Input.Players or Players:GetPlayers()
 	self.IsGlobal = Input.Players == nil
 
 	self.AdornmentName = Input.EnemyInfo.AdornmentName

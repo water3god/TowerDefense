@@ -148,7 +148,7 @@ export type UnitInput = {
 	OwnerId: number?,
 	AttackPriority: string,
 	Level: number,
-	CollisionRadius: number,
+
 	SpeedRatio: number,
 	Abilities: { number },
 }

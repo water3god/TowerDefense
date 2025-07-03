@@ -288,41 +288,13 @@ end
 Players.PlayerRemoving:Connect(function(player)
 	player_map[player] = nil
 end)
-export type Time = (number)
-export type StageData = ({
-	["FastestTime"]: (number),
-	["FinishedCount"]: (number),
-})
-export type Level = (number)
-export type ProductId = (number)
-export type SpeedChangeData = ({
-	["TimeStart"]: (number),
-	["Speed"]: (number),
-	["TimeEnd"]: ((number)?),
-})
-export type ResourceData = ({
-	["Resource"]: (string),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-	["PartialOneLose"]: ((boolean)?),
-})
 export type Item = ("Units" | "Products" | "Resources")
-export type XP = (number)
-export type Health = (number)
-export type BoothData = ({
-	["OwnerId"]: (number),
-	["MapId"]: (string),
-	["LevelId"]: (string),
-	["Difficulty"]: (string),
-	["Players"]: ({ (Player) }),
-	["StartTime"]: (number),
-	["EndTime"]: (number),
-})
 export type SpeedChange = ({
 	["UniqueId"]: (string),
 	["Speed"]: (number),
 	["Time"]: (number),
 })
+export type XP = (number)
 export type EnemyInput = ({
 	["UniqueId"]: (string),
 	["ModelName"]: (string),
@@ -343,18 +315,33 @@ export type EnemyInput = ({
 		["TimeEnd"]: ((number)?),
 	}) }),
 })
+export type Health = (number)
+export type BoothData = ({
+	["OwnerId"]: (number),
+	["MapId"]: (string),
+	["LevelId"]: (string),
+	["Difficulty"]: (string),
+	["Players"]: ({ (Player) }),
+	["StartTime"]: (number),
+	["EndTime"]: (number),
+})
+export type Level = (number)
 export type LevelData = ({
 	["Level"]: (number),
 	["XP"]: (number),
 	["NeededXP"]: (number),
 })
+export type Time = (number)
 export type Difficulty = ("Normal" | "Hard" | "Insane")
-export type VisualUnitData = ({
-	["Unit"]: (string),
-	["Level"]: (number),
+export type ProductData = ({
+	["ProductId"]: (number),
+	["IsGamepass"]: (boolean),
+	["Count"]: (number),
 	["UniqueId"]: (string),
-	["XP"]: (number),
-	["NeededXP"]: (number),
+})
+export type TimeData = ({
+	["StartTime"]: (number),
+	["EndTime"]: (number),
 })
 export type Inventory = ({
 	["Units"]: ({ [(string)]: ({
@@ -377,15 +364,28 @@ export type Inventory = ({
 		["PartialOneLose"]: ((boolean)?),
 	}) }),
 })
-export type ProductData = ({
-	["ProductId"]: (number),
-	["IsGamepass"]: (boolean),
+export type StageData = ({
+	["FastestTime"]: (number),
+	["FinishedCount"]: (number),
+})
+export type ResourceData = ({
+	["Resource"]: (string),
 	["Count"]: (number),
 	["UniqueId"]: (string),
+	["PartialOneLose"]: ((boolean)?),
 })
-export type TimeData = ({
-	["StartTime"]: (number),
-	["EndTime"]: (number),
+export type ProductId = (number)
+export type SpeedChangeData = ({
+	["TimeStart"]: (number),
+	["Speed"]: (number),
+	["TimeEnd"]: ((number)?),
+})
+export type VisualUnitData = ({
+	["Unit"]: (string),
+	["Level"]: (number),
+	["UniqueId"]: (string),
+	["XP"]: (number),
+	["NeededXP"]: (number),
 })
 
 local function SendEvents()

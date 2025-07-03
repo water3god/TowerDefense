@@ -62,7 +62,7 @@ end)
 Enemy.Spawned:Connect(function(NewEnemy: Enemy.Enemy)
 	local Data = {}
 	AddInfoToSpawn(Data, NewEnemy)
-	SpawnEvent.FireList(NewEnemy.ReplicateTo, { Data } :: any, true)
+	SpawnEvent.FireList(NewEnemy.ReplicateTo, { [NewEnemy.UniqueId] = Data } :: any, true)
 
 	local UniqueId: string = NewEnemy.UniqueId
 
