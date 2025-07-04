@@ -177,18 +177,20 @@ local function CreateDailyFrame(Properties: Properties)
 		}),
 		DayLabel = e(Main.TextLabel, {
 			native = {
-				Position = UDim2.fromScale(0.3, 0.175),
-				Size = UDim2.fromScale(0.8, 0.08),
+				Position = UDim2.fromScale(0.4, 0.175),
+				Size = UDim2.fromScale(0.4, 0.08),
 				Text = string.format("Day: %u", DailyData.Day),
+				TextXAlignment = Enum.TextXAlignment.Left,
 			},
 		}),
 		Timer = e(Main.TextLabel, {
 			native = {
-				Position = UDim2.fromScale(0.7, 0.175),
-				Size = UDim2.fromScale(0.8, 0.08),
+				Position = UDim2.fromScale(0.6, 0.175),
+				Size = UDim2.fromScale(0.4, 0.08),
 				Text = Time:map(function(TimeValue: number)
 					return string.format("Time Left: %s", HelperFunctions.FormatTime(TimeValue))
 				end),
+				TextXAlignment = Enum.TextXAlignment.Right,
 			},
 		}),
 		List = e(Main.ScrollingFrame, {

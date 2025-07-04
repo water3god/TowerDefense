@@ -502,6 +502,7 @@ local VisibleFrames = {
 	[Constants.TRADE_FRAME] = {},
 	[Constants.SETTINGS] = {},
 	[Constants.STORE] = {},
+	[Constants.DAILY_FRAME] = {},
 }
 
 local NoBlur = {
