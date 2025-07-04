@@ -11,6 +11,7 @@ local Constants = {
 	IN_ROLL = "InRoll",
 	SETTINGS = "Settings",
 	STORE = "Store",
+	DAILY_FRAME = "DailyFrame",
 }
 
 return Constants

@@ -14,6 +14,7 @@ local OriginalPositions: {
 	[Constants.ROLL_FRAME] = UDim2.fromScale(0.5, 0.5),
 	[Constants.SETTINGS] = UDim2.fromScale(0.5, 0.5),
 	[Constants.STORE] = UDim2.fromScale(0.5, 0.5),
+	[Constants.DAILY_FRAME] = UDim2.fromScale(0.5, 0.5),
 }
 
 return OriginalPositions

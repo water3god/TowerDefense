@@ -18,6 +18,7 @@ local Shared = ReplicatedStorage.Shared
 local LevelRequirements = require(Shared.LevelRequirements)
 local GameInfo = require(Shared.GameInfo)
 local ProductInfo = require(Shared.ProductInfo)
+local DailyRewards = require(Shared.DailyRewards)
 
 local CalculateUnitXP = GameInfo.XPData.CalculateUnitXP
 local CalculatePlayerXP = GameInfo.XPData.CalculatePlayerXP
@@ -79,6 +80,8 @@ type PlayerDataData<T> = {
 	RobuxSpent: Signal.Signal<number>,
 	TotalGoldGained: Signal.Signal<number>,
 
+	DailyRedeemed: Signal.Signal<number, number>,
+
 	Destroying: Signal.Signal<>,
 }
 
@@ -119,6 +122,8 @@ type PlayerDataImpl = {
 	OwnsMap: (self: PlayerData, Map: string) -> boolean,
 	OwnsStage: (self: PlayerData, Data: GetStageData) -> boolean,
 	AddStage: (self: PlayerData, Data: StageParamData) -> (),
+
+	RedeemDaily: (self: PlayerData) -> (),
 
 	GetSetting: (self: PlayerData, Setting: string) -> any,
 	ChangeSetting: (self: PlayerData, Setting: string, Value: any) -> (),
@@ -243,6 +248,8 @@ function PlayerData.new(Player: Player)
 	self.RobuxSpent = self._Trove:Construct(Signal)
 	self.TotalGoldGained = self._Trove:Construct(Signal)
 	self.StageChanged = self._Trove:Construct(Signal)
+
+	self.DailyRedeemed = self._Trove:Construct(Signal)
 
 	self.Destroying = self._Trove:Construct(Signal)
 
@@ -675,6 +682,41 @@ function PlayerData:AddStage(StageParamData: StageParamData)
 	end
 	DifficultyData.FinishedCount += 1
 	self.StageChanged:Fire(StageParamData)
+end
+
+function PlayerData:RedeemDaily()
+	local Data = self.Profile.Data
+
+	if Data.DailyData.LastRedeemed + 60 * 60 * 24 > workspace:GetServerTimeNow() then
+		return
+	end
+
+	local Day = Data.DailyData.Day
+
+	local RewardData = DailyRewards.Rewards[Day]
+
+	if RewardData.Type == "Unit" then
+		self:AddUnit(RewardData.Name, RewardData.ExtraData)
+	elseif RewardData.Type == "Resource" then
+		self:AddResource(RewardData.Name, RewardData.Count)
+	elseif RewardData.Type == "Product" then
+		if RewardData.ExtraData and RewardData.ExtraData.ProductId then
+			self:AddProduct(RewardData.ExtraData.ProductId, RewardData.Count)
+		else
+			warn("PlayerData:RedeemDaily (Invalid Product Data)", RewardData)
+			return
+		end
+	end
+
+	if Day >= #DailyRewards.Rewards then
+		Data.DailyData.Day = 1
+	else
+		Data.DailyData.Day += 1
+	end
+
+	Data.DailyData.LastRedeemed = workspace:GetServerTimeNow()
+
+	self.DailyRedeemed:Fire(Data.DailyData.Day, Data.DailyData.LastRedeemed)
 end
 
 function PlayerData:GetSetting(Setting: string)

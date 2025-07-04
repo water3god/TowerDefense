@@ -51,6 +51,10 @@ export type Data = {
 	Gold: number,
 	TotalGoldGained: number,
 	MaxUnitCount: number,
+	DailyData: {
+		Day: number,
+		LastRedeemed: number,
+	},
 }
 
 local Data: Data = {
@@ -69,6 +73,10 @@ local Data: Data = {
 	Gold = 80,
 	TotalGoldGained = 80,
 	MaxUnitCount = 50,
+	DailyData = {
+		Day = 1,
+		LastRedeemed = 0,
+	},
 }
 
 return Data

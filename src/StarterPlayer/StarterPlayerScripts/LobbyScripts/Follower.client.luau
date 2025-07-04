@@ -13,6 +13,13 @@ local AllEquipped = require(GlobalClient.AllEquipped)
 local LobbyClient = Client.LobbyClient
 local Follower = require(LobbyClient.Follower)
 
+local Shared = ReplicatedStorage.Shared
+local IsLobby = require(Shared.IsLobby)
+
+if not IsLobby then
+	return
+end
+
 local FollowerCache: { [Player]: { { UniqueId: string, Follower: Follower.Follower } } } = {}
 
 local function CreateFollower(Character: Follower.Character, Data: AllEquipped.UnitDataSent, Index: number)

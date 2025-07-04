@@ -36,25 +36,24 @@ local Shared = ReplicatedStorage.Shared
 local DailyRewards = require(Shared.DailyRewards)
 
 export type Properties = {
-	OnClick: (() -> ())?,
+	CloseClick: (() -> ())?,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
 
-local function CreateDailyFrame(Properties)
+local function CreateDailyFrame(Properties: Properties)
 	local DailyData = React.useContext(DailyContext.Context)
 	local Time, _, SetTime = Hooks.UseTime()
 
 	React.useEffect(function()
-		SetTime(DailyData.LastRedeemed + 60 * 60 * 24, DailyData.LastRedeemed)
+		SetTime(60 * 60 * 24, DailyData.LastRedeemed)
 	end, { DailyData.LastRedeemed })
 
 	local OnClick = React.useCallback(function(Day: number)
-		if DailyData.Day < Day then
-			-- If the day is greater than the current day, we cannot redeem it yet.
-			return
+		if Day <= DailyData.Day then
+			DailyData.Redeem()
 		end
-	end, { DailyData.Day })
+	end, { DailyData.Day, DailyData.Redeem :: any })
 
 	local Dailys = React.useMemo(function()
 		local Frames: { [string]: React.Node } = {}
@@ -62,7 +61,7 @@ local function CreateDailyFrame(Properties)
 
 		local Check = e(Main.ImageLabel, {
 			native = {
-				Size = UDim2.fromScale(0.8, 0.8),
+				Size = UDim2.fromScale(0.7, 0.7),
 				ImageColor3 = Color3.new(0.066667, 1, 0.098039),
 				Image = "rbxassetid://78742556758797",
 				LayoutOrder = 10,
@@ -72,8 +71,14 @@ local function CreateDailyFrame(Properties)
 		for Day, RewardData in ipairs(DailyRewards.Rewards) do
 			local DayName = string.format("Day%u", Day)
 			if RewardData.Type == "Unit" then
+				local Level = 1
+
+				if RewardData.ExtraData and RewardData.ExtraData.Level then
+					Level = RewardData.ExtraData.Level
+				end
+
 				Frames[DayName] = e(UnitFrame.CreateUnitFrame, {
-					Level = 1,
+					Level = Level,
 					UnitName = RewardData.Name,
 					OnClick = function()
 						OnClick(Day)
@@ -82,7 +87,7 @@ local function CreateDailyFrame(Properties)
 						LayoutOrder = LayoutOrder(),
 					},
 					containerChildren = {
-						Check = Day <= DailyData.Day and Check,
+						Check = Day < DailyData.Day and Check,
 					},
 				})
 			elseif RewardData.Type == "Resource" then
@@ -96,7 +101,7 @@ local function CreateDailyFrame(Properties)
 						LayoutOrder = LayoutOrder(),
 					},
 					containerChildren = {
-						Check = Day <= DailyData.Day and Check,
+						Check = Day < DailyData.Day and Check,
 					},
 				})
 			elseif RewardData.Type == "Product" then
@@ -112,7 +117,7 @@ local function CreateDailyFrame(Properties)
 						LayoutOrder = LayoutOrder(),
 					},
 					containerChildren = {
-						Check = Day <= DailyData.Day and Check,
+						Check = Day < DailyData.Day and Check,
 					},
 				})
 			end
@@ -174,7 +179,7 @@ local function CreateDailyFrame(Properties)
 			native = {
 				Position = UDim2.fromScale(0.3, 0.175),
 				Size = UDim2.fromScale(0.8, 0.08),
-				Text = string.format("Day: %u", 3),
+				Text = string.format("Day: %u", DailyData.Day),
 			},
 		}),
 		Timer = e(Main.TextLabel, {

@@ -171,7 +171,6 @@ event RedeemDailyReward = {
 	from: Client,
 	type: Reliable,
 	call: SingleAsync,
-	data: u8,
 }
 
 event DailySync = {
@@ -181,8 +180,6 @@ event DailySync = {
 	data: struct {
 		Day: u8,
 		LastRedeemed: Time,
-		Rewards: map { [u8]: map { [string]: unknown } },
-		-- Rewards for each day
 	},
 }
 

@@ -65,6 +65,9 @@ local Store = require(StoreFolder.Store)
 local TipsFolder = Gui.Tips
 local TipsGui = require(TipsFolder.TipsGui)
 
+local DailyFolder = Gui.Daily
+local DailyFrame = require(DailyFolder.DailyFrame)
+
 -- Contexts --
 local InventoryContext = require(Inventory.InventoryContext)
 local TradeMenuContext = require(Trade.TradeContext)
@@ -78,6 +81,7 @@ local WarningContext = require(WarningFolder.WarningContext)
 local SettingContext = require(SettingFolder.SettingsContext)
 local PurchaseContext = require(StoreFolder.PurchaseContext)
 local TipsContext = require(TipsFolder.TipsContext)
+local DailyContext = require(DailyFolder.DailyContext)
 
 local IsRunning = RunService:IsRunning()
 
@@ -263,6 +267,21 @@ local function RenderStore(Props)
 	})
 
 	return e(Store, {
+		CloseClick = Props.CloseClick,
+		native = {
+			Position = Position,
+			Visible = Visiblity,
+		},
+	})
+end
+
+local function RenderDailyFrame(Props: any)
+	local Position, Visiblity = AnimateWrapper({
+		Visible = Props.Visible,
+		Name = Constants.DAILY_FRAME,
+	})
+
+	return e(DailyFrame, {
 		CloseClick = Props.CloseClick,
 		native = {
 			Position = Position,
@@ -683,6 +702,7 @@ local function Render()
 			EquippedUnitsContext.Provider,
 			PurchaseContext.Provider,
 			TipsContext.Provider,
+			DailyContext.Provider,
 		},
 	}, {
 		FieldOfView = e("Folder", {
@@ -752,6 +772,12 @@ local function Render()
 						SetVisibleInternal(Constants.ROLL_FRAME, true)
 					end,
 				}) :: any,
+				[Constants.DAILY_FRAME] = e(RenderDailyFrame, {
+					Visible = if VisibleFrame == Constants.DAILY_FRAME then true else false,
+					CloseClick = function()
+						OnCloseClick(Constants.DAILY_FRAME)
+					end,
+				}),
 			} :: any
 		),
 		OtherGui = e("Folder", {}, {
@@ -794,7 +820,7 @@ local function Render()
 				},
 			}),
 		}),
-		Buttons = IsLobby and e(Main.Frame, {
+		LeftButtons = IsLobby and e(Main.Frame, {
 			native = {
 				Position = Styles.Inverted:map(function(Size: number)
 					return UDim2.fromScale(0.1, 0.5):Lerp(UDim2.fromScale(-0.1, 0.5), Size)
@@ -850,6 +876,32 @@ local function Render()
 				IconColor = ColorSequence.new(Color3.fromRGB(137, 77, 178)),
 				OnClick = function()
 					OnMainButtonClick(Constants.TRADE_MENU)
+				end,
+			}),
+		}),
+		RightButtons = IsLobby and e(Main.Frame, {
+			native = {
+				Position = Styles.Inverted:map(function(Size: number)
+					return UDim2.fromScale(0.9, 0.5):Lerp(UDim2.fromScale(1.1, 0.5), Size)
+				end),
+				Size = UDim2.fromScale(0.15, 0.4),
+			},
+		}, {
+			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+				AspectRatio = 0.62,
+			}),
+			UIGridLayout = e("UIGridLayout", {
+				CellPadding = UDim2.fromScale(0, 0),
+				CellSize = UDim2.fromScale(0.5, 0.3),
+				FillDirection = Enum.FillDirection.Horizontal,
+			}),
+			DailyButton = e(MainButtonFrame, {
+				Position = UDim2.fromScale(0.9, 0.5),
+				Size = UDim2.fromScale(0.1, 0.15),
+				Name = "Daily",
+				Icon = "rbxassetid://118717037434015",
+				OnClick = function()
+					OnMainButtonClick(Constants.DAILY_FRAME)
 				end,
 			}),
 		}),

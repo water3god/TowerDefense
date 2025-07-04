@@ -28,8 +28,9 @@ local Story = {
 	story = function(Properties)
 		local Frame = e(DailyContext.Context.Provider, {
 			value = {
-				Day = 0,
+				Day = 1,
 				LastRedeemed = 1,
+				Redeem = function() end,
 			},
 		}, {
 			DailyFrame = e(DailyFrame, {}),

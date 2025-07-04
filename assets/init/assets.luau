@@ -13,6 +13,7 @@ local assets = {
 	},
 	images = {
 		["GreecePhoto.png"] = "rbxassetid://140359005328317",
+		["calendar.png"] = "rbxassetid://118717037434015",
 	},
 }
 

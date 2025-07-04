@@ -103,7 +103,8 @@ local function SetupWaypoints(InputtedWaypoints: { Vector3 }, CurveSize: number 
 			- (Position - InputtedPreviousPosition).Unit
 				* ClampCurveSize(Position, InputtedPreviousPosition, GottenCurveSize)
 		local NextPosition = Position
-			- (Position - InputtedNextPosition).Unit * ClampCurveSize(Position, InputtedNextPosition, GottenCurveSize)
+			- (Position - InputtedNextPosition).Unit
+				* ClampCurveSize(Position, InputtedNextPosition, GottenCurveSize)
 
 		table.insert(Waypoints, PreviousPosition)
 		table.insert(Waypoints, Position)
