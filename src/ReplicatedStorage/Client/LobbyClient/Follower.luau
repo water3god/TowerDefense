@@ -23,11 +23,11 @@ local UnitClient = require(GlobalClient.UnitClient)
 local Player = Players.LocalPlayer
 
 local Positions = {
-	Vector3.new(1, 0, 0),
-	Vector3.new(0.75, 0, 0.75),
-	Vector3.new(0, 0, 1),
-	Vector3.new(-0.75, 0, 0.75),
 	Vector3.new(-1, 0, 0),
+	Vector3.new(-0.75, 0, 0.75),
+	Vector3.new(0, 0, 1),
+	Vector3.new(0.75, 0, 0.75),
+	Vector3.new(1, 0, 0),
 }
 
 local GlobalWorkspace = workspace.GlobalWorkspace
@@ -121,6 +121,7 @@ function Follower.new(Data: Input): Follower
 	self.AlignPosition = self.Trove:Construct(Instance, "AlignPosition") :: AlignPosition
 	self.AlignPosition.Name = "FollowerAlignPosition"
 
+	self.AlignPosition.MaxForce = math.huge
 	self.AlignPosition.Attachment0 = Attachment
 	self.AlignPosition.Mode = Enum.PositionAlignmentMode.OneAttachment
 	self.AlignPosition.Parent = self.CharRoot
@@ -166,19 +167,25 @@ function Follower.new(Data: Input): Follower
 		LastPosition = self.CharRoot.Position
 	end
 
+	local PlayerRoot: BasePart? = nil
+	local Offset = Positions[Data.Index] * 6
+
+	task.spawn(function()
+		PlayerRoot = Player.Character:WaitForChild("HumanoidRootPart")
+	end)
+
 	local function OnStep()
-		if not self.Character:FindFirstChild("HumanoidRootPart") then
+		if not PlayerRoot then
 			return
 		end
-
-		local CharCFrame = self.Character.HumanoidRootPart.CFrame
-		local AlteredCFrame = CharCFrame - CharCFrame:VectorToWorldSpace(Positions[Data.Index] * 6)
+		local CharCFrame = PlayerRoot.CFrame
+		local AlteredCFrame = CharCFrame + CharCFrame:VectorToWorldSpace(Offset)
 
 		self.AlignPosition.Position = AlteredCFrame.Position
 		self.AlignOrientation.CFrame = AlteredCFrame
 	end
 
-	local function OtherStep(Delta: number)
+	local function OtherStep()
 		local OtherRay = workspace:Raycast(self.IdealPart.Position + Vector3.new(0, 3, 0), -Vector3.yAxis * 10, Params)
 
 		if OtherRay and OtherRay.Position then
@@ -190,8 +197,15 @@ function Follower.new(Data: Input): Follower
 	end
 
 	RunService.PreSimulation:Connect(OnStep)
-	RunService.PreSimulation:Connect(OtherStep)
-	RunService.PostSimulation:Connect(UpdateWalk)
+	self.Trove:BindToRenderStep("Follower" .. self.UniqueId, Enum.RenderPriority.Character.Value, OtherStep)
+	local WalkCount = 0
+	RunService.Heartbeat:Connect(function(Delta)
+		WalkCount += Delta
+		if WalkCount >= 0.016 then
+			UpdateWalk(Delta)
+			WalkCount = 0
+		end
+	end)
 
 	--self.Trove:BindToRenderStep("Follower" .. self.UniqueId, Enum.RenderPriority.Character.Value, OnStep)
 
