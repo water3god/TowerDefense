@@ -139,7 +139,7 @@ function Follower.new(Data: Input): Follower
 	local function UpdateWalk(Delta: number)
 		local Movement = LastPosition - self.CharRoot.Position
 
-		if Movement.Magnitude > 0.0005 / Delta then
+		if Movement.Magnitude > 0.01 then
 			if not InWalk then
 				Count += 1
 			else
@@ -153,7 +153,7 @@ function Follower.new(Data: Input): Follower
 			end
 		end
 
-		if Count > 10 then
+		if Count > 6 then
 			if InWalk then
 				PlayWalk(false)
 				InWalk = false
