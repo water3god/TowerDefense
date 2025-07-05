@@ -68,17 +68,19 @@ AllEquippedSync.SetCallback(function(Data: { [Player]: DataSent })
 	end
 end)
 
-local function GetUnitData(Data: { string })
+local function GetUnitData(Data: { string? })
 	local NewData = {}
 	local Inventory = InventoryService:GetInventory()
 	for Index, Id in pairs(Data) do
-		local UnitData = Inventory.Units[Id]
-		if UnitData then
-			NewData[Index] = {
-				Id = Id,
-				Level = UnitData.Level,
-				UnitName = UnitData.Unit,
-			}
+		if Id then
+			local UnitData = Inventory.Units[Id]
+			if UnitData then
+				NewData[Index] = {
+					Id = Id,
+					Level = UnitData.Level,
+					UnitName = UnitData.Unit,
+				}
+			end
 		end
 	end
 
@@ -89,7 +91,7 @@ local function OnLocalChanged()
 	Equipped[LocalPlayer] = {
 		Title = InventoryService.TitleData.EquippedTitle,
 		Level = InventoryService.Level,
-		EquippedUnits = GetUnitData(InventoryService.TitleData.Titles),
+		EquippedUnits = GetUnitData(InventoryService.EquippedUnits),
 	}
 	Module.Changed:Fire(LocalPlayer, Equipped[LocalPlayer])
 	if ChangedSignals[LocalPlayer] then

@@ -14,7 +14,7 @@ local AllEquippedSync = Network.AllEquippedSync
 
 local CurrentData = {}
 
-local function Update(Data: PlayerData.PlayerData, Player: Player?)
+local function Update(Data: PlayerData.PlayerData)
 	local SendData = {}
 
 	for Index, Id in pairs(Data.Profile.Data.EquippedUnits) do
@@ -36,15 +36,13 @@ local function Update(Data: PlayerData.PlayerData, Player: Player?)
 	}
 
 	CurrentData[Data.Player] = NewTable
-	if Player then
-		AllEquippedSync.FireExcept(Player, { [Data.Player] = NewTable })
-	else
-		AllEquippedSync.FireAll({ [Data.Player] = NewTable })
-	end
+
+	AllEquippedSync.FireExcept(Data.Player, { [Data.Player] = NewTable })
 end
 
 local function HandleData(Data: PlayerData.PlayerData)
-	Update(Data, Data.Player)
+	AllEquippedSync.Fire(Data.Player, CurrentData)
+	Update(Data)
 	Data.UnitEquipped:Connect(function()
 		Update(Data)
 	end)
@@ -61,7 +59,9 @@ local function HandleData(Data: PlayerData.PlayerData)
 		Update(Data)
 	end)
 
-	AllEquippedSync.Fire(Data.Player, CurrentData)
+	Data.Destroying:Once(function()
+		CurrentData[Data.Player] = nil
+	end)
 end
 
 for _, Data in pairs(PlayerData.GetDatas()) do

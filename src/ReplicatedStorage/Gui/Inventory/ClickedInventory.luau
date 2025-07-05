@@ -322,15 +322,13 @@ local function Connected(props)
 						resolve(Value)
 					end
 					resolve(Equipped)
-				end):andThen(function(Value: AllEquipped.DataSent?)
-					if Value then
-						SetData({
-							Loading = false,
-							Name = ClickedPlayer.Name,
-							Frames = Value.EquippedUnits,
-							Level = Value.Level,
-						})
-					end
+				end):andThen(function(Value: AllEquipped.DataSent)
+					SetData({
+						Loading = false,
+						Name = ClickedPlayer.Name,
+						Frames = Value.EquippedUnits,
+						Level = Value.Level,
+					})
 				end)
 
 				return function()

@@ -43,7 +43,7 @@ local function HandleCharacter(Player: Player, Character: Model)
 			if Data then
 				return Billboard, Data
 			else
-				return AllEquipped.GetChangedSignal(Player):Wait()
+				return Billboard, AllEquipped.GetChangedSignal(Player):Wait()
 			end
 		end)
 		:andThen(function(Billboard: BillboardGui, Data: AllEquipped.DataSent)
