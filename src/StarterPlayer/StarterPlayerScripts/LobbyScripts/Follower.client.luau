@@ -36,7 +36,7 @@ local function InitalizePlayer(Player: Player)
 	local function OnCharacterAdded(Character: Follower.Character)
 		local EquippedData = AllEquipped.Equipped[Player]
 		if EquippedData then
-			for Index, UnitData in pairs(EquippedData) do
+			for Index, UnitData in pairs(EquippedData.EquippedUnits) do
 				FollowerCache[Player][Index] =
 					{ UniqueId = UnitData.Id, Follower = CreateFollower(Character, UnitData, Index) }
 			end
@@ -44,7 +44,7 @@ local function InitalizePlayer(Player: Player)
 
 		local Connection = AllEquipped.Changed:Connect(function(OtherPlayer, Data)
 			if OtherPlayer == Player then
-				for Index, UnitData in pairs(Data) do
+				for Index, UnitData in pairs(Data.EquippedUnits) do
 					local CachedTable = FollowerCache[Player][Index]
 					if not CachedTable or CachedTable.UniqueId ~= UnitData.Id then
 						if FollowerCache[Player][Index] then

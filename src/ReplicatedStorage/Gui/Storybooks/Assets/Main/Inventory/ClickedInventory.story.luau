@@ -25,7 +25,12 @@ local Story = {
 	reactRoblox = ReactRoblox,
 	controls = controls,
 	story = function()
-		local Frame = e(ClickedInventory)
+		local Frame = e(ClickedInventory.Create, {
+			Loading = true,
+			Frames = {},
+			Level = 1,
+			Name = "Wa1er_God",
+		})
 		return Frame
 	end,
 }

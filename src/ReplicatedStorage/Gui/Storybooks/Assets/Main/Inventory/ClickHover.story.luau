@@ -13,8 +13,8 @@ local e = React.createElement
 
 -- Reference UI --
 local Gui = ReplicatedStorage.Gui
-local GameFrames = Gui.GameFrames
-local DisplayTitle = require(GameFrames.DisplayTitle)
+local Inventory = Gui.Inventory
+local ClickHover = require(Inventory.ClickHover)
 
 -- Controls --
 local controls = {}
@@ -25,11 +25,7 @@ local Story = {
 	reactRoblox = ReactRoblox,
 	controls = controls,
 	story = function()
-		local Frame = e(DisplayTitle, {
-			Name = "Wa1er_God",
-			Title = "Owner",
-			Level = 20,
-		})
+		local Frame = e(ClickHover)
 		return Frame
 	end,
 }

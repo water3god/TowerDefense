@@ -6,6 +6,7 @@ local DefaultFont =
 	Font.new("rbxasset://fonts/families/FredokaOne.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
@@ -134,9 +135,11 @@ do
 				API.start({
 					Scale = 0.95,
 				})
-				SFXService.PlaySoundGlobalWithId("rbxassetid://72255888882620", function(Sound: Sound)
-					Sound.Volume = 0.1
-				end)
+				if RunService:IsClient() then
+					SFXService.PlaySoundGlobalWithId("rbxassetid://72255888882620", function(Sound: Sound)
+						Sound.Volume = 0.1
+					end)
+				end
 			elseif Instance.GuiState == Enum.GuiState.Idle then
 				API.stop()
 				API.start({

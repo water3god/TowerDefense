@@ -29,11 +29,16 @@ local function Update(Data: PlayerData.PlayerData, Player: Player?)
 		end
 	end
 
-	CurrentData[Data.Player] = SendData
+	local NewTable = {
+		Level = Data.Profile.Data.Level,
+		EquippedUnits = SendData,
+	}
+
+	CurrentData[Data.Player] = NewTable
 	if Player then
-		AllEquippedSync.FireExcept(Player, { [Data.Player] = SendData })
+		AllEquippedSync.FireExcept(Player, { [Data.Player] = NewTable })
 	else
-		AllEquippedSync.FireAll({ [Data.Player] = SendData })
+		AllEquippedSync.FireAll({ [Data.Player] = NewTable })
 	end
 end
 
@@ -44,6 +49,10 @@ local function HandleData(Data: PlayerData.PlayerData)
 	end)
 
 	Data.UnitUnequipped:Connect(function()
+		Update(Data)
+	end)
+
+	Data.LeveledUp:Connect(function()
 		Update(Data)
 	end)
 

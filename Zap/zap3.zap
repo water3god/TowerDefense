@@ -200,10 +200,13 @@ event AllEquippedSync = {
 	type: Reliable,
 	call: SingleAsync,
 	data: map { [Instance(Player)]: struct {
-		Id: string,
 		Level: Level,
-		UnitName: string,
-	}[] },
+		EquippedUnits: struct {
+			Id: string,
+			Level: Level,
+			UnitName: string,
+		}[],
+	} },
 }
 
 event TeleportBack = {

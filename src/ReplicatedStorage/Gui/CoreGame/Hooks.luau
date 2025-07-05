@@ -222,6 +222,12 @@ function Hooks.useTranslator()
 	return translator
 end
 
+function Hooks.useRaycastParams()
+	local raycastParams = React.useState(RaycastParams.new())
+
+	return raycastParams
+end
+
 local useState = React.useState
 local useCallback = React.useCallback
 local useEffect = React.useEffect

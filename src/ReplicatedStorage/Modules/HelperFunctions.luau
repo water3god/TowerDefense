@@ -25,6 +25,7 @@ local function CreateRaw()
 	Part.CanCollide = false
 	Part.CanQuery = false
 	Part.CanTouch = false
+	Part.Size = Vector3.one
 
 	return Part
 end

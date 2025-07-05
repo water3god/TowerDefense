@@ -264,13 +264,14 @@ end
 Players.PlayerRemoving:Connect(function(player)
 	player_map[player] = nil
 end)
-export type VoteData = ({
-	["Time"]: (number),
-	["StartTime"]: (number),
-	["CurrentCount"]: (number),
-	["NeededCount"]: (number),
+export type Level = (number)
+export type Health = (number)
+export type MainXPData = ({
+	["OldXP"]: (number),
+	["NewXP"]: (number),
+	["OldLevel"]: (number),
+	["NewLevel"]: (number),
 })
-export type ProductId = (number)
 export type Vote = (number)
 export type WaveData = ({
 	["Wave"]: (number),
@@ -279,14 +280,14 @@ export type WaveData = ({
 	["Time"]: (number),
 	["StartTime"]: (number),
 })
+export type ProductId = (number)
 export type Wave = (number)
-export type MainXPData = ({
-	["OldXP"]: (number),
-	["NewXP"]: (number),
-	["OldLevel"]: (number),
-	["NewLevel"]: (number),
+export type VoteData = ({
+	["Time"]: (number),
+	["StartTime"]: (number),
+	["CurrentCount"]: (number),
+	["NeededCount"]: (number),
 })
-export type Level = (number)
 export type ResourceData = ({
 	["Units"]: ({ (string) }),
 	["Resources"]: ({ ({
@@ -301,7 +302,6 @@ export type ResourceData = ({
 		["NewXP"]: (number),
 	}) }),
 })
-export type Health = (number)
 export type Time = (number)
 export type XP = (number)
 
@@ -2122,11 +2122,14 @@ local returns = {
 		end,
 	},
 	AllEquippedSync = {
-		Fire = function(Player: Player, Value: ({ [(Player)]: ({ ({
-			["Id"]: (string),
+		Fire = function(Player: Player, Value: ({ [(Player)]: ({
 			["Level"]: (number),
-			["UnitName"]: (string),
-		}) }) }))
+			["EquippedUnits"]: ({ ({
+				["Id"]: (string),
+				["Level"]: (number),
+				["UnitName"]: (string),
+			}) }),
+		}) }))
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
@@ -2136,11 +2139,13 @@ local returns = {
 				len_41 = len_41 + 1
 				assert(k_1:IsA("Player"), "received instance is not of the Player class!")
 				table.insert(outgoing_inst, k_1)
-				local len_42 = #v_1
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, v_1["Level"])
+				local len_42 = #v_1["EquippedUnits"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_42)
 				for i_21 = 1, len_42 do
-					local val_21 = v_1[i_21]
+					local val_21 = v_1["EquippedUnits"][i_21]
 					local len_43 = #val_21["Id"]
 					alloc(2)
 					buffer.writeu16(outgoing_buff, outgoing_apos, len_43)
@@ -2158,11 +2163,14 @@ local returns = {
 			buffer.writeu16(outgoing_buff, len_pos_1, len_41)
 			player_map[Player] = save()
 		end,
-		FireAll = function(Value: ({ [(Player)]: ({ ({
-			["Id"]: (string),
+		FireAll = function(Value: ({ [(Player)]: ({
 			["Level"]: (number),
-			["UnitName"]: (string),
-		}) }) }))
+			["EquippedUnits"]: ({ ({
+				["Id"]: (string),
+				["Level"]: (number),
+				["UnitName"]: (string),
+			}) }),
+		}) }))
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
@@ -2172,11 +2180,13 @@ local returns = {
 				len_45 = len_45 + 1
 				assert(k_2:IsA("Player"), "received instance is not of the Player class!")
 				table.insert(outgoing_inst, k_2)
-				local len_46 = #v_2
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, v_2["Level"])
+				local len_46 = #v_2["EquippedUnits"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_46)
 				for i_22 = 1, len_46 do
-					local val_22 = v_2[i_22]
+					local val_22 = v_2["EquippedUnits"][i_22]
 					local len_47 = #val_22["Id"]
 					alloc(2)
 					buffer.writeu16(outgoing_buff, outgoing_apos, len_47)
@@ -2201,11 +2211,14 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireExcept = function(Except: Player, Value: ({ [(Player)]: ({ ({
-			["Id"]: (string),
+		FireExcept = function(Except: Player, Value: ({ [(Player)]: ({
 			["Level"]: (number),
-			["UnitName"]: (string),
-		}) }) }))
+			["EquippedUnits"]: ({ ({
+				["Id"]: (string),
+				["Level"]: (number),
+				["UnitName"]: (string),
+			}) }),
+		}) }))
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
@@ -2215,11 +2228,13 @@ local returns = {
 				len_49 = len_49 + 1
 				assert(k_3:IsA("Player"), "received instance is not of the Player class!")
 				table.insert(outgoing_inst, k_3)
-				local len_50 = #v_3
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, v_3["Level"])
+				local len_50 = #v_3["EquippedUnits"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_50)
 				for i_23 = 1, len_50 do
-					local val_23 = v_3[i_23]
+					local val_23 = v_3["EquippedUnits"][i_23]
 					local len_51 = #val_23["Id"]
 					alloc(2)
 					buffer.writeu16(outgoing_buff, outgoing_apos, len_51)
@@ -2246,11 +2261,14 @@ local returns = {
 				end
 			end
 		end,
-		FireList = function(List: { [unknown]: Player }, Value: ({ [(Player)]: ({ ({
-			["Id"]: (string),
+		FireList = function(List: { [unknown]: Player }, Value: ({ [(Player)]: ({
 			["Level"]: (number),
-			["UnitName"]: (string),
-		}) }) }))
+			["EquippedUnits"]: ({ ({
+				["Id"]: (string),
+				["Level"]: (number),
+				["UnitName"]: (string),
+			}) }),
+		}) }))
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
@@ -2260,11 +2278,13 @@ local returns = {
 				len_53 = len_53 + 1
 				assert(k_4:IsA("Player"), "received instance is not of the Player class!")
 				table.insert(outgoing_inst, k_4)
-				local len_54 = #v_4
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, v_4["Level"])
+				local len_54 = #v_4["EquippedUnits"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_54)
 				for i_24 = 1, len_54 do
-					local val_24 = v_4[i_24]
+					local val_24 = v_4["EquippedUnits"][i_24]
 					local len_55 = #val_24["Id"]
 					alloc(2)
 					buffer.writeu16(outgoing_buff, outgoing_apos, len_55)
@@ -2289,11 +2309,14 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireSet = function(Set: { [Player]: any }, Value: ({ [(Player)]: ({ ({
-			["Id"]: (string),
+		FireSet = function(Set: { [Player]: any }, Value: ({ [(Player)]: ({
 			["Level"]: (number),
-			["UnitName"]: (string),
-		}) }) }))
+			["EquippedUnits"]: ({ ({
+				["Id"]: (string),
+				["Level"]: (number),
+				["UnitName"]: (string),
+			}) }),
+		}) }))
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
@@ -2303,11 +2326,13 @@ local returns = {
 				len_57 = len_57 + 1
 				assert(k_5:IsA("Player"), "received instance is not of the Player class!")
 				table.insert(outgoing_inst, k_5)
-				local len_58 = #v_5
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, v_5["Level"])
+				local len_58 = #v_5["EquippedUnits"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_58)
 				for i_25 = 1, len_58 do
-					local val_25 = v_5[i_25]
+					local val_25 = v_5["EquippedUnits"][i_25]
 					local len_59 = #val_25["Id"]
 					alloc(2)
 					buffer.writeu16(outgoing_buff, outgoing_apos, len_59)

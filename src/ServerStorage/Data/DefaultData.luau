@@ -55,6 +55,8 @@ export type Data = {
 		Day: number,
 		LastRedeemed: number,
 	},
+	EquippedTitle: string,
+	Titles: { string },
 }
 
 local Data: Data = {
@@ -77,6 +79,8 @@ local Data: Data = {
 		Day = 1,
 		LastRedeemed = 0,
 	},
+	EquippedTitle = "Player",
+	Titles = { "Player" },
 }
 
 return Data

@@ -26,6 +26,7 @@ local HelperFunctions = require(Modules.HelperFunctions)
 local Gui = ReplicatedStorage.Gui
 local Inventory = Gui.Inventory
 local InventoryMain = require(Inventory.InventoryMain)
+local ClickedInventory = require(Inventory.ClickedInventory)
 
 local Trade = Gui.Trade
 local TradeFrame = require(Trade.TradeFrame)
@@ -424,7 +425,7 @@ local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (strin
 				if Preferred == "MouseKeyboard" then
 					local NewMouse = InputTrove:Construct(Mouse)
 
-					NewMouse.LeftDown:Connect(function()
+					NewMouse.LeftUp:Connect(function()
 						OnPress(Mouse:GetPosition())
 					end)
 
@@ -439,13 +440,20 @@ local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (strin
 				elseif Preferred == "Touch" then
 					local NewTouch = InputTrove:Construct(Touch)
 
-					NewTouch.TouchTap:Connect(function(TouchPositions: { Vector2 }, Processed: boolean)
+					NewTouch.TouchTapInWorld:Connect(function(TouchPosition: Vector2, Processed: boolean)
 						if Processed then
 							return
 						end
 
-						OnFrame(TouchPositions[1])
-						OnPress(TouchPositions[1])
+						OnPress(TouchPosition)
+					end)
+
+					NewTouch.TouchMoved:Connect(function(InputObject: InputObject, Processed: boolean)
+						if Processed then
+							return
+						end
+
+						OnFrame(Vector2.new(InputObject.Position.X, InputObject.Position.Y))
 					end)
 				end
 			end)
@@ -800,6 +808,7 @@ local function Render()
 					WaitingFrame = e(WaitingFrame),
 				}),
 				TipsGui = e(TipsGui),
+				ClickedInventory = e(ClickedInventory.Connected),
 			}),
 
 			BottomFrame = e(Bottom, {
