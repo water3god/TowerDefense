@@ -157,20 +157,6 @@ if not RunService:IsRunning() then
 		OwnerStart = table.freeze({
 			SetCallback = noop
 		}),
-		LevelXPChanged = table.freeze({
-			Fire = noop,
-			FireAll = noop,
-			FireExcept = noop,
-			FireList = noop,
-			FireSet = noop
-		}),
-		LevelChanged = table.freeze({
-			Fire = noop,
-			FireAll = noop,
-			FireExcept = noop,
-			FireList = noop,
-			FireSet = noop
-		}),
 		LeaveBooth = table.freeze({
 			SetCallback = noop
 		}),
@@ -302,18 +288,6 @@ end
 Players.PlayerRemoving:Connect(function(player)
 	player_map[player] = nil
 end)
-export type TimeData = ({
-	["StartTime"]: (number),
-	["EndTime"]: (number),
-})
-export type XP = (number)
-export type Time = (number)
-export type Health = (number)
-export type SpeedChangeData = ({
-	["TimeStart"]: (number),
-	["Speed"]: (number),
-	["TimeEnd"]: ((number)?),
-})
 export type EnemyInput = ({
 	["UniqueId"]: (string),
 	["ModelName"]: (string),
@@ -334,26 +308,40 @@ export type EnemyInput = ({
 		["TimeEnd"]: ((number)?),
 	}) }),
 })
-export type Item = ("Units" | "Products" | "Resources")
-export type Level = (number)
-export type BoothData = ({
-	["OwnerId"]: (number),
-	["MapId"]: (string),
-	["LevelId"]: (string),
-	["Difficulty"]: (string),
-	["Players"]: ({ (Player) }),
-	["StartTime"]: (number),
-	["EndTime"]: (number),
+export type ProductData = ({
+	["ProductId"]: (number),
+	["IsGamepass"]: (boolean),
+	["Count"]: (number),
+	["UniqueId"]: (string),
 })
+export type Health = (number)
 export type LevelData = ({
 	["Level"]: (number),
 	["XP"]: (number),
 	["NeededXP"]: (number),
 })
+export type ProductId = (number)
+export type Level = (number)
+export type Item = ("Units" | "Products" | "Resources")
+export type XP = (number)
+export type SpeedChangeData = ({
+	["TimeStart"]: (number),
+	["Speed"]: (number),
+	["TimeEnd"]: ((number)?),
+})
+export type Difficulty = ("Normal" | "Hard" | "Insane")
+export type StageData = ({
+	["FastestTime"]: (number),
+	["FinishedCount"]: (number),
+})
 export type SpeedChange = ({
 	["UniqueId"]: (string),
 	["Speed"]: (number),
 	["Time"]: (number),
+})
+export type TimeData = ({
+	["StartTime"]: (number),
+	["EndTime"]: (number),
 })
 export type ResourceData = ({
 	["Resource"]: (string),
@@ -361,7 +349,6 @@ export type ResourceData = ({
 	["UniqueId"]: (string),
 	["PartialOneLose"]: ((boolean)?),
 })
-export type ProductId = (number)
 export type Inventory = ({
 	["Units"]: ({ [(string)]: ({
 		["Unit"]: (string),
@@ -383,16 +370,14 @@ export type Inventory = ({
 		["PartialOneLose"]: ((boolean)?),
 	}) }),
 })
-export type Difficulty = ("Normal" | "Hard" | "Insane")
-export type ProductData = ({
-	["ProductId"]: (number),
-	["IsGamepass"]: (boolean),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-})
-export type StageData = ({
-	["FastestTime"]: (number),
-	["FinishedCount"]: (number),
+export type BoothData = ({
+	["OwnerId"]: (number),
+	["MapId"]: (string),
+	["LevelId"]: (string),
+	["Difficulty"]: (string),
+	["Players"]: ({ (Player) }),
+	["StartTime"]: (number),
+	["EndTime"]: (number),
 })
 export type VisualUnitData = ({
 	["Unit"]: (string),
@@ -401,6 +386,7 @@ export type VisualUnitData = ({
 	["XP"]: (number),
 	["NeededXP"]: (number),
 })
+export type Time = (number)
 
 local function SendEvents()
 	for player, outgoing in player_map do
@@ -1209,150 +1195,6 @@ local returns = {
 			reliable_events[2] = Callback
 			return function()
 				reliable_events[2] = nil
-			end
-		end,
-	},
-	LevelXPChanged = {
-		Fire = function(Player: Player, Value: (number))
-			load_player(Player)
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 18)
-			alloc(8)
-			buffer.writef64(outgoing_buff, outgoing_apos, Value)
-			player_map[Player] = save()
-		end,
-		FireAll = function(Value: (number))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 18)
-			alloc(8)
-			buffer.writef64(outgoing_buff, outgoing_apos, Value)
-			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
-			for _, player in Players:GetPlayers() do
-				load_player(player)
-				alloc(used)
-				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
-				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
-				player_map[player] = save()
-			end
-		end,
-		FireExcept = function(Except: Player, Value: (number))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 18)
-			alloc(8)
-			buffer.writef64(outgoing_buff, outgoing_apos, Value)
-			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
-			for _, player in Players:GetPlayers() do
-				if player ~= Except then
-					load_player(player)
-					alloc(used)
-					buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
-					table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
-					player_map[player] = save()
-				end
-			end
-		end,
-		FireList = function(List: { [unknown]: Player }, Value: (number))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 18)
-			alloc(8)
-			buffer.writef64(outgoing_buff, outgoing_apos, Value)
-			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
-			for _, player in List do
-				load_player(player)
-				alloc(used)
-				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
-				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
-				player_map[player] = save()
-			end
-		end,
-		FireSet = function(Set: { [Player]: any }, Value: (number))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 18)
-			alloc(8)
-			buffer.writef64(outgoing_buff, outgoing_apos, Value)
-			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
-			for player in Set do
-				load_player(player)
-				alloc(used)
-				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
-				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
-				player_map[player] = save()
-			end
-		end,
-	},
-	LevelChanged = {
-		Fire = function(Player: Player, Value: (number))
-			load_player(Player)
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 17)
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, Value)
-			player_map[Player] = save()
-		end,
-		FireAll = function(Value: (number))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 17)
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, Value)
-			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
-			for _, player in Players:GetPlayers() do
-				load_player(player)
-				alloc(used)
-				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
-				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
-				player_map[player] = save()
-			end
-		end,
-		FireExcept = function(Except: Player, Value: (number))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 17)
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, Value)
-			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
-			for _, player in Players:GetPlayers() do
-				if player ~= Except then
-					load_player(player)
-					alloc(used)
-					buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
-					table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
-					player_map[player] = save()
-				end
-			end
-		end,
-		FireList = function(List: { [unknown]: Player }, Value: (number))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 17)
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, Value)
-			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
-			for _, player in List do
-				load_player(player)
-				alloc(used)
-				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
-				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
-				player_map[player] = save()
-			end
-		end,
-		FireSet = function(Set: { [Player]: any }, Value: (number))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 17)
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, Value)
-			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
-			for player in Set do
-				load_player(player)
-				alloc(used)
-				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
-				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
-				player_map[player] = save()
 			end
 		end,
 	},

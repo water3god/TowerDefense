@@ -9,6 +9,22 @@ type Health = u32
 
 type Time = f64
 
+-- Level --
+
+event LevelChanged = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: Level,
+}
+
+event LevelXPChanged = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: XP,
+}
+
 -- Marketplace --
 
 -- Maybe don't use --

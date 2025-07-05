@@ -137,12 +137,6 @@ if not RunService:IsRunning() then
 		OwnerStart = table.freeze({
 			Fire = noop
 		}),
-		LevelXPChanged = table.freeze({
-			SetCallback = noop
-		}),
-		LevelChanged = table.freeze({
-			SetCallback = noop
-		}),
 		LeaveBooth = table.freeze({
 			Fire = noop
 		}),
@@ -201,18 +195,6 @@ local remotes = ReplicatedStorage:WaitForChild("Zap1")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
-export type TimeData = ({
-	["StartTime"]: (number),
-	["EndTime"]: (number),
-})
-export type XP = (number)
-export type Time = (number)
-export type Health = (number)
-export type SpeedChangeData = ({
-	["TimeStart"]: (number),
-	["Speed"]: (number),
-	["TimeEnd"]: ((number)?),
-})
 export type EnemyInput = ({
 	["UniqueId"]: (string),
 	["ModelName"]: (string),
@@ -233,26 +215,40 @@ export type EnemyInput = ({
 		["TimeEnd"]: ((number)?),
 	}) }),
 })
-export type Item = ("Units" | "Products" | "Resources")
-export type Level = (number)
-export type BoothData = ({
-	["OwnerId"]: (number),
-	["MapId"]: (string),
-	["LevelId"]: (string),
-	["Difficulty"]: (string),
-	["Players"]: ({ (Player) }),
-	["StartTime"]: (number),
-	["EndTime"]: (number),
+export type ProductData = ({
+	["ProductId"]: (number),
+	["IsGamepass"]: (boolean),
+	["Count"]: (number),
+	["UniqueId"]: (string),
 })
+export type Health = (number)
 export type LevelData = ({
 	["Level"]: (number),
 	["XP"]: (number),
 	["NeededXP"]: (number),
 })
+export type ProductId = (number)
+export type Level = (number)
+export type Item = ("Units" | "Products" | "Resources")
+export type XP = (number)
+export type SpeedChangeData = ({
+	["TimeStart"]: (number),
+	["Speed"]: (number),
+	["TimeEnd"]: ((number)?),
+})
+export type Difficulty = ("Normal" | "Hard" | "Insane")
+export type StageData = ({
+	["FastestTime"]: (number),
+	["FinishedCount"]: (number),
+})
 export type SpeedChange = ({
 	["UniqueId"]: (string),
 	["Speed"]: (number),
 	["Time"]: (number),
+})
+export type TimeData = ({
+	["StartTime"]: (number),
+	["EndTime"]: (number),
 })
 export type ResourceData = ({
 	["Resource"]: (string),
@@ -260,7 +256,6 @@ export type ResourceData = ({
 	["UniqueId"]: (string),
 	["PartialOneLose"]: ((boolean)?),
 })
-export type ProductId = (number)
 export type Inventory = ({
 	["Units"]: ({ [(string)]: ({
 		["Unit"]: (string),
@@ -282,16 +277,14 @@ export type Inventory = ({
 		["PartialOneLose"]: ((boolean)?),
 	}) }),
 })
-export type Difficulty = ("Normal" | "Hard" | "Insane")
-export type ProductData = ({
-	["ProductId"]: (number),
-	["IsGamepass"]: (boolean),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-})
-export type StageData = ({
-	["FastestTime"]: (number),
-	["FinishedCount"]: (number),
+export type BoothData = ({
+	["OwnerId"]: (number),
+	["MapId"]: (string),
+	["LevelId"]: (string),
+	["Difficulty"]: (string),
+	["Players"]: ({ (Player) }),
+	["StartTime"]: (number),
+	["EndTime"]: (number),
 })
 export type VisualUnitData = ({
 	["Unit"]: (string),
@@ -300,6 +293,7 @@ export type VisualUnitData = ({
 	["XP"]: (number),
 	["NeededXP"]: (number),
 })
+export type Time = (number)
 
 local function SendEvents()
 	if outgoing_used ~= 0 then
@@ -317,15 +311,13 @@ end
 
 RunService.Heartbeat:Connect(SendEvents)
 
-local reliable_events = table.create(19)
-local reliable_event_queue: { [number]: { any } } = table.create(19)
+local reliable_events = table.create(17)
+local reliable_event_queue: { [number]: { any } } = table.create(17)
 reliable_event_queue[14] = {}
 reliable_event_queue[15] = {}
 reliable_event_queue[16] = {}
 reliable_event_queue[0] = {}
 reliable_event_queue[1] = {}
-reliable_event_queue[18] = {}
-reliable_event_queue[17] = {}
 reliable_event_queue[13] = {}
 reliable_event_queue[12] = {}
 reliable_event_queue[11] = {}
@@ -443,28 +435,6 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 				table.insert(reliable_event_queue[1], value)
 				if #reliable_event_queue[1] > 64 then
 					warn(`[ZAP] {#reliable_event_queue[1]} events in queue for StoryDataSync. Did you forget to attach a listener?`)
-				end
-			end
-		elseif id == 18 then
-			local value
-			value = buffer.readf64(incoming_buff, read(8))
-			if reliable_events[18] then
-				task.spawn(reliable_events[18], value)
-			else
-				table.insert(reliable_event_queue[18], value)
-				if #reliable_event_queue[18] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[18]} events in queue for LevelXPChanged. Did you forget to attach a listener?`)
-				end
-			end
-		elseif id == 17 then
-			local value
-			value = buffer.readu16(incoming_buff, read(2))
-			if reliable_events[17] then
-				task.spawn(reliable_events[17], value)
-			else
-				table.insert(reliable_event_queue[17], value)
-				if #reliable_event_queue[17] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[17]} events in queue for LevelChanged. Did you forget to attach a listener?`)
 				end
 			end
 		elseif id == 13 then
@@ -869,30 +839,6 @@ local returns = {
 		Fire = function()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
-		end,
-	},
-	LevelXPChanged = {
-		SetCallback = function(Callback: (Value: (number)) -> ()): () -> ()
-			reliable_events[18] = Callback
-			for _, value in reliable_event_queue[18] do
-				task.spawn(Callback, value)
-			end
-			reliable_event_queue[18] = {}
-			return function()
-				reliable_events[18] = nil
-			end
-		end,
-	},
-	LevelChanged = {
-		SetCallback = function(Callback: (Value: (number)) -> ()): () -> ()
-			reliable_events[17] = Callback
-			for _, value in reliable_event_queue[17] do
-				task.spawn(Callback, value)
-			end
-			reliable_event_queue[17] = {}
-			return function()
-				reliable_events[17] = nil
-			end
 		end,
 	},
 	LeaveBooth = {

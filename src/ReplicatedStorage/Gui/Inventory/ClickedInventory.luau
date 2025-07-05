@@ -8,6 +8,8 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local GuiService = game:GetService("GuiService")
 
+local LocalPlayer = Players.LocalPlayer
+
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
 local Input = require(Packages.Input)
@@ -227,9 +229,13 @@ local function Connected(props)
 			if Raycast and Raycast.Instance then
 				local Character = Raycast.Instance:FindFirstAncestorWhichIsA("Model")
 
-				if Character and Players:GetPlayerFromCharacter(Character) then
-					SetHovered(true)
-					SetOtherCharacter(Character)
+				if Character then
+					local Player = Players:GetPlayerFromCharacter(Character)
+					if Player ~= LocalPlayer then
+						SetHovered(true)
+						SetOtherCharacter(Character)
+					end
+
 					return
 				end
 			end
@@ -245,7 +251,7 @@ local function Connected(props)
 				local Character = Raycast.Instance:FindFirstAncestorWhichIsA("Model")
 				if Character then
 					local Player = Players:GetPlayerFromCharacter(Character)
-					if Player then
+					if Player and Player ~= LocalPlayer then
 						SetClickedPlayer(Player)
 						return
 					end

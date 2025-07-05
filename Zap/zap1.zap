@@ -297,19 +297,3 @@ event TitleAdded = {
 	call: SingleAsync,
 	data: string,
 }
-
--- Level --
-
-event LevelChanged = {
-	from: Server,
-	type: Reliable,
-	call: SingleAsync,
-	data: Level,
-}
-
-event LevelXPChanged = {
-	from: Server,
-	type: Reliable,
-	call: SingleAsync,
-	data: XP,
-}
