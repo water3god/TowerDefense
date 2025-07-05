@@ -6,6 +6,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local GuiService = game:GetService("GuiService")
 
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
@@ -109,10 +110,10 @@ local function CreateClickedInventory(props: Properties)
 
 	return e(Main.Frame, {
 		native = Join({
-			Size = UDim2.fromScale(0.8, 0.5),
+			Size = UDim2.fromScale(0.4, 0.2),
 			BackgroundTransparency = 0,
 			BackgroundColor3 = Color3.fromRGB(91, 91, 91),
-		}, props.children),
+		}, props.native),
 	}, {
 		PlayerName = e(Main.TextLabel, {
 			native = {
@@ -184,21 +185,22 @@ local function CreateClickedInventory(props: Properties)
 end
 
 local function Connected(props)
-	local Data, SetData = React.useState(nil :: { AllEquipped.UnitDataSent }?)
-	local Character = Hooks.useCharacter()
-	local OtherCharacter, SetOtherCharacter = React.useState(nil :: Model?)
+	local Data, SetData: any = React.useState(nil :: { AllEquipped.UnitDataSent }?)
+	local Camera = Hooks.useCamera()
+	local OtherCharacter, SetOtherCharacter: any = React.useState(nil :: Model?)
 	local ClickedPlayer, SetClickedPlayer = React.useState(nil :: Player?)
 	local RaycastParams = Hooks.useRaycastParams()
-	local HoveredPosition, SetHoveredPosition = React.useBinding(Vector2.new(0, 0))
+	local HoveredPosition, SetHoveredPosition = React.useBinding(UDim2.new())
+	local ClickedPosition, SetClickedPosition = React.useBinding(UDim2.new())
 	local Hovered, SetHovered = React.useState(false)
 
-	React.useEffect(function()
+	--[[React.useEffect(function()
 		if Character then
 			RaycastParams.FilterDescendantsInstances = { Character }
 		else
 			RaycastParams.FilterDescendantsInstances = {}
 		end
-	end, { Character })
+	end, { Character })]]
 
 	local Highlight = React.useMemo(function()
 		if not OtherCharacter then
@@ -206,7 +208,7 @@ local function Connected(props)
 		end
 
 		return e("Highlight", {
-			Adornee = OtherCharacter.Character,
+			Adornee = OtherCharacter,
 			FillColor = Color3.fromRGB(255, 255, 255),
 			FillTransparency = 0.5,
 			OutlineColor = Color3.new(1, 1, 1),
@@ -218,29 +220,40 @@ local function Connected(props)
 		local ClickedTrove = Trove.new()
 
 		local function UpdatePosition(Position: Vector2)
-			SetHoveredPosition(Position)
-			local Raycast = HelperFunctions.Raycast(Position)
+			local NewPosition = Position - GuiService:GetGuiInset()
+			SetHoveredPosition(UDim2.fromOffset(NewPosition.X, NewPosition.Y))
+			local Raycast = HelperFunctions.Raycast(Position, RaycastParams)
 
 			if Raycast and Raycast.Instance then
-				local PlayerCharacter = Players:GetPlayerFromCharacter(Raycast.Instance.Parent)
-				if PlayerCharacter then
+				local Character = Raycast.Instance:FindFirstAncestorWhichIsA("Model")
+
+				if Character and Players:GetPlayerFromCharacter(Character) then
 					SetHovered(true)
-					SetOtherCharacter(PlayerCharacter)
+					SetOtherCharacter(Character)
+					return
 				end
 			end
 
 			SetHovered(false)
+			SetOtherCharacter(nil)
 		end
 
 		local function OnClick(Position: Vector2)
-			local Raycast = HelperFunctions.Raycast(Position)
+			local Raycast = HelperFunctions.Raycast(Position, RaycastParams)
 
 			if Raycast and Raycast.Instance then
-				local Player = Players:GetPlayerFromCharacter(Raycast.Instance.Parent)
-				if Player then
-					SetClickedPlayer(Player)
+				local Character = Raycast.Instance:FindFirstAncestorWhichIsA("Model")
+				if Character then
+					local Player = Players:GetPlayerFromCharacter(Character)
+					if Player then
+						SetClickedPlayer(Player)
+						return
+					end
 				end
 			end
+
+			SetClickedPlayer(nil)
+			SetData(nil)
 		end
 
 		local Disconnect = Input.PreferredInput.Observe(function(PreferredInput)
@@ -285,8 +298,20 @@ local function Connected(props)
 			local ClickedCharacter = ClickedPlayer.Character
 
 			if ClickedCharacter then
+				local Connection = nil :: RBXScriptConnection?
+				local WorldPromise = Promise.try(function()
+					return ClickedCharacter
+				end):andThen(function(Model: Model)
+					Connection = RunService.PostSimulation:Connect(function()
+						local Position = Camera:WorldToScreenPoint(Model:GetPivot().Position)
+						SetClickedPosition(UDim2.fromOffset(Position.X, Position.Y))
+					end)
+				end)
+
 				local ClickedPromise = Promise.new(function(resolve: (...any) -> ())
-					if not AllEquipped.Equipped[ClickedPlayer] then
+					SetClickedPosition(UDim2.fromScale(-1, -1))
+					local Equipped = AllEquipped.Equipped[ClickedPlayer]
+					if not Equipped then
 						SetData({
 							Loading = true,
 							Name = "",
@@ -296,7 +321,7 @@ local function Connected(props)
 						local Value = AllEquipped.GetChangedSignal(ClickedPlayer):Wait()
 						resolve(Value)
 					end
-					resolve()
+					resolve(Equipped)
 				end):andThen(function(Value: AllEquipped.DataSent?)
 					if Value then
 						SetData({
@@ -310,6 +335,10 @@ local function Connected(props)
 
 				return function()
 					ClickedPromise:cancel()
+					WorldPromise:cancel()
+					if Connection then
+						Connection:Disconnect()
+					end
 				end
 			end
 		end
@@ -319,7 +348,15 @@ local function Connected(props)
 
 	return e(React.Fragment, nil, {
 		Highlight = Highlight,
-		ClickedInventory = Data and e(CreateClickedInventory, Data, props.children),
+		ClickedInventory = Data and e(
+			CreateClickedInventory,
+			Join(Data, {
+				native = {
+					Position = ClickedPosition,
+				},
+			}),
+			props.children
+		),
 		ClickedHover = e(ClickedHover, {
 			native = {
 				Position = HoveredPosition,

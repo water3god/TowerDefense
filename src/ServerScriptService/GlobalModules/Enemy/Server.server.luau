@@ -57,7 +57,7 @@ SafePlayerAdded:Connect(function(Player: Player)
 	end
 
 	SpawnEvent.Fire(Player, FullEnemyTable :: any, false)
-end)
+end, true)
 
 Enemy.Spawned:Connect(function(NewEnemy: Enemy.Enemy)
 	local Data = {}

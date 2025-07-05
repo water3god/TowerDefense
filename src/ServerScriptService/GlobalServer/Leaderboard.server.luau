@@ -33,4 +33,4 @@ SafePlayerAdded:Connect(function(Player: Player)
 			RollCount.Value = Value
 		end)
 	end
-end)
+end, true)

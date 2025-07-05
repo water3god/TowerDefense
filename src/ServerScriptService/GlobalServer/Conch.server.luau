@@ -21,4 +21,4 @@ SafePlayerAdded:Connect(function(player)
 		local user = Conch.get_user(player)
 		Conch.give_roles(user, "super-user")
 	end
-end)
+end, true)

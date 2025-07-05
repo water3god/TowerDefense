@@ -114,6 +114,7 @@ function Funcs.UIStrokeAdvanced(Properties: PropertiesBasic)
 				local function Set()
 					local AbsoluteSize = StrokeInst.Parent.AbsoluteSize
 					local TotalSize = (AbsoluteSize.X + AbsoluteSize.Y) / 2
+
 					SetSize(TotalSize * Properties.Stroke)
 				end
 				Set()

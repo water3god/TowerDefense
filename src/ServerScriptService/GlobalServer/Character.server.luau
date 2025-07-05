@@ -50,9 +50,9 @@ local function HandleData(Character: Model, Data: PlayerData.PlayerData)
 			local Billboard = Instance.new("BillboardGui")
 			Billboard.Name = "DisplayTitleGui"
 			Billboard.Adornee = RootPart
-			Billboard.Size = UDim2.new(0, 200, 0, 50)
-			Billboard.StudsOffset = Vector3.new(0, 3, 0)
-			Billboard.AlwaysOnTop = true
+			Billboard.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+			Billboard.Size = UDim2.fromScale(5, 5)
+			Billboard.StudsOffsetWorldSpace = Vector3.new(0, 4, 0)
 			Billboard.Parent = RootPart
 
 			local Root = ReactRoblox.createRoot(Billboard)
@@ -77,8 +77,10 @@ SafePlayerAdded:Connect(function(Player: Player)
 		HandleChar(Player.Character)
 	end
 	Player.CharacterAdded:Connect(HandleChar)
+end, true)
 
-	local Data = PlayerData.GetPlayerData(Player)
+local function DataAdded(Data: PlayerData.PlayerData)
+	local Player = Data.Player
 	if Data then
 		if Player.Character then
 			HandleData(Player.Character, Data)
@@ -87,4 +89,10 @@ SafePlayerAdded:Connect(function(Player: Player)
 			HandleData(Character, Data)
 		end)
 	end
-end, true)
+end
+
+for _, Data in pairs(PlayerData.GetDatas()) do
+	DataAdded(Data)
+end
+
+PlayerData.DataAdded:Connect(DataAdded)

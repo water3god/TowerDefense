@@ -30,8 +30,8 @@ local function CreateClickHover(props: Properties)
 		native = Join({
 			BackgroundTransparency = 0,
 			BackgroundColor3 = Color3.fromRGB(77, 77, 77),
-			Size = UDim2.fromScale(0.5, 0.5),
-		}, props.children),
+			Size = UDim2.fromScale(0.2, 0.1),
+		}, props.native),
 	}, {
 		UICorner = e("UICorner", {
 			CornerRadius = UDim.new(0.2, 0),
