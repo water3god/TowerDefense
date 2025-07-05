@@ -29,6 +29,7 @@ export type UnitDataSent = {
 }
 
 export type DataSent = {
+	Title: string,
 	Level: number,
 	EquippedUnits: { UnitDataSent },
 }
@@ -84,30 +85,27 @@ local function GetUnitData(Data: { string })
 	return NewData
 end
 
+local function OnLocalChanged()
+	Equipped[LocalPlayer] = {
+		Title = InventoryService.TitleData.EquippedTitle,
+		Level = InventoryService.Level,
+		EquippedUnits = GetUnitData(InventoryService.TitleData.Titles),
+	}
+	Module.Changed:Fire(LocalPlayer, Equipped[LocalPlayer])
+	if ChangedSignals[LocalPlayer] then
+		ChangedSignals[LocalPlayer]:Fire(Equipped[LocalPlayer])
+	end
+end
+
 task.spawn(function()
 	if not InventoryService.IsSynced then
 		InventoryService.Synced:Wait()
 	end
-	Equipped[LocalPlayer] = {
-		Level = InventoryService.Level,
-		EquippedUnits = GetUnitData(InventoryService.EquippedUnits),
-	}
-	Module.Changed:Fire(LocalPlayer, Equipped[LocalPlayer])
-	if ChangedSignals[LocalPlayer] then
-		ChangedSignals[LocalPlayer]:Fire(Equipped[LocalPlayer])
-	end
+	OnLocalChanged()
 end)
 
-InventoryService.UnitEquipChanged:Connect(function()
-	Equipped[LocalPlayer] = {
-		Level = InventoryService.Level,
-		EquippedUnits = GetUnitData(InventoryService.EquippedUnits),
-	}
-	Module.Changed:Fire(LocalPlayer, Equipped[LocalPlayer])
-	if ChangedSignals[LocalPlayer] then
-		ChangedSignals[LocalPlayer]:Fire(Equipped[LocalPlayer])
-	end
-end)
+InventoryService.UnitEquipChanged:Connect(OnLocalChanged)
+InventoryService.TitleChanged:Connect(OnLocalChanged)
 
 Players.PlayerRemoving:Connect(function(Player: Player)
 	if Equipped[Player] then

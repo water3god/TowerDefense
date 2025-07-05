@@ -17,6 +17,9 @@ local Sell = Network.ItemSell
 local LevelChangedEvent = Network.LevelChanged
 local XPChangedEvent = Network.LevelXPChanged
 
+local TitleChangedEvent = Network.TitleChanged
+local TitleAddedEvent = Network.TitleAdded
+
 local Shared = ReplicatedStorage.Shared
 local Types = require(Shared.Types)
 
@@ -106,11 +109,14 @@ Data.ResourceChanged = ResourceChanged
 Data.LevelChanged = LevelChanged
 Data.XPChanged = XPChanged
 
+Data.TitleChanged = Signal.new()
+Data.TitleAdded = Signal.new()
+
 Data.GetItemRequest = Signal.new()
 
 Data.IsSynced = IsSynced
 
-Data.EquippedUnits = {} :: { string }
+Data.EquippedUnits = {} :: { string? }
 Data.MaxUnitCount = 100
 
 UnitEquipped.SetCallback(function(SentData: { UniqueId: string, Index: number, Equip: boolean })
@@ -118,18 +124,28 @@ UnitEquipped.SetCallback(function(SentData: { UniqueId: string, Index: number, E
 	UnitEquipChanged:Fire(SentData)
 end)
 
-InventorySync.SetCallback(function(SentData: any, EquippedUnits: { string }, LevelData: any, MaxUnitCount: number)
-	Data.IsSynced = true
-	CurrentInventory = SentData
-	Data.EquippedUnits = EquippedUnits
+InventorySync.SetCallback(
+	function(
+		SentData: any,
+		EquippedUnits: { string? },
+		LevelData: any,
+		MaxUnitCount: number,
+		TitleData: { EquippedTitle: string, Titles: { string } }
+	)
+		Data.IsSynced = true
+		CurrentInventory = SentData
+		Data.EquippedUnits = EquippedUnits
 
-	Data.Level = LevelData.Level
-	Data.XP = LevelData.XP
-	Data.NeededXP = LevelData.NeededXP
+		Data.Level = LevelData.Level
+		Data.XP = LevelData.XP
+		Data.NeededXP = LevelData.NeededXP
 
-	Data.MaxUnitCount = MaxUnitCount
-	Synced:Fire()
-end)
+		Data.TitleData = TitleData
+
+		Data.MaxUnitCount = MaxUnitCount
+		Synced:Fire()
+	end
+)
 
 LevelChangedEvent.SetCallback(function(Level: number)
 	Data.Level = Level
@@ -139,6 +155,20 @@ end)
 XPChangedEvent.SetCallback(function(XP: number)
 	Data.XP = XP
 	XPChanged:Fire(XP)
+end)
+
+TitleAddedEvent.SetCallback(function(Title: string)
+	if Data.TitleData then
+		table.insert(Data.TitleData.Titles, Title)
+		Data.TitleAdded:Fire(Title)
+	end
+end)
+
+TitleChangedEvent.SetCallback(function(Title: string)
+	if Data.TitleData then
+		Data.TitleData.EquippedTitle = Title
+		Data.TitleChanged:Fire(Title)
+	end
 end)
 
 function Data:GetInventory()

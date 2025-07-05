@@ -245,6 +245,10 @@ event InventorySync = {
 		string?[],
 		LevelData,
 		u16,
+		struct {
+			EquippedTitle: string,
+			Titles: string[],
+		},
 	),
 }
 
@@ -278,6 +282,20 @@ event UnitEquipped = {
 		Index: u8,
 		Equip: boolean,
 	},
+}
+
+event TitleChanged = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: string,
+}
+
+event TitleAdded = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: string,
 }
 
 -- Level --

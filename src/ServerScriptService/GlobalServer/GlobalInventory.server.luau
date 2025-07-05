@@ -17,6 +17,9 @@ local UnitEquipped = Network.UnitEquipped
 local LevelChangedEvent = Network.LevelChanged
 local XPChangedEvent = Network.LevelXPChanged
 
+local TitleChangedEvent = Network.TitleChanged
+local TitleAddedEvent = Network.TitleAdded
+
 local function OnDataAdded(Data: PlayerData.PlayerData)
 	local Player = Data.Player
 	local GivenData = Data.Profile.Data
@@ -30,7 +33,11 @@ local function OnDataAdded(Data: PlayerData.PlayerData)
 		},
 		GivenData.EquippedUnits,
 		{ Level = GivenData.Level, XP = GivenData.XP, NeededXP = Data.NeededXP },
-		GivenData.MaxUnitCount
+		GivenData.MaxUnitCount,
+		{
+			EquippedTitle = GivenData.EquippedTitle,
+			Titles = GivenData.Titles,
+		}
 	)
 
 	Data.UnitEquipped:Connect(function(Unit: string, Index: number)
@@ -69,6 +76,14 @@ local function OnDataAdded(Data: PlayerData.PlayerData)
 
 	Data.XPChanged:Connect(function(XP: number)
 		XPChangedEvent.Fire(Player, XP)
+	end)
+
+	Data.TitleChanged:Connect(function(Title: string)
+		TitleChangedEvent.Fire(Player, Title)
+	end)
+
+	Data.TitleAdded:Connect(function(Title: string)
+		TitleAddedEvent.Fire(Player, Title)
 	end)
 end
 

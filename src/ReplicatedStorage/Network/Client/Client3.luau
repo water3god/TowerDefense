@@ -183,29 +183,21 @@ local remotes = ReplicatedStorage:WaitForChild("Zap3")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
-export type Level = (number)
-export type Health = (number)
 export type MainXPData = ({
 	["OldXP"]: (number),
 	["NewXP"]: (number),
 	["OldLevel"]: (number),
 	["NewLevel"]: (number),
 })
-export type Vote = (number)
+export type Health = (number)
+export type XP = (number)
+export type Level = (number)
 export type WaveData = ({
 	["Wave"]: (number),
 	["BaseHealth"]: (number),
 	["MaxHealth"]: (number),
 	["Time"]: (number),
 	["StartTime"]: (number),
-})
-export type ProductId = (number)
-export type Wave = (number)
-export type VoteData = ({
-	["Time"]: (number),
-	["StartTime"]: (number),
-	["CurrentCount"]: (number),
-	["NeededCount"]: (number),
 })
 export type ResourceData = ({
 	["Units"]: ({ (string) }),
@@ -221,8 +213,16 @@ export type ResourceData = ({
 		["NewXP"]: (number),
 	}) }),
 })
+export type Wave = (number)
+export type ProductId = (number)
+export type Vote = (number)
+export type VoteData = ({
+	["Time"]: (number),
+	["StartTime"]: (number),
+	["CurrentCount"]: (number),
+	["NeededCount"]: (number),
+})
 export type Time = (number)
-export type XP = (number)
 
 local function SendEvents()
 	if outgoing_used ~= 0 then
@@ -497,17 +497,19 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 				assert(key_1 ~= nil, "received instance is nil!")
 				assert(key_1:IsA("Player"), "received instance is not of the Player class!")
 				val_5 = {}
+				local len_9 = buffer.readu16(incoming_buff, read(2))
+				val_5["Title"] = buffer.readstring(incoming_buff, read(len_9), len_9)
 				val_5["Level"] = buffer.readu16(incoming_buff, read(2))
 				val_5["EquippedUnits"] = {}
-				local len_9 = buffer.readu16(incoming_buff, read(2))
-				for i_5 = 1, len_9 do
+				local len_10 = buffer.readu16(incoming_buff, read(2))
+				for i_5 = 1, len_10 do
 					local val_6
 					val_6 = {}
-					local len_10 = buffer.readu16(incoming_buff, read(2))
-					val_6["Id"] = buffer.readstring(incoming_buff, read(len_10), len_10)
-					val_6["Level"] = buffer.readu16(incoming_buff, read(2))
 					local len_11 = buffer.readu16(incoming_buff, read(2))
-					val_6["UnitName"] = buffer.readstring(incoming_buff, read(len_11), len_11)
+					val_6["Id"] = buffer.readstring(incoming_buff, read(len_11), len_11)
+					val_6["Level"] = buffer.readu16(incoming_buff, read(2))
+					local len_12 = buffer.readu16(incoming_buff, read(2))
+					val_6["UnitName"] = buffer.readstring(incoming_buff, read(len_12), len_12)
 					val_5["EquippedUnits"][i_5] = val_6
 				end
 				value[key_1] = val_5
@@ -762,6 +764,7 @@ local returns = {
 	},
 	AllEquippedSync = {
 		SetCallback = function(Callback: (Value: ({ [(Player)]: ({
+			["Title"]: (string),
 			["Level"]: (number),
 			["EquippedUnits"]: ({ ({
 				["Id"]: (string),

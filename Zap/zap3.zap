@@ -200,6 +200,7 @@ event AllEquippedSync = {
 	type: Reliable,
 	call: SingleAsync,
 	data: map { [Instance(Player)]: struct {
+		Title: string,
 		Level: Level,
 		EquippedUnits: struct {
 			Id: string,

@@ -40,38 +40,6 @@ local function HandleChar(Character: Model)
 	Character.Parent = CharacterFolder
 end
 
-local function HandleData(Character: Model, Data: PlayerData.PlayerData)
-	task.spawn(function()
-		local ProfileData = Data.Profile.Data
-
-		local TitlePromise = Promise.try(function()
-			return Character:WaitForChild("HumanoidRootPart") :: BasePart
-		end):andThen(function(RootPart)
-			local Billboard = Instance.new("BillboardGui")
-			Billboard.Name = "DisplayTitleGui"
-			Billboard.Adornee = RootPart
-			Billboard.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-			Billboard.Size = UDim2.fromScale(5, 5)
-			Billboard.StudsOffsetWorldSpace = Vector3.new(0, 4, 0)
-			Billboard.Parent = RootPart
-
-			local Root = ReactRoblox.createRoot(Billboard)
-			Root:render(e(DisplayTitle, {
-				Name = Data.Player.Name,
-				Title = ProfileData.EquippedTitle,
-				Level = ProfileData.Level,
-			}))
-			Character.Destroying:Once(function()
-				Root:unmount()
-			end)
-		end)
-
-		Character.Destroying:Once(function()
-			TitlePromise:cancel()
-		end)
-	end)
-end
-
 SafePlayerAdded:Connect(function(Player: Player)
 	if Player.Character then
 		HandleChar(Player.Character)
@@ -80,15 +48,7 @@ SafePlayerAdded:Connect(function(Player: Player)
 end, true)
 
 local function DataAdded(Data: PlayerData.PlayerData)
-	local Player = Data.Player
-	if Data then
-		if Player.Character then
-			HandleData(Player.Character, Data)
-		end
-		Player.CharacterAdded:Connect(function(Character: Model)
-			HandleData(Character, Data)
-		end)
-	end
+	return
 end
 
 for _, Data in pairs(PlayerData.GetDatas()) do

@@ -31,6 +31,7 @@ local function Update(Data: PlayerData.PlayerData, Player: Player?)
 
 	local NewTable = {
 		Level = Data.Profile.Data.Level,
+		Title = Data.Profile.Data.EquippedTitle,
 		EquippedUnits = SendData,
 	}
 
@@ -53,6 +54,10 @@ local function HandleData(Data: PlayerData.PlayerData)
 	end)
 
 	Data.LeveledUp:Connect(function()
+		Update(Data)
+	end)
+
+	Data.TitleChanged:Connect(function()
 		Update(Data)
 	end)
 

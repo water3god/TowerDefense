@@ -19,6 +19,8 @@ local LevelRequirements = require(Shared.LevelRequirements)
 local GameInfo = require(Shared.GameInfo)
 local ProductInfo = require(Shared.ProductInfo)
 local DailyRewards = require(Shared.DailyRewards)
+local SettingData = require(Shared.Settings)
+local TitleData = require(Shared.Titles)
 
 local CalculateUnitXP = GameInfo.XPData.CalculateUnitXP
 local CalculatePlayerXP = GameInfo.XPData.CalculatePlayerXP
@@ -28,8 +30,6 @@ local Utility = ServerScriptService.Utility
 local ProfileStore = require(Utility.ProfileStore)
 
 local Template = require(ServerStorage.Data.DefaultData)
-
-local SettingData = require(ReplicatedStorage.Shared.Settings)
 
 export type GetStageData = {
 	Map: string,
@@ -81,6 +81,8 @@ type PlayerDataData<T> = {
 	TotalGoldGained: Signal.Signal<number>,
 
 	DailyRedeemed: Signal.Signal<number, number>,
+	TitleChanged: Signal.Signal<string>,
+	TitleAdded: Signal.Signal<string>,
 
 	Destroying: Signal.Signal<>,
 }
@@ -130,6 +132,9 @@ type PlayerDataImpl = {
 	GetSettingChangedSignal: (self: PlayerData, Setting: string) -> Signal.Signal<any>,
 
 	ChangeInGame: (self: PlayerData, InGame: boolean) -> (),
+
+	AddTitle: (self: PlayerData, Title: string) -> (),
+	ChangeTitle: (self: PlayerData, Title: string) -> (),
 
 	AddRoll: (self: PlayerData, Count: number) -> (),
 
@@ -250,6 +255,9 @@ function PlayerData.new(Player: Player)
 	self.StageChanged = self._Trove:Construct(Signal)
 
 	self.DailyRedeemed = self._Trove:Construct(Signal)
+
+	self.TitleChanged = self._Trove:Construct(Signal)
+	self.TitleAdded = self._Trove:Construct(Signal)
 
 	self.Destroying = self._Trove:Construct(Signal)
 
@@ -754,6 +762,36 @@ function PlayerData:GetSettingChangedSignal(Setting: string)
 		self.SettingSignals[Setting] = SettingSignal
 		return SettingSignal
 	end
+end
+
+function PlayerData:AddTitle(Title: string)
+	local Data = self.Profile.Data
+
+	if not Title or Title == "" then
+		return
+	end
+	if not table.find(TitleData.Titles, Title) then
+		return
+	end
+	if not table.find(Data.Titles, Title) then
+		table.insert(Data.Titles, Title)
+		self.TitleAdded:Fire(Title)
+	end
+end
+
+function PlayerData:ChangeTitle(Title: string)
+	local Data = self.Profile.Data
+
+	if not Title or Title == "" then
+		return
+	end
+
+	if not table.find(Data.Titles, Title) then
+		return
+	end
+
+	Data.EquippedTitle = Title
+	self.TitleChanged:Fire(Title)
 end
 
 function PlayerData:AddRoll(Count: number)
