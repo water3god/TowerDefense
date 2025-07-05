@@ -231,7 +231,7 @@ local function Connected(props)
 
 				if Character then
 					local Player = Players:GetPlayerFromCharacter(Character)
-					if Player ~= LocalPlayer then
+					if Player and Player ~= LocalPlayer then
 						SetHovered(true)
 						SetOtherCharacter(Character)
 					end
