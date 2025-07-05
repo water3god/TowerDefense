@@ -57,7 +57,7 @@ local function InitalizePlayer(Player: Player)
 				end
 
 				for Key, FollowerData in pairs(FollowerCache[Player]) do
-					if not Data[Key] then
+					if not Data.EquippedUnits[Key] then
 						FollowerData.Follower:Destroy()
 						FollowerCache[Player][Key] = nil
 					end
