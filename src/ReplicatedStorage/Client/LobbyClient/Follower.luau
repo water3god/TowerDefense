@@ -153,7 +153,7 @@ function Follower.new(Data: Input): Follower
 			end
 		end
 
-		if Count > 6 then
+		if Count > 3 then
 			if InWalk then
 				PlayWalk(false)
 				InWalk = false
