@@ -70,8 +70,8 @@ local function CreateTitle(props: TitleProps)
 		}, {
 			TextLabel = e(Main.TextLabel, {
 				native = {
-					Position = UDim2.fromScale(0.35, 0.5),
-					Size = UDim2.fromScale(0.575, 0.4),
+					Position = UDim2.fromScale(0.375, 0.35),
+					Size = UDim2.fromScale(0.6, 0.4),
 					Text = props.TitleName,
 					TextXAlignment = Enum.TextXAlignment.Left,
 				},
@@ -83,10 +83,22 @@ local function CreateTitle(props: TitleProps)
 					Stroke = 0.02,
 				}),
 			}),
+			DescriptionLabel = e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.375, 0.7),
+					Size = UDim2.fromScale(0.6, 0.2),
+					Text = TitleData and TitleData.Description or "No description available.",
+					TextXAlignment = Enum.TextXAlignment.Left,
+				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.02,
+				}),
+			}),
 			ToggleButton = e(Main.Animateables.ImageButton, {
 				native = {
-					Position = UDim2.fromScale(0.75, 0.5),
-					Size = UDim2.fromScale(0.6, 0.6),
+					Position = UDim2.fromScale(0.8, 0.5),
+					Size = UDim2.fromScale(0.6, 0.5),
 					BackgroundTransparency = 1,
 					Image = "rbxassetid://72606508098140",
 					ImageColor3 = props.Equipped and Color3.new(0.635294, 0.635294, 0.635294) or Color3.new(1, 1, 1),
