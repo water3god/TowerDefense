@@ -152,6 +152,9 @@ if not RunService:IsRunning() then
 		EquipUnit = table.freeze({
 			Fire = noop
 		}),
+		EquipTitle = table.freeze({
+			Fire = noop
+		}),
 		EnemySpeedEvent = table.freeze({
 			SetCallback = noop
 		}),
@@ -195,66 +198,9 @@ local remotes = ReplicatedStorage:WaitForChild("Zap1")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
-export type EnemyInput = ({
-	["UniqueId"]: (string),
-	["ModelName"]: (string),
-	["Health"]: (number),
-	["MaxHealth"]: (number),
-	["Speed"]: (number),
-	["IsBoss"]: (boolean),
-	["Ally"]: (boolean),
-	["OriginalSpeed"]: (number),
-	["VectorOffset"]: (Vector3),
-	["BezierId"]: (string),
-	["TimePosition"]: (number),
-	["Time"]: (number),
-	["AdornmentName"]: ((string)?),
-	["SpeedChanges"]: ({ ({
-		["TimeStart"]: (number),
-		["Speed"]: (number),
-		["TimeEnd"]: ((number)?),
-	}) }),
-})
-export type ProductData = ({
-	["ProductId"]: (number),
-	["IsGamepass"]: (boolean),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-})
-export type Health = (number)
-export type LevelData = ({
-	["Level"]: (number),
-	["XP"]: (number),
-	["NeededXP"]: (number),
-})
-export type ProductId = (number)
-export type Level = (number)
-export type Item = ("Units" | "Products" | "Resources")
-export type XP = (number)
-export type SpeedChangeData = ({
-	["TimeStart"]: (number),
-	["Speed"]: (number),
-	["TimeEnd"]: ((number)?),
-})
-export type Difficulty = ("Normal" | "Hard" | "Insane")
 export type StageData = ({
 	["FastestTime"]: (number),
 	["FinishedCount"]: (number),
-})
-export type SpeedChange = ({
-	["UniqueId"]: (string),
-	["Speed"]: (number),
-	["Time"]: (number),
-})
-export type TimeData = ({
-	["StartTime"]: (number),
-	["EndTime"]: (number),
-})
-export type ResourceData = ({
-	["Resource"]: (string),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-	["PartialOneLose"]: ((boolean)?),
 })
 export type Inventory = ({
 	["Units"]: ({ [(string)]: ({
@@ -277,6 +223,12 @@ export type Inventory = ({
 		["PartialOneLose"]: ((boolean)?),
 	}) }),
 })
+export type XP = (number)
+export type SpeedChange = ({
+	["UniqueId"]: (string),
+	["Speed"]: (number),
+	["Time"]: (number),
+})
 export type BoothData = ({
 	["OwnerId"]: (number),
 	["MapId"]: (string),
@@ -286,6 +238,7 @@ export type BoothData = ({
 	["StartTime"]: (number),
 	["EndTime"]: (number),
 })
+export type Time = (number)
 export type VisualUnitData = ({
 	["Unit"]: (string),
 	["Level"]: (number),
@@ -293,7 +246,57 @@ export type VisualUnitData = ({
 	["XP"]: (number),
 	["NeededXP"]: (number),
 })
-export type Time = (number)
+export type SpeedChangeData = ({
+	["TimeStart"]: (number),
+	["Speed"]: (number),
+	["TimeEnd"]: ((number)?),
+})
+export type LevelData = ({
+	["Level"]: (number),
+	["XP"]: (number),
+	["NeededXP"]: (number),
+})
+export type Health = (number)
+export type EnemyInput = ({
+	["UniqueId"]: (string),
+	["ModelName"]: (string),
+	["Health"]: (number),
+	["MaxHealth"]: (number),
+	["Speed"]: (number),
+	["IsBoss"]: (boolean),
+	["Ally"]: (boolean),
+	["OriginalSpeed"]: (number),
+	["VectorOffset"]: (Vector3),
+	["BezierId"]: (string),
+	["TimePosition"]: (number),
+	["Time"]: (number),
+	["AdornmentName"]: ((string)?),
+	["SpeedChanges"]: ({ ({
+		["TimeStart"]: (number),
+		["Speed"]: (number),
+		["TimeEnd"]: ((number)?),
+	}) }),
+})
+export type TimeData = ({
+	["StartTime"]: (number),
+	["EndTime"]: (number),
+})
+export type ProductData = ({
+	["ProductId"]: (number),
+	["IsGamepass"]: (boolean),
+	["Count"]: (number),
+	["UniqueId"]: (string),
+})
+export type ResourceData = ({
+	["Resource"]: (string),
+	["Count"]: (number),
+	["UniqueId"]: (string),
+	["PartialOneLose"]: ((boolean)?),
+})
+export type ProductId = (number)
+export type Difficulty = ("Normal" | "Hard" | "Insane")
+export type Level = (number)
+export type Item = ("Units" | "Products" | "Resources")
 
 local function SendEvents()
 	if outgoing_used ~= 0 then
@@ -936,6 +939,17 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["Equip"] and 1 or 0)
 		end,
 	},
+	EquipTitle = {
+		Fire = function(Value: (string))
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
+			local len_41 = #Value
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_41)
+			alloc(len_41)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_41)
+		end,
+	},
 	EnemySpeedEvent = {
 		SetCallback = function(Callback: (Value: ({
 			["UniqueId"]: (string),
@@ -1027,16 +1041,16 @@ local returns = {
 		}))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-			local len_41 = #Value["MapId"]
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_41)
-			alloc(len_41)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["MapId"], len_41)
-			local len_42 = #Value["LevelId"]
+			local len_42 = #Value["MapId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_42)
 			alloc(len_42)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["LevelId"], len_42)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["MapId"], len_42)
+			local len_43 = #Value["LevelId"]
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_43)
+			alloc(len_43)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["LevelId"], len_43)
 			if Value["Difficulty"] == "Normal" then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)

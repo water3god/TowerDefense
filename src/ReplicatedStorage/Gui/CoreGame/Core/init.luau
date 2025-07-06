@@ -24,18 +24,20 @@ local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 
 local Gui = ReplicatedStorage.Gui
-local Inventory = Gui.Inventory
-local InventoryMain = require(Inventory.InventoryMain)
-local ClickedInventory = require(Inventory.ClickedInventory)
-
-local Trade = Gui.Trade
-local TradeFrame = require(Trade.TradeFrame)
-local TradeMenu = require(Trade.TradeMenu)
 
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
 local MainButtonFrame = require(CoreGame.MainButtonFrame)
 local Hooks = require(CoreGame.Hooks)
+
+local Inventory = Gui.Inventory
+local InventoryMain = require(Inventory.InventoryMain)
+local ClickedInventory = require(Inventory.ClickedInventory)
+local TitlesFrame = require(Inventory.TitlesFrame)
+
+local Trade = Gui.Trade
+local TradeFrame = require(Trade.TradeFrame)
+local TradeMenu = require(Trade.TradeMenu)
 
 local GameFrames = Gui.GameFrames
 local Bottom = require(GameFrames.Bottom)
@@ -283,6 +285,21 @@ local function RenderDailyFrame(Props: any)
 	})
 
 	return e(DailyFrame, {
+		CloseClick = Props.CloseClick,
+		native = {
+			Position = Position,
+			Visible = Visiblity,
+		},
+	})
+end
+
+local function RenderTitlesFrame(Props: any)
+	local Position, Visiblity = AnimateWrapper({
+		Visible = Props.Visible,
+		Name = Constants.TITLES_FRAME,
+	})
+
+	return e(TitlesFrame.Connected, {
 		CloseClick = Props.CloseClick,
 		native = {
 			Position = Position,
@@ -785,6 +802,12 @@ local function Render()
 					Visible = if VisibleFrame == Constants.DAILY_FRAME then true else false,
 					CloseClick = function()
 						OnCloseClick(Constants.DAILY_FRAME)
+					end,
+				}),
+				[Constants.TITLES_FRAME] = e(RenderTitlesFrame, {
+					Visible = if VisibleFrame == Constants.TITLES_FRAME then true else false,
+					CloseClick = function()
+						OnCloseClick(Constants.TITLES_FRAME)
 					end,
 				}),
 			} :: any

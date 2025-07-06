@@ -113,10 +113,14 @@ local function CreateWaitingFrame(Props: Properties)
 				Position = UDim2.fromScale(0.8, 0.6),
 				Size = UDim2.fromScale(0.4, 0.55),
 				Image = GameData and GameData.MapData.Image,
+				ScaleType = Enum.ScaleType.Crop,
 			},
 		}, {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 				AspectRatio = 1,
+			}),
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.1, 0),
 			}),
 		}),
 		DifficultyLabel = e(Main.TextLabel, {
@@ -136,7 +140,7 @@ local function CreateWaitingFrame(Props: Properties)
 		TitleLabel = e(Main.TextLabel, {
 			native = {
 				Position = UDim2.fromScale(0.5, 0.2),
-				Size = UDim2.fromScale(0.9, 0.2),
+				Size = UDim2.fromScale(0.9, 0.13),
 				Text = GameData and GameInfo.GetFullName(
 					GameData.MapData.Name,
 					GameData.StageData.Index,

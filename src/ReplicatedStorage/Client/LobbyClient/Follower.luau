@@ -136,10 +136,10 @@ function Follower.new(Data: Input): Follower
 	local Count = 0
 	local InWalk = false
 
-	local function UpdateWalk(Delta: number)
+	local function UpdateWalk()
 		local Movement = LastPosition - self.CharRoot.Position
 
-		if Movement.Magnitude > 0.01 then
+		if Movement.Magnitude > 0.05 then
 			if not InWalk then
 				Count += 1
 			else
@@ -186,7 +186,7 @@ function Follower.new(Data: Input): Follower
 	end
 
 	local function OtherStep()
-		local OtherRay = workspace:Raycast(self.IdealPart.Position + Vector3.new(0, 3, 0), -Vector3.yAxis * 10, Params)
+		local OtherRay = workspace:Raycast(self.IdealPart.Position + Vector3.new(0, 3, 0), -Vector3.yAxis * 20, Params)
 
 		if OtherRay and OtherRay.Position then
 			local Position = Vector3.new(self.IdealPart.CFrame.X, OtherRay.Position.Y, self.IdealPart.CFrame.Z)
@@ -196,13 +196,13 @@ function Follower.new(Data: Input): Follower
 		end
 	end
 
-	RunService.PreSimulation:Connect(OnStep)
+	RunService.RenderStepped:Connect(OnStep)
 	self.Trove:BindToRenderStep("Follower" .. self.UniqueId, Enum.RenderPriority.Character.Value, OtherStep)
 	local WalkCount = 0
 	RunService.Heartbeat:Connect(function(Delta)
 		WalkCount += Delta
 		if WalkCount >= 0.016 then
-			UpdateWalk(Delta)
+			UpdateWalk()
 			WalkCount = 0
 		end
 	end)

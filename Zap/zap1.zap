@@ -297,3 +297,10 @@ event TitleAdded = {
 	call: SingleAsync,
 	data: string,
 }
+
+event EquipTitle = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: string,
+}

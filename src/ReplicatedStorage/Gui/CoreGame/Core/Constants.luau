@@ -12,6 +12,7 @@ local Constants = {
 	SETTINGS = "Settings",
 	STORE = "Store",
 	DAILY_FRAME = "DailyFrame",
+	TITLES_FRAME = "TitlesFrame",
 }
 
 return Constants

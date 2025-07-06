@@ -16,6 +16,7 @@ local Network = require(ReplicatedStorage.Network.Server)
 
 local EquipUnit = Network.EquipUnit
 local Sell = Network.ItemSell
+local EquipTitle = Network.EquipTitle
 
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
@@ -109,5 +110,22 @@ Sell.SetCallback(function(Player: Player, Type: string, Data: { string })
 		end
 
 		PData:AddGold(TotalCost)
+	end
+end)
+
+EquipTitle.SetCallback(function(Player: Player, Title: string)
+	local PData = PlayerData.GetPlayerDataAsync(Player)
+
+	if PData then
+		if PData.CurrentWave then
+			return
+		end
+
+		local TitleData = require(Shared.Titles)[Title]
+		if not TitleData then
+			return
+		end
+
+		PData:ChangeTitle(Title)
 	end
 end)

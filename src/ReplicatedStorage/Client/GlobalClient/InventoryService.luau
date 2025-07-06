@@ -19,6 +19,7 @@ local XPChangedEvent = Network.LevelXPChanged
 
 local TitleChangedEvent = Network.TitleChanged
 local TitleAddedEvent = Network.TitleAdded
+local EquipTitle = Network.EquipTitle
 
 local Shared = ReplicatedStorage.Shared
 local Types = require(Shared.Types)
@@ -202,6 +203,10 @@ end
 
 function Data.RequestForItem(Type: string?)
 	Data.GetItemRequest:Fire(Type)
+end
+
+function Data.EquipTitle(Title: string)
+	EquipTitle.Fire(Title)
 end
 
 return Data

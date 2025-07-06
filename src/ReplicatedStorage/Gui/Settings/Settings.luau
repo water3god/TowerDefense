@@ -215,7 +215,7 @@ local function CreateNumber(props: { Setting: string, Value: number })
 end
 
 local function CreateSetting(props: SettingProps)
-	local ValueDeterminer = React.useMemo(function()
+	local ValueDeterminer: React.Node = React.useMemo(function()
 		if props.Type == "boolean" then
 			return e(CreateBoolean, {
 				Setting = props.SettingName,
@@ -237,7 +237,7 @@ local function CreateSetting(props: SettingProps)
 
 	return e(Main.Frame, {
 		native = Join({
-			Size = UDim2.fromScale(0.9, 0.15),
+			Size = UDim2.fromScale(1, 0.15),
 		}, props.native),
 	}, {
 		Main = e(Main.Frame, {
