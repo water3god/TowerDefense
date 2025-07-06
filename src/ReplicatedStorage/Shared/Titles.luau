@@ -41,9 +41,9 @@ local Titles: {
 		Description = "A tester ensuring game quality.",
 		Priority = 6,
 	},
-	Supporter = {
-		Color = ColorSequence.new(Color3.fromRGB(255, 0, 255), Color3.fromRGB(255, 100, 200)),
-		Description = "A supporter of the game.",
+	["Group Member"] = {
+		Color = ColorSequence.new(Color3.fromRGB(0, 213, 255), Color3.fromRGB(100, 219, 255)),
+		Description = "A group member",
 		Priority = 7,
 	},
 	Player = {

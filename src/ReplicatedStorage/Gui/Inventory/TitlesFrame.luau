@@ -30,7 +30,6 @@ local Hooks = require(CoreGame.Hooks)
 
 local Shared = ReplicatedStorage.Shared
 local TitleInfo = require(Shared.Titles)
-
 export type Properties = {
 	Titles: { string },
 	EquippedTitle: string,

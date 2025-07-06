@@ -24,6 +24,7 @@ local Constants = {
 	STARTCOINS = 500,
 	ROLLCOSTS = { MAIN = 40 },
 	ROLLPERCENT = 1,
+	GroupId = 34745901,
 }
 
 return Constants
