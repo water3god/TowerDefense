@@ -9,7 +9,11 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 local Packages = ReplicatedStorage.Packages
+local Promise = require(Packages.Promise)
 local Conch = require(Packages.Conch)
+
+local Shared = ReplicatedStorage.Shared
+local Constants = require(Shared.Constants)
 
 local SafePlayer = ServerScriptService.Utility.SafePlayer
 local SafePlayerAdded = require(SafePlayer.SafePlayerAdded)

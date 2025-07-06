@@ -66,6 +66,8 @@ type Data = {
 	MaxHealth: number,
 
 	Coins: { [number]: number },
+	CoinsChangedSignals: { [number]: Signal.Signal<number> },
+
 	Positions: { Vector3 },
 	Data: WaveData.WaveData,
 
@@ -100,6 +102,8 @@ type Impl = {
 	SetCoinsUser: (self: GlobalWave, UserId: number, Coins: number) -> (),
 	SubtractCoinsFromUser: (self: GlobalWave, UserId: number, Coins: number) -> (),
 	AddCoinsToUser: (self: GlobalWave, UserId: number, Coins: number) -> (),
+
+	GetCoinsChangedSignal: (self: GlobalWave, UserId: number) -> Signal.Signal<number>,
 
 	Damage: (self: GlobalWave, Damage: number) -> (),
 	Heal: (self: GlobalWave, Healing: number) -> (),
@@ -172,6 +176,7 @@ function GlobalWave.new(Input: Input)
 	self.InitTime = workspace:GetServerTimeNow()
 
 	self.Coins = {}
+	self.CoinsChangedSignals = {}
 
 	for _, PlayerId in ipairs(Input.PlayerIds) do
 		self.Coins[PlayerId] = 0
@@ -356,11 +361,15 @@ function GlobalWave:NextWave()
 	end))
 end
 
-function GlobalWave:SetCoinsUser(UserId: number, Coins: number)
+function GlobalWave:SetCoinsUser(UserId: number, CoinsInput: number)
+	local Coins = math.floor(math.max(CoinsInput, 0))
 	if self.Coins[UserId] then
-		self.Coins[UserId] = math.floor(math.max(Coins, 0))
+		self.Coins[UserId] = Coins
 	end
 	self.CoinsChanged:Fire(UserId, Coins)
+	if self.CoinsChangedSignals[UserId] then
+		self.CoinsChangedSignals[UserId]:Fire(Coins)
+	end
 end
 
 function GlobalWave:SubtractCoinsFromUser(UserId: number, Coins: number)
@@ -389,6 +398,14 @@ function GlobalWave:HasEnoughCoins(UserId: number, NeededCoins: number)
 		end
 	end
 	return false
+end
+
+function GlobalWave:GetCoinsChangedSignal(UserId: number)
+	if not self.CoinsChangedSignals[UserId] then
+		self.CoinsChangedSignals[UserId] = self.Trove:Construct(Signal)
+	end
+
+	return self.CoinsChangedSignals[UserId]
 end
 
 function GlobalWave:Damage(Damage: number)

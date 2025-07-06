@@ -103,7 +103,7 @@ local function OnPlayerData(Data: PlayerData.PlayerData)
 	local ProfData = Data.Profile.Data
 
 	local function Redeem(ProductId: number)
-		local Success = Products[ProductId]
+		local Success = Products[ProductId](Data)
 		if Success then
 			if ProfData.CachedProducts[ProductId] == 1 then
 				ProfData.CachedProducts[ProductId] = nil

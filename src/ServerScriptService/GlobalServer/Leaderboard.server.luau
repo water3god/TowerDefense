@@ -2,19 +2,19 @@
 
 -- By Wa1er_God --
 
-if true then
-	return
-end
-
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local ServerScriptService = game:GetService("ServerScriptService")
+
+local Shared = ReplicatedStorage.Shared
+local IsLobby = require(Shared.IsLobby)
 
 local SafePlayer = ServerScriptService.Utility.SafePlayer
 local SafePlayerAdded = require(SafePlayer.SafePlayerAdded)
 
 local GlobalModules = ServerScriptService.GlobalModules
 local PlayerData = require(GlobalModules.PlayerData)
+local GlobalWave = require(GlobalModules.GlobalWave)
 
 SafePlayerAdded:Connect(function(Player: Player)
 	local Data = PlayerData.GetPlayerDataAsync(Player)
@@ -24,13 +24,44 @@ SafePlayerAdded:Connect(function(Player: Player)
 		Leaderstats.Name = "leaderstats"
 		Leaderstats.Parent = Player
 
-		local RollCount = Instance.new("IntValue")
-		RollCount.Name = "Roll Count"
-		RollCount.Value = Data.Profile.Data.RollCount
-		RollCount.Parent = Leaderstats
+		if IsLobby then
+			local GoldCount = Instance.new("IntValue")
+			GoldCount.Name = "Gold Count"
+			GoldCount.Value = Data.Profile.Data.Gold
+			GoldCount.Parent = Leaderstats
 
-		Data.Rolled:Connect(function(Value)
-			RollCount.Value = Value
-		end)
+			Data.GoldChanged:Connect(function(Gold: number)
+				GoldCount.Value = Gold
+			end)
+		else
+			local CoinCount = Instance.new("IntValue")
+			CoinCount.Name = "Coin Count"
+
+			local function HandleWave(Wave: GlobalWave.GlobalWave)
+				CoinCount.Value = Wave.Coins[Player.UserId]
+				CoinCount.Parent = Leaderstats
+
+				local Connection = Wave:GetCoinsChangedSignal(Player.UserId):Connect(function(Coins: number)
+					CoinCount.Value = Coins
+				end)
+
+				local OtherConnection = Player.Destroying:Once(function()
+					Connection:Disconnect()
+				end)
+
+				Wave.Ended:Once(function()
+					OtherConnection:Disconnect()
+				end)
+			end
+
+			do
+				local Wave = GlobalWave.GetWave()
+				if Wave then
+					HandleWave(Wave)
+				end
+			end
+
+			GlobalWave.Added:Connect(HandleWave)
+		end
 	end
 end, true)

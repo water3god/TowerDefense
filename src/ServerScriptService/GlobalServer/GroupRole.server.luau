@@ -20,6 +20,7 @@ local Roles = {
 	[255] = "Owner",
 	[254] = "Admin",
 	[250] = "Developer",
+	[200] = "Tester",
 	[1] = "Group Member",
 }
 

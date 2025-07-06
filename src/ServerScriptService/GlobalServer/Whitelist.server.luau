@@ -2,7 +2,14 @@
 
 -- By Wa1er_God --
 
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
+
+local Packages = ReplicatedStorage.Packages
+local Promise = require(Packages.Promise)
+
+local Shared = ReplicatedStorage.Shared
+local Constants = require(Shared.Constants)
 
 local SafePlayerAdded = require(ServerScriptService.Utility.SafePlayer.SafePlayerAdded)
 
@@ -21,6 +28,16 @@ local WhiteListedIds = {
 
 SafePlayerAdded:Connect(function(Player: Player)
 	if not table.find(WhiteListedIds, Player.UserId) and Player.UserId > 0 then
-		Player:Kick("You Are not Whitelisted!")
+		Promise.try(function()
+			return Player:GetRankInGroup(Constants.GroupId)
+		end)
+			:andThen(function(Rank: number)
+				if Rank < 200 then
+					Player:Kick("You Are not Whitelisted!")
+				end
+			end)
+			:catch(function()
+				Player:Kick("Error Validating Whitelist Configuration.")
+			end)
 	end
 end, true)
