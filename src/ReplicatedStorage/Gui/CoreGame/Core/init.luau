@@ -528,6 +528,7 @@ local VisibleFrames = {
 	[Constants.SETTINGS] = {},
 	[Constants.STORE] = {},
 	[Constants.DAILY_FRAME] = {},
+	[Constants.TITLES_FRAME] = {},
 }
 
 local NoBlur = {
@@ -935,6 +936,15 @@ local function Render()
 				Icon = "rbxassetid://118717037434015",
 				OnClick = function()
 					OnMainButtonClick(Constants.DAILY_FRAME)
+				end,
+			}),
+			TitlesButton = e(MainButtonFrame, {
+				Position = UDim2.fromScale(0.9, 0.5),
+				Size = UDim2.fromScale(0.1, 0.15),
+				Name = "Titles",
+				Icon = "rbxassetid://95049959452468",
+				OnClick = function()
+					OnMainButtonClick(Constants.TITLES_FRAME)
 				end,
 			}),
 		}),

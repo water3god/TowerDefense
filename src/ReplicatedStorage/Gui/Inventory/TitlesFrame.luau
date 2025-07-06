@@ -203,7 +203,7 @@ local function CreateTitlesFrame(props: Properties)
 	}, props.children)
 end
 
-local function Connected(props: { native: { [any]: any }?, children: { [any]: any }? })
+local function Connected(props: { CloseClick: (() -> ())?, native: { [any]: any }?, children: { [any]: any }? })
 	local Titles, SetTitles = React.useState({} :: { string })
 	local EquippedTitle, SetEquippedTitle = React.useState("Player")
 
@@ -232,6 +232,7 @@ local function Connected(props: { native: { [any]: any }?, children: { [any]: an
 
 	return e(CreateTitlesFrame, {
 		native = props.native,
+		CloseClick = props.CloseClick,
 		Titles = Titles,
 		EquippedTitle = EquippedTitle,
 	}, props.children)
