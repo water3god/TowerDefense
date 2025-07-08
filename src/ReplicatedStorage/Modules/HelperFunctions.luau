@@ -82,6 +82,109 @@ function Funcs.IsSameTable(...: { [any]: any })
 	return true
 end
 
+--[[
+	Only do this on Arrays
+]]
+function Funcs.GetLimitedArray(t1, t2)
+	local NewTable = {}
+
+	for _, Value in ipairs(t1) do
+		if table.find(t2, Value) then
+			table.insert(NewTable, Value)
+		end
+	end
+
+	return NewTable
+end
+
+function Funcs.GetDifferentTable(t1, t2)
+	local OneOnly = {}
+	local TwoOnly = {}
+
+	for _, Value in ipairs(t1) do
+		if not table.find(t2, Value) then
+			table.insert(OneOnly, Value)
+		end
+	end
+
+	for _, Value in ipairs(t2) do
+		if not table.find(t1, Value) then
+			table.insert(TwoOnly, Value)
+		end
+	end
+
+	return OneOnly, TwoOnly
+end
+
+function Funcs.BecomeInnerArray(Array: { any }, Name: string)
+	local NewArray = {}
+	for _, Value in ipairs(Array) do
+		table.insert(NewArray, Value[Name])
+	end
+
+	return NewArray
+end
+
+function Funcs.BecomeInnerDict(Dict, Name: string)
+	local NewDict = {}
+	for Key, Value in pairs(Dict) do
+		NewDict[Key] = Value[Name]
+	end
+
+	return NewDict
+end
+
+function Funcs.SyncArray(Array, SampleArray, Name: string)
+	-- Build a map from Name to value for fast lookup
+	local ArrayMap = {}
+	for _, Value in ipairs(Array) do
+		ArrayMap[Value[Name]] = Value
+	end
+
+	-- Build the new array in the order of SampleArray
+	local NewArray = {}
+	for _, SampleValue in ipairs(SampleArray) do
+		local Id = SampleValue[Name]
+		if ArrayMap[Id] then
+			table.insert(NewArray, ArrayMap[Id])
+		else
+			table.insert(NewArray, SampleValue)
+		end
+	end
+
+	-- Replace contents of Array with NewArray
+	table.clear(Array)
+	for i = 1, #NewArray do
+		Array[i] = Funcs.DeepClone(NewArray[i])
+	end
+end
+
+Funcs.RemoveQueue = {}
+
+function Funcs.RemoveQueue.Init()
+	return {}
+end
+
+function Funcs.RemoveQueue.AddIndex(Table: { number }, Index: number)
+	if not table.find(Table, Index) then
+		table.insert(Table, Index)
+	end
+end
+
+function Funcs.RemoveQueue.Cleanup(Table, RemovedIds: { number })
+	table.sort(RemovedIds, function(a, b)
+		return a > b
+	end)
+
+	for _, Index in ipairs(RemovedIds) do
+		if RemovedIds[Index] then
+			table.remove(Table, Index)
+		else
+			print("InvalidIds", RemovedIds, Index)
+		end
+	end
+end
+
 local EMPTY = {}
 function Funcs.joinDicts<K, V>(...: { [K]: V }?): { [K]: V }
 	local final = nil

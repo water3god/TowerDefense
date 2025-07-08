@@ -216,3 +216,37 @@ event TeleportBack = {
 	call: SingleAsync,
 	data: boolean,
 }
+
+-- Quests --
+
+type QuestRemoteInfo = struct {
+	Id: string,
+	CurrentValue: f64,
+	Redeemed: boolean,
+}
+
+event QuestSync = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: struct {
+		DailyQuests: QuestRemoteInfo[],
+		WeeklyQuests: QuestRemoteInfo[],
+		EventQuests: QuestRemoteInfo[],
+		GlobalQuests: QuestRemoteInfo[],
+	},
+}
+
+event QuestChanged = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: QuestRemoteInfo,
+}
+
+event RedeemQuest = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: string,
+}

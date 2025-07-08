@@ -8,7 +8,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
-local ReactRoblox = require(Packages.ReactRoblox)
 local e = React.createElement
 
 local Modules = ReplicatedStorage.Modules
@@ -197,7 +196,7 @@ local function CreateDailyFrame(Properties: Properties)
 			BarSize = 0.01,
 			native = {
 				Position = UDim2.fromScale(0.5, 0.575),
-				Size = UDim2.fromScale(0.95, 0.65),
+				Size = UDim2.fromScale(0.9, 0.65),
 				AutomaticCanvasSize = Enum.AutomaticSize.Y,
 			},
 		}, {

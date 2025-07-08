@@ -720,251 +720,255 @@ local function Render()
 		})
 	end, { VisibleFrame })
 
-	return e(Hooks.ContextStack, {
-		providers = {
-			WarningContext.Provider,
-			CurrencyContext.Provider,
-			SettingContext.Provider,
-			InventoryContext.Provider,
-			EquippedUnitsContext.Provider,
-			PurchaseContext.Provider,
-			TipsContext.Provider,
-			DailyContext.Provider,
+	return e(
+		Hooks.ContextStack,
+		{
+			providers = {
+				WarningContext.Provider,
+				CurrencyContext.Provider,
+				SettingContext.Provider,
+				InventoryContext.Provider,
+				EquippedUnitsContext.Provider,
+				PurchaseContext.Provider,
+				TipsContext.Provider,
+				DailyContext.Provider,
+			},
 		},
-	}, {
-		FieldOfView = e("Folder", {
-			Archivable = IsRunning and Styles.FieldOfView:map(function(FieldOfView: number)
-				Camera.FieldOfView = FieldOfView
-				return true
-			end) or true,
-		}),
-		GuiBlur = IsRunning and ReactRoblox.createPortal(
-			e("BlurEffect", {
-				Size = Styles.Size,
+		{
+			FieldOfView = e("Folder", {
+				Archivable = IsRunning and Styles.FieldOfView:map(function(FieldOfView: number)
+					Camera.FieldOfView = FieldOfView
+					return true
+				end) or true,
 			}),
-			Lighting
-		),
-		Main = IsLobby and e(
-			"Folder",
-			{},
-			{
-				[Constants.INVENTORY_FRAME] = e(RenderInventory, {
-					Visible = if VisibleFrame == Constants.INVENTORY_FRAME then true else false,
-					ref = InventoryRef,
-					CloseClick = function()
-						OnCloseClick(Constants.INVENTORY_FRAME)
-					end,
+			GuiBlur = IsRunning and ReactRoblox.createPortal(
+				e("BlurEffect", {
+					Size = Styles.Size,
 				}),
-				[Constants.TRADE_FRAME] = e(RenderTradeFrame, {
-					Visible = if VisibleFrame == Constants.TRADE_FRAME then true else false,
-					Toggle = function(Visible)
-						SetVisibleInternal(Constants.TRADE_FRAME, Visible)
-					end,
-				}) :: any,
-				[Constants.TRADE_MENU] = e(RenderTradeMenu, {
-					Visible = if VisibleFrame == Constants.TRADE_MENU then true else false,
-					CloseClick = function()
-						OnCloseClick(Constants.TRADE_MENU)
-					end,
+				Lighting
+			),
+			Main = IsLobby and e(
+				"Folder",
+				{},
+				{
+					[Constants.INVENTORY_FRAME] = e(RenderInventory, {
+						Visible = if VisibleFrame == Constants.INVENTORY_FRAME then true else false,
+						ref = InventoryRef,
+						CloseClick = function()
+							OnCloseClick(Constants.INVENTORY_FRAME)
+						end,
+					}),
+					[Constants.TRADE_FRAME] = e(RenderTradeFrame, {
+						Visible = if VisibleFrame == Constants.TRADE_FRAME then true else false,
+						Toggle = function(Visible)
+							SetVisibleInternal(Constants.TRADE_FRAME, Visible)
+						end,
+					}),
+					[Constants.TRADE_MENU] = e(RenderTradeMenu, {
+						Visible = if VisibleFrame == Constants.TRADE_MENU then true else false,
+						CloseClick = function()
+							OnCloseClick(Constants.TRADE_MENU)
+						end,
+					}),
+					[Constants.STORY_FRAME] = e(RenderStoryFrame, {
+						Visible = if VisibleFrame == Constants.STORY_FRAME then true else false,
+						Toggle = function(Visible)
+							SetVisibleInternal(Constants.STORY_FRAME, Visible)
+						end,
+						CloseClick = function()
+							OnCloseClick(Constants.STORY_FRAME)
+						end,
+					}),
+					[Constants.STORE] = e(RenderStore, {
+						Visible = if VisibleFrame == Constants.STORE then true else false,
+						CloseClick = function()
+							OnCloseClick(Constants.STORE)
+						end,
+					}),
+					[Constants.ROLL_FRAME] = e(RenderRollFrame, {
+						Visible = if VisibleFrame == Constants.ROLL_FRAME then true else false,
+						CloseClick = function()
+							OnCloseClick(Constants.ROLL_FRAME)
+						end,
+						SetVisible = function()
+							SetVisibleRetricted(Constants.ROLL_FRAME, true)
+						end,
+					}),
+					[Constants.IN_ROLL] = e(InRoll.Connected, {
+						SetVisible = function(Visible: boolean)
+							SetVisibleInternal(Constants.IN_ROLL, Visible)
+						end,
+						CloseClick = function()
+							SetVisibleInternal(Constants.ROLL_FRAME, true)
+						end,
+					}),
+					[Constants.DAILY_FRAME] = e(RenderDailyFrame, {
+						Visible = if VisibleFrame == Constants.DAILY_FRAME then true else false,
+						CloseClick = function()
+							OnCloseClick(Constants.DAILY_FRAME)
+						end,
+					}),
+					[Constants.TITLES_FRAME] = e(RenderTitlesFrame, {
+						Visible = if VisibleFrame == Constants.TITLES_FRAME then true else false,
+						CloseClick = function()
+							OnCloseClick(Constants.TITLES_FRAME)
+						end,
+					}),
+				} :: { [string]: React.Node }
+			),
+			OtherGui = e("Folder", {}, {
+				GameOnly = not IsLobby and e("Folder", {}, {
+					TopFrame = e(WaveContext.Provider, {}, {
+						TopFrame = e(Top),
+					}),
+					VoteFrame = e(VoteFrame),
+					EndFrame = e(EndFrame.Connected, {
+						Enabled = true,
+					}),
+					ToolTips = e(HandleToolTips, {
+						PlacingUnitId = PlacingUnitId,
+						SetUnitId = SetUnitId,
+					}),
 				}),
-				[Constants.STORY_FRAME] = e(RenderStoryFrame, {
-					Visible = if VisibleFrame == Constants.STORY_FRAME then true else false,
-					Toggle = function(Visible)
-						SetVisibleInternal(Constants.STORY_FRAME, Visible)
-					end,
-					CloseClick = function()
-						OnCloseClick(Constants.STORY_FRAME)
-					end,
+				LobbyOnly = IsLobby and e("Folder", {}, {
+					WaitingFrame = e(StoryContext.Provider, {}, {
+						WaitingFrame = e(WaitingFrame),
+					}),
+					TipsGui = e(TipsGui),
+					ClickedInventory = e(ClickedInventory.Connected),
 				}),
-				[Constants.STORE] = e(RenderStore, {
-					Visible = if VisibleFrame == Constants.STORE then true else false,
-					CloseClick = function()
-						OnCloseClick(Constants.STORE)
-					end,
-				}) :: any,
-				[Constants.ROLL_FRAME] = e(RenderRollFrame, {
-					Visible = if VisibleFrame == Constants.ROLL_FRAME then true else false,
-					CloseClick = function()
-						OnCloseClick(Constants.ROLL_FRAME)
-					end,
-					SetVisible = function()
-						SetVisibleRetricted(Constants.ROLL_FRAME, true)
-					end,
-				}),
-				[Constants.IN_ROLL] = e(InRoll.Connected, {
-					SetVisible = function(Visible: boolean)
-						SetVisibleInternal(Constants.IN_ROLL, Visible)
-					end,
-					CloseClick = function()
-						SetVisibleInternal(Constants.ROLL_FRAME, true)
-					end,
-				}) :: any,
-				[Constants.DAILY_FRAME] = e(RenderDailyFrame, {
-					Visible = if VisibleFrame == Constants.DAILY_FRAME then true else false,
-					CloseClick = function()
-						OnCloseClick(Constants.DAILY_FRAME)
-					end,
-				}),
-				[Constants.TITLES_FRAME] = e(RenderTitlesFrame, {
-					Visible = if VisibleFrame == Constants.TITLES_FRAME then true else false,
-					CloseClick = function()
-						OnCloseClick(Constants.TITLES_FRAME)
-					end,
-				}),
-			} :: any
-		),
-		OtherGui = e("Folder", {}, {
-			GameOnly = not IsLobby and e("Folder", {}, {
-				TopFrame = e(WaveContext.Provider, {}, {
-					TopFrame = e(Top),
-				}),
-				VoteFrame = e(VoteFrame),
-				EndFrame = e(EndFrame.Connected, {
-					Enabled = true,
-				}),
-				ToolTips = e(HandleToolTips, {
-					PlacingUnitId = PlacingUnitId,
-					SetUnitId = SetUnitId,
-				}),
-			}),
-			LobbyOnly = IsLobby and e("Folder", {}, {
-				WaitingFrame = e(StoryContext.Provider, {}, {
-					WaitingFrame = e(WaitingFrame),
-				}),
-				TipsGui = e(TipsGui),
-				ClickedInventory = e(ClickedInventory.Connected),
-			}),
 
-			BottomFrame = e(Bottom, {
-				SetHovered = SetHovered,
-				GetHovered = GetHovered,
-				UnitClick = OnBottomUnitClick,
-				SetVisible = function(Visible: boolean)
-					SetVisibleInternal(Constants.INVENTORY_FRAME, Visible)
-				end,
+				BottomFrame = e(Bottom, {
+					SetHovered = SetHovered,
+					GetHovered = GetHovered,
+					UnitClick = OnBottomUnitClick,
+					SetVisible = function(Visible: boolean)
+						SetVisibleInternal(Constants.INVENTORY_FRAME, Visible)
+					end,
+					native = {
+						Position = React.joinBindings({ Styles.Inverted :: any, VisibleFrameBinding })
+							:map(function(NewData: { any })
+								if NewData[2] and table.find(VisibleFrames[NewData[2]], "Bottom") then
+									return UDim2.fromScale(0.5, 0.9)
+								else
+									return UDim2.fromScale(0.5, 0.9):Lerp(UDim2.fromScale(0.5, 1.2), NewData[1])
+								end
+							end),
+					},
+				}),
+			}),
+			LeftButtons = IsLobby and e(Main.Frame, {
 				native = {
-					Position = React.joinBindings({ Styles.Inverted :: any, VisibleFrameBinding })
-						:map(function(NewData: { any })
-							if NewData[2] and table.find(VisibleFrames[NewData[2]], "Bottom") then
-								return UDim2.fromScale(0.5, 0.9)
-							else
-								return UDim2.fromScale(0.5, 0.9):Lerp(UDim2.fromScale(0.5, 1.2), NewData[1])
-							end
-						end),
+					Position = Styles.Inverted:map(function(Size: number)
+						return UDim2.fromScale(0.1, 0.5):Lerp(UDim2.fromScale(-0.1, 0.5), Size)
+					end),
+					Size = UDim2.fromScale(0.15, 0.4),
 				},
+			}, {
+				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+					AspectRatio = 0.62,
+				}),
+				UIGridLayout = e("UIGridLayout", {
+					CellPadding = UDim2.fromScale(0, 0),
+					CellSize = UDim2.fromScale(0.5, 0.3),
+					FillDirection = Enum.FillDirection.Horizontal,
+				}),
+				InventoryButton = e(MainButtonFrame, {
+					Position = UDim2.fromScale(0.1, 0.5),
+					Size = UDim2.fromScale(0.1, 0.15),
+					Name = "Inventory",
+					Icon = "rbxassetid://126162489334707",
+					OnClick = function()
+						OnMainButtonClick(Constants.INVENTORY_FRAME)
+					end,
+				}),
+				PlayButton = e(MainButtonFrame, {
+					Position = UDim2.fromScale(0.1, 0.5),
+					Size = UDim2.fromScale(0.1, 0.15),
+					Name = "Play",
+					Icon = "rbxassetid://123087872755553",
+					OnClick = OnPlay,
+				}),
+				StoreButton = e(MainButtonFrame, {
+					Position = UDim2.fromScale(0.1, 0.5),
+					Size = UDim2.fromScale(0.1, 0.15),
+					Name = "Store",
+					Icon = "rbxassetid://101802087294765",
+					OnClick = function()
+						OnMainButtonClick(Constants.STORE)
+					end,
+				}),
+				SummonButton = e(MainButtonFrame, {
+					Position = UDim2.fromScale(0.1, 0.5),
+					Size = UDim2.fromScale(0.1, 0.15),
+					Name = "Summon",
+					Icon = "rbxassetid://103961311594276",
+					OnClick = OnSummon,
+				}),
+				TradeButton = e(MainButtonFrame, {
+					Position = UDim2.fromScale(0.1, 0.5),
+					Size = UDim2.fromScale(0.1, 0.15),
+					Name = "Trade",
+					Icon = "rbxassetid://71136210616050",
+					IconColor = ColorSequence.new(Color3.fromRGB(137, 77, 178)),
+					OnClick = function()
+						OnMainButtonClick(Constants.TRADE_MENU)
+					end,
+				}),
 			}),
-		}),
-		LeftButtons = IsLobby and e(Main.Frame, {
-			native = {
-				Position = Styles.Inverted:map(function(Size: number)
-					return UDim2.fromScale(0.1, 0.5):Lerp(UDim2.fromScale(-0.1, 0.5), Size)
-				end),
-				Size = UDim2.fromScale(0.15, 0.4),
-			},
-		}, {
-			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 0.62,
+			RightButtons = IsLobby and e(Main.Frame, {
+				native = {
+					Position = Styles.Inverted:map(function(Size: number)
+						return UDim2.fromScale(0.9, 0.5):Lerp(UDim2.fromScale(1.1, 0.5), Size)
+					end),
+					Size = UDim2.fromScale(0.15, 0.4),
+				},
+			}, {
+				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+					AspectRatio = 0.62,
+				}),
+				UIGridLayout = e("UIGridLayout", {
+					CellPadding = UDim2.fromScale(0, 0),
+					CellSize = UDim2.fromScale(0.5, 0.3),
+					FillDirection = Enum.FillDirection.Horizontal,
+				}),
+				DailyButton = e(MainButtonFrame, {
+					Position = UDim2.fromScale(0.9, 0.5),
+					Size = UDim2.fromScale(0.1, 0.15),
+					Name = "Daily",
+					Icon = "rbxassetid://118717037434015",
+					OnClick = function()
+						OnMainButtonClick(Constants.DAILY_FRAME)
+					end,
+				}),
+				TitlesButton = e(MainButtonFrame, {
+					Position = UDim2.fromScale(0.9, 0.5),
+					Size = UDim2.fromScale(0.1, 0.15),
+					Name = "Titles",
+					Icon = "rbxassetid://95049959452468",
+					OnClick = function()
+						OnMainButtonClick(Constants.TITLES_FRAME)
+					end,
+				}),
 			}),
-			UIGridLayout = e("UIGridLayout", {
-				CellPadding = UDim2.fromScale(0, 0),
-				CellSize = UDim2.fromScale(0.5, 0.3),
-				FillDirection = Enum.FillDirection.Horizontal,
-			}),
-			InventoryButton = e(MainButtonFrame, {
-				Position = UDim2.fromScale(0.1, 0.5),
-				Size = UDim2.fromScale(0.1, 0.15),
-				Name = "Inventory",
-				Icon = "rbxassetid://126162489334707",
+			SettingButton = e(MainButtonFrame, {
+				Position = UDim2.fromScale(0.9, 0.05),
+				Size = UDim2.fromScale(0.1, 0.08),
+				Name = "Settings",
+				Icon = "rbxassetid://133964081103849",
 				OnClick = function()
-					OnMainButtonClick(Constants.INVENTORY_FRAME)
+					OnMainButtonClick(Constants.SETTINGS)
 				end,
 			}),
-			PlayButton = e(MainButtonFrame, {
-				Position = UDim2.fromScale(0.1, 0.5),
-				Size = UDim2.fromScale(0.1, 0.15),
-				Name = "Play",
-				Icon = "rbxassetid://123087872755553",
-				OnClick = OnPlay,
-			}),
-			StoreButton = e(MainButtonFrame, {
-				Position = UDim2.fromScale(0.1, 0.5),
-				Size = UDim2.fromScale(0.1, 0.15),
-				Name = "Store",
-				Icon = "rbxassetid://101802087294765",
-				OnClick = function()
-					OnMainButtonClick(Constants.STORE)
+			[Constants.SETTINGS] = e(RenderSettings, {
+				Visible = if VisibleFrame == Constants.SETTINGS then true else false,
+				CloseClick = function()
+					OnCloseClick(Constants.SETTINGS)
 				end,
 			}),
-			SummonButton = e(MainButtonFrame, {
-				Position = UDim2.fromScale(0.1, 0.5),
-				Size = UDim2.fromScale(0.1, 0.15),
-				Name = "Summon",
-				Icon = "rbxassetid://103961311594276",
-				OnClick = OnSummon,
-			}),
-			TradeButton = e(MainButtonFrame, {
-				Position = UDim2.fromScale(0.1, 0.5),
-				Size = UDim2.fromScale(0.1, 0.15),
-				Name = "Trade",
-				Icon = "rbxassetid://71136210616050",
-				IconColor = ColorSequence.new(Color3.fromRGB(137, 77, 178)),
-				OnClick = function()
-					OnMainButtonClick(Constants.TRADE_MENU)
-				end,
-			}),
-		}),
-		RightButtons = IsLobby and e(Main.Frame, {
-			native = {
-				Position = Styles.Inverted:map(function(Size: number)
-					return UDim2.fromScale(0.9, 0.5):Lerp(UDim2.fromScale(1.1, 0.5), Size)
-				end),
-				Size = UDim2.fromScale(0.15, 0.4),
-			},
-		}, {
-			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 0.62,
-			}),
-			UIGridLayout = e("UIGridLayout", {
-				CellPadding = UDim2.fromScale(0, 0),
-				CellSize = UDim2.fromScale(0.5, 0.3),
-				FillDirection = Enum.FillDirection.Horizontal,
-			}),
-			DailyButton = e(MainButtonFrame, {
-				Position = UDim2.fromScale(0.9, 0.5),
-				Size = UDim2.fromScale(0.1, 0.15),
-				Name = "Daily",
-				Icon = "rbxassetid://118717037434015",
-				OnClick = function()
-					OnMainButtonClick(Constants.DAILY_FRAME)
-				end,
-			}),
-			TitlesButton = e(MainButtonFrame, {
-				Position = UDim2.fromScale(0.9, 0.5),
-				Size = UDim2.fromScale(0.1, 0.15),
-				Name = "Titles",
-				Icon = "rbxassetid://95049959452468",
-				OnClick = function()
-					OnMainButtonClick(Constants.TITLES_FRAME)
-				end,
-			}),
-		}),
-		SettingButton = e(MainButtonFrame, {
-			Position = UDim2.fromScale(0.9, 0.05),
-			Size = UDim2.fromScale(0.1, 0.08),
-			Name = "Settings",
-			Icon = "rbxassetid://133964081103849",
-			OnClick = function()
-				OnMainButtonClick(Constants.SETTINGS)
-			end,
-		}),
-		[Constants.SETTINGS] = e(RenderSettings, {
-			Visible = if VisibleFrame == Constants.SETTINGS then true else false,
-			CloseClick = function()
-				OnCloseClick(Constants.SETTINGS)
-			end,
-		}) :: any,
-		Warnings = e(Warning),
-	})
+			Warnings = e(Warning),
+		} :: { [string]: React.Node }
+	)
 end
 
 return Render

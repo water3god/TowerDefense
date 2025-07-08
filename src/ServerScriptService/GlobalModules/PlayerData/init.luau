@@ -9,9 +9,12 @@ local Players = game:GetService("Players")
 
 local Packages = ReplicatedStorage.Packages
 local Trove = require(Packages.Trove)
+local Promise = require(Packages.Promise)
+local TableUtil = require(Packages.TableUtil)
 local Signal = require(Packages.Signal)
 
 local Modules = ReplicatedStorage.Modules
+local HelperFunctions = require(Modules.HelperFunctions)
 local GenerateId = require(Modules.GenerateId)
 
 local Shared = ReplicatedStorage.Shared
@@ -21,6 +24,7 @@ local ProductInfo = require(Shared.ProductInfo)
 local DailyRewards = require(Shared.DailyRewards)
 local SettingData = require(Shared.Settings)
 local TitleData = require(Shared.Titles)
+local QuestData = require(Shared.Quests)
 
 local CalculateUnitXP = GameInfo.XPData.CalculateUnitXP
 local CalculatePlayerXP = GameInfo.XPData.CalculatePlayerXP
@@ -84,6 +88,12 @@ type PlayerDataData<T> = {
 	TitleChanged: Signal.Signal<string>,
 	TitleAdded: Signal.Signal<string>,
 
+	DailyRegenerated: Signal.Signal<>,
+	WeeklyRegenerated: Signal.Signal<>,
+
+	QuestProgressed: Signal.Signal<QuestData.DefaultQuestData>,
+	QuestRedeemed: Signal.Signal<QuestData.DefaultQuestData>,
+
 	Destroying: Signal.Signal<>,
 }
 
@@ -126,6 +136,21 @@ type PlayerDataImpl = {
 	AddStage: (self: PlayerData, Data: StageParamData) -> (),
 
 	RedeemDaily: (self: PlayerData) -> (),
+
+	GetQuestFromId: (self: PlayerData, Id: string) -> QuestData.DefaultQuestData?,
+
+	RegenerateDailyQuests: (self: PlayerData) -> (),
+	RegenerateWeeklyQuests: (self: PlayerData) -> (),
+
+	ProgressQuests: (
+		self: PlayerData,
+		Data: {
+			Amount: number,
+			Type: QuestData.QuestType | string,
+			ExtraData: { any: any }?,
+		}
+	) -> (),
+	RedeemQuest: (self: PlayerData, Id: string) -> (),
 
 	GetSetting: (self: PlayerData, Setting: string) -> any,
 	ChangeSetting: (self: PlayerData, Setting: string, Value: any) -> (),
@@ -175,34 +200,6 @@ local function GetMaxUnits(Level: number)
 	return UnitsAvailable
 end
 
-local function Reconcile(Data: { [any]: any }, Type: string)
-	if Type == "Units" then
-		for _, UnitData in pairs(Data) do
-			if not UnitData.UniqueId then
-				UnitData.UniqueId = GenerateId.GenerateId()
-			end
-			if not UnitData.Level then
-				UnitData.Level = 1
-				UnitData.XP = 0
-				UnitData.NeededXP = CalculateUnitXP(1)
-			end
-			while UnitData.XP >= UnitData.NeededXP do
-				UnitData.XP -= UnitData.NeededXP
-				UnitData.Level += 1
-				UnitData.NeededXP = CalculateUnitXP(UnitData.Level)
-			end
-		end
-	end
-end
-
-local function Len(Table: { [any]: any } & {})
-	local Count = 0
-	for _, _ in pairs(Table) do
-		Count += 1
-	end
-	return Count
-end
-
 local function SyncIds(Table: { [string]: any }, Func: ((OldId: string, NewId: string) -> ())?)
 	for UniqueId, Data in pairs(Table) do
 		if GenerateId.IdIsTaken(UniqueId) then
@@ -217,6 +214,36 @@ local function SyncIds(Table: { [string]: any }, Func: ((OldId: string, NewId: s
 			GenerateId.AddId(UniqueId)
 		end
 	end
+end
+
+local function ReconcileQuests(Quests: QuestData.Quests)
+	local function Handle(Name: string)
+		HelperFunctions.SyncArray(Quests[Name], QuestData.Quests[Name], "Id")
+
+		local SampleTable = QuestData.Quests[Name]
+		local CurrentTable: QuestData.QuestSubType = Quests[Name]
+
+		if #SampleTable ~= #CurrentTable then
+			warn("Error: Quest count mismatch for " .. Name)
+		else
+			for i = 1, #SampleTable, 1 do
+				local CurrentValue = CurrentTable[i]
+				local SampleValue = SampleTable[i]
+
+				if CurrentValue.Id ~= SampleValue.Id then
+					warn("Error: Quest ID mismatch for " .. Name .. " at index " .. i)
+				else
+					CurrentValue.Name = SampleValue.Name
+					CurrentValue.Description = SampleValue.Description
+					CurrentValue.QuestReward = TableUtil.Copy(SampleValue.QuestReward)
+					CurrentValue.NeededValue = SampleValue.NeededValue
+				end
+			end
+		end
+	end
+
+	Handle("EventQuests")
+	Handle("GlobalQuests")
 end
 
 local function RemoveOld(Keys: { string }, Table: { [string]: any })
@@ -259,6 +286,12 @@ function PlayerData.new(Player: Player)
 	self.TitleChanged = self._Trove:Construct(Signal)
 	self.TitleAdded = self._Trove:Construct(Signal)
 
+	self.DailyRegenerated = self._Trove:Construct(Signal)
+	self.WeeklyRegenerated = self._Trove:Construct(Signal)
+
+	self.QuestProgressed = self._Trove:Construct(Signal)
+	self.QuestRedeemed = self._Trove:Construct(Signal)
+
 	self.Destroying = self._Trove:Construct(Signal)
 
 	self.SettingSignals = {}
@@ -281,7 +314,6 @@ function PlayerData.new(Player: Player)
 	if self.Profile then
 		self.Profile:AddUserId(Player.UserId)
 		self.Profile:Reconcile()
-		Reconcile(self.Profile.Data.Units, "Units")
 
 		local Data = self.Profile.Data
 
@@ -295,26 +327,78 @@ function PlayerData.new(Player: Player)
 		SyncIds(Data.Products)
 		SyncIds(Data.Resources)
 		RemoveOld(SettingData.SettingIndexes, Data.Settings :: any)
+		ReconcileQuests(Data.Quests)
 
 		self.Profile.OnSessionEnd:Connect(function()
 			self:Delete()
-			Player:Kick()
+			Player:Kick("Error Loading Profile: Player not in game.")
 		end)
 
 		if self.Player:IsDescendantOf(Players) then
 			PlayerDatas[self.Player] = self
 		else
 			self:Delete()
-			Player:Kick()
+			Player:Kick("Error Loading Profile: Player not in game.")
 			return
 		end
 	else
 		self:Delete()
-		Player:Kick()
+		Player:Kick("Error Loading Profile: Player not in game.")
 		return
 	end
 
 	self.NeededXP = CalculatePlayerXP(self.Profile.Data.Level)
+
+	do
+		local QuestsMetaData = self.Profile.Data.Quests.MetaData
+		local CurrentTime = DateTime.now()
+
+		if QuestsMetaData.DailyRegenerated + 86400 < CurrentTime.UnixTimestamp then
+			self:RegenerateDailyQuests()
+		end
+		if QuestsMetaData.WeeklyRegenerated + 604800 < CurrentTime.UnixTimestamp then
+			self:RegenerateWeeklyQuests()
+		end
+	end
+
+	local function DailyQuestsPromise(): Promise.Promise
+		return Promise.new(function(resolve)
+			local CurrentTime = DateTime.now()
+			local NewTime = math.ceil(CurrentTime.UnixTimestamp / 86400) * 86400
+			local Seconds = NewTime - CurrentTime.UnixTimestamp
+			task.wait(Seconds + 1)
+			resolve()
+		end)
+			:andThen(function()
+				self:RegenerateDailyQuests()
+			end)
+			:andThen(function()
+				local promise = DailyQuestsPromise()
+				self._Trove:AddPromise(promise :: any)
+				return promise
+			end)
+	end
+
+	local function WeeklyQuestsPromise(): Promise.Promise
+		return Promise.new(function(resolve)
+			local CurrentTime = DateTime.now()
+			local NewTime = math.ceil(CurrentTime.UnixTimestamp / 604800) * 604800
+			local Seconds = NewTime - CurrentTime.UnixTimestamp
+			task.wait(Seconds + 1)
+			resolve()
+		end)
+			:andThen(function()
+				self:RegenerateWeeklyQuests()
+			end)
+			:andThen(function()
+				local promise = WeeklyQuestsPromise()
+				self._Trove:AddPromise(promise :: any)
+				return promise
+			end)
+	end
+
+	self._Trove:Add(DailyQuestsPromise() :: any)
+	self._Trove:Add(WeeklyQuestsPromise() :: any)
 
 	self.DataAdded:Fire(self)
 
@@ -725,6 +809,112 @@ function PlayerData:RedeemDaily()
 	Data.DailyData.LastRedeemed = workspace:GetServerTimeNow()
 
 	self.DailyRedeemed:Fire(Data.DailyData.Day, Data.DailyData.LastRedeemed)
+end
+
+function PlayerData:GetQuestFromId(Id: string)
+	local Quests = self.Profile.Data.Quests
+
+	for _, QuestTypes in pairs(Quests) do
+		if typeof(QuestTypes) ~= "table" then
+			continue
+		end
+		for _, Quest in pairs(QuestTypes) do
+			if Quest.Id == Id then
+				return Quest
+			end
+		end
+	end
+
+	return nil
+end
+
+function PlayerData:RegenerateDailyQuests()
+	local Quests = self.Profile.Data.Quests
+	local DailyQuestsData = QuestData.Quests.DailyQuests
+
+	local NewQuests = {}
+	local UsedIds = {}
+
+	for _ = 1, math.min(5, #DailyQuestsData), 1 do
+		local RandomQuest = DailyQuestsData[math.random(1, #DailyQuestsData)]
+		while table.find(UsedIds, RandomQuest.Id) do
+			RandomQuest = DailyQuestsData[math.random(1, #DailyQuestsData)]
+		end
+
+		table.insert(UsedIds, RandomQuest.Id)
+		table.insert(NewQuests, TableUtil.Copy(RandomQuest, true))
+	end
+
+	local CurrentTime = DateTime.now().UnixTimestamp
+	local DayTime = math.floor(CurrentTime / 86400 * 86400)
+
+	Quests.MetaData.DailyRegenerated = DayTime
+	Quests.DailyQuests = NewQuests
+	self.DailyRegenerated:Fire()
+end
+
+function PlayerData:RegenerateWeeklyQuests()
+	local Quests = self.Profile.Data.Quests
+	local WeeklyQuestsData = QuestData.Quests.WeeklyQuests
+
+	local NewQuests = {}
+	local UsedIds = {}
+
+	for _ = 1, math.min(10, #WeeklyQuestsData), 1 do
+		local RandomQuest = WeeklyQuestsData[math.random(1, #WeeklyQuestsData)]
+		while table.find(UsedIds, RandomQuest.Id) do
+			RandomQuest = WeeklyQuestsData[math.random(1, #WeeklyQuestsData)]
+		end
+
+		table.insert(UsedIds, RandomQuest.Id)
+		table.insert(NewQuests, TableUtil.Copy(RandomQuest, true))
+	end
+
+	local CurrentTime = DateTime.now().UnixTimestamp
+	local WeekTime = math.floor(CurrentTime / (7 * 86400) * (7 * 86400))
+
+	Quests.MetaData.WeeklyRegenerated = WeekTime
+	Quests.WeeklyQuests = NewQuests
+	self.WeeklyRegenerated:Fire()
+end
+
+function PlayerData:ProgressQuests(
+	Data: { Amount: number, Type: QuestData.QuestType | string, ExtraData: { any: any }? }
+)
+	for _, QuestTypes in pairs(QuestData.QuestsOnly) do
+		for _, Quest in pairs(QuestTypes) do
+			if Quest.Type == Data.Type then
+				if Data.Type == "Playtime" then
+					local PlayTimeData = Quest.Data :: QuestData.PlayTimeData
+					PlayTimeData.Seconds += Data.Amount
+
+					if PlayTimeData.Type == "Seconds" then
+						Quest.CurrentValue = PlayTimeData.Seconds
+					elseif PlayTimeData.Type == "Minutes" then
+						Quest.CurrentValue = PlayTimeData.Seconds / 60
+					elseif PlayTimeData.Type == "Hours" then
+						Quest.CurrentValue = PlayTimeData.Seconds / 3600
+					elseif PlayTimeData.Type == "Days" then
+						Quest.CurrentValue = PlayTimeData.Seconds / 86400
+					end
+				else
+					Quest.CurrentValue += Data.Amount
+				end
+				self.QuestProgressed:Fire(Quest)
+			end
+		end
+	end
+end
+
+function PlayerData:RedeemQuest(Id: string)
+	local Quest = self:GetQuestFromId(Id)
+
+	if not Quest or Quest.Redeemed then
+		return
+	end
+
+	Quest.Redeemed = true
+	self.QuestRedeemed:Fire(Quest)
 end
 
 function PlayerData:GetSetting(Setting: string)

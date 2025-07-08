@@ -233,7 +233,7 @@ local function Connected(props: { CloseClick: (() -> ())?, native: { [any]: any 
 		end)
 	end, {})
 
-	Hooks.useEventConnection(InventoryService.TitleAdded, function(Title: string)
+	Hooks.useEventConnection(InventoryService.TitleAdded, function()
 		SetTitles(InventoryService.TitleData.Titles)
 	end, {})
 

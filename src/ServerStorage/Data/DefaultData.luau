@@ -1,7 +1,10 @@
 --!strict
 
-local Settings = require(game:GetService("ReplicatedStorage").Shared.Settings)
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local Shared = ReplicatedStorage.Shared
+local Quests = require(Shared.Quests)
+local Settings = require(Shared.Settings)
 export type UnitData = {
 	Unit: string,
 	Level: number,
@@ -57,6 +60,7 @@ export type Data = {
 	},
 	EquippedTitle: string,
 	Titles: { string },
+	Quests: Quests.Quests,
 }
 
 local Data: Data = {
@@ -81,6 +85,7 @@ local Data: Data = {
 	},
 	EquippedTitle = "Player",
 	Titles = { "Player" },
+	Quests = Quests.Quests,
 }
 
 return Data

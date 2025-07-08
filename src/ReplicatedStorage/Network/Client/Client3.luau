@@ -146,8 +146,17 @@ if not RunService:IsRunning() then
 		SendWarning = table.freeze({
 			SetCallback = noop
 		}),
+		RedeemQuest = table.freeze({
+			Fire = noop
+		}),
 		RedeemDailyReward = table.freeze({
 			Fire = noop
+		}),
+		QuestSync = table.freeze({
+			SetCallback = noop
+		}),
+		QuestChanged = table.freeze({
+			SetCallback = noop
 		}),
 		PlayerVoted = table.freeze({
 			SetCallback = noop
@@ -183,21 +192,36 @@ local remotes = ReplicatedStorage:WaitForChild("Zap3")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
+export type XP = (number)
+export type Health = (number)
+export type VoteData = ({
+	["Time"]: (number),
+	["StartTime"]: (number),
+	["CurrentCount"]: (number),
+	["NeededCount"]: (number),
+})
 export type MainXPData = ({
 	["OldXP"]: (number),
 	["NewXP"]: (number),
 	["OldLevel"]: (number),
 	["NewLevel"]: (number),
 })
-export type Health = (number)
-export type XP = (number)
-export type Level = (number)
 export type WaveData = ({
 	["Wave"]: (number),
 	["BaseHealth"]: (number),
 	["MaxHealth"]: (number),
 	["Time"]: (number),
 	["StartTime"]: (number),
+})
+export type Level = (number)
+export type ProductId = (number)
+export type Time = (number)
+export type Wave = (number)
+export type Vote = (number)
+export type QuestRemoteInfo = ({
+	["Id"]: (string),
+	["CurrentValue"]: (number),
+	["Redeemed"]: (boolean),
 })
 export type ResourceData = ({
 	["Units"]: ({ (string) }),
@@ -213,16 +237,6 @@ export type ResourceData = ({
 		["NewXP"]: (number),
 	}) }),
 })
-export type Wave = (number)
-export type ProductId = (number)
-export type Vote = (number)
-export type VoteData = ({
-	["Time"]: (number),
-	["StartTime"]: (number),
-	["CurrentCount"]: (number),
-	["NeededCount"]: (number),
-})
-export type Time = (number)
 
 local function SendEvents()
 	if outgoing_used ~= 0 then
@@ -240,8 +254,8 @@ end
 
 RunService.Heartbeat:Connect(SendEvents)
 
-local reliable_events = table.create(14)
-local reliable_event_queue: { [number]: { any } } = table.create(14)
+local reliable_events = table.create(16)
+local reliable_event_queue: { [number]: { any } } = table.create(16)
 reliable_event_queue[6] = {}
 reliable_event_queue[5] = {}
 reliable_event_queue[8] = {}
@@ -249,6 +263,8 @@ reliable_event_queue[4] = {}
 reliable_event_queue[3] = {}
 reliable_event_queue[7] = {}
 reliable_event_queue[9] = {}
+reliable_event_queue[14] = {}
+reliable_event_queue[15] = {}
 reliable_event_queue[2] = {}
 reliable_event_queue[1] = {}
 reliable_event_queue[0] = {}
@@ -402,6 +418,76 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 					warn(`[ZAP] {#reliable_event_queue[9]} events in queue for SendWarning. Did you forget to attach a listener?`)
 				end
 			end
+		elseif id == 14 then
+			local value
+			value = {}
+			value["DailyQuests"] = {}
+			local len_8 = buffer.readu16(incoming_buff, read(2))
+			for i_4 = 1, len_8 do
+				local val_4
+				val_4 = {}
+				local len_9 = buffer.readu16(incoming_buff, read(2))
+				val_4["Id"] = buffer.readstring(incoming_buff, read(len_9), len_9)
+				val_4["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
+				val_4["Redeemed"] = buffer.readu8(incoming_buff, read(1)) == 1
+				value["DailyQuests"][i_4] = val_4
+			end
+			value["WeeklyQuests"] = {}
+			local len_10 = buffer.readu16(incoming_buff, read(2))
+			for i_5 = 1, len_10 do
+				local val_5
+				val_5 = {}
+				local len_11 = buffer.readu16(incoming_buff, read(2))
+				val_5["Id"] = buffer.readstring(incoming_buff, read(len_11), len_11)
+				val_5["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
+				val_5["Redeemed"] = buffer.readu8(incoming_buff, read(1)) == 1
+				value["WeeklyQuests"][i_5] = val_5
+			end
+			value["EventQuests"] = {}
+			local len_12 = buffer.readu16(incoming_buff, read(2))
+			for i_6 = 1, len_12 do
+				local val_6
+				val_6 = {}
+				local len_13 = buffer.readu16(incoming_buff, read(2))
+				val_6["Id"] = buffer.readstring(incoming_buff, read(len_13), len_13)
+				val_6["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
+				val_6["Redeemed"] = buffer.readu8(incoming_buff, read(1)) == 1
+				value["EventQuests"][i_6] = val_6
+			end
+			value["GlobalQuests"] = {}
+			local len_14 = buffer.readu16(incoming_buff, read(2))
+			for i_7 = 1, len_14 do
+				local val_7
+				val_7 = {}
+				local len_15 = buffer.readu16(incoming_buff, read(2))
+				val_7["Id"] = buffer.readstring(incoming_buff, read(len_15), len_15)
+				val_7["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
+				val_7["Redeemed"] = buffer.readu8(incoming_buff, read(1)) == 1
+				value["GlobalQuests"][i_7] = val_7
+			end
+			if reliable_events[14] then
+				task.spawn(reliable_events[14], value)
+			else
+				table.insert(reliable_event_queue[14], value)
+				if #reliable_event_queue[14] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[14]} events in queue for QuestSync. Did you forget to attach a listener?`)
+				end
+			end
+		elseif id == 15 then
+			local value
+			value = {}
+			local len_16 = buffer.readu16(incoming_buff, read(2))
+			value["Id"] = buffer.readstring(incoming_buff, read(len_16), len_16)
+			value["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
+			value["Redeemed"] = buffer.readu8(incoming_buff, read(1)) == 1
+			if reliable_events[15] then
+				task.spawn(reliable_events[15], value)
+			else
+				table.insert(reliable_event_queue[15], value)
+				if #reliable_event_queue[15] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[15]} events in queue for QuestChanged. Did you forget to attach a listener?`)
+				end
+			end
 		elseif id == 2 then
 			local value
 			value = {}
@@ -432,14 +518,14 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			value["VotedCount"] = buffer.readu16(incoming_buff, read(2))
 			value["Win"] = buffer.readu8(incoming_buff, read(1)) == 1
 			value["Players"] = {}
-			local len_8 = buffer.readu16(incoming_buff, read(2))
-			for i_4 = 1, len_8 do
-				local val_4
+			local len_17 = buffer.readu16(incoming_buff, read(2))
+			for i_8 = 1, len_17 do
+				local val_8
 				incoming_ipos = incoming_ipos + 1
-				val_4 = incoming_inst[incoming_ipos]
-				assert(val_4 ~= nil, "received instance is nil!")
-				assert(val_4:IsA("Player"), "received instance is not of the Player class!")
-				value["Players"][i_4] = val_4
+				val_8 = incoming_inst[incoming_ipos]
+				assert(val_8 ~= nil, "received instance is nil!")
+				assert(val_8:IsA("Player"), "received instance is not of the Player class!")
+				value["Players"][i_8] = val_8
 			end
 			if reliable_events[0] then
 				task.spawn(reliable_events[0], value)
@@ -491,28 +577,28 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			value = {}
 			for _ = 1, buffer.readu16(incoming_buff, read(2)) do
 				local key_1
-				local val_5
+				local val_9
 				incoming_ipos = incoming_ipos + 1
 				key_1 = incoming_inst[incoming_ipos]
 				assert(key_1 ~= nil, "received instance is nil!")
 				assert(key_1:IsA("Player"), "received instance is not of the Player class!")
-				val_5 = {}
-				local len_9 = buffer.readu16(incoming_buff, read(2))
-				val_5["Title"] = buffer.readstring(incoming_buff, read(len_9), len_9)
-				val_5["Level"] = buffer.readu16(incoming_buff, read(2))
-				val_5["EquippedUnits"] = {}
-				local len_10 = buffer.readu16(incoming_buff, read(2))
-				for i_5 = 1, len_10 do
-					local val_6
-					val_6 = {}
-					local len_11 = buffer.readu16(incoming_buff, read(2))
-					val_6["Id"] = buffer.readstring(incoming_buff, read(len_11), len_11)
-					val_6["Level"] = buffer.readu16(incoming_buff, read(2))
-					local len_12 = buffer.readu16(incoming_buff, read(2))
-					val_6["UnitName"] = buffer.readstring(incoming_buff, read(len_12), len_12)
-					val_5["EquippedUnits"][i_5] = val_6
+				val_9 = {}
+				local len_18 = buffer.readu16(incoming_buff, read(2))
+				val_9["Title"] = buffer.readstring(incoming_buff, read(len_18), len_18)
+				val_9["Level"] = buffer.readu16(incoming_buff, read(2))
+				val_9["EquippedUnits"] = {}
+				local len_19 = buffer.readu16(incoming_buff, read(2))
+				for i_9 = 1, len_19 do
+					local val_10
+					val_10 = {}
+					local len_20 = buffer.readu16(incoming_buff, read(2))
+					val_10["Id"] = buffer.readstring(incoming_buff, read(len_20), len_20)
+					val_10["Level"] = buffer.readu16(incoming_buff, read(2))
+					local len_21 = buffer.readu16(incoming_buff, read(2))
+					val_10["UnitName"] = buffer.readstring(incoming_buff, read(len_21), len_21)
+					val_9["EquippedUnits"][i_9] = val_10
 				end
-				value[key_1] = val_5
+				value[key_1] = val_9
 			end
 			if reliable_events[13] then
 				task.spawn(reliable_events[13], value)
@@ -665,10 +751,70 @@ local returns = {
 			end
 		end,
 	},
+	RedeemQuest = {
+		Fire = function(Value: (string))
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
+			local len_22 = #Value
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_22)
+			alloc(len_22)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_22)
+		end,
+	},
 	RedeemDailyReward = {
 		Fire = function()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
+		end,
+	},
+	QuestSync = {
+		SetCallback = function(Callback: (Value: ({
+			["DailyQuests"]: ({ ({
+				["Id"]: (string),
+				["CurrentValue"]: (number),
+				["Redeemed"]: (boolean),
+			}) }),
+			["WeeklyQuests"]: ({ ({
+				["Id"]: (string),
+				["CurrentValue"]: (number),
+				["Redeemed"]: (boolean),
+			}) }),
+			["EventQuests"]: ({ ({
+				["Id"]: (string),
+				["CurrentValue"]: (number),
+				["Redeemed"]: (boolean),
+			}) }),
+			["GlobalQuests"]: ({ ({
+				["Id"]: (string),
+				["CurrentValue"]: (number),
+				["Redeemed"]: (boolean),
+			}) }),
+		})) -> ()): () -> ()
+			reliable_events[14] = Callback
+			for _, value in reliable_event_queue[14] do
+				task.spawn(Callback, value)
+			end
+			reliable_event_queue[14] = {}
+			return function()
+				reliable_events[14] = nil
+			end
+		end,
+	},
+	QuestChanged = {
+		SetCallback = function(Callback: (Value: ({
+			["Id"]: (string),
+			["CurrentValue"]: (number),
+			["Redeemed"]: (boolean),
+		})) -> ()): () -> ()
+			reliable_events[15] = Callback
+			for _, value in reliable_event_queue[15] do
+				task.spawn(Callback, value)
+			end
+			reliable_event_queue[15] = {}
+			return function()
+				reliable_events[15] = nil
+			end
 		end,
 	},
 	PlayerVoted = {
