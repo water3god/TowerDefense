@@ -71,6 +71,9 @@ local TipsGui = require(TipsFolder.TipsGui)
 local DailyFolder = Gui.Daily
 local DailyFrame = require(DailyFolder.DailyFrame)
 
+local QuestsFolder = Gui.Quests
+local QuestsFrame = require(QuestsFolder.QuestsFrame)
+
 -- Contexts --
 local InventoryContext = require(Inventory.InventoryContext)
 local TradeMenuContext = require(Trade.TradeContext)
@@ -85,6 +88,7 @@ local SettingContext = require(SettingFolder.SettingsContext)
 local PurchaseContext = require(StoreFolder.PurchaseContext)
 local TipsContext = require(TipsFolder.TipsContext)
 local DailyContext = require(DailyFolder.DailyContext)
+local QuestsContext = require(QuestsFolder.QuestsContext)
 
 local IsRunning = RunService:IsRunning()
 
@@ -300,6 +304,21 @@ local function RenderTitlesFrame(Props: any)
 	})
 
 	return e(TitlesFrame.Connected, {
+		CloseClick = Props.CloseClick,
+		native = {
+			Position = Position,
+			Visible = Visiblity,
+		},
+	})
+end
+
+local function RenderQuestsFrame(Props: any)
+	local Position, Visiblity = AnimateWrapper({
+		Visible = Props.Visible,
+		Name = Constants.TITLES_FRAME,
+	})
+
+	return e(QuestsFrame, {
 		CloseClick = Props.CloseClick,
 		native = {
 			Position = Position,
@@ -529,6 +548,7 @@ local VisibleFrames = {
 	[Constants.STORE] = {},
 	[Constants.DAILY_FRAME] = {},
 	[Constants.TITLES_FRAME] = {},
+	[Constants.QUESTS_FRAME] = {},
 }
 
 local NoBlur = {
@@ -732,6 +752,7 @@ local function Render()
 				PurchaseContext.Provider,
 				TipsContext.Provider,
 				DailyContext.Provider,
+				QuestsContext.Provider,
 			},
 		},
 		{
@@ -809,6 +830,12 @@ local function Render()
 						end,
 					}),
 					[Constants.TITLES_FRAME] = e(RenderTitlesFrame, {
+						Visible = if VisibleFrame == Constants.TITLES_FRAME then true else false,
+						CloseClick = function()
+							OnCloseClick(Constants.TITLES_FRAME)
+						end,
+					}),
+					[Constants.QUESTS_FRAME] = e(RenderQuestsFrame, {
 						Visible = if VisibleFrame == Constants.TITLES_FRAME then true else false,
 						CloseClick = function()
 							OnCloseClick(Constants.TITLES_FRAME)

@@ -13,6 +13,7 @@ local Constants = {
 	STORE = "Store",
 	DAILY_FRAME = "DailyFrame",
 	TITLES_FRAME = "TitlesFrame",
+	QUESTS_FRAME = "QuestsFrame",
 }
 
 return Constants

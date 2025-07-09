@@ -40,13 +40,6 @@ local Default: {
 	},
 }
 
-local Names = {
-	DailyQuests = "Daily Quests",
-	WeeklyQuests = "Weekly Quests",
-	EventQuests = "Event Quests",
-	GlobalQuests = "Global Quests",
-}
-
 local QuestsContext = React.createContext(Default)
 
 local function QuestsProvider(props)

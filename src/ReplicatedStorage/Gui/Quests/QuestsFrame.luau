@@ -14,6 +14,10 @@ local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
 
+local Client = ReplicatedStorage.Client
+local LobbyClient = Client.LobbyClient
+local QuestsService = require(LobbyClient.QuestsService)
+
 -- Reference UI --
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
@@ -130,6 +134,12 @@ local function CreateQuest(props: QuestProps)
 		return e("Frame")
 	end, { props.QuestData })
 
+	local Redeem = React.useCallback(function()
+		if not props.QuestData.Redeemed and props.QuestData.CurrentValue >= props.QuestData.NeededValue then
+			QuestsService.RedeemQuest(props.QuestData.Id)
+		end
+	end, {})
+
 	return e(Main.Frame, {
 		native = Join({
 			Size = UDim2.fromScale(1, 0.3),
@@ -196,15 +206,26 @@ local function CreateQuest(props: QuestProps)
 					BackgroundTransparency = 0,
 					BackgroundColor3 = RedeemColor,
 					Text = "",
+					[React.Event.MouseButton1Click] = Redeem,
 				},
 			}, {
+				UICorner = e("UICorner", {
+					CornerRadius = UDim.new(0.2, 0),
+				}),
 				Label = e(Main.TextLabel, {
 					native = {
 						Size = UDim2.fromScale(0.9, 0.8),
 						Text = RedeemText,
 					},
+				}, {
+					UIStroke = e(UIStroke.UIStrokeAdvanced, {
+						Stroke = 0.015,
+					}),
 				}),
 			}),
+		}),
+		UICorner = e("UICorner", {
+			CornerRadius = UDim.new(0.2, 0),
 		}),
 		Reward = Reward,
 	}, props.children)
@@ -237,14 +258,14 @@ local function CreateQuestsFrame(props: Properties)
 		for Name, DisplayName in pairs(Names) do
 			local Priority = Priorities[Name]
 			Frames[Name] = e(BaseButton, {
-				Highlighted = true,
+				Highlighted = OpenFrame == Name,
 				Text = DisplayName,
 				OnClick = function()
 					SetOpenFrame(Name)
 				end,
 				native = {
 					Position = UDim2.fromScale(0.2 * Priority, 0.5),
-					Size = UDim2.fromScale(0.3, 0.2),
+					Size = UDim2.fromScale(0.3, 0.9),
 				},
 			})
 		end
@@ -267,7 +288,7 @@ local function CreateQuestsFrame(props: Properties)
 		QuestButtons = e(Main.Frame, {
 			native = {
 				Position = UDim2.fromScale(0.5, 0.2),
-				Size = UDim2.fromScale(0.5, 0.2),
+				Size = UDim2.fromScale(0.9, 0.15),
 			},
 		}, QuestButtons),
 		MainFrame = e(Main.ScrollingFrame, {
