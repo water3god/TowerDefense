@@ -132,9 +132,9 @@ function Hooks.useEventConnection<T...>(
 	end, { event, cachedCallback } :: { unknown })
 end
 
-function Hooks.useZapConnection(
-	Event: { SetCallback: (...any) -> (...any) -> () },
-	Callback: (...any) -> (),
+function Hooks.useZapConnection<T...>(
+	Event: { SetCallback: ((T...) -> ()) -> () -> () },
+	Callback: (T...) -> (),
 	dependencies: { any }
 )
 	local cachedCallback = React.useMemo(function()
@@ -145,22 +145,6 @@ function Hooks.useZapConnection(
 		return Event.SetCallback(cachedCallback)
 	end, { Event, cachedCallback } :: { unknown })
 end
-
---[[export type Client<T...> = { any }
-
-function Hooks.useRedConnection<T...>(event: Client<T...>, callback: (T...) -> (), dependencies: { any })
-	local cachedCallback = React.useMemo(function()
-		return callback
-	end, dependencies)
-
-	React.useEffect(function()
-		local connection = (event :: any):On(cachedCallback)
-
-		return function()
-			connection:Disconnect()
-		end
-	end, { event, cachedCallback } :: { unknown })
-end]]
 
 function Hooks.useCamera()
 	return React.useMemo(function()
