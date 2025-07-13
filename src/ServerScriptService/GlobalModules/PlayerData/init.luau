@@ -420,8 +420,8 @@ function PlayerData.new(Player: Player)
 			end)
 	end
 
-	self._Trove:Add(DailyQuestsPromise() :: any)
-	self._Trove:Add(WeeklyQuestsPromise() :: any)
+	self._Trove:AddPromise(DailyQuestsPromise() :: any)
+	self._Trove:AddPromise(WeeklyQuestsPromise() :: any)
 
 	self.DataAdded:Fire(self)
 
@@ -1001,7 +1001,7 @@ function PlayerData:AddTitle(Title: string)
 	if not Title or Title == "" then
 		return
 	end
-	if not table.find(TitleData.Titles, Title) then
+	if not TitleData[Title] then
 		return
 	end
 	if not table.find(Data.Titles, Title) then

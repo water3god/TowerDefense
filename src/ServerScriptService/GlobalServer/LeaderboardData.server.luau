@@ -28,7 +28,7 @@ local Updated = Signal.new()
 
 local function HandleInterval(Store: OrderedDataStore)
 	return Promise.try(function()
-		return Store:GetSortedAsync(false, 200)
+		return Store:GetSortedAsync(false, 100)
 	end)
 		:andThen(function(Pages)
 			return Pages:GetCurrentPage()

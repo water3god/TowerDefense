@@ -245,6 +245,8 @@ end
 local Unit: UnitImpl = {} :: UnitImpl
 Unit.__index = Unit
 
+Unit.Added = Signal.new()
+
 function Unit.__eq(a, b)
 	return rawequal(a.UniqueId, b.UniqueId)
 end

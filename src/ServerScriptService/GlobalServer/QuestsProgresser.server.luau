@@ -119,6 +119,7 @@ local function HandlePlayerData(PData: PlayerData.PlayerData)
 	for _, OtherUnit in pairs(Unit.GetUnits()) do
 		HandleUnit(OtherUnit)
 	end
+
 	QuestTrove:Connect(Unit.Added, HandleUnit)
 
 	local function SetLeaderboard(LeaderboardName: string, QuestType: string, Position: number)
