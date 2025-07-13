@@ -60,20 +60,21 @@ local function HandlePlayerData(PData: PlayerData.PlayerData)
 				Id = QuestInfo.Id,
 				CurrentValue = QuestInfo.Data.CurrentValue,
 				Redeemed = QuestInfo.Data.Redeemed,
+				Data = QuestInfo.Data.Data, -- This field is optional, but included for completeness
 			}
 		end
 		QuestChanged.Fire(PData.Player, IndividualData)
 	end
 
 	local function OnRedeemed(Quest: QuestData.DefaultQuestData)
-		QuestChanged.Fire(
-			PData.Player,
-			{ {
+		QuestChanged.Fire(PData.Player, {
+			{
 				Id = Quest.Id,
 				CurrentValue = Quest.CurrentValue,
 				Redeemed = Quest.Redeemed,
-			} }
-		)
+				Data = Quest.Data,
+			},
+		})
 	end
 
 	PData.QuestProgressed:Connect(OnProgressed)

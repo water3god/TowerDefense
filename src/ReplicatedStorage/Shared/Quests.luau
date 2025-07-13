@@ -24,7 +24,7 @@ export type RewardType = "Title" | "Resource" | "Product" | "Unit"
 export type QuestSubs = "DailyQuests" | "WeeklyQuests" | "EventQuests" | "GlobalQuests"
 
 export type QuestReward = {
-	Type: RewardType,
+	Type: RewardType | string,
 	Value: string,
 	Count: number,
 }
@@ -72,7 +72,7 @@ export type EnemyKillData = {
 -- Quests Data --
 
 export type QuestData<T> = {
-	Type: QuestType,
+	Type: QuestType | string,
 	Id: string, -- Has To Be Unique --
 	Name: string,
 	Description: string,
@@ -141,10 +141,34 @@ export type TotalPlayerData = {
 }
 
 local Quests: Quests = {
-	DailyQuests = table.freeze({}),
+	DailyQuests = table.freeze({
+		{
+			Type = "Playtime",
+			Id = "Daily_Playtime_1",
+			Name = "Play for 30 Minutes",
+			Description = "Play for 30 minutes to earn rewards.",
+			Data = { Type = "Minutes" } :: PlayTimeData,
+			CurrentValue = 0,
+			NeededValue = 30,
+			Redeemed = false,
+			QuestReward = { Type = "Resource", Value = "Gold", Count = 100 },
+		},
+	}),
 	WeeklyQuests = table.freeze({}),
 	EventQuests = table.freeze({}),
-	GlobalQuests = table.freeze({}),
+	GlobalQuests = table.freeze({
+		{
+			Type = "Playtime",
+			Id = "Global_Playtime_1",
+			Name = "Play for 10 Hours",
+			Description = "Play for 10 hours to earn rewards.",
+			Data = { Type = "Hours" } :: PlayTimeData,
+			CurrentValue = 0,
+			NeededValue = 36000,
+			Redeemed = false,
+			QuestReward = { Type = "Title", Value = "Player", Count = 1 },
+		},
+	}),
 	MetaData = {
 		DailyRegenerated = 0,
 		WeeklyRegenerated = 0,
@@ -180,6 +204,7 @@ return {
 		DailyQuests = Quests.DailyQuests,
 		WeeklyQuests = Quests.WeeklyQuests,
 		EventQuests = Quests.EventQuests,
+		GlobalQuests = Quests.GlobalQuests,
 	} :: { [string]: { DefaultQuestData } },
 	QuestPlayerData = {
 		DailyQuests = DefaultQuestPlayerData,

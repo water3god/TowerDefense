@@ -36,6 +36,7 @@ local Default: {
 		MetaData = {
 			DailyRegenerated = 0,
 			WeeklyRegenerated = 0,
+			CurrentEvent = "",
 		},
 	},
 }
@@ -65,7 +66,7 @@ local function QuestsProvider(props)
 		if QuestsService.Data then
 			SetQuestsData({
 				Loading = false,
-				Data = QuestsService.Data,
+				Data = table.clone(QuestsService.Data),
 			})
 		end
 	end, {})

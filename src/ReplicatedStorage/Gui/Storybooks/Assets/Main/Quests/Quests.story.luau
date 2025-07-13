@@ -26,7 +26,59 @@ local Story = {
 	reactRoblox = ReactRoblox,
 	controls = controls,
 	story = function()
-		local Frame = e(QuestsFrame)
+		local Frame = e(QuestsContext.Context.Provider, {
+			value = {
+				Loading = false,
+				Data = {
+					DailyQuests = {
+						{
+							Type = "Playtime",
+							Id = "Global_Playtime_1",
+							Name = "Play for 10 Hours",
+							Description = "Play for 10 hours to earn rewards.",
+							Data = { Type = "Hours" },
+							CurrentValue = 0,
+							NeededValue = 10,
+							Redeemed = false,
+							QuestReward = { Type = "Title", Value = "Player", Count = 1 },
+						},
+						{
+							Type = "Playtime",
+							Id = "Global_Playtime_2",
+							Name = "Play for 10 Hours",
+							Description = "Play for 10 hours to earn rewards.",
+							Data = { Type = "Hours" },
+							CurrentValue = 0,
+							NeededValue = 10,
+							Redeemed = false,
+							QuestReward = { Type = "Resource", Value = "Gold", Count = 1 },
+						},
+					},
+					WeeklyQuests = {},
+					EventQuests = {},
+					GlobalQuests = {
+						{
+							Type = "Playtime",
+							Id = "Global_Playtime_1",
+							Name = "Play for 10 Hours",
+							Description = "Play for 10 hours to earn rewards.",
+							Data = { Type = "Hours" },
+							CurrentValue = 0,
+							NeededValue = 10,
+							Redeemed = false,
+							QuestReward = { Type = "Title", Value = "Player", Count = 1 },
+						},
+					},
+					MetaData = {
+						DailyRegenerated = 0,
+						WeeklyRegenerated = 0,
+						CurrentEvent = "",
+					},
+				},
+			},
+		}, {
+			QuestsFrame = e(QuestsFrame, {}),
+		})
 		return Frame
 	end,
 }

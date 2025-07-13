@@ -91,9 +91,8 @@ local function CreateQuest(props: QuestProps)
 			if TitleData then
 				return e(Main.TextLabel, {
 					native = {
-						Position = UDim2.fromScale(0.5, 0.5),
-						Size = UDim2.fromScale(0.6, 0.3),
-						TextXAlignment = Enum.TextXAlignment.Right,
+						Position = UDim2.fromScale(0.86, 0.325),
+						Size = UDim2.fromScale(0.3, 0.3),
 						Text = QuestReward.Value,
 					},
 				}, {
@@ -111,6 +110,10 @@ local function CreateQuest(props: QuestProps)
 			return e(ResourceFrame, {
 				Name = QuestReward.Value,
 				Value = QuestReward.Count,
+				native = {
+					Position = UDim2.fromScale(0.86, 0.325),
+					Size = UDim2.fromScale(0.3, 0.6),
+				},
 			})
 		elseif QuestReward.Type == "Product" then
 			local _, ProductId = ProductInfo.GetProductFromName({
@@ -123,6 +126,10 @@ local function CreateQuest(props: QuestProps)
 					IsGamepass = false,
 					ProductId = ProductId,
 					Count = QuestReward.Count,
+					native = {
+						Position = UDim2.fromScale(0.86, 0.325),
+						Size = UDim2.fromScale(0.3, 0.6),
+					},
 				})
 			else
 				warn("No Product For Name: " .. QuestReward.Value)
@@ -131,6 +138,10 @@ local function CreateQuest(props: QuestProps)
 			return e(UnitFrame.CreateUnitFrame, {
 				UnitName = QuestReward.Value,
 				Level = 1,
+				native = {
+					Position = UDim2.fromScale(0.86, 0.325),
+					Size = UDim2.fromScale(0.3, 0.6),
+				},
 			})
 		end
 
@@ -155,19 +166,19 @@ local function CreateQuest(props: QuestProps)
 				BackgroundColor3 = Color3.new(0.298039, 0.094118, 0.470588),
 			},
 		}, {
-			QuestName = e(Main.TextLabel, {
+			QuestTitle = e(Main.TextLabel, {
 				native = {
 					Text = props.QuestData.Name,
-					Size = UDim2.fromScale(0.5, 0.5),
-					Position = UDim2.fromScale(0.2, 0.3),
+					Size = UDim2.fromScale(0.5, 0.25),
+					Position = UDim2.fromScale(0.275, 0.225),
 					TextXAlignment = Enum.TextXAlignment.Left,
 				},
 			}),
 			QuestDescription = e(Main.TextLabel, {
 				native = {
 					Text = props.QuestData.Description,
-					Size = UDim2.fromScale(0.5, 0.5),
-					Position = UDim2.fromScale(0.2, 0.6),
+					Size = UDim2.fromScale(0.5, 0.15),
+					Position = UDim2.fromScale(0.275, 0.5),
 					TextXAlignment = Enum.TextXAlignment.Left,
 				},
 			}),
@@ -175,8 +186,8 @@ local function CreateQuest(props: QuestProps)
 				native = {
 					BackgroundTransparency = 0,
 					BackgroundColor3 = Color3.new(0.160784, 0.082353, 0.203922),
-					Position = UDim2.fromScale(0.35, 0.8),
-					Size = UDim2.fromScale(0.7, 0.5),
+					Position = UDim2.fromScale(0.375, 0.775),
+					Size = UDim2.fromScale(0.7, 0.25),
 				},
 			}, {
 				InnerBar = e(Main.Frame, {
@@ -184,8 +195,11 @@ local function CreateQuest(props: QuestProps)
 						BackgroundTransparency = 0,
 						BackgroundColor3 = Color3.new(0.505882, 0.137255, 0.709804),
 						AnchorPoint = Vector2.new(0, 0.5),
-						Position = UDim2.fromScale(0, 0.8),
-						Size = UDim2.fromScale(0.8, 0.5),
+						Position = UDim2.fromScale(0, 0.5),
+						Size = UDim2.fromScale(
+							math.clamp(props.QuestData.CurrentValue / props.QuestData.NeededValue, 0, 1),
+							1
+						),
 					},
 				}, {
 					UICorner = e("UICorner", {
@@ -196,6 +210,7 @@ local function CreateQuest(props: QuestProps)
 					native = {
 						Size = UDim2.fromScale(0.9, 0.8),
 						Text = string.format("%u / %u", props.QuestData.CurrentValue, props.QuestData.NeededValue),
+						ZIndex = 2,
 					},
 				}),
 				UICorner = e("UICorner", {
@@ -204,8 +219,8 @@ local function CreateQuest(props: QuestProps)
 			}),
 			RedeemButton = e(Main.Animateables.TextButton, {
 				native = {
-					Size = UDim2.fromScale(0.3, 0.5),
-					Position = UDim2.fromScale(0.8, 0.8),
+					Size = UDim2.fromScale(0.2, 0.3),
+					Position = UDim2.fromScale(0.86, 0.775),
 					BackgroundTransparency = 0,
 					BackgroundColor3 = RedeemColor,
 					Text = "",
@@ -215,6 +230,13 @@ local function CreateQuest(props: QuestProps)
 				UICorner = e("UICorner", {
 					CornerRadius = UDim.new(0.2, 0),
 				}),
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.03,
+					native = {
+						ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+						LineJoinMode = Enum.LineJoinMode.Round,
+					},
+				}),
 				Label = e(Main.TextLabel, {
 					native = {
 						Size = UDim2.fromScale(0.9, 0.8),
@@ -222,15 +244,15 @@ local function CreateQuest(props: QuestProps)
 					},
 				}, {
 					UIStroke = e(UIStroke.UIStrokeAdvanced, {
-						Stroke = 0.015,
+						Stroke = 0.03,
 					}),
 				}),
 			}),
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.1, 0),
+			}),
+			Reward = Reward,
 		}),
-		UICorner = e("UICorner", {
-			CornerRadius = UDim.new(0.2, 0),
-		}),
-		Reward = Reward,
 	}, props.children)
 end
 
@@ -249,15 +271,12 @@ local function CreateQuestsFrame(props: Properties)
 						local CurrentTime = DateTime.now()
 						local NewTime = math.ceil(CurrentTime.UnixTimestamp / 86400) * 86400
 						local Seconds = NewTime - CurrentTime.UnixTimestamp
+						SetTime(Seconds, workspace:GetServerTimeNow())
 						task.wait(Seconds + 1)
-						resolve(NewTime)
+						resolve()
+					end):andThen(function()
+						return DailyQuestsPromise()
 					end)
-						:andThen(function(NewTime)
-							SetTime(86400, NewTime)
-						end)
-						:andThen(function()
-							return DailyQuestsPromise()
-						end)
 				end
 
 				local promise = DailyQuestsPromise()
@@ -271,15 +290,12 @@ local function CreateQuestsFrame(props: Properties)
 						local CurrentTime = DateTime.now()
 						local NewTime = math.ceil(CurrentTime.UnixTimestamp / 604800) * 604800
 						local Seconds = NewTime - CurrentTime.UnixTimestamp
+						SetTime(Seconds, workspace:GetServerTimeNow())
 						task.wait(Seconds + 1)
-						resolve(NewTime)
+						resolve()
+					end):andThen(function()
+						return WeeklyQuestsPromise()
 					end)
-						:andThen(function(NewTime)
-							SetTime(604800, NewTime)
-						end)
-						:andThen(function()
-							return WeeklyQuestsPromise()
-						end)
 				end
 
 				local promise = WeeklyQuestsPromise()
@@ -288,7 +304,7 @@ local function CreateQuestsFrame(props: Properties)
 					promise:cancel()
 				end
 			else
-				local TimeDifference = Constants.EndTime - DateTime.now().UnixTimestamp
+				local TimeDifference = math.clamp(Constants.EndTime - DateTime.now().UnixTimestamp, 0, math.huge)
 				SetTime(TimeDifference, workspace:GetServerTimeNow())
 			end
 		else
@@ -334,7 +350,7 @@ local function CreateQuestsFrame(props: Properties)
 		end
 
 		return Frames
-	end, { OpenFrame })
+	end, { OpenFrame, QuestData } :: { unknown })
 
 	return e(Main.Frame, {
 		native = Join({
@@ -348,16 +364,6 @@ local function CreateQuestsFrame(props: Properties)
 			Size = UDim2.fromScale(1, 0.14),
 			Title = "QUESTS",
 		}),
-		Timer = TimerVisible and e(Main.TextLabel, {
-			native = {
-				Position = UDim2.fromScale(0.5, 0.22),
-				Size = UDim2.fromScale(0.4, 0.05),
-				Text = Time:map(function(t)
-					return string.format("Time Left: %s", HelperFunctions.FormatTime(t))
-				end),
-				TextScaled = true,
-			},
-		}),
 		QuestButtons = e(Main.Frame, {
 			native = {
 				Position = UDim2.fromScale(0.5, 0.13),
@@ -367,8 +373,8 @@ local function CreateQuestsFrame(props: Properties)
 		MainFrame = e(Main.ScrollingFrame, {
 			BarSize = 0.01,
 			native = {
-				Position = UDim2.fromScale(0.5, 0.6),
-				Size = UDim2.fromScale(0.9, 0.675),
+				Position = UDim2.fromScale(0.5, 0.55),
+				Size = UDim2.fromScale(0.9, 0.75),
 				AutomaticCanvasSize = Enum.AutomaticSize.Y,
 			},
 		}, {
@@ -376,6 +382,17 @@ local function CreateQuestsFrame(props: Properties)
 				Padding = UDim.new(0, 0),
 				SortOrder = Enum.SortOrder.LayoutOrder,
 				FillDirection = Enum.FillDirection.Vertical,
+			}),
+			Timer = TimerVisible and e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.5, 0.1),
+					Size = UDim2.fromScale(1, 0.07),
+					Text = Time:map(function(t)
+						return string.format("Time Left: %s", HelperFunctions.FormatTime(t))
+					end),
+					TextScaled = true,
+					LayoutOrder = 0,
+				},
 			}),
 		}, QuestFrames),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {

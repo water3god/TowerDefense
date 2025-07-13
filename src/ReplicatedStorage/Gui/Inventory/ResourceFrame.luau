@@ -46,7 +46,7 @@ local function CreateResourceFrame(props: ResourceProps)
 
 		BackgroundColor = RarityData.BackgroundColor,
 		NameColor = RarityData.Color,
-		NameStrokeColor = RarityData.Color,
+		NameStrokeColor = RarityData.StrokeColor,
 		RightColor = RarityData.Color,
 		RightStrokeColor = RarityData.StrokeColor,
 		native = props.native,

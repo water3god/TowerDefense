@@ -44,57 +44,48 @@ local function HandlePlayerData(PData: PlayerData.PlayerData)
 		end
 	end
 
+	local function AddToAll(Property: string, Amount: number)
+		DailyQuests[Property] += Amount
+		WeeklyQuests[Property] += Amount
+		EventQuests[Property] += Amount
+		GlobalQuests[Property] += Amount
+		Progress(Property :: any, {
+			DailyQuests = DailyQuests[Property],
+			WeeklyQuests = WeeklyQuests[Property],
+			EventQuests = EventQuests[Property],
+			GlobalQuests = GlobalQuests[Property],
+		})
+	end
+
+	local function AddToAllWithParameter(Property: string, Additional: string, Amount: number, ExtraData: any)
+		DailyQuests[Property][Additional] += Amount
+		WeeklyQuests[Property][Additional] += Amount
+		EventQuests[Property][Additional] += Amount
+		GlobalQuests[Property][Additional] += Amount
+		Progress(Property :: any, {
+			DailyQuests = DailyQuests[Property][Additional],
+			WeeklyQuests = WeeklyQuests[Property][Additional],
+			EventQuests = EventQuests[Property][Additional],
+			GlobalQuests = GlobalQuests[Property][Additional],
+		}, ExtraData)
+	end
+
 	local function HandleUnit(OtherUnit: Unit.Unit)
 		if OtherUnit.Owner == PData.Player then
 			OtherUnit.Damaged:Connect(function(Damage: number)
-				DailyQuests.Damage += Damage
-				WeeklyQuests.Damage += Damage
-				EventQuests.Damage += Damage
-				GlobalQuests.Damage += Damage
-				Progress("Damage", {
-					DailyQuests = DailyQuests.Damage,
-					WeeklyQuests = WeeklyQuests.Damage,
-					EventQuests = EventQuests.Damage,
-					GlobalQuests = GlobalQuests.Damage,
-				})
+				AddToAll("Damage", Damage)
 
-				DailyQuests.DamageByUnit[OtherUnit.UnitName] += Damage
-				WeeklyQuests.DamageByUnit[OtherUnit.UnitName] += Damage
-				EventQuests.DamageByUnit[OtherUnit.UnitName] += Damage
-				GlobalQuests.DamageByUnit[OtherUnit.UnitName] += Damage
-				Progress("DamageByUnit", {
-					DailyQuests = DailyQuests.DamageByUnit[OtherUnit.UnitName],
-					WeeklyQuests = WeeklyQuests.DamageByUnit[OtherUnit.UnitName],
-					EventQuests = EventQuests.DamageByUnit[OtherUnit.UnitName],
-					GlobalQuests = GlobalQuests.DamageByUnit[OtherUnit.UnitName],
-				}, {
+				AddToAllWithParameter("DamageByUnit", OtherUnit.UnitName, Damage, {
 					UnitName = OtherUnit.UnitName,
 				})
+
 				PData:AddDamageDone(Damage)
 			end)
 
 			OtherUnit.KilledEnemy:Connect(function(Enemy)
-				DailyQuests.Kills += 1
-				WeeklyQuests.Kills += 1
-				EventQuests.Kills += 1
-				GlobalQuests.Kills += 1
-				Progress("Kills", {
-					DailyQuests = DailyQuests.Kills,
-					WeeklyQuests = WeeklyQuests.Kills,
-					EventQuests = EventQuests.Kills,
-					GlobalQuests = GlobalQuests.Kills,
-				})
+				AddToAll("Kills", 1)
 
-				DailyQuests.EnemyKills[Enemy.ModelName] += 1
-				WeeklyQuests.EnemyKills[Enemy.ModelName] += 1
-				EventQuests.EnemyKills[Enemy.ModelName] += 1
-				GlobalQuests.EnemyKills[Enemy.ModelName] += 1
-				Progress("EnemyKills", {
-					DailyQuests = DailyQuests.EnemyKills[Enemy.ModelName],
-					WeeklyQuests = WeeklyQuests.EnemyKills[Enemy.ModelName],
-					EventQuests = EventQuests.EnemyKills[Enemy.ModelName],
-					GlobalQuests = GlobalQuests.EnemyKills[Enemy.ModelName],
-				}, {
+				AddToAllWithParameter("EnemyKills", Enemy.ModelName, 1, {
 					EnemyName = Enemy.ModelName,
 				})
 			end)
@@ -104,16 +95,7 @@ local function HandlePlayerData(PData: PlayerData.PlayerData)
 	local PlaytimeTimer = QuestTrove:Construct(Timer, 60)
 
 	PlaytimeTimer.Tick:Connect(function()
-		DailyQuests.Playtime += 60
-		WeeklyQuests.Playtime += 60
-		EventQuests.Playtime += 60
-		GlobalQuests.Playtime += 60
-		Progress("Playtime", {
-			DailyQuests = DailyQuests.Playtime,
-			WeeklyQuests = WeeklyQuests.Playtime,
-			EventQuests = EventQuests.Playtime,
-			GlobalQuests = GlobalQuests.Playtime,
-		})
+		AddToAll("Playtime", 60)
 	end)
 
 	for _, OtherUnit in pairs(Unit.GetUnits()) do
@@ -149,43 +131,16 @@ local function HandlePlayerData(PData: PlayerData.PlayerData)
 			return
 		end
 		if Type == "Added" then
-			DailyQuests.Resources[Resource.Resource] += Count
-			WeeklyQuests.Resources[Resource.Resource] += Count
-			EventQuests.Resources[Resource.Resource] += Count
-			GlobalQuests.Resources[Resource.Resource] += Count
-			Progress("Resources", {
-				DailyQuests = DailyQuests.Resources[Resource.Resource],
-				WeeklyQuests = WeeklyQuests.Resources[Resource.Resource],
-				EventQuests = EventQuests.Resources[Resource.Resource],
-				GlobalQuests = GlobalQuests.Resources[Resource.Resource],
-			}, { Resource = Resource.Resource })
+			AddToAllWithParameter("Resources", Resource.Resource, Count, { Resource = Resource.Resource })
 		end
 	end)
 
 	PData.RobuxSpent:Connect(function(_, NewRobuxSpent: number)
-		DailyQuests.RobuxSpent += NewRobuxSpent
-		WeeklyQuests.RobuxSpent += NewRobuxSpent
-		EventQuests.RobuxSpent += NewRobuxSpent
-		GlobalQuests.RobuxSpent += NewRobuxSpent
-		Progress("RobuxSpent", {
-			DailyQuests = DailyQuests.RobuxSpent,
-			WeeklyQuests = WeeklyQuests.RobuxSpent,
-			EventQuests = EventQuests.RobuxSpent,
-			GlobalQuests = GlobalQuests.RobuxSpent,
-		})
+		AddToAll("RobuxSpent", NewRobuxSpent)
 	end)
 
 	PData.Summoned:Connect(function()
-		DailyQuests.Summon += 1
-		WeeklyQuests.Summon += 1
-		EventQuests.Summon += 1
-		GlobalQuests.Summon += 1
-		Progress("Summon", {
-			DailyQuests = DailyQuests.Summon,
-			WeeklyQuests = WeeklyQuests.Summon,
-			EventQuests = EventQuests.Summon,
-			GlobalQuests = GlobalQuests.Summon,
-		})
+		AddToAll("Summon", 1)
 	end)
 
 	for MapName, Stages in pairs(Data.CompletedMaps) do
@@ -204,16 +159,7 @@ local function HandlePlayerData(PData: PlayerData.PlayerData)
 	local function OnWave(Wave: GlobalWave.GlobalWave)
 		QuestTrove:Connect(Wave.Ended, function(Win: boolean)
 			if Win then
-				DailyQuests.Wins += 1
-				WeeklyQuests.Wins += 1
-				EventQuests.Wins += 1
-				GlobalQuests.Wins += 1
-				Progress("Wins", {
-					DailyQuests = DailyQuests.Wins,
-					WeeklyQuests = WeeklyQuests.Wins,
-					EventQuests = EventQuests.Wins,
-					GlobalQuests = GlobalQuests.Wins,
-				})
+				AddToAll("Wins", 1)
 			end
 		end)
 	end

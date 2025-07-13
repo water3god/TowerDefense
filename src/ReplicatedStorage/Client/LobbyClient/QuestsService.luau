@@ -38,7 +38,7 @@ QuestSync.SetCallback(function(Data)
 						Id = Quest.Id,
 						Name = ReferenceQuest.Name,
 						Description = ReferenceQuest.Description,
-						Data = Quest.CurrentValue,
+						Data = Quest.Data,
 						CurrentValue = Quest.CurrentValue,
 						NeededValue = ReferenceQuest.NeededValue,
 						Redeemed = Quest.Redeemed,
@@ -57,6 +57,8 @@ QuestSync.SetCallback(function(Data)
 	Update("GlobalQuests")
 	Table.MetaData = QuestData.Quests.MetaData
 	Module.Data = Table
+	Module.IsSynced = true
+	Module.Synced:Fire()
 end)
 
 function Module.GetQuestFromId(Id: string): QuestData.QuestRemoteInfo?

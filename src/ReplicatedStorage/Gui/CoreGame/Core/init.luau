@@ -315,7 +315,7 @@ end
 local function RenderQuestsFrame(Props: any)
 	local Position, Visiblity = AnimateWrapper({
 		Visible = Props.Visible,
-		Name = Constants.TITLES_FRAME,
+		Name = Constants.QUESTS_FRAME,
 	})
 
 	return e(QuestsFrame, {
@@ -836,9 +836,9 @@ local function Render()
 						end,
 					}),
 					[Constants.QUESTS_FRAME] = e(RenderQuestsFrame, {
-						Visible = if VisibleFrame == Constants.TITLES_FRAME then true else false,
+						Visible = if VisibleFrame == Constants.QUESTS_FRAME then true else false,
 						CloseClick = function()
-							OnCloseClick(Constants.TITLES_FRAME)
+							OnCloseClick(Constants.QUESTS_FRAME)
 						end,
 					}),
 				} :: { [string]: React.Node }
@@ -975,6 +975,15 @@ local function Render()
 					Icon = "rbxassetid://95049959452468",
 					OnClick = function()
 						OnMainButtonClick(Constants.TITLES_FRAME)
+					end,
+				}),
+				QuestsButton = e(MainButtonFrame, {
+					Position = UDim2.fromScale(0.9, 0.5),
+					Size = UDim2.fromScale(0.1, 0.15),
+					Name = "Quests",
+					Icon = "rbxassetid://126483259351802",
+					OnClick = function()
+						OnMainButtonClick(Constants.QUESTS_FRAME)
 					end,
 				}),
 			}),

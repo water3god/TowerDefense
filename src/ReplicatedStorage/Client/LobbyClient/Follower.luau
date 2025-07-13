@@ -114,6 +114,8 @@ function Follower.new(Data: Input): Follower
 	self.AlignOrientation = self.Trove:Construct(Instance, "AlignOrientation") :: AlignOrientation
 	self.AlignOrientation.Name = "FollowerAlignOrientation"
 
+	self.AlignOrientation.MaxTorque = 100000
+	self.AlignOrientation.Responsiveness = 25
 	self.AlignOrientation.Attachment0 = Attachment
 	self.AlignOrientation.Mode = Enum.OrientationAlignmentMode.OneAttachment
 	self.AlignOrientation.Parent = self.CharRoot
@@ -121,7 +123,8 @@ function Follower.new(Data: Input): Follower
 	self.AlignPosition = self.Trove:Construct(Instance, "AlignPosition") :: AlignPosition
 	self.AlignPosition.Name = "FollowerAlignPosition"
 
-	self.AlignPosition.MaxForce = math.huge
+	self.AlignPosition.MaxForce = 100000
+	self.AlignPosition.Responsiveness = 25
 	self.AlignPosition.Attachment0 = Attachment
 	self.AlignPosition.Mode = Enum.PositionAlignmentMode.OneAttachment
 	self.AlignPosition.Parent = self.CharRoot
@@ -186,7 +189,7 @@ function Follower.new(Data: Input): Follower
 	end
 
 	local function OtherStep()
-		local OtherRay = workspace:Raycast(self.IdealPart.Position + Vector3.new(0, 3, 0), -Vector3.yAxis * 20, Params)
+		local OtherRay = workspace:Raycast(self.IdealPart.Position + Vector3.new(0, 3, 0), -Vector3.yAxis * 30, Params)
 
 		if OtherRay and OtherRay.Position then
 			local Position = Vector3.new(self.IdealPart.CFrame.X, OtherRay.Position.Y, self.IdealPart.CFrame.Z)
