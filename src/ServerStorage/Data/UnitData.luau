@@ -25,9 +25,7 @@ local function DelayAttack(Unit: UnitModule.Unit, Damage: number, Delay: number)
 	if CurrentEnemy then
 		Unit:AddAttackPromise(
 			Promise.delay(Delay * Unit.SpeedRatio):andThen(function()
-				if CurrentEnemy and CurrentEnemy.Damage then
-					CurrentEnemy:Damage(Damage)
-				end
+				Unit:DamageEnemy(CurrentEnemy, Damage)
 			end),
 			"DelayAttack"
 		)
@@ -122,9 +120,7 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 								local Distance = (Unit.CFrame.Position - CurrentEnemy.CFrame.Position).Magnitude
 								Unit:AddPromise(
 									Promise.delay(Distance / Speed):andThen(function()
-										if CurrentEnemy and CurrentEnemy.Damage then
-											CurrentEnemy:Damage(Damage)
-										end
+										Unit:DamageEnemy(CurrentEnemy, Damage)
 									end),
 									"PompeyAttackArrow"
 								)

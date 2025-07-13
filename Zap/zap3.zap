@@ -241,7 +241,7 @@ event QuestChanged = {
 	from: Server,
 	type: Reliable,
 	call: SingleAsync,
-	data: QuestRemoteInfo,
+	data: QuestRemoteInfo[],
 }
 
 event RedeemQuest = {

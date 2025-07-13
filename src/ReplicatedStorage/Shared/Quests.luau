@@ -4,8 +4,24 @@
 
 -- Services --
 
-export type QuestType = "Kill" | "Playtime" | "Leaderboard" | "Resource"
+export type QuestType =
+	"Kills"
+	| "DamageByUnit"
+	| "Playtime"
+	| "Leaderboard"
+	| "Resources"
+	| "Damage"
+	| "Wins"
+	| "Map"
+	| "MapStage"
+	| "Level"
+	| "RobuxSpent"
+	| "Summon"
+	| "EnemyKills"
+
 export type RewardType = "Title" | "Resource" | "Product" | "Unit"
+
+export type QuestSubs = "DailyQuests" | "WeeklyQuests" | "EventQuests" | "GlobalQuests"
 
 export type QuestReward = {
 	Type: RewardType,
@@ -17,7 +33,40 @@ export type QuestReward = {
 
 export type PlayTimeData = {
 	Type: "Seconds" | "Minutes" | "Hours" | "Days",
-	Seconds: number,
+}
+
+export type LeaderboardData = {
+	LeaderboardName: string,
+	Position: number,
+}
+
+export type ResourceData = {
+	Resource: string,
+}
+
+export type DamageByUnitData = {
+	UnitName: string,
+}
+
+export type KillsByUnitData = {
+	UnitName: string,
+}
+
+export type BossKillData = {
+	BossName: string,
+}
+
+export type MapData = {
+	MapName: string,
+}
+
+export type MapStageData = {
+	MapName: string,
+	Stage: number,
+}
+
+export type EnemyKillData = {
+	EnemyName: string,
 }
 
 -- Quests Data --
@@ -46,6 +95,7 @@ export type Quests = {
 	MetaData: {
 		DailyRegenerated: number,
 		WeeklyRegenerated: number,
+		CurrentEvent: string,
 	},
 }
 
@@ -56,6 +106,40 @@ export type QuestRemoteInfo = {
 	Redeemed: boolean,
 }
 
+export type QuestPlayerData = {
+	Kills: number,
+	DamageByUnit: { [string]: number },
+	Resources: { [string]: number },
+	Leaderboard: { [string]: number },
+	Playtime: number,
+	-- Maps (in DataStore) --
+	Damage: number,
+	Wins: number,
+	RobuxSpent: number,
+	Summon: number,
+	EnemyKills: { [string]: number },
+}
+
+local DefaultQuestPlayerData: QuestPlayerData = {
+	Kills = 0,
+	DamageByUnit = {},
+	Resources = {},
+	Leaderboard = {},
+	Playtime = 0,
+	Damage = 0,
+	Wins = 0,
+	RobuxSpent = 0,
+	Summon = 0,
+	EnemyKills = {},
+}
+
+export type TotalPlayerData = {
+	DailyQuests: QuestPlayerData,
+	WeeklyQuests: QuestPlayerData,
+	EventQuests: QuestPlayerData,
+	GlobalQuests: QuestPlayerData,
+}
+
 local Quests: Quests = {
 	DailyQuests = table.freeze({}),
 	WeeklyQuests = table.freeze({}),
@@ -64,7 +148,30 @@ local Quests: Quests = {
 	MetaData = {
 		DailyRegenerated = 0,
 		WeeklyRegenerated = 0,
+		CurrentEvent = "None",
 	},
+}
+
+local ValidFunctions: { [string]: (QuestData: QuestData<any>, ExtraData: { [any]: any }) -> boolean } = {
+	Leaderboard = function(QuestData: QuestData<LeaderboardData>, ExtraData: { [any]: any })
+		return ExtraData.LeaderboardName == QuestData.Data.LeaderboardName
+			and ExtraData.Position <= QuestData.Data.Position
+	end,
+	DamageByUnit = function(QuestData: QuestData<DamageByUnitData>, ExtraData: { [any]: any })
+		return ExtraData.UnitName == QuestData.Data.UnitName
+	end,
+	Map = function(QuestData: QuestData<MapData>, ExtraData: { [any]: any })
+		return ExtraData.MapName == QuestData.Data.MapName
+	end,
+	MapStage = function(QuestData: QuestData<MapStageData>, ExtraData: { [any]: any })
+		return ExtraData.MapName == QuestData.Data.MapName and ExtraData.Stage >= QuestData.Data.Stage
+	end,
+	Resource = function(QuestData: QuestData<ResourceData>, ExtraData: { [any]: any })
+		return ExtraData.Resource == QuestData.Data.Resource
+	end,
+	EnemyKills = function(QuestData: QuestData<EnemyKillData>, ExtraData: { [any]: any })
+		return ExtraData.EnemyName == QuestData.Data.EnemyName
+	end,
 }
 
 return {
@@ -74,4 +181,11 @@ return {
 		WeeklyQuests = Quests.WeeklyQuests,
 		EventQuests = Quests.EventQuests,
 	} :: { [string]: { DefaultQuestData } },
+	QuestPlayerData = {
+		DailyQuests = DefaultQuestPlayerData,
+		WeeklyQuests = DefaultQuestPlayerData,
+		EventQuests = DefaultQuestPlayerData,
+		GlobalQuests = DefaultQuestPlayerData,
+	} :: TotalPlayerData,
+	ValidFunctions = ValidFunctions,
 }

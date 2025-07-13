@@ -13,9 +13,14 @@ local RedeemQuest = Network.RedeemQuest
 
 local Shared = ReplicatedStorage.Shared
 local QuestData = require(Shared.Quests)
+local IsLobby = require(Shared.IsLobby)
 
 local GlobalModules = ServerScriptService.GlobalModules
 local PlayerData = require(GlobalModules.PlayerData)
+
+if not IsLobby then
+	return
+end
 
 type QuestRemoteInfo = {
 	Id: string,
@@ -48,16 +53,31 @@ local function HandlePlayerData(PData: PlayerData.PlayerData)
 	Convert("EventQuests")
 	Convert("GlobalQuests")
 
-	local function OnQuestChanged(Quest: QuestData.DefaultQuestData)
-		QuestChanged.Fire(PData.Player, {
-			Id = Quest.Id,
-			CurrentValue = Quest.CurrentValue,
-			Redeemed = Quest.Redeemed,
-		})
+	local function OnProgressed(Data: { { Id: string, Data: QuestData.DefaultQuestData } })
+		local IndividualData: { [number]: QuestRemoteInfo } = {}
+		for Index, QuestInfo in ipairs(Data) do
+			IndividualData[Index] = {
+				Id = QuestInfo.Id,
+				CurrentValue = QuestInfo.Data.CurrentValue,
+				Redeemed = QuestInfo.Data.Redeemed,
+			}
+		end
+		QuestChanged.Fire(PData.Player, IndividualData)
 	end
 
-	PData.QuestProgressed:Connect(OnQuestChanged)
-	PData.QuestRedeemed:Connect(OnQuestChanged)
+	local function OnRedeemed(Quest: QuestData.DefaultQuestData)
+		QuestChanged.Fire(
+			PData.Player,
+			{ {
+				Id = Quest.Id,
+				CurrentValue = Quest.CurrentValue,
+				Redeemed = Quest.Redeemed,
+			} }
+		)
+	end
+
+	PData.QuestProgressed:Connect(OnProgressed)
+	PData.QuestRedeemed:Connect(OnRedeemed)
 
 	QuestSync.Fire(PData.Player, SendData)
 end

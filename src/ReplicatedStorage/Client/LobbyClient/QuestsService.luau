@@ -79,13 +79,15 @@ function Module.RedeemQuest(Id: string)
 end
 
 QuestChanged.SetCallback(function(Data)
-	local Quest = Module.GetQuestFromId(Data.Id)
-	if not Quest then
-		return
+	for _, SentQuestData in pairs(Data) do
+		local Quest = Module.GetQuestFromId(SentQuestData.Id)
+		if not Quest then
+			return
+		end
+		Quest.CurrentValue = SentQuestData.CurrentValue
+		Quest.Redeemed = SentQuestData.Redeemed
+		Module.QuestChanged:Fire(Quest)
 	end
-	Quest.CurrentValue = Data.CurrentValue
-	Quest.Redeemed = Data.Redeemed
-	Module.QuestChanged:Fire(Quest)
 end)
 
 return Module

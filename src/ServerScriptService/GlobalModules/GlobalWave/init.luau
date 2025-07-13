@@ -338,12 +338,12 @@ function GlobalWave:NextWave()
 
 					NewEnemy.HealthChanged:Connect(function(Health: number)
 						if Health == 0 and NewEnemy.Trove then
-							NewEnemy:Destroy(true)
+							task.defer(NewEnemy.Destroy, NewEnemy, true)
 						end
 					end)
 
 					NewEnemy.Trove:Connect(self.Ended, function()
-						NewEnemy:Destroy(false)
+						task.defer(NewEnemy.Destroy, NewEnemy, false)
 					end)
 
 					self.EnemyAdded:Fire(NewEnemy)

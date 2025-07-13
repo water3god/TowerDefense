@@ -108,6 +108,7 @@ type EnemyImpl = {
 	Spawned: Signal.Signal<Enemy>,
 	BezierAdded: Signal.Signal<BezierPath.Path, string>,
 	BezierRemoving: Signal.Signal<string>,
+	Damaged: Signal.Signal<number>,
 
 	__eq: (a: Enemy, b: Enemy) -> boolean,
 	__index: EnemyImpl,
@@ -145,6 +146,7 @@ function Enemy.new(Input: EnemyInput)
 	self.MaxHealthChanged = self.Trove:Construct(Signal)
 	self.SpeedChanged = self.Trove:Construct(Signal)
 	self.ReachedEnd = self.Trove:Construct(Signal)
+	self.Damaged = self.Trove:Construct(Signal)
 	self.Destroying = self.Trove:Construct(Signal)
 
 	self.ModelName = Input.EnemyInfo.ModelName

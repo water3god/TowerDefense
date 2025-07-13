@@ -127,6 +127,12 @@ type UnitData = {
 	Upgraded: Signal.Signal<number>,
 	AbilityUsed: Signal.Signal<number, number>, -- First is Index, Second is Fire Time
 	SpeedRatioChanged: Signal.Signal<number>,
+
+	DamagedEnemy: Signal.Signal<Enemy.Enemy, number>,
+	KilledEnemy: Signal.Signal<Enemy.Enemy>,
+	AllyAdded: Signal.Signal<Enemy.Enemy>,
+
+	Damaged: Signal.Signal<number>,
 	Destroying: Signal.Signal<>,
 }
 
@@ -138,6 +144,7 @@ type UnitImpl = {
 	UpdateEnemy: (self: Unit) -> (),
 	Upgrade: (self: Unit) -> (),
 	UseAbility: (self: Unit, Index: number) -> (),
+	AddAlly: (self: Unit, Ally: Enemy.Enemy) -> (),
 
 	PlayAnimation: (
 		self: Unit,
@@ -166,6 +173,8 @@ type UnitImpl = {
 	AddSpectator: (self: Unit, Player: Player) -> (),
 	RemoveSpectator: (self: Unit, Player: Player) -> (),
 
+	DamageEnemy: (self: Unit, Enemy: Enemy.Enemy, Damage: number) -> (),
+
 	IsOwnedBy: (self: Unit, Player: Player) -> boolean,
 
 	Delete: (self: Unit) -> (),
@@ -179,6 +188,7 @@ type UnitImpl = {
 
 	__eq: (a: Unit, b: Unit) -> boolean,
 	__index: UnitImpl,
+	Added: Signal.Signal<Unit>,
 }
 
 export type Unit = typeof(setmetatable({} :: UnitData, {} :: UnitImpl))
@@ -251,6 +261,12 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 	self.Upgraded = self._Trove:Construct(Signal)
 	self.AbilityUsed = self._Trove:Construct(Signal)
 	self.SpeedRatioChanged = self._Trove:Construct(Signal)
+
+	self.DamagedEnemy = self._Trove:Construct(Signal)
+	self.KilledEnemy = self._Trove:Construct(Signal)
+	self.AllyAdded = self._Trove:Construct(Signal)
+
+	self.Damaged = self._Trove:Construct(Signal)
 	self.Destroying = self._Trove:Construct(Signal)
 
 	self.UnitName = Data.UnitName
@@ -306,6 +322,12 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 		AbilityEvent:FireList(self.UniqueId, Index, TimeUsed)
 	end)
 
+	self.AllyAdded:Connect(function(Ally: Enemy.Enemy)
+		self._Trove:Connect(Ally.Damaged, function(Damage: number)
+			self.Damaged:Fire(Damage)
+		end)
+	end)
+
 	local function OnLevel(Level: number)
 		local Func = self.DefaultRuns[Level]
 		if Func then
@@ -327,6 +349,7 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 	self.Upgraded:Connect(OnLevel)
 
 	Units[self.UniqueId] = self
+	self.Added:Fire(self)
 
 	return self
 end
@@ -458,6 +481,10 @@ function Unit:UseAbility(Index: number)
 	end
 end
 
+function Unit:AddAlly(Ally: Enemy.Enemy)
+	self.AllyAdded:Fire(Ally)
+end
+
 function Unit:PlayAnimation(
 	AnimationName: string,
 	SecondsAfter: number?,
@@ -506,6 +533,18 @@ end
 function Unit:Stun(Length: number)
 	self:DisableAttack(Length)
 	self:PlayAnimation("Stun", nil, nil, nil, Length)
+end
+
+function Unit:DamageEnemy(EnemyInput: Enemy.Enemy, Damage: number)
+	if not getmetatable(EnemyInput) then
+		return
+	end
+
+	EnemyInput:Damage(Damage)
+	self.DamagedEnemy:Fire(EnemyInput, Damage)
+	if EnemyInput.Health == 0 then
+		self.KilledEnemy:Fire(EnemyInput)
+	end
 end
 
 function Unit:_CalculateSpeedRatio()

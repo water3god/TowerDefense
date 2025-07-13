@@ -62,6 +62,9 @@ local function Roll(Data: PlayerData.PlayerData, Count: number, Auto: boolean)
 	for _ = 1, Count, 1 do
 		local UnitName = RandomGenerate(ChanceData) :: string
 		local UnitData = Data:AddUnit(UnitName)
+		if UnitData then
+			Data.Summoned:Fire(UnitData)
+		end
 
 		if UnitData then
 			table.insert(SendData, { Name = UnitName, Id = UnitData.UniqueId })

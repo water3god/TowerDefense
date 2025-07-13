@@ -16,9 +16,13 @@ local Constants = {
 	LevelXPStore = "LevelXPStorev0.01",
 	TotalGoldStore = "TotalGoldv0.01",
 	RobuxSpentStore = "RobuxSpentStorev0.01",
+	DamageStore = "DamageStorev0.01",
 
 	WarningTime = 3,
 	CostDivider = 3,
+
+	CurrentEvent = "None",
+	EndTime = 1, -- Unix Timestamp of event end time
 
 	ROLLDELAYTIME = 3,
 	STARTCOINS = 500,

@@ -110,7 +110,9 @@ local function CreateUnitFrame(props: UnitProperties)
 
 	React.useEffect(function()
 		if Data.Rarity == "Godly" then
+			return
 		elseif Data.Rarity == "Mythic" then
+			return
 		else
 			SFXService.PlaySoundGlobal(SummonSound)
 		end
@@ -302,15 +304,7 @@ local function CreateInRoll(props: Properties)
 
 		local TimeDifference = workspace:GetServerTimeNow() - props.LastFiredTime
 		local DelayTime = Constants.ROLLDELAYTIME * Constants.ROLLPERCENT - TimeDifference
-		if props.AutoRoll then
-			--[[local NewPromise = Promise.delay(DelayTime):andThen(function()
-				SetVisible(false)
-			end)
-
-			return function()
-				NewPromise:cancel()
-			end]]
-		else
+		if not props.AutoRoll then
 			if DelayTime <= 0 then
 				SetVisible(false)
 			end

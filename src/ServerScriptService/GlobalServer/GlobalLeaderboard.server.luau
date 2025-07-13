@@ -23,6 +23,7 @@ local PlayerData = require(GlobalModules.PlayerData)
 local LevelXPStore = DataStoreService:GetOrderedDataStore(Constants.LevelXPStore)
 local TotalGoldStore = DataStoreService:GetOrderedDataStore(Constants.TotalGoldStore)
 local RobuxSpentStore = DataStoreService:GetOrderedDataStore(Constants.RobuxSpentStore)
+local DamageStore = DataStoreService:GetOrderedDataStore(Constants.DamageStore)
 
 local DataTimer = Timer.new(100)
 DataTimer:Start()
@@ -56,6 +57,16 @@ local function HandleData(PData: PlayerData.PlayerData)
 			RobuxSpentStore:UpdateAsync(UserId, function(Robux: number?): number?
 				if Robux ~= Data.RobuxSpent then
 					return Data.RobuxSpent
+				else
+					return nil
+				end
+			end)
+		end)
+
+		pcall(function()
+			DamageStore:UpdateAsync(UserId, function(Damage: number?): number?
+				if Damage ~= Data.TotalDamageDone then
+					return Data.TotalDamageDone
 				else
 					return nil
 				end

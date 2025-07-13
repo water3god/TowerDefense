@@ -24,12 +24,14 @@ local Datastores: { [string]: OrderedDataStore } = {
 	LevelXPStore = DataStoreService:GetOrderedDataStore(Constants.LevelXPStore),
 	TotalGoldStore = DataStoreService:GetOrderedDataStore(Constants.TotalGoldStore),
 	RobuxSpentStore = DataStoreService:GetOrderedDataStore(Constants.RobuxSpentStore),
+	DamageStore = DataStoreService:GetOrderedDataStore(Constants.DamageStore),
 }
 
 local LeaderboardDataProps: { [string]: { Title: string, ValueName: string } } = {
 	LevelXPStore = { Title = "Level Leaderboard", ValueName = "Level" },
 	TotalGoldStore = { Title = "Gold Leaderboard", ValueName = "Gold" },
 	RobuxSpentStore = { Title = "Robux Leaderboard", ValueName = "Robux" },
+	DamageStore = { Title = "Damage Leaderboard", ValueName = "Damage" },
 }
 
 -- Reference UI --

@@ -7,6 +7,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
+local Promise = require(Packages.Promise)
 local React = require(Packages.React)
 local e = React.createElement
 
@@ -26,6 +27,7 @@ local Title = require(CoreGame.Title)
 local CloseButton = require(CoreGame.CloseButton)
 local UIStroke = require(CoreGame.UIStroke)
 local BaseButton = require(CoreGame.BaseButton)
+local Hooks = require(CoreGame.Hooks)
 
 local QuestsFolder = Gui.Quests
 local QuestsContext = require(QuestsFolder.QuestsContext)
@@ -39,6 +41,7 @@ local Shared = ReplicatedStorage.Shared
 local QuestsInfo = require(Shared.Quests)
 local ProductInfo = require(Shared.ProductInfo)
 local TitleInfo = require(Shared.Titles)
+local Constants = require(Shared.Constants)
 
 export type Properties = {
 	CloseClick: (() -> ())?,
@@ -234,6 +237,66 @@ end
 local function CreateQuestsFrame(props: Properties)
 	local QuestData = React.useContext(QuestsContext.Context)
 	local OpenFrame, SetOpenFrame = React.useState("DailyQuests")
+	local TimerVisible, SetTimerVisible = React.useState(false)
+	local Time, _, SetTime = Hooks.UseTime()
+
+	React.useEffect(function(): any
+		if OpenFrame == "DailyQuests" or OpenFrame == "WeeklyQuests" or OpenFrame == "EventQuests" then
+			SetTimerVisible(true)
+			if OpenFrame == "DailyQuests" then
+				local function DailyQuestsPromise()
+					return Promise.new(function(resolve)
+						local CurrentTime = DateTime.now()
+						local NewTime = math.ceil(CurrentTime.UnixTimestamp / 86400) * 86400
+						local Seconds = NewTime - CurrentTime.UnixTimestamp
+						task.wait(Seconds + 1)
+						resolve(NewTime)
+					end)
+						:andThen(function(NewTime)
+							SetTime(86400, NewTime)
+						end)
+						:andThen(function()
+							return DailyQuestsPromise()
+						end)
+				end
+
+				local promise = DailyQuestsPromise()
+
+				return function()
+					promise:cancel()
+				end
+			elseif OpenFrame == "WeeklyQuests" then
+				local function WeeklyQuestsPromise()
+					return Promise.new(function(resolve)
+						local CurrentTime = DateTime.now()
+						local NewTime = math.ceil(CurrentTime.UnixTimestamp / 604800) * 604800
+						local Seconds = NewTime - CurrentTime.UnixTimestamp
+						task.wait(Seconds + 1)
+						resolve(NewTime)
+					end)
+						:andThen(function(NewTime)
+							SetTime(604800, NewTime)
+						end)
+						:andThen(function()
+							return WeeklyQuestsPromise()
+						end)
+				end
+
+				local promise = WeeklyQuestsPromise()
+
+				return function()
+					promise:cancel()
+				end
+			else
+				local TimeDifference = Constants.EndTime - DateTime.now().UnixTimestamp
+				SetTime(TimeDifference, workspace:GetServerTimeNow())
+			end
+		else
+			SetTimerVisible(false)
+		end
+
+		return
+	end, { OpenFrame })
 
 	local QuestFrames = React.useMemo(function()
 		local Frames: { [string]: React.Node } = {}
@@ -264,8 +327,8 @@ local function CreateQuestsFrame(props: Properties)
 					SetOpenFrame(Name)
 				end,
 				native = {
-					Position = UDim2.fromScale(0.2 * Priority, 0.5),
-					Size = UDim2.fromScale(0.3, 0.9),
+					Position = UDim2.fromScale(0.15 + (0.233 * (Priority - 1)), 0.5),
+					Size = UDim2.fromScale(0.2, 0.9),
 				},
 			})
 		end
@@ -281,21 +344,31 @@ local function CreateQuestsFrame(props: Properties)
 		}, props.native),
 	}, {
 		Title = e(Title, {
-			Position = UDim2.fromScale(0.25, 0),
+			Position = UDim2.fromScale(0.2, 0),
 			Size = UDim2.fromScale(1, 0.14),
 			Title = "QUESTS",
 		}),
+		Timer = TimerVisible and e(Main.TextLabel, {
+			native = {
+				Position = UDim2.fromScale(0.5, 0.22),
+				Size = UDim2.fromScale(0.4, 0.05),
+				Text = Time:map(function(t)
+					return string.format("Time Left: %s", HelperFunctions.FormatTime(t))
+				end),
+				TextScaled = true,
+			},
+		}),
 		QuestButtons = e(Main.Frame, {
 			native = {
-				Position = UDim2.fromScale(0.5, 0.2),
-				Size = UDim2.fromScale(0.9, 0.15),
+				Position = UDim2.fromScale(0.5, 0.13),
+				Size = UDim2.fromScale(1, 0.1),
 			},
 		}, QuestButtons),
 		MainFrame = e(Main.ScrollingFrame, {
 			BarSize = 0.01,
 			native = {
 				Position = UDim2.fromScale(0.5, 0.6),
-				Size = UDim2.fromScale(0.9, 0.7),
+				Size = UDim2.fromScale(0.9, 0.675),
 				AutomaticCanvasSize = Enum.AutomaticSize.Y,
 			},
 		}, {
@@ -306,7 +379,7 @@ local function CreateQuestsFrame(props: Properties)
 			}),
 		}, QuestFrames),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-			AspectRatio = 1,
+			AspectRatio = 1.2,
 		}),
 		UICorner = e("UICorner", {
 			CornerRadius = UDim.new(0.02, 0),

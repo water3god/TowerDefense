@@ -45,7 +45,7 @@ export type Data = {
 	Resources: {
 		[string]: ResourceData,
 	},
-	CompletedMaps: { [string]: { [number]: { [string]: StageData } } },
+	CompletedMaps: { [string]: { [number]: { [string]: StageData } } }, -- MapId, Index, Difficulty, StageData
 	Level: number,
 	XP: number,
 	RollCount: number,
@@ -53,6 +53,7 @@ export type Data = {
 	RobuxSpent: number,
 	Gold: number,
 	TotalGoldGained: number,
+	TotalDamageDone: number,
 	MaxUnitCount: number,
 	DailyData: {
 		Day: number,
@@ -60,7 +61,9 @@ export type Data = {
 	},
 	EquippedTitle: string,
 	Titles: { string },
+	LeaderboardData: { [string]: number },
 	Quests: Quests.Quests,
+	QuestData: Quests.TotalPlayerData,
 }
 
 local Data: Data = {
@@ -78,6 +81,7 @@ local Data: Data = {
 	RobuxSpent = 0,
 	Gold = 80,
 	TotalGoldGained = 80,
+	TotalDamageDone = 0,
 	MaxUnitCount = 50,
 	DailyData = {
 		Day = 1,
@@ -85,7 +89,9 @@ local Data: Data = {
 	},
 	EquippedTitle = "Player",
 	Titles = { "Player" },
+	LeaderboardData = {},
 	Quests = Quests.Quests,
+	QuestData = Quests.QuestPlayerData,
 }
 
 return Data

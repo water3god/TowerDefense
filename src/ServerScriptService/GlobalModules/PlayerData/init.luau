@@ -25,6 +25,7 @@ local DailyRewards = require(Shared.DailyRewards)
 local SettingData = require(Shared.Settings)
 local TitleData = require(Shared.Titles)
 local QuestData = require(Shared.Quests)
+local Constants = require(Shared.Constants)
 
 local CalculateUnitXP = GameInfo.XPData.CalculateUnitXP
 local CalculatePlayerXP = GameInfo.XPData.CalculatePlayerXP
@@ -69,11 +70,12 @@ type PlayerDataData<T> = {
 
 	ProductChanged: Signal.Signal<string, Template.ProductData>,
 	ProductRedeemed: Signal.Signal<number, boolean>,
-	ResourceChanged: Signal.Signal<string, Template.ResourceData>,
+	ResourceChanged: Signal.Signal<string, Template.ResourceData, number?>,
 
 	StageChanged: Signal.Signal<StageParamData>,
 
 	Rolled: Signal.Signal<any>,
+	Summoned: Signal.Signal<Template.UnitData>,
 
 	SettingChanged: Signal.Signal<string, any>,
 
@@ -81,17 +83,20 @@ type PlayerDataData<T> = {
 	LeveledUp: Signal.Signal<number>,
 
 	GoldChanged: Signal.Signal<number>,
-	RobuxSpent: Signal.Signal<number>,
+	RobuxSpent: Signal.Signal<number, number>,
 	TotalGoldGained: Signal.Signal<number>,
+	DamageDone: Signal.Signal<number>,
 
 	DailyRedeemed: Signal.Signal<number, number>,
 	TitleChanged: Signal.Signal<string>,
 	TitleAdded: Signal.Signal<string>,
 
+	LeaderboardChanged: Signal.Signal<string, number>,
+
 	DailyRegenerated: Signal.Signal<>,
 	WeeklyRegenerated: Signal.Signal<>,
 
-	QuestProgressed: Signal.Signal<QuestData.DefaultQuestData>,
+	QuestProgressed: Signal.Signal<{ { Id: string, Data: QuestData.DefaultQuestData } }>,
 	QuestRedeemed: Signal.Signal<QuestData.DefaultQuestData>,
 
 	Destroying: Signal.Signal<>,
@@ -129,6 +134,7 @@ type PlayerDataImpl = {
 	AddGold: (self: PlayerData, Gold: number) -> (),
 	SubtractGold: (self: PlayerData, Gold: number) -> (),
 
+	AddDamageDone: (self: PlayerData, Damage: number) -> (),
 	AddRobuxSpent: (self: PlayerData, Robux: number) -> (),
 
 	OwnsMap: (self: PlayerData, Map: string) -> boolean,
@@ -147,6 +153,7 @@ type PlayerDataImpl = {
 		Data: {
 			Amount: number,
 			Type: QuestData.QuestType | string,
+			SubType: QuestData.QuestSubs | string?,
 			ExtraData: { any: any }?,
 		}
 	) -> (),
@@ -160,6 +167,8 @@ type PlayerDataImpl = {
 
 	AddTitle: (self: PlayerData, Title: string) -> (),
 	ChangeTitle: (self: PlayerData, Title: string) -> (),
+
+	ChangeLeaderboardPosition: (self: PlayerData, LeaderboardName: string, Position: number) -> (),
 
 	AddRoll: (self: PlayerData, Count: number) -> (),
 
@@ -266,7 +275,10 @@ function PlayerData.new(Player: Player)
 	self.UnitUnequipped = self._Trove:Construct(Signal)
 
 	self.SettingChanged = self._Trove:Construct(Signal)
+
 	self.Rolled = self._Trove:Construct(Signal)
+	self.Summoned = self._Trove:Construct(Signal)
+
 	self.AutoRollChanged = self._Trove:Construct(Signal)
 
 	self.ProductChanged = self._Trove:Construct(Signal)
@@ -279,12 +291,15 @@ function PlayerData.new(Player: Player)
 	self.GoldChanged = self._Trove:Construct(Signal)
 	self.RobuxSpent = self._Trove:Construct(Signal)
 	self.TotalGoldGained = self._Trove:Construct(Signal)
+	self.DamageDone = self._Trove:Construct(Signal)
 	self.StageChanged = self._Trove:Construct(Signal)
 
 	self.DailyRedeemed = self._Trove:Construct(Signal)
 
 	self.TitleChanged = self._Trove:Construct(Signal)
 	self.TitleAdded = self._Trove:Construct(Signal)
+
+	self.LeaderboardChanged = self._Trove:Construct(Signal)
 
 	self.DailyRegenerated = self._Trove:Construct(Signal)
 	self.WeeklyRegenerated = self._Trove:Construct(Signal)
@@ -328,6 +343,14 @@ function PlayerData.new(Player: Player)
 		SyncIds(Data.Resources)
 		RemoveOld(SettingData.SettingIndexes, Data.Settings :: any)
 		ReconcileQuests(Data.Quests)
+		TableUtil.Reconcile(Data.QuestData, QuestData.QuestPlayerData.DailyQuests)
+		TableUtil.Reconcile(Data.QuestData, QuestData.QuestPlayerData.WeeklyQuests)
+		TableUtil.Reconcile(Data.QuestData, QuestData.QuestPlayerData.EventQuests)
+		TableUtil.Reconcile(Data.QuestData, QuestData.QuestPlayerData.GlobalQuests)
+
+		if Constants.CurrentEvent ~= Data.Quests.MetaData.CurrentEvent then
+			Data.Quests.EventQuests = TableUtil.Copy(QuestData.Quests.EventQuests)
+		end
 
 		self.Profile.OnSessionEnd:Connect(function()
 			self:Delete()
@@ -645,7 +668,7 @@ function PlayerData:AddResource(Resource: string, CountInput: number?)
 	if FoundId then
 		local Data = Resources[FoundId]
 		Data.Count += Count
-		self.ResourceChanged:Fire("Added", Data)
+		self.ResourceChanged:Fire("Added", Data, CountInput)
 	elseif GameInfo.RewardInfo[Resource] then
 		local UniqueId = GenerateId.GenerateId()
 		local Data = { Resource = Resource, UniqueId = UniqueId, Count = Count }
@@ -701,10 +724,16 @@ function PlayerData:SubtractGold(Gold: number)
 	self:SetGold(CurrentGold - Gold)
 end
 
+function PlayerData:AddDamageDone(Damage: number)
+	local Data = self.Profile.Data
+	Data.TotalDamageDone += Damage
+	self.DamageDone:Fire(Data.TotalDamageDone)
+end
+
 function PlayerData:AddRobuxSpent(RobuxSpent: number)
 	local Data = self.Profile.Data
 	Data.RobuxSpent += RobuxSpent
-	self.RobuxSpent:Fire(Data.RobuxSpent)
+	self.RobuxSpent:Fire(Data.RobuxSpent, RobuxSpent)
 end
 
 function PlayerData:OwnsMap(Map: string)
@@ -790,7 +819,11 @@ function PlayerData:RedeemDaily()
 	if RewardData.Type == "Unit" then
 		self:AddUnit(RewardData.Name, RewardData.ExtraData)
 	elseif RewardData.Type == "Resource" then
-		self:AddResource(RewardData.Name, RewardData.Count)
+		if RewardData.Name == "Gold" then
+			self:AddGold(RewardData.Count)
+		else
+			self:AddResource(RewardData.Name, RewardData.Count)
+		end
 	elseif RewardData.Type == "Product" then
 		if RewardData.ExtraData and RewardData.ExtraData.ProductId then
 			self:AddProduct(RewardData.ExtraData.ProductId, RewardData.Count)
@@ -850,6 +883,8 @@ function PlayerData:RegenerateDailyQuests()
 
 	Quests.MetaData.DailyRegenerated = DayTime
 	Quests.DailyQuests = NewQuests
+	local QData = self.Profile.Data.QuestData
+	QData.DailyQuests = HelperFunctions.CopyTableToTable(QData.DailyQuests, QuestData.QuestPlayerData.DailyQuests)
 	self.DailyRegenerated:Fire()
 end
 
@@ -875,35 +910,41 @@ function PlayerData:RegenerateWeeklyQuests()
 
 	Quests.MetaData.WeeklyRegenerated = WeekTime
 	Quests.WeeklyQuests = NewQuests
+	local QData = self.Profile.Data.QuestData
+	QData.WeeklyQuests = HelperFunctions.CopyTableToTable(QData.WeeklyQuests, QuestData.QuestPlayerData.WeeklyQuests)
 	self.WeeklyRegenerated:Fire()
 end
 
-function PlayerData:ProgressQuests(
-	Data: { Amount: number, Type: QuestData.QuestType | string, ExtraData: { any: any }? }
-)
-	for _, QuestTypes in pairs(QuestData.QuestsOnly) do
-		for _, Quest in pairs(QuestTypes) do
-			if Quest.Type == Data.Type then
-				if Data.Type == "Playtime" then
-					local PlayTimeData = Quest.Data :: QuestData.PlayTimeData
-					PlayTimeData.Seconds += Data.Amount
-
-					if PlayTimeData.Type == "Seconds" then
-						Quest.CurrentValue = PlayTimeData.Seconds
-					elseif PlayTimeData.Type == "Minutes" then
-						Quest.CurrentValue = PlayTimeData.Seconds / 60
-					elseif PlayTimeData.Type == "Hours" then
-						Quest.CurrentValue = PlayTimeData.Seconds / 3600
-					elseif PlayTimeData.Type == "Days" then
-						Quest.CurrentValue = PlayTimeData.Seconds / 86400
+function PlayerData:ProgressQuests(Data)
+	local DataToFire = {}
+	local PData = self.Profile.Data
+	local function Progress(Type: QuestData.QuestSubs | string)
+		local Quests: { QuestData.DefaultQuestData } = PData.Quests[Type]
+		for _, Quest in ipairs(Quests) do
+			if Quest.Type == Data.Type and Quest.CurrentValue ~= Data.Amount then
+				if QuestData.ValidFunctions[Quest.Type] and Data.ExtraData then
+					local Valid = QuestData.ValidFunctions[Quest.Type](Quest, Data.ExtraData)
+					if not Valid then
+						continue
 					end
-				else
-					Quest.CurrentValue += Data.Amount
 				end
-				self.QuestProgressed:Fire(Quest)
+
+				Quest.CurrentValue = math.min(Data.Amount, Quest.NeededValue)
+				table.insert(DataToFire, { Id = Quest.Id, Data = Quest })
 			end
 		end
 	end
+
+	if Data.SubType then
+		Progress(Data.SubType)
+	else
+		Progress("DailyQuests")
+		Progress("WeeklyQuests")
+		Progress("EventQuests")
+		Progress("GlobalQuests")
+	end
+
+	self.QuestProgressed:Fire(DataToFire)
 end
 
 function PlayerData:RedeemQuest(Id: string)
@@ -982,6 +1023,19 @@ function PlayerData:ChangeTitle(Title: string)
 
 	Data.EquippedTitle = Title
 	self.TitleChanged:Fire(Title)
+end
+
+function PlayerData:ChangeLeaderboardPosition(LeaderboardName: string, Position: number)
+	local Data = self.Profile.Data
+
+	if typeof(LeaderboardName) ~= "string" or typeof(Position) ~= "number" then
+		return
+	end
+
+	if Data.LeaderboardData[LeaderboardName] ~= Position then
+		Data.LeaderboardData[LeaderboardName] = Position
+		self.LeaderboardChanged:Fire(LeaderboardName, Position)
+	end
 end
 
 function PlayerData:AddRoll(Count: number)

@@ -159,6 +159,20 @@ function Funcs.SyncArray(Array, SampleArray, Name: string)
 	end
 end
 
+function Funcs.CopyTableToTable<T>(Dest: any, Source: T): T
+	local Clone = table.clone(Dest)
+	table.clear(Dest)
+	for Key, Value in pairs(Source :: any) do
+		if typeof(Clone[Key]) == "table" then
+			Dest[Key] = Funcs.CopyTableToTable(Clone[Key], Value)
+		else
+			Dest[Key] = Value
+		end
+	end
+
+	return Dest
+end
+
 Funcs.RemoveQueue = {}
 
 function Funcs.RemoveQueue.Init()
