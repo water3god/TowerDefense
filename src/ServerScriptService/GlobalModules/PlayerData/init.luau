@@ -389,7 +389,7 @@ function PlayerData.new(Player: Player)
 			local CurrentTime = DateTime.now()
 			local NewTime = math.ceil(CurrentTime.UnixTimestamp / 86400) * 86400
 			local Seconds = NewTime - CurrentTime.UnixTimestamp
-			print(Seconds)
+
 			task.wait(Seconds + 1)
 			resolve()
 		end)
@@ -397,9 +397,7 @@ function PlayerData.new(Player: Player)
 				self:RegenerateDailyQuests()
 			end)
 			:andThen(function()
-				local promise = DailyQuestsPromise()
-				self._Trove:AddPromise(promise :: any)
-				return promise
+				return DailyQuestsPromise()
 			end)
 	end
 
@@ -408,7 +406,7 @@ function PlayerData.new(Player: Player)
 			local CurrentTime = DateTime.now()
 			local NewTime = math.ceil(CurrentTime.UnixTimestamp / 604800) * 604800
 			local Seconds = NewTime - CurrentTime.UnixTimestamp
-			print(Seconds)
+
 			task.wait(Seconds + 1)
 			resolve()
 		end)
@@ -416,9 +414,7 @@ function PlayerData.new(Player: Player)
 				self:RegenerateWeeklyQuests()
 			end)
 			:andThen(function()
-				local promise = WeeklyQuestsPromise()
-				self._Trove:AddPromise(promise :: any)
-				return promise
+				return WeeklyQuestsPromise()
 			end)
 	end
 

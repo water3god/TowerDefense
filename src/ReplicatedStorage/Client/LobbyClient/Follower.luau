@@ -189,7 +189,7 @@ function Follower.new(Data: Input): Follower
 	end
 
 	local function OtherStep()
-		local OtherRay = workspace:Raycast(self.IdealPart.Position + Vector3.new(0, 3, 0), -Vector3.yAxis * 30, Params)
+		local OtherRay = workspace:Raycast(self.IdealPart.Position, -Vector3.yAxis * 30, Params)
 
 		if OtherRay and OtherRay.Position then
 			local Position = Vector3.new(self.IdealPart.CFrame.X, OtherRay.Position.Y, self.IdealPart.CFrame.Z)
