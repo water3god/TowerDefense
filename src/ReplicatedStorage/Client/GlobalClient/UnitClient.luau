@@ -323,7 +323,7 @@ local function NewUnit(Input: Types.UnitInput, New: boolean)
 
 	self:ApplyDetail()
 
-	self.VectorOffset = HelperFunctions.GetModelVectorOffset(self.Character)
+	self.VectorOffset = Vector3.new(0, 3 * self.Humanoid.BodyHeightScale.Value, 0)
 	self.VisualCFrame = self.CFrame + self.VectorOffset
 	self:TPToRootPosition()
 
@@ -639,7 +639,7 @@ function UnitModule:OnUpgrade(Level: number)
 	self.TotalCost = UnitInfo.CalculateTotalCost(self.UnitData.UnitData, self.Level)
 	self.Upgraded:Fire(Level)
 	self:ApplyDetail()
-	self.VectorOffset = HelperFunctions.GetModelVectorOffset(self.Character)
+	self.VectorOffset = Vector3.new(0, 3 * self.Humanoid.BodyHeightScale.Value, 0)
 	self.VisualCFrame = self.CFrame + self.VectorOffset
 	self:TPToRootPosition()
 end
@@ -820,7 +820,9 @@ function UnitModule.InitPlacement(Unit: string)
 		end
 	end
 
-	local Ratio = UnitModel.Humanoid.BodyHeightScale.Value
+	local Humanoid = UnitModel.Humanoid
+
+	local Ratio = Humanoid.BodyHeightScale.Value
 	local RatioRadius = Radius / Ratio
 
 	local Root = CharacterData.CenterPart
@@ -835,7 +837,7 @@ function UnitModule.InitPlacement(Unit: string)
 	RadiusPart.Parent = UnitModel
 	TweenTransparency(RadiusPart, RadiusReference.Transparency)
 
-	local VectorOffset = HelperFunctions.GetModelVectorOffset(UnitModel)
+	local VectorOffset = Vector3.new(0, 3 * Humanoid.BodyHeightScale.Value, 0)
 
 	local RayParams = RaycastParams.new()
 	RayParams.FilterType = Enum.RaycastFilterType.Exclude

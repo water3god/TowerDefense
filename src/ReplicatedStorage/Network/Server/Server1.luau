@@ -124,137 +124,137 @@ if not RunService:IsRunning() then
 			FireAll = noop,
 			FireExcept = noop,
 			FireList = noop,
-			FireSet = noop
+			FireSet = noop,
 		}),
 		TitleChanged = table.freeze({
 			Fire = noop,
 			FireAll = noop,
 			FireExcept = noop,
 			FireList = noop,
-			FireSet = noop
+			FireSet = noop,
 		}),
 		TitleAdded = table.freeze({
 			Fire = noop,
 			FireAll = noop,
 			FireExcept = noop,
 			FireList = noop,
-			FireSet = noop
+			FireSet = noop,
 		}),
 		TPGuiSet = table.freeze({
 			Fire = noop,
 			FireAll = noop,
 			FireExcept = noop,
 			FireList = noop,
-			FireSet = noop
+			FireSet = noop,
 		}),
 		StoryDataSync = table.freeze({
 			Fire = noop,
 			FireAll = noop,
 			FireExcept = noop,
 			FireList = noop,
-			FireSet = noop
+			FireSet = noop,
 		}),
 		OwnerStart = table.freeze({
-			SetCallback = noop
+			SetCallback = noop,
 		}),
 		LeaveBooth = table.freeze({
-			SetCallback = noop
+			SetCallback = noop,
 		}),
 		ItemSell = table.freeze({
-			SetCallback = noop
+			SetCallback = noop,
 		}),
 		ItemChanged = table.freeze({
 			Fire = noop,
 			FireAll = noop,
 			FireExcept = noop,
 			FireList = noop,
-			FireSet = noop
+			FireSet = noop,
 		}),
 		InventorySync = table.freeze({
 			Fire = noop,
 			FireAll = noop,
 			FireExcept = noop,
 			FireList = noop,
-			FireSet = noop
+			FireSet = noop,
 		}),
 		EquipUnit = table.freeze({
-			SetCallback = noop
+			SetCallback = noop,
 		}),
 		EquipTitle = table.freeze({
-			SetCallback = noop
+			SetCallback = noop,
 		}),
 		EnemySpeedEvent = table.freeze({
 			Fire = noop,
 			FireAll = noop,
 			FireExcept = noop,
 			FireList = noop,
-			FireSet = noop
+			FireSet = noop,
 		}),
 		EnemySpawnEvent = table.freeze({
 			Fire = noop,
 			FireAll = noop,
 			FireExcept = noop,
 			FireList = noop,
-			FireSet = noop
+			FireSet = noop,
 		}),
 		EnemyLocationEvent = table.freeze({
 			Fire = noop,
 			FireAll = noop,
 			FireExcept = noop,
 			FireList = noop,
-			FireSet = noop
+			FireSet = noop,
 		}),
 		EnemyHealthEvent = table.freeze({
 			Fire = noop,
 			FireAll = noop,
 			FireExcept = noop,
 			FireList = noop,
-			FireSet = noop
+			FireSet = noop,
 		}),
 		EnemyDestroyEvent = table.freeze({
 			Fire = noop,
 			FireAll = noop,
 			FireExcept = noop,
 			FireList = noop,
-			FireSet = noop
+			FireSet = noop,
 		}),
 		ChooseMap = table.freeze({
-			SetCallback = noop
+			SetCallback = noop,
 		}),
 		BoothWaiting = table.freeze({
 			Fire = noop,
 			FireAll = noop,
 			FireExcept = noop,
 			FireList = noop,
-			FireSet = noop
+			FireSet = noop,
 		}),
 		BoothRestarted = table.freeze({
 			Fire = noop,
 			FireAll = noop,
 			FireExcept = noop,
 			FireList = noop,
-			FireSet = noop
+			FireSet = noop,
 		}),
 		BoothPlayerChanged = table.freeze({
 			Fire = noop,
 			FireAll = noop,
 			FireExcept = noop,
 			FireList = noop,
-			FireSet = noop
+			FireSet = noop,
 		}),
 		BoothMapLoading = table.freeze({
 			Fire = noop,
 			FireAll = noop,
 			FireExcept = noop,
 			FireList = noop,
-			FireSet = noop
+			FireSet = noop,
 		}),
 		BoothChoosing = table.freeze({
 			Fire = noop,
 			FireAll = noop,
 			FireExcept = noop,
 			FireList = noop,
-			FireSet = noop
+			FireSet = noop,
 		}),
 	}) :: Events
 end
@@ -291,105 +291,113 @@ end
 Players.PlayerRemoving:Connect(function(player)
 	player_map[player] = nil
 end)
-export type StageData = ({
-	["FastestTime"]: (number),
-	["FinishedCount"]: (number),
-})
-export type Inventory = ({
-	["Units"]: ({ [(string)]: ({
-		["Unit"]: (string),
-		["Level"]: (number),
-		["UniqueId"]: (string),
-		["XP"]: (number),
-		["NeededXP"]: (number),
-	}) }),
-	["Products"]: ({ [(string)]: ({
-		["ProductId"]: (number),
-		["IsGamepass"]: (boolean),
-		["Count"]: (number),
-		["UniqueId"]: (string),
-	}) }),
-	["Resources"]: ({ [(string)]: ({
-		["Resource"]: (string),
-		["Count"]: (number),
-		["UniqueId"]: (string),
-		["PartialOneLose"]: ((boolean)?),
-	}) }),
-})
-export type XP = (number)
-export type SpeedChange = ({
-	["UniqueId"]: (string),
-	["Speed"]: (number),
-	["Time"]: (number),
-})
-export type BoothData = ({
-	["OwnerId"]: (number),
-	["MapId"]: (string),
-	["LevelId"]: (string),
-	["Difficulty"]: (string),
-	["Players"]: ({ (Player) }),
-	["StartTime"]: (number),
-	["EndTime"]: (number),
-})
-export type Time = (number)
-export type VisualUnitData = ({
-	["Unit"]: (string),
-	["Level"]: (number),
-	["UniqueId"]: (string),
-	["XP"]: (number),
-	["NeededXP"]: (number),
-})
-export type SpeedChangeData = ({
-	["TimeStart"]: (number),
-	["Speed"]: (number),
-	["TimeEnd"]: ((number)?),
-})
-export type LevelData = ({
-	["Level"]: (number),
-	["XP"]: (number),
-	["NeededXP"]: (number),
-})
-export type Health = (number)
-export type EnemyInput = ({
-	["UniqueId"]: (string),
-	["ModelName"]: (string),
-	["Health"]: (number),
-	["MaxHealth"]: (number),
-	["Speed"]: (number),
-	["IsBoss"]: (boolean),
-	["Ally"]: (boolean),
-	["OriginalSpeed"]: (number),
-	["VectorOffset"]: (Vector3),
-	["BezierId"]: (string),
-	["TimePosition"]: (number),
-	["Time"]: (number),
-	["AdornmentName"]: ((string)?),
-	["SpeedChanges"]: ({ ({
-		["TimeStart"]: (number),
-		["Speed"]: (number),
-		["TimeEnd"]: ((number)?),
-	}) }),
-})
-export type TimeData = ({
-	["StartTime"]: (number),
-	["EndTime"]: (number),
-})
-export type ProductData = ({
-	["ProductId"]: (number),
-	["IsGamepass"]: (boolean),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-})
-export type ResourceData = ({
-	["Resource"]: (string),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-	["PartialOneLose"]: ((boolean)?),
-})
-export type ProductId = (number)
-export type Difficulty = ("Normal" | "Hard" | "Insane")
-export type Level = (number)
-export type Item = ("Units" | "Products" | "Resources")
+export type StageData = {
+	["FastestTime"]: number,
+	["FinishedCount"]: number,
+}
+export type Inventory = {
+	["Units"]: {
+		[string]: {
+			["Unit"]: string,
+			["Level"]: number,
+			["UniqueId"]: string,
+			["XP"]: number,
+			["NeededXP"]: number,
+		},
+	},
+	["Products"]: {
+		[string]: {
+			["ProductId"]: number,
+			["IsGamepass"]: boolean,
+			["Count"]: number,
+			["UniqueId"]: string,
+		},
+	},
+	["Resources"]: {
+		[string]: {
+			["Resource"]: string,
+			["Count"]: number,
+			["UniqueId"]: string,
+			["PartialOneLose"]: boolean?,
+		},
+	},
+}
+export type XP = number
+export type SpeedChange = {
+	["UniqueId"]: string,
+	["Speed"]: number,
+	["Time"]: number,
+}
+export type BoothData = {
+	["OwnerId"]: number,
+	["MapId"]: string,
+	["LevelId"]: string,
+	["Difficulty"]: string,
+	["Players"]: { Player },
+	["StartTime"]: number,
+	["EndTime"]: number,
+}
+export type Time = number
+export type VisualUnitData = {
+	["Unit"]: string,
+	["Level"]: number,
+	["UniqueId"]: string,
+	["XP"]: number,
+	["NeededXP"]: number,
+}
+export type SpeedChangeData = {
+	["TimeStart"]: number,
+	["Speed"]: number,
+	["TimeEnd"]: number?,
+}
+export type LevelData = {
+	["Level"]: number,
+	["XP"]: number,
+	["NeededXP"]: number,
+}
+export type Health = number
+export type EnemyInput = {
+	["UniqueId"]: string,
+	["ModelName"]: string,
+	["Health"]: number,
+	["MaxHealth"]: number,
+	["Speed"]: number,
+	["IsBoss"]: boolean,
+	["Ally"]: boolean,
+	["OriginalSpeed"]: number,
+	["VectorOffset"]: Vector3,
+	["BezierId"]: string,
+	["TimePosition"]: number,
+	["Time"]: number,
+	["AdornmentName"]: string?,
+	["SpeedChanges"]: {
+		{
+			["TimeStart"]: number,
+			["Speed"]: number,
+			["TimeEnd"]: number?,
+		}
+	},
+}
+export type TimeData = {
+	["StartTime"]: number,
+	["EndTime"]: number,
+}
+export type ProductData = {
+	["ProductId"]: number,
+	["IsGamepass"]: boolean,
+	["Count"]: number,
+	["UniqueId"]: string,
+}
+export type ResourceData = {
+	["Resource"]: string,
+	["Count"]: number,
+	["UniqueId"]: string,
+	["PartialOneLose"]: boolean?,
+}
+export type ProductId = number
+export type Difficulty = "Normal" | "Hard" | "Insane"
+export type Level = number
+export type Item = "Units" | "Products" | "Resources"
 
 local function SendEvents()
 	for player, outgoing in player_map do
@@ -491,11 +499,14 @@ table.freeze(polling_queues_unreliable)
 local returns = {
 	SendEvents = SendEvents,
 	UnitEquipped = {
-		Fire = function(Player: Player, Value: ({
-			["UniqueId"]: (string),
-			["Index"]: (number),
-			["Equip"]: (boolean),
-		}))
+		Fire = function(
+			Player: Player,
+			Value: {
+				["UniqueId"]: string,
+				["Index"]: number,
+				["Equip"]: boolean,
+			}
+		)
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
@@ -510,11 +521,11 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["Equip"] and 1 or 0)
 			player_map[Player] = save()
 		end,
-		FireAll = function(Value: ({
-			["UniqueId"]: (string),
-			["Index"]: (number),
-			["Equip"]: (boolean),
-		}))
+		FireAll = function(Value: {
+			["UniqueId"]: string,
+			["Index"]: number,
+			["Equip"]: boolean,
+		})
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
@@ -536,11 +547,14 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireExcept = function(Except: Player, Value: ({
-			["UniqueId"]: (string),
-			["Index"]: (number),
-			["Equip"]: (boolean),
-		}))
+		FireExcept = function(
+			Except: Player,
+			Value: {
+				["UniqueId"]: string,
+				["Index"]: number,
+				["Equip"]: boolean,
+			}
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
@@ -564,11 +578,14 @@ local returns = {
 				end
 			end
 		end,
-		FireList = function(List: { [unknown]: Player }, Value: ({
-			["UniqueId"]: (string),
-			["Index"]: (number),
-			["Equip"]: (boolean),
-		}))
+		FireList = function(
+			List: { [unknown]: Player },
+			Value: {
+				["UniqueId"]: string,
+				["Index"]: number,
+				["Equip"]: boolean,
+			}
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
@@ -590,11 +607,14 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireSet = function(Set: { [Player]: any }, Value: ({
-			["UniqueId"]: (string),
-			["Index"]: (number),
-			["Equip"]: (boolean),
-		}))
+		FireSet = function(
+			Set: { [Player]: any },
+			Value: {
+				["UniqueId"]: string,
+				["Index"]: number,
+				["Equip"]: boolean,
+			}
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
@@ -618,7 +638,7 @@ local returns = {
 		end,
 	},
 	TitleChanged = {
-		Fire = function(Player: Player, Value: (string))
+		Fire = function(Player: Player, Value: string)
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
@@ -629,7 +649,7 @@ local returns = {
 			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_13)
 			player_map[Player] = save()
 		end,
-		FireAll = function(Value: (string))
+		FireAll = function(Value: string)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
@@ -647,7 +667,7 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireExcept = function(Except: Player, Value: (string))
+		FireExcept = function(Except: Player, Value: string)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
@@ -667,7 +687,7 @@ local returns = {
 				end
 			end
 		end,
-		FireList = function(List: { [unknown]: Player }, Value: (string))
+		FireList = function(List: { [unknown]: Player }, Value: string)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
@@ -685,7 +705,7 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireSet = function(Set: { [Player]: any }, Value: (string))
+		FireSet = function(Set: { [Player]: any }, Value: string)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
@@ -705,7 +725,7 @@ local returns = {
 		end,
 	},
 	TitleAdded = {
-		Fire = function(Player: Player, Value: (string))
+		Fire = function(Player: Player, Value: string)
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 16)
@@ -716,7 +736,7 @@ local returns = {
 			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_18)
 			player_map[Player] = save()
 		end,
-		FireAll = function(Value: (string))
+		FireAll = function(Value: string)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 16)
@@ -734,7 +754,7 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireExcept = function(Except: Player, Value: (string))
+		FireExcept = function(Except: Player, Value: string)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 16)
@@ -754,7 +774,7 @@ local returns = {
 				end
 			end
 		end,
-		FireList = function(List: { [unknown]: Player }, Value: (string))
+		FireList = function(List: { [unknown]: Player }, Value: string)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 16)
@@ -772,7 +792,7 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireSet = function(Set: { [Player]: any }, Value: (string))
+		FireSet = function(Set: { [Player]: any }, Value: string)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 16)
@@ -792,10 +812,13 @@ local returns = {
 		end,
 	},
 	TPGuiSet = {
-		Fire = function(Player: Player, Value: ({
-			["MapName"]: (string),
-			["ImageId"]: (string),
-		}))
+		Fire = function(
+			Player: Player,
+			Value: {
+				["MapName"]: string,
+				["ImageId"]: string,
+			}
+		)
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -811,10 +834,10 @@ local returns = {
 			buffer.writestring(outgoing_buff, outgoing_apos, Value["ImageId"], len_24)
 			player_map[Player] = save()
 		end,
-		FireAll = function(Value: ({
-			["MapName"]: (string),
-			["ImageId"]: (string),
-		}))
+		FireAll = function(Value: {
+			["MapName"]: string,
+			["ImageId"]: string,
+		})
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -837,10 +860,13 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireExcept = function(Except: Player, Value: ({
-			["MapName"]: (string),
-			["ImageId"]: (string),
-		}))
+		FireExcept = function(
+			Except: Player,
+			Value: {
+				["MapName"]: string,
+				["ImageId"]: string,
+			}
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -865,10 +891,13 @@ local returns = {
 				end
 			end
 		end,
-		FireList = function(List: { [unknown]: Player }, Value: ({
-			["MapName"]: (string),
-			["ImageId"]: (string),
-		}))
+		FireList = function(
+			List: { [unknown]: Player },
+			Value: {
+				["MapName"]: string,
+				["ImageId"]: string,
+			}
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -891,10 +920,13 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireSet = function(Set: { [Player]: any }, Value: ({
-			["MapName"]: (string),
-			["ImageId"]: (string),
-		}))
+		FireSet = function(
+			Set: { [Player]: any },
+			Value: {
+				["MapName"]: string,
+				["ImageId"]: string,
+			}
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -919,10 +951,19 @@ local returns = {
 		end,
 	},
 	StoryDataSync = {
-		Fire = function(Player: Player, Value: ({ [(string)]: ({ [(number)]: ({ [("Normal" | "Hard" | "Insane")]: ({
-			["FastestTime"]: (number),
-			["FinishedCount"]: (number),
-		}) }) }) }))
+		Fire = function(
+			Player: Player,
+			Value: {
+				[string]: {
+					[number]: {
+						[("Normal" | "Hard" | "Insane")]: {
+							["FastestTime"]: number,
+							["FinishedCount"]: number,
+						},
+					},
+				},
+			}
+		)
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
@@ -969,10 +1010,16 @@ local returns = {
 			buffer.writeu16(outgoing_buff, len_pos_1, len_33)
 			player_map[Player] = save()
 		end,
-		FireAll = function(Value: ({ [(string)]: ({ [(number)]: ({ [("Normal" | "Hard" | "Insane")]: ({
-			["FastestTime"]: (number),
-			["FinishedCount"]: (number),
-		}) }) }) }))
+		FireAll = function(Value: {
+			[string]: {
+				[number]: {
+					[("Normal" | "Hard" | "Insane")]: {
+						["FastestTime"]: number,
+						["FinishedCount"]: number,
+					},
+				},
+			},
+		})
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
@@ -1026,10 +1073,19 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireExcept = function(Except: Player, Value: ({ [(string)]: ({ [(number)]: ({ [("Normal" | "Hard" | "Insane")]: ({
-			["FastestTime"]: (number),
-			["FinishedCount"]: (number),
-		}) }) }) }))
+		FireExcept = function(
+			Except: Player,
+			Value: {
+				[string]: {
+					[number]: {
+						[("Normal" | "Hard" | "Insane")]: {
+							["FastestTime"]: number,
+							["FinishedCount"]: number,
+						},
+					},
+				},
+			}
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
@@ -1085,10 +1141,19 @@ local returns = {
 				end
 			end
 		end,
-		FireList = function(List: { [unknown]: Player }, Value: ({ [(string)]: ({ [(number)]: ({ [("Normal" | "Hard" | "Insane")]: ({
-			["FastestTime"]: (number),
-			["FinishedCount"]: (number),
-		}) }) }) }))
+		FireList = function(
+			List: { [unknown]: Player },
+			Value: {
+				[string]: {
+					[number]: {
+						[("Normal" | "Hard" | "Insane")]: {
+							["FastestTime"]: number,
+							["FinishedCount"]: number,
+						},
+					},
+				},
+			}
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
@@ -1142,10 +1207,19 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireSet = function(Set: { [Player]: any }, Value: ({ [(string)]: ({ [(number)]: ({ [("Normal" | "Hard" | "Insane")]: ({
-			["FastestTime"]: (number),
-			["FinishedCount"]: (number),
-		}) }) }) }))
+		FireSet = function(
+			Set: { [Player]: any },
+			Value: {
+				[string]: {
+					[number]: {
+						[("Normal" | "Hard" | "Insane")]: {
+							["FastestTime"]: number,
+							["FinishedCount"]: number,
+						},
+					},
+				},
+			}
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
@@ -1217,7 +1291,7 @@ local returns = {
 		end,
 	},
 	ItemSell = {
-		SetCallback = function(Callback: (Player: Player, Value: (string), Value2: ({ (string) })) -> ()): () -> ()
+		SetCallback = function(Callback: (Player: Player, Value: string, Value2: { string }) -> ()): () -> ()
 			reliable_events[4] = Callback
 			return function()
 				reliable_events[4] = nil
@@ -1225,7 +1299,7 @@ local returns = {
 		end,
 	},
 	ItemChanged = {
-		Fire = function(Player: Player, Value: ("Units" | "Products" | "Resources"), Value2: (string), Value3: ((unknown)))
+		Fire = function(Player: Player, Value: "Units" | "Products" | "Resources", Value2: string, Value3: unknown)
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
@@ -1256,7 +1330,7 @@ local returns = {
 			end
 			player_map[Player] = save()
 		end,
-		FireAll = function(Value: ("Units" | "Products" | "Resources"), Value2: (string), Value3: ((unknown)))
+		FireAll = function(Value: "Units" | "Products" | "Resources", Value2: string, Value3: unknown)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
@@ -1294,7 +1368,12 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireExcept = function(Except: Player, Value: ("Units" | "Products" | "Resources"), Value2: (string), Value3: ((unknown)))
+		FireExcept = function(
+			Except: Player,
+			Value: "Units" | "Products" | "Resources",
+			Value2: string,
+			Value3: unknown
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
@@ -1334,7 +1413,12 @@ local returns = {
 				end
 			end
 		end,
-		FireList = function(List: { [unknown]: Player }, Value: ("Units" | "Products" | "Resources"), Value2: (string), Value3: ((unknown)))
+		FireList = function(
+			List: { [unknown]: Player },
+			Value: "Units" | "Products" | "Resources",
+			Value2: string,
+			Value3: unknown
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
@@ -1372,7 +1456,12 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireSet = function(Set: { [Player]: any }, Value: ("Units" | "Products" | "Resources"), Value2: (string), Value3: ((unknown)))
+		FireSet = function(
+			Set: { [Player]: any },
+			Value: "Units" | "Products" | "Resources",
+			Value2: string,
+			Value3: unknown
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
@@ -1412,34 +1501,47 @@ local returns = {
 		end,
 	},
 	InventorySync = {
-		Fire = function(Player: Player, Value: ({
-			["Units"]: ({ [(string)]: ({
-				["Unit"]: (string),
-				["Level"]: (number),
-				["UniqueId"]: (string),
-				["XP"]: (number),
-				["NeededXP"]: (number),
-			}) }),
-			["Products"]: ({ [(string)]: ({
-				["ProductId"]: (number),
-				["IsGamepass"]: (boolean),
-				["Count"]: (number),
-				["UniqueId"]: (string),
-			}) }),
-			["Resources"]: ({ [(string)]: ({
-				["Resource"]: (string),
-				["Count"]: (number),
-				["UniqueId"]: (string),
-				["PartialOneLose"]: ((boolean)?),
-			}) }),
-		}), Value2: ({ ((string)?) }), Value3: ({
-			["Level"]: (number),
-			["XP"]: (number),
-			["NeededXP"]: (number),
-		}), Value4: (number), Value5: ({
-			["EquippedTitle"]: (string),
-			["Titles"]: ({ (string) }),
-		}))
+		Fire = function(
+			Player: Player,
+			Value: {
+				["Units"]: {
+					[string]: {
+						["Unit"]: string,
+						["Level"]: number,
+						["UniqueId"]: string,
+						["XP"]: number,
+						["NeededXP"]: number,
+					},
+				},
+				["Products"]: {
+					[string]: {
+						["ProductId"]: number,
+						["IsGamepass"]: boolean,
+						["Count"]: number,
+						["UniqueId"]: string,
+					},
+				},
+				["Resources"]: {
+					[string]: {
+						["Resource"]: string,
+						["Count"]: number,
+						["UniqueId"]: string,
+						["PartialOneLose"]: boolean?,
+					},
+				},
+			},
+			Value2: { string? },
+			Value3: {
+				["Level"]: number,
+				["XP"]: number,
+				["NeededXP"]: number,
+			},
+			Value4: number,
+			Value5: {
+				["EquippedTitle"]: string,
+				["Titles"]: { string },
+			}
+		)
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
@@ -1568,34 +1670,46 @@ local returns = {
 			end
 			player_map[Player] = save()
 		end,
-		FireAll = function(Value: ({
-			["Units"]: ({ [(string)]: ({
-				["Unit"]: (string),
-				["Level"]: (number),
-				["UniqueId"]: (string),
-				["XP"]: (number),
-				["NeededXP"]: (number),
-			}) }),
-			["Products"]: ({ [(string)]: ({
-				["ProductId"]: (number),
-				["IsGamepass"]: (boolean),
-				["Count"]: (number),
-				["UniqueId"]: (string),
-			}) }),
-			["Resources"]: ({ [(string)]: ({
-				["Resource"]: (string),
-				["Count"]: (number),
-				["UniqueId"]: (string),
-				["PartialOneLose"]: ((boolean)?),
-			}) }),
-		}), Value2: ({ ((string)?) }), Value3: ({
-			["Level"]: (number),
-			["XP"]: (number),
-			["NeededXP"]: (number),
-		}), Value4: (number), Value5: ({
-			["EquippedTitle"]: (string),
-			["Titles"]: ({ (string) }),
-		}))
+		FireAll = function(
+			Value: {
+				["Units"]: {
+					[string]: {
+						["Unit"]: string,
+						["Level"]: number,
+						["UniqueId"]: string,
+						["XP"]: number,
+						["NeededXP"]: number,
+					},
+				},
+				["Products"]: {
+					[string]: {
+						["ProductId"]: number,
+						["IsGamepass"]: boolean,
+						["Count"]: number,
+						["UniqueId"]: string,
+					},
+				},
+				["Resources"]: {
+					[string]: {
+						["Resource"]: string,
+						["Count"]: number,
+						["UniqueId"]: string,
+						["PartialOneLose"]: boolean?,
+					},
+				},
+			},
+			Value2: { string? },
+			Value3: {
+				["Level"]: number,
+				["XP"]: number,
+				["NeededXP"]: number,
+			},
+			Value4: number,
+			Value5: {
+				["EquippedTitle"]: string,
+				["Titles"]: { string },
+			}
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
@@ -1731,34 +1845,47 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireExcept = function(Except: Player, Value: ({
-			["Units"]: ({ [(string)]: ({
-				["Unit"]: (string),
-				["Level"]: (number),
-				["UniqueId"]: (string),
-				["XP"]: (number),
-				["NeededXP"]: (number),
-			}) }),
-			["Products"]: ({ [(string)]: ({
-				["ProductId"]: (number),
-				["IsGamepass"]: (boolean),
-				["Count"]: (number),
-				["UniqueId"]: (string),
-			}) }),
-			["Resources"]: ({ [(string)]: ({
-				["Resource"]: (string),
-				["Count"]: (number),
-				["UniqueId"]: (string),
-				["PartialOneLose"]: ((boolean)?),
-			}) }),
-		}), Value2: ({ ((string)?) }), Value3: ({
-			["Level"]: (number),
-			["XP"]: (number),
-			["NeededXP"]: (number),
-		}), Value4: (number), Value5: ({
-			["EquippedTitle"]: (string),
-			["Titles"]: ({ (string) }),
-		}))
+		FireExcept = function(
+			Except: Player,
+			Value: {
+				["Units"]: {
+					[string]: {
+						["Unit"]: string,
+						["Level"]: number,
+						["UniqueId"]: string,
+						["XP"]: number,
+						["NeededXP"]: number,
+					},
+				},
+				["Products"]: {
+					[string]: {
+						["ProductId"]: number,
+						["IsGamepass"]: boolean,
+						["Count"]: number,
+						["UniqueId"]: string,
+					},
+				},
+				["Resources"]: {
+					[string]: {
+						["Resource"]: string,
+						["Count"]: number,
+						["UniqueId"]: string,
+						["PartialOneLose"]: boolean?,
+					},
+				},
+			},
+			Value2: { string? },
+			Value3: {
+				["Level"]: number,
+				["XP"]: number,
+				["NeededXP"]: number,
+			},
+			Value4: number,
+			Value5: {
+				["EquippedTitle"]: string,
+				["Titles"]: { string },
+			}
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
@@ -1896,34 +2023,47 @@ local returns = {
 				end
 			end
 		end,
-		FireList = function(List: { [unknown]: Player }, Value: ({
-			["Units"]: ({ [(string)]: ({
-				["Unit"]: (string),
-				["Level"]: (number),
-				["UniqueId"]: (string),
-				["XP"]: (number),
-				["NeededXP"]: (number),
-			}) }),
-			["Products"]: ({ [(string)]: ({
-				["ProductId"]: (number),
-				["IsGamepass"]: (boolean),
-				["Count"]: (number),
-				["UniqueId"]: (string),
-			}) }),
-			["Resources"]: ({ [(string)]: ({
-				["Resource"]: (string),
-				["Count"]: (number),
-				["UniqueId"]: (string),
-				["PartialOneLose"]: ((boolean)?),
-			}) }),
-		}), Value2: ({ ((string)?) }), Value3: ({
-			["Level"]: (number),
-			["XP"]: (number),
-			["NeededXP"]: (number),
-		}), Value4: (number), Value5: ({
-			["EquippedTitle"]: (string),
-			["Titles"]: ({ (string) }),
-		}))
+		FireList = function(
+			List: { [unknown]: Player },
+			Value: {
+				["Units"]: {
+					[string]: {
+						["Unit"]: string,
+						["Level"]: number,
+						["UniqueId"]: string,
+						["XP"]: number,
+						["NeededXP"]: number,
+					},
+				},
+				["Products"]: {
+					[string]: {
+						["ProductId"]: number,
+						["IsGamepass"]: boolean,
+						["Count"]: number,
+						["UniqueId"]: string,
+					},
+				},
+				["Resources"]: {
+					[string]: {
+						["Resource"]: string,
+						["Count"]: number,
+						["UniqueId"]: string,
+						["PartialOneLose"]: boolean?,
+					},
+				},
+			},
+			Value2: { string? },
+			Value3: {
+				["Level"]: number,
+				["XP"]: number,
+				["NeededXP"]: number,
+			},
+			Value4: number,
+			Value5: {
+				["EquippedTitle"]: string,
+				["Titles"]: { string },
+			}
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
@@ -2059,34 +2199,47 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireSet = function(Set: { [Player]: any }, Value: ({
-			["Units"]: ({ [(string)]: ({
-				["Unit"]: (string),
-				["Level"]: (number),
-				["UniqueId"]: (string),
-				["XP"]: (number),
-				["NeededXP"]: (number),
-			}) }),
-			["Products"]: ({ [(string)]: ({
-				["ProductId"]: (number),
-				["IsGamepass"]: (boolean),
-				["Count"]: (number),
-				["UniqueId"]: (string),
-			}) }),
-			["Resources"]: ({ [(string)]: ({
-				["Resource"]: (string),
-				["Count"]: (number),
-				["UniqueId"]: (string),
-				["PartialOneLose"]: ((boolean)?),
-			}) }),
-		}), Value2: ({ ((string)?) }), Value3: ({
-			["Level"]: (number),
-			["XP"]: (number),
-			["NeededXP"]: (number),
-		}), Value4: (number), Value5: ({
-			["EquippedTitle"]: (string),
-			["Titles"]: ({ (string) }),
-		}))
+		FireSet = function(
+			Set: { [Player]: any },
+			Value: {
+				["Units"]: {
+					[string]: {
+						["Unit"]: string,
+						["Level"]: number,
+						["UniqueId"]: string,
+						["XP"]: number,
+						["NeededXP"]: number,
+					},
+				},
+				["Products"]: {
+					[string]: {
+						["ProductId"]: number,
+						["IsGamepass"]: boolean,
+						["Count"]: number,
+						["UniqueId"]: string,
+					},
+				},
+				["Resources"]: {
+					[string]: {
+						["Resource"]: string,
+						["Count"]: number,
+						["UniqueId"]: string,
+						["PartialOneLose"]: boolean?,
+					},
+				},
+			},
+			Value2: { string? },
+			Value3: {
+				["Level"]: number,
+				["XP"]: number,
+				["NeededXP"]: number,
+			},
+			Value4: number,
+			Value5: {
+				["EquippedTitle"]: string,
+				["Titles"]: { string },
+			}
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
@@ -2224,10 +2377,13 @@ local returns = {
 		end,
 	},
 	EquipUnit = {
-		SetCallback = function(Callback: (Player: Player, Value: ({
-			["UniqueId"]: (string),
-			["Equip"]: (boolean),
-		})) -> ()): () -> ()
+		SetCallback = function(Callback: (
+			Player: Player,
+			Value: {
+				["UniqueId"]: string,
+				["Equip"]: boolean,
+			}
+		) -> ()): () -> ()
 			reliable_events[3] = Callback
 			return function()
 				reliable_events[3] = nil
@@ -2235,7 +2391,7 @@ local returns = {
 		end,
 	},
 	EquipTitle = {
-		SetCallback = function(Callback: (Player: Player, Value: (string)) -> ()): () -> ()
+		SetCallback = function(Callback: (Player: Player, Value: string) -> ()): () -> ()
 			reliable_events[5] = Callback
 			return function()
 				reliable_events[5] = nil
@@ -2243,11 +2399,14 @@ local returns = {
 		end,
 	},
 	EnemySpeedEvent = {
-		Fire = function(Player: Player, Value: ({
-			["UniqueId"]: (string),
-			["Speed"]: (number),
-			["Time"]: (number),
-		}))
+		Fire = function(
+			Player: Player,
+			Value: {
+				["UniqueId"]: string,
+				["Speed"]: number,
+				["Time"]: number,
+			}
+		)
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
@@ -2262,11 +2421,11 @@ local returns = {
 			buffer.writef64(outgoing_buff, outgoing_apos, Value["Time"])
 			player_map[Player] = save()
 		end,
-		FireAll = function(Value: ({
-			["UniqueId"]: (string),
-			["Speed"]: (number),
-			["Time"]: (number),
-		}))
+		FireAll = function(Value: {
+			["UniqueId"]: string,
+			["Speed"]: number,
+			["Time"]: number,
+		})
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
@@ -2288,11 +2447,14 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireExcept = function(Except: Player, Value: ({
-			["UniqueId"]: (string),
-			["Speed"]: (number),
-			["Time"]: (number),
-		}))
+		FireExcept = function(
+			Except: Player,
+			Value: {
+				["UniqueId"]: string,
+				["Speed"]: number,
+				["Time"]: number,
+			}
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
@@ -2316,11 +2478,14 @@ local returns = {
 				end
 			end
 		end,
-		FireList = function(List: { [unknown]: Player }, Value: ({
-			["UniqueId"]: (string),
-			["Speed"]: (number),
-			["Time"]: (number),
-		}))
+		FireList = function(
+			List: { [unknown]: Player },
+			Value: {
+				["UniqueId"]: string,
+				["Speed"]: number,
+				["Time"]: number,
+			}
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
@@ -2342,11 +2507,14 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireSet = function(Set: { [Player]: any }, Value: ({
-			["UniqueId"]: (string),
-			["Speed"]: (number),
-			["Time"]: (number),
-		}))
+		FireSet = function(
+			Set: { [Player]: any },
+			Value: {
+				["UniqueId"]: string,
+				["Speed"]: number,
+				["Time"]: number,
+			}
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
@@ -2370,26 +2538,34 @@ local returns = {
 		end,
 	},
 	EnemySpawnEvent = {
-		Fire = function(Player: Player, Value: ({ [(string)]: ({
-			["UniqueId"]: (string),
-			["ModelName"]: (string),
-			["Health"]: (number),
-			["MaxHealth"]: (number),
-			["Speed"]: (number),
-			["IsBoss"]: (boolean),
-			["Ally"]: (boolean),
-			["OriginalSpeed"]: (number),
-			["VectorOffset"]: (Vector3),
-			["BezierId"]: (string),
-			["TimePosition"]: (number),
-			["Time"]: (number),
-			["AdornmentName"]: ((string)?),
-			["SpeedChanges"]: ({ ({
-				["TimeStart"]: (number),
-				["Speed"]: (number),
-				["TimeEnd"]: ((number)?),
-			}) }),
-		}) }), Value2: (boolean))
+		Fire = function(
+			Player: Player,
+			Value: {
+				[string]: {
+					["UniqueId"]: string,
+					["ModelName"]: string,
+					["Health"]: number,
+					["MaxHealth"]: number,
+					["Speed"]: number,
+					["IsBoss"]: boolean,
+					["Ally"]: boolean,
+					["OriginalSpeed"]: number,
+					["VectorOffset"]: Vector3,
+					["BezierId"]: string,
+					["TimePosition"]: number,
+					["Time"]: number,
+					["AdornmentName"]: string?,
+					["SpeedChanges"]: {
+						{
+							["TimeStart"]: number,
+							["Speed"]: number,
+							["TimeEnd"]: number?,
+						}
+					},
+				},
+			},
+			Value2: boolean
+		)
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
@@ -2476,26 +2652,33 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value2 and 1 or 0)
 			player_map[Player] = save()
 		end,
-		FireAll = function(Value: ({ [(string)]: ({
-			["UniqueId"]: (string),
-			["ModelName"]: (string),
-			["Health"]: (number),
-			["MaxHealth"]: (number),
-			["Speed"]: (number),
-			["IsBoss"]: (boolean),
-			["Ally"]: (boolean),
-			["OriginalSpeed"]: (number),
-			["VectorOffset"]: (Vector3),
-			["BezierId"]: (string),
-			["TimePosition"]: (number),
-			["Time"]: (number),
-			["AdornmentName"]: ((string)?),
-			["SpeedChanges"]: ({ ({
-				["TimeStart"]: (number),
-				["Speed"]: (number),
-				["TimeEnd"]: ((number)?),
-			}) }),
-		}) }), Value2: (boolean))
+		FireAll = function(
+			Value: {
+				[string]: {
+					["UniqueId"]: string,
+					["ModelName"]: string,
+					["Health"]: number,
+					["MaxHealth"]: number,
+					["Speed"]: number,
+					["IsBoss"]: boolean,
+					["Ally"]: boolean,
+					["OriginalSpeed"]: number,
+					["VectorOffset"]: Vector3,
+					["BezierId"]: string,
+					["TimePosition"]: number,
+					["Time"]: number,
+					["AdornmentName"]: string?,
+					["SpeedChanges"]: {
+						{
+							["TimeStart"]: number,
+							["Speed"]: number,
+							["TimeEnd"]: number?,
+						}
+					},
+				},
+			},
+			Value2: boolean
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
@@ -2589,26 +2772,34 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireExcept = function(Except: Player, Value: ({ [(string)]: ({
-			["UniqueId"]: (string),
-			["ModelName"]: (string),
-			["Health"]: (number),
-			["MaxHealth"]: (number),
-			["Speed"]: (number),
-			["IsBoss"]: (boolean),
-			["Ally"]: (boolean),
-			["OriginalSpeed"]: (number),
-			["VectorOffset"]: (Vector3),
-			["BezierId"]: (string),
-			["TimePosition"]: (number),
-			["Time"]: (number),
-			["AdornmentName"]: ((string)?),
-			["SpeedChanges"]: ({ ({
-				["TimeStart"]: (number),
-				["Speed"]: (number),
-				["TimeEnd"]: ((number)?),
-			}) }),
-		}) }), Value2: (boolean))
+		FireExcept = function(
+			Except: Player,
+			Value: {
+				[string]: {
+					["UniqueId"]: string,
+					["ModelName"]: string,
+					["Health"]: number,
+					["MaxHealth"]: number,
+					["Speed"]: number,
+					["IsBoss"]: boolean,
+					["Ally"]: boolean,
+					["OriginalSpeed"]: number,
+					["VectorOffset"]: Vector3,
+					["BezierId"]: string,
+					["TimePosition"]: number,
+					["Time"]: number,
+					["AdornmentName"]: string?,
+					["SpeedChanges"]: {
+						{
+							["TimeStart"]: number,
+							["Speed"]: number,
+							["TimeEnd"]: number?,
+						}
+					},
+				},
+			},
+			Value2: boolean
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
@@ -2704,26 +2895,34 @@ local returns = {
 				end
 			end
 		end,
-		FireList = function(List: { [unknown]: Player }, Value: ({ [(string)]: ({
-			["UniqueId"]: (string),
-			["ModelName"]: (string),
-			["Health"]: (number),
-			["MaxHealth"]: (number),
-			["Speed"]: (number),
-			["IsBoss"]: (boolean),
-			["Ally"]: (boolean),
-			["OriginalSpeed"]: (number),
-			["VectorOffset"]: (Vector3),
-			["BezierId"]: (string),
-			["TimePosition"]: (number),
-			["Time"]: (number),
-			["AdornmentName"]: ((string)?),
-			["SpeedChanges"]: ({ ({
-				["TimeStart"]: (number),
-				["Speed"]: (number),
-				["TimeEnd"]: ((number)?),
-			}) }),
-		}) }), Value2: (boolean))
+		FireList = function(
+			List: { [unknown]: Player },
+			Value: {
+				[string]: {
+					["UniqueId"]: string,
+					["ModelName"]: string,
+					["Health"]: number,
+					["MaxHealth"]: number,
+					["Speed"]: number,
+					["IsBoss"]: boolean,
+					["Ally"]: boolean,
+					["OriginalSpeed"]: number,
+					["VectorOffset"]: Vector3,
+					["BezierId"]: string,
+					["TimePosition"]: number,
+					["Time"]: number,
+					["AdornmentName"]: string?,
+					["SpeedChanges"]: {
+						{
+							["TimeStart"]: number,
+							["Speed"]: number,
+							["TimeEnd"]: number?,
+						}
+					},
+				},
+			},
+			Value2: boolean
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
@@ -2817,26 +3016,34 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireSet = function(Set: { [Player]: any }, Value: ({ [(string)]: ({
-			["UniqueId"]: (string),
-			["ModelName"]: (string),
-			["Health"]: (number),
-			["MaxHealth"]: (number),
-			["Speed"]: (number),
-			["IsBoss"]: (boolean),
-			["Ally"]: (boolean),
-			["OriginalSpeed"]: (number),
-			["VectorOffset"]: (Vector3),
-			["BezierId"]: (string),
-			["TimePosition"]: (number),
-			["Time"]: (number),
-			["AdornmentName"]: ((string)?),
-			["SpeedChanges"]: ({ ({
-				["TimeStart"]: (number),
-				["Speed"]: (number),
-				["TimeEnd"]: ((number)?),
-			}) }),
-		}) }), Value2: (boolean))
+		FireSet = function(
+			Set: { [Player]: any },
+			Value: {
+				[string]: {
+					["UniqueId"]: string,
+					["ModelName"]: string,
+					["Health"]: number,
+					["MaxHealth"]: number,
+					["Speed"]: number,
+					["IsBoss"]: boolean,
+					["Ally"]: boolean,
+					["OriginalSpeed"]: number,
+					["VectorOffset"]: Vector3,
+					["BezierId"]: string,
+					["TimePosition"]: number,
+					["Time"]: number,
+					["AdornmentName"]: string?,
+					["SpeedChanges"]: {
+						{
+							["TimeStart"]: number,
+							["Speed"]: number,
+							["TimeEnd"]: number?,
+						}
+					},
+				},
+			},
+			Value2: boolean
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
@@ -2932,7 +3139,7 @@ local returns = {
 		end,
 	},
 	EnemyLocationEvent = {
-		Fire = function(Player: Player, Value: (string), Value2: (({ (Vector3) })?))
+		Fire = function(Player: Player, Value: string, Value2: { Vector3 }?)
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
@@ -2962,7 +3169,7 @@ local returns = {
 			end
 			player_map[Player] = save()
 		end,
-		FireAll = function(Value: (string), Value2: (({ (Vector3) })?))
+		FireAll = function(Value: string, Value2: { Vector3 }?)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
@@ -2999,7 +3206,7 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireExcept = function(Except: Player, Value: (string), Value2: (({ (Vector3) })?))
+		FireExcept = function(Except: Player, Value: string, Value2: { Vector3 }?)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
@@ -3038,7 +3245,7 @@ local returns = {
 				end
 			end
 		end,
-		FireList = function(List: { [unknown]: Player }, Value: (string), Value2: (({ (Vector3) })?))
+		FireList = function(List: { [unknown]: Player }, Value: string, Value2: { Vector3 }?)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
@@ -3075,7 +3282,7 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireSet = function(Set: { [Player]: any }, Value: (string), Value2: (({ (Vector3) })?))
+		FireSet = function(Set: { [Player]: any }, Value: string, Value2: { Vector3 }?)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
@@ -3114,7 +3321,7 @@ local returns = {
 		end,
 	},
 	EnemyHealthEvent = {
-		Fire = function(Player: Player, Value: (string), Value2: (number), Value3: (number))
+		Fire = function(Player: Player, Value: string, Value2: number, Value3: number)
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
@@ -3129,7 +3336,7 @@ local returns = {
 			buffer.writef64(outgoing_buff, outgoing_apos, Value3)
 			player_map[Player] = save()
 		end,
-		FireAll = function(Value: (string), Value2: (number), Value3: (number))
+		FireAll = function(Value: string, Value2: number, Value3: number)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
@@ -3151,7 +3358,7 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireExcept = function(Except: Player, Value: (string), Value2: (number), Value3: (number))
+		FireExcept = function(Except: Player, Value: string, Value2: number, Value3: number)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
@@ -3175,7 +3382,7 @@ local returns = {
 				end
 			end
 		end,
-		FireList = function(List: { [unknown]: Player }, Value: (string), Value2: (number), Value3: (number))
+		FireList = function(List: { [unknown]: Player }, Value: string, Value2: number, Value3: number)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
@@ -3197,7 +3404,7 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireSet = function(Set: { [Player]: any }, Value: (string), Value2: (number), Value3: (number))
+		FireSet = function(Set: { [Player]: any }, Value: string, Value2: number, Value3: number)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
@@ -3221,7 +3428,7 @@ local returns = {
 		end,
 	},
 	EnemyDestroyEvent = {
-		Fire = function(Player: Player, Value: ({ (string) }), Value2: (boolean))
+		Fire = function(Player: Player, Value: { string }, Value2: boolean)
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
@@ -3240,7 +3447,7 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value2 and 1 or 0)
 			player_map[Player] = save()
 		end,
-		FireAll = function(Value: ({ (string) }), Value2: (boolean))
+		FireAll = function(Value: { string }, Value2: boolean)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
@@ -3266,7 +3473,7 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireExcept = function(Except: Player, Value: ({ (string) }), Value2: (boolean))
+		FireExcept = function(Except: Player, Value: { string }, Value2: boolean)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
@@ -3294,7 +3501,7 @@ local returns = {
 				end
 			end
 		end,
-		FireList = function(List: { [unknown]: Player }, Value: ({ (string) }), Value2: (boolean))
+		FireList = function(List: { [unknown]: Player }, Value: { string }, Value2: boolean)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
@@ -3320,7 +3527,7 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireSet = function(Set: { [Player]: any }, Value: ({ (string) }), Value2: (boolean))
+		FireSet = function(Set: { [Player]: any }, Value: { string }, Value2: boolean)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
@@ -3348,11 +3555,14 @@ local returns = {
 		end,
 	},
 	ChooseMap = {
-		SetCallback = function(Callback: (Player: Player, Value: ({
-			["MapId"]: (string),
-			["LevelId"]: (string),
-			["Difficulty"]: ("Normal" | "Hard" | "Insane"),
-		})) -> ()): () -> ()
+		SetCallback = function(Callback: (
+			Player: Player,
+			Value: {
+				["MapId"]: string,
+				["LevelId"]: string,
+				["Difficulty"]: "Normal" | "Hard" | "Insane",
+			}
+		) -> ()): () -> ()
 			reliable_events[0] = Callback
 			return function()
 				reliable_events[0] = nil
@@ -3360,15 +3570,18 @@ local returns = {
 		end,
 	},
 	BoothWaiting = {
-		Fire = function(Player: Player, BoothData: ({
-			["OwnerId"]: (number),
-			["MapId"]: (string),
-			["LevelId"]: (string),
-			["Difficulty"]: (string),
-			["Players"]: ({ (Player) }),
-			["StartTime"]: (number),
-			["EndTime"]: (number),
-		}))
+		Fire = function(
+			Player: Player,
+			BoothData: {
+				["OwnerId"]: number,
+				["MapId"]: string,
+				["LevelId"]: string,
+				["Difficulty"]: string,
+				["Players"]: { Player },
+				["StartTime"]: number,
+				["EndTime"]: number,
+			}
+		)
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
@@ -3403,15 +3616,15 @@ local returns = {
 			buffer.writef64(outgoing_buff, outgoing_apos, BoothData["EndTime"])
 			player_map[Player] = save()
 		end,
-		FireAll = function(BoothData: ({
-			["OwnerId"]: (number),
-			["MapId"]: (string),
-			["LevelId"]: (string),
-			["Difficulty"]: (string),
-			["Players"]: ({ (Player) }),
-			["StartTime"]: (number),
-			["EndTime"]: (number),
-		}))
+		FireAll = function(BoothData: {
+			["OwnerId"]: number,
+			["MapId"]: string,
+			["LevelId"]: string,
+			["Difficulty"]: string,
+			["Players"]: { Player },
+			["StartTime"]: number,
+			["EndTime"]: number,
+		})
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
@@ -3453,15 +3666,18 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireExcept = function(Except: Player, BoothData: ({
-			["OwnerId"]: (number),
-			["MapId"]: (string),
-			["LevelId"]: (string),
-			["Difficulty"]: (string),
-			["Players"]: ({ (Player) }),
-			["StartTime"]: (number),
-			["EndTime"]: (number),
-		}))
+		FireExcept = function(
+			Except: Player,
+			BoothData: {
+				["OwnerId"]: number,
+				["MapId"]: string,
+				["LevelId"]: string,
+				["Difficulty"]: string,
+				["Players"]: { Player },
+				["StartTime"]: number,
+				["EndTime"]: number,
+			}
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
@@ -3505,15 +3721,18 @@ local returns = {
 				end
 			end
 		end,
-		FireList = function(List: { [unknown]: Player }, BoothData: ({
-			["OwnerId"]: (number),
-			["MapId"]: (string),
-			["LevelId"]: (string),
-			["Difficulty"]: (string),
-			["Players"]: ({ (Player) }),
-			["StartTime"]: (number),
-			["EndTime"]: (number),
-		}))
+		FireList = function(
+			List: { [unknown]: Player },
+			BoothData: {
+				["OwnerId"]: number,
+				["MapId"]: string,
+				["LevelId"]: string,
+				["Difficulty"]: string,
+				["Players"]: { Player },
+				["StartTime"]: number,
+				["EndTime"]: number,
+			}
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
@@ -3555,15 +3774,18 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireSet = function(Set: { [Player]: any }, BoothData: ({
-			["OwnerId"]: (number),
-			["MapId"]: (string),
-			["LevelId"]: (string),
-			["Difficulty"]: (string),
-			["Players"]: ({ (Player) }),
-			["StartTime"]: (number),
-			["EndTime"]: (number),
-		}))
+		FireSet = function(
+			Set: { [Player]: any },
+			BoothData: {
+				["OwnerId"]: number,
+				["MapId"]: string,
+				["LevelId"]: string,
+				["Difficulty"]: string,
+				["Players"]: { Player },
+				["StartTime"]: number,
+				["EndTime"]: number,
+			}
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
@@ -3669,7 +3891,7 @@ local returns = {
 		end,
 	},
 	BoothPlayerChanged = {
-		Fire = function(Player: Player, Value: (number), Value2: (boolean))
+		Fire = function(Player: Player, Value: number, Value2: boolean)
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
@@ -3679,7 +3901,7 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value2 and 1 or 0)
 			player_map[Player] = save()
 		end,
-		FireAll = function(Value: (number), Value2: (boolean))
+		FireAll = function(Value: number, Value2: boolean)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
@@ -3696,7 +3918,7 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireExcept = function(Except: Player, Value: (number), Value2: (boolean))
+		FireExcept = function(Except: Player, Value: number, Value2: boolean)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
@@ -3715,7 +3937,7 @@ local returns = {
 				end
 			end
 		end,
-		FireList = function(List: { [unknown]: Player }, Value: (number), Value2: (boolean))
+		FireList = function(List: { [unknown]: Player }, Value: number, Value2: boolean)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
@@ -3732,7 +3954,7 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireSet = function(Set: { [Player]: any }, Value: (number), Value2: (boolean))
+		FireSet = function(Set: { [Player]: any }, Value: number, Value2: boolean)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
@@ -3813,10 +4035,13 @@ local returns = {
 		end,
 	},
 	BoothChoosing = {
-		Fire = function(Player: Player, Value: ({
-			["StartTime"]: (number),
-			["EndTime"]: (number),
-		}))
+		Fire = function(
+			Player: Player,
+			Value: {
+				["StartTime"]: number,
+				["EndTime"]: number,
+			}
+		)
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
@@ -3826,10 +4051,10 @@ local returns = {
 			buffer.writef64(outgoing_buff, outgoing_apos, Value["EndTime"])
 			player_map[Player] = save()
 		end,
-		FireAll = function(Value: ({
-			["StartTime"]: (number),
-			["EndTime"]: (number),
-		}))
+		FireAll = function(Value: {
+			["StartTime"]: number,
+			["EndTime"]: number,
+		})
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
@@ -3846,10 +4071,13 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireExcept = function(Except: Player, Value: ({
-			["StartTime"]: (number),
-			["EndTime"]: (number),
-		}))
+		FireExcept = function(
+			Except: Player,
+			Value: {
+				["StartTime"]: number,
+				["EndTime"]: number,
+			}
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
@@ -3868,10 +4096,13 @@ local returns = {
 				end
 			end
 		end,
-		FireList = function(List: { [unknown]: Player }, Value: ({
-			["StartTime"]: (number),
-			["EndTime"]: (number),
-		}))
+		FireList = function(
+			List: { [unknown]: Player },
+			Value: {
+				["StartTime"]: number,
+				["EndTime"]: number,
+			}
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
@@ -3888,10 +4119,13 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireSet = function(Set: { [Player]: any }, Value: ({
-			["StartTime"]: (number),
-			["EndTime"]: (number),
-		}))
+		FireSet = function(
+			Set: { [Player]: any },
+			Value: {
+				["StartTime"]: number,
+				["EndTime"]: number,
+			}
+		)
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 2)

@@ -206,7 +206,6 @@ local DefaultColor = Color3.new(0.227451, 0.082353, 0.290196)
 
 local function CreateMainStory(Properties: Properties)
 	local StoryData = React.useContext(StoryContext.Context)
-
 	local Time, TotalTime, SetTime = Hooks.UseTime()
 
 	React.useEffect(function()
@@ -300,7 +299,7 @@ local function CreateMainStory(Properties: Properties)
 		StoryService.ChooseMap({
 			MapId = CurrentMap,
 			LevelId = (GameInfo.GetMapFromId(CurrentMap) :: GameInfo.MapInfo).LevelInfo[Stage].GameId,
-			Difficulty = Difficulty,
+			Difficulty = Difficulty :: any,
 		})
 	end, { CurrentMap :: any, Stage :: any, Difficulty :: any })
 
@@ -326,17 +325,22 @@ local function CreateMainStory(Properties: Properties)
 			Stage,
 			(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo[Stage].Name
 		)
-	end, { CurrentMap :: any, Stage :: any })
+	end, { CurrentMap, Stage } :: { unknown })
 
 	local LevelCount = React.useMemo(function()
 		return #(GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo
-	end, { CurrentMap :: any })
+	end, { CurrentMap })
 
 	local FirstValue = React.useMemo(function()
 		local MapInfo = StoryData.CompletedMaps[CurrentMap]
 
-		if MapInfo and MapInfo[Stage] and MapInfo[Stage][Difficulty] and MapInfo[Stage][Difficulty].FinishedCount then
-			return tostring(MapInfo[Stage][Difficulty].FinishedCount)
+		if
+			MapInfo
+			and MapInfo[Stage]
+			and MapInfo[Stage][Difficulty :: any]
+			and MapInfo[Stage][Difficulty :: any].FinishedCount
+		then
+			return tostring(MapInfo[Stage][Difficulty :: any].FinishedCount)
 		else
 			return "N/A"
 		end
@@ -345,8 +349,13 @@ local function CreateMainStory(Properties: Properties)
 	local SecondValue = React.useMemo(function()
 		local MapInfo = StoryData.CompletedMaps[CurrentMap]
 
-		if MapInfo and MapInfo[Stage] and MapInfo[Stage][Difficulty] and MapInfo[Stage][Difficulty].FastestTime then
-			return tostring(MapInfo[Stage][Difficulty].FastestTime)
+		if
+			MapInfo
+			and MapInfo[Stage]
+			and MapInfo[Stage][Difficulty :: any]
+			and MapInfo[Stage][Difficulty :: any].FastestTime
+		then
+			return tostring(MapInfo[Stage][Difficulty :: any].FastestTime)
 		else
 			return "N/A"
 		end

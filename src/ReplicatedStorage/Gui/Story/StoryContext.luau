@@ -34,7 +34,7 @@ local function Provider(props)
 	local Value, SetValue = React.useState({
 		Enabled = false,
 		Data = nil,
-		CompletedMaps = {},
+		CompletedMaps = StoryService.MapData,
 	} :: Context)
 
 	Hooks.useEventConnection(StoryService.BoothChoosing, function(Data)

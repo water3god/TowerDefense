@@ -137,6 +137,7 @@ do
 				})
 				if RunService:IsClient() then
 					SFXService.PlaySoundGlobalWithId("rbxassetid://72255888882620", function(Sound: Sound)
+						Sound.TimePosition = 0.9 * Sound.TimeLength
 						Sound.Volume = 0.1
 					end)
 				end
