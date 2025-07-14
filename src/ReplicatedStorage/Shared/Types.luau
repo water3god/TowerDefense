@@ -131,6 +131,7 @@ export type EnemyModule = {
 	GetEnemy: (UniqueId: string) -> EnemyClient?,
 
 	GetEnemies: () -> { [string]: EnemyClient },
+	GetBeziers: () -> { [string]: BezierPath.Path },
 
 	NewEnemy: Signal.Signal<EnemyClient, boolean>,
 
