@@ -72,12 +72,12 @@ export type QuestProps = {
 local function CreateQuest(props: QuestProps)
 	local RedeemColor, RedeemText = React.useMemo(function()
 		if props.QuestData.Redeemed then
-			return Color3.new(), "Redeemed"
+			return Color3.new(0.564706, 0.564706, 0.564706), "Redeemed"
 		else
 			if props.QuestData.CurrentValue >= props.QuestData.NeededValue then
 				return Color3.new(0.27451, 0.929412, 0.188235), "Redeem"
 			else
-				return Color3.new(0.254902, 0.254902, 0.254902), "Redeem"
+				return Color3.new(0.533333, 0.533333, 0.533333), "Redeem"
 			end
 		end
 	end, { props.QuestData })

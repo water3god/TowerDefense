@@ -58,6 +58,19 @@ local function HandlePlayerData(PData: PlayerData.PlayerData)
 	end
 
 	local function AddToAllWithParameter(Property: string, Additional: string, Amount: number, ExtraData: any)
+		if not DailyQuests[Property][Additional] then
+			DailyQuests[Property][Additional] = 0
+		end
+		if not WeeklyQuests[Property][Additional] then
+			WeeklyQuests[Property][Additional] = 0
+		end
+		if not EventQuests[Property][Additional] then
+			EventQuests[Property][Additional] = 0
+		end
+		if not GlobalQuests[Property][Additional] then
+			GlobalQuests[Property][Additional] = 0
+		end
+
 		DailyQuests[Property][Additional] += Amount
 		WeeklyQuests[Property][Additional] += Amount
 		EventQuests[Property][Additional] += Amount

@@ -438,7 +438,9 @@ local function NewUnit(Input: Types.UnitInput, New: boolean)
 	end
 
 	self.Animations.Idle.Looped = true
-	self.Animations.Attack.Looped = false
+	if self.Animations.Attack then
+		self.Animations.Attack.Looped = false
+	end
 
 	Units[self.UniqueId] = self
 
