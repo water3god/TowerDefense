@@ -392,15 +392,23 @@ local function CreateUpgradeFrame(Properties: Properties)
 		else
 			return false
 		end
-	end, { UpgradeData.Level })
+	end, { UpgradeData.Level, UpgradeData } :: { unknown })
 
-	local NextLevelCost = React.useMemo(function()
+	local NextLevelCost = React.useMemo(function(): number?
 		if HasNextLevel then
-			return UpgradeData.UpgradeData[UpgradeData.Level + 1].Cost or 0
+			return UpgradeData.UpgradeData[UpgradeData.Level + 1].Cost
 		else
-			return 0
+			return
 		end
-	end, { UpgradeData.Level, UpgradeData.UpgradeData } :: { unknown })
+	end, { HasNextLevel, UpgradeData.Level } :: { unknown })
+
+	local UpgradeText = React.useMemo(function()
+		if HasNextLevel and NextLevelCost then
+			return string.format("Upgrade [%u]", NextLevelCost)
+		else
+			return "Maxxed"
+		end
+	end, { HasNextLevel, NextLevelCost } :: { unknown })
 
 	local RarityData: RarityInfo.RarityInfo = React.useMemo(function()
 		local Rarity = UnitInfo.UnitInfo[UpgradeData.UnitName].Rarity
@@ -533,7 +541,9 @@ local function CreateUpgradeFrame(Properties: Properties)
 		}),
 		UpgradeButton = e(Main.Animateables.TextButton, {
 			native = {
-				BackgroundColor3 = Color3.new(0.078431, 1.000000, 0.231373),
+				BackgroundColor3 = if HasNextLevel
+					then Color3.new(0.078431, 1.000000, 0.231373)
+					else Color3.new(0.509804, 0.509804, 0.509804),
 				BackgroundTransparency = 0,
 				Position = UDim2.fromScale(0.7, 0.875),
 				Size = UDim2.fromScale(0.4, 0.1),
@@ -544,7 +554,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 			Label = e(Main.TextLabel, {
 				native = {
 					Size = UDim2.fromScale(0.9, 0.7),
-					Text = string.format("Upgrade [%u]", NextLevelCost),
+					Text = UpgradeText,
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {

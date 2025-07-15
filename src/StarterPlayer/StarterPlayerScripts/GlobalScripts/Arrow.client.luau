@@ -53,12 +53,7 @@ local function OnStart()
 			table.insert(Arrows, { StartTime = workspace:GetServerTimeNow(), Arrow = ArrowClone, Bezier = Id })
 			ArrowClone.CFrame = Bezier:CalculateUniformCFrame(0)
 			ArrowClone.Parent = Misc
-			StartTrove:Add(ArrowClone)
 		end
-	end)
-
-	StartTrove:Add(function()
-		table.clear(Arrows)
 	end)
 
 	ArrowTimer:Start()
@@ -91,7 +86,7 @@ RunService.PostSimulation:Connect(function()
 			ArrowData.Arrow:Destroy()
 			local Index = table.find(Arrows, ArrowData)
 			if Index then
-				table.remove(ArrowData, Index)
+				table.remove(Arrows, Index)
 			end
 		end
 		ArrowData.Arrow.CFrame = Bezier:CalculateUniformCFrame(Time) + VectorOffset
