@@ -777,6 +777,9 @@ function UnitModule.InitCharacter(Unit: string, Position: CFrame?)
 			local Walk = GetWalk(Unit)
 			if Walk then
 				WalkAnim = Animator:LoadAnimation(Walk)
+				if WalkAnim then
+					WalkAnim.Priority = Enum.AnimationPriority.Action2
+				end
 			end
 		end
 	end))

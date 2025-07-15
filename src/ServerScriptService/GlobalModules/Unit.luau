@@ -128,7 +128,6 @@ type UnitData = {
 	AbilityUsed: Signal.Signal<number, number>, -- First is Index, Second is Fire Time
 	SpeedRatioChanged: Signal.Signal<number>,
 
-	DamagedEnemy: Signal.Signal<Enemy.Enemy, number>,
 	KilledEnemy: Signal.Signal<Enemy.Enemy>,
 	AllyAdded: Signal.Signal<Enemy.Enemy>,
 
@@ -256,7 +255,6 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 	self.AbilityUsed = self._Trove:Construct(Signal)
 	self.SpeedRatioChanged = self._Trove:Construct(Signal)
 
-	self.DamagedEnemy = self._Trove:Construct(Signal)
 	self.KilledEnemy = self._Trove:Construct(Signal)
 	self.AllyAdded = self._Trove:Construct(Signal)
 
@@ -536,7 +534,7 @@ function Unit:DamageEnemy(EnemyInput: Enemy.Enemy, Damage: number)
 	end
 
 	EnemyInput:Damage(Damage)
-	self.DamagedEnemy:Fire(EnemyInput, Damage)
+	self.Damaged:Fire(Damage)
 	if EnemyInput.Health == 0 then
 		self.KilledEnemy:Fire(EnemyInput)
 	end
