@@ -134,10 +134,19 @@
         "$path": "Models/TagList.rbxm"
       }
     },
+    "StarterGui": {
+      "$className": "StarterGui",
+      "$properties": {
+        "ScreenOrientation": "LandscapeSensor"
+      }
+    },
     "StarterPlayer": {
       "$className": "StarterPlayer",
       "$properties": {
-        "CharacterWalkSpeed": 24
+        "CharacterWalkSpeed": 24,
+        "CameraMaxZoomDistance": 400,
+        "CharacterJumpPower": 7.2,
+        "CharacterUseJumpPower": true
       },
       "StarterPlayerScripts": {
         "$className": "StarterPlayerScripts",
@@ -164,9 +173,111 @@
       "$properties": {
         "ChatVersion": "TextChatService"
       },
-      "$ignoreUnknownInstances": true
+      "$ignoreUnknownInstances": true,
+      "ChatWindowConfiguration": {
+        "$className": "ChatWindowConfiguration",
+        "$properties": {
+          "TextSize": 18,
+          "FontFace": {
+            "family": "rbxasset://fonts/families/BuilderSans.json",
+            "weight": "Bold",
+            "style": "Normal"
+          }
+        }
+      },
+      "ChatInputBarConfiguration": {
+        "$className": "ChatInputBarConfiguration",
+        "$properties": {
+          "TextSize": 18,
+          "FontFace": {
+            "family": "rbxasset://fonts/families/BuilderSans.json",
+            "weight": "Medium",
+            "style": "Normal"
+          }
+        }
+      },
+      "ChannelTabsConfiguration": {
+        "$className": "ChannelTabsConfiguration",
+        "$properties": {
+          "FontFace": {
+            "family": "rbxasset://fonts/families/BuilderSans.json",
+            "weight": "Bold",
+            "style": "Normal"
+          }
+        }
+      },
+      "BubbleChatConfiguration": {
+        "$className": "BubbleChatConfiguration",
+        "$properties": {
+          "TextSize": 18,
+          "FontFace": {
+            "family": "rbxasset://fonts/families/BuilderSans.json",
+            "weight": "Medium",
+            "style": "Normal"
+          }
+        },
+        "$ignoreUnknownInstances": true,
+        "UICorner": {
+          "$className": "UICorner",
+          "$properties": {
+            "CornerRadius": {
+              "UDim": [0, 12]
+            }
+          }
+        },
+        "UIGradient": {
+          "$className": "UIGradient",
+          "$properties": {
+            "Color": {
+              "ColorSequence": {
+                "keypoints": [
+                  {
+                    "time": 0,
+                    "color": [1, 1, 1]
+                  },
+                  {
+                    "time": 1,
+                    "color": [1, 1, 1]
+                  }
+                ]
+              }
+            },
+            "Enabled": false
+          }
+        },
+        "UIPadding": {
+          "$className": "UIPadding",
+          "$properties": {
+            "PaddingTop": {
+              "UDim": [0, 8]
+            },
+            "PaddingBottom": {
+              "UDim": [0, 8]
+            },
+            "PaddingLeft": {
+              "UDim": [0, 8]
+            },
+            "PaddingRight": {
+              "UDim": [0, 8]
+            }
+          }
+        },
+        "ImageLabel": {
+          "$className": "ImageLabel",
+          "$properties": {
+            "BackgroundColor3": [1, 1, 1],
+            "Size": {
+              "UDim2": [
+                [0, 100],
+                [0, 100]
+              ]
+            }
+          }
+        }
+      }
     },
     "HttpService": {
+      "$className": "HttpService",
       "$properties": {
         "HttpEnabled": true
       }

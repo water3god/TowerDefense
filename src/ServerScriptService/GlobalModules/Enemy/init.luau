@@ -277,7 +277,10 @@ function Enemy:IsInRange(StandardPos: Vector2, Range: number)
 end
 
 function Enemy:Destroy(Animate: boolean)
-	self.Destroying:Fire(Animate)
+	if self.Destroying then
+		self.Destroying:Fire(Animate)
+	end
+
 	if self.Trove then
 		self.Trove:Destroy()
 		Enemies[self.UniqueId] = nil
