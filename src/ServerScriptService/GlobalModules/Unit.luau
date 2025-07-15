@@ -220,15 +220,7 @@ local function SendInfo(UnitInput: { [string]: Unit }, PlayerInput: { Player }, 
 	PlacementEvent.FireList(PlayerInput, Data, New)
 end
 
-local function SyncFuncs(Table: { [number]: any })
-	local HighestLevel: number = 0
-
-	for Level, _ in ipairs(Table) do
-		if Level > HighestLevel then
-			HighestLevel = Level
-		end
-	end
-
+local function SyncFuncs(Table: { [number]: any }, HighestLevel: number)
 	local Closest: number = 0
 	local NewTable = {}
 
@@ -281,11 +273,12 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 	end
 
 	local SharedUnitData = UnitInfo.UnitInfo[self.UnitName]
+	local HighestLevel = #SharedUnitData.UnitData
 
 	self.UnitData = SharedUnitData
 
-	self.DefaultRuns = SyncFuncs(Data.DefaultRuns)
-	self.AttackFuncs = SyncFuncs(Data.AttackFuncs)
+	self.DefaultRuns = SyncFuncs(Data.DefaultRuns, HighestLevel)
+	self.AttackFuncs = SyncFuncs(Data.AttackFuncs, HighestLevel)
 
 	self.LastFired = 0
 	self.Level = UserInput.Level

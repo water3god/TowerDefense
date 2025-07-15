@@ -191,7 +191,7 @@ export type PlayerData = typeof(setmetatable({} :: PlayerDataData<any>, {} :: Pl
 local PlayerData: PlayerDataImpl = {} :: PlayerDataImpl
 PlayerData.__index = PlayerData
 
-local MainDatastore = ProfileStore.New("MainDataStorev0.03", Template)
+local MainDatastore = ProfileStore.New(Constants.MainDataStore, Template)
 
 local PlayerDatas: { [Player]: PlayerData } = {}
 
@@ -753,7 +753,7 @@ function PlayerData:OwnsStage(ParamData: GetStageData)
 	local CompletedMaps = self.Profile.Data.CompletedMaps
 
 	if CompletedMaps[ParamData.Map] then
-		if ParamData.Stage == 1 or CompletedMaps[ParamData.Map][ParamData.Stage] then
+		if ParamData.Stage == 1 or CompletedMaps[ParamData.Map][ParamData.Stage - 1] then
 			return true
 		end
 	else

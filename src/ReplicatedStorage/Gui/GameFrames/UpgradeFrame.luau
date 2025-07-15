@@ -76,7 +76,7 @@ local function CreatePropertyFrame(Props: PropertyProperties)
 
 	return e(Main.Frame, {
 		native = Join({
-			Size = UDim2.fromScale(1, 0.25),
+			Size = UDim2.fromScale(1, 0.2),
 		}, Props.native),
 	}, {
 		UIFlex = e("UIListLayout", {
@@ -97,7 +97,7 @@ local function CreatePropertyFrame(Props: PropertyProperties)
 		}),
 		BeforeLabel = e(Main.TextLabel, {
 			native = {
-				Size = UDim2.fromScale(0.2, 1),
+				Size = UDim2.fromScale(0.3, 1),
 				Text = if IsSpecial then Props.Other else HelperFunctions.NumberScaler.ShortenNumber(Props.Inital),
 				AutoLocalize = false,
 				TextColor3 = Color,
@@ -106,7 +106,7 @@ local function CreatePropertyFrame(Props: PropertyProperties)
 		}),
 		ArrowImage = e(Main.ImageLabel, {
 			native = {
-				Size = UDim2.fromScale(0.2, 0.7),
+				Size = UDim2.fromScale(0.2, 0.6),
 				Image = "rbxassetid://90650317828395",
 				LayoutOrder = Order(),
 				ImageColor3 = Color,
@@ -318,7 +318,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 		end
 
 		return Frames
-	end, { UpgradeData.UpgradeData :: any, UpgradeData.Level :: any })
+	end, { UpgradeData.UpgradeData, UpgradeData.Level } :: { unknown })
 
 	local AbilityFrames = React.useMemo(function()
 		local Frames: { [string]: React.Node } = {}
@@ -357,7 +357,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 		else
 			SetSell(true)
 		end
-	end, { UpgradeData.UniqueId :: any, InSell :: any })
+	end, { UpgradeData.UniqueId, InSell } :: { unknown })
 
 	local UpgradeClick = React.useCallback(function()
 		local Unit = UnitClient.GetUnit(UpgradeData.UniqueId)
@@ -377,9 +377,12 @@ local function CreateUpgradeFrame(Properties: Properties)
 
 	local SellText = React.useMemo(function()
 		if InSell then
-			return "CONFIRM"
+			return "Confirm?"
 		else
-			return string.format("Sell: %u", math.floor(UpgradeData.TotalCost / Constants.CostDivider))
+			return string.format(
+				"Sell [%s]",
+				HelperFunctions.NumberScaler.ShortenNumber(math.floor(UpgradeData.TotalCost / Constants.CostDivider))
+			)
 		end
 	end, { UpgradeData.TotalCost, InSell :: any })
 
@@ -390,6 +393,14 @@ local function CreateUpgradeFrame(Properties: Properties)
 			return false
 		end
 	end, { UpgradeData.Level })
+
+	local NextLevelCost = React.useMemo(function()
+		if HasNextLevel then
+			return UpgradeData.UpgradeData[UpgradeData.Level + 1].Cost or 0
+		else
+			return 0
+		end
+	end, { UpgradeData.Level, UpgradeData.UpgradeData } :: { unknown })
 
 	local RarityData: RarityInfo.RarityInfo = React.useMemo(function()
 		local Rarity = UnitInfo.UnitInfo[UpgradeData.UnitName].Rarity
@@ -525,7 +536,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 				BackgroundColor3 = Color3.new(0.078431, 1.000000, 0.231373),
 				BackgroundTransparency = 0,
 				Position = UDim2.fromScale(0.7, 0.875),
-				Size = UDim2.fromScale(0.25, 0.1),
+				Size = UDim2.fromScale(0.4, 0.1),
 				Text = "",
 				[React.Event.MouseButton1Click] = UpgradeClick,
 			},
@@ -533,11 +544,11 @@ local function CreateUpgradeFrame(Properties: Properties)
 			Label = e(Main.TextLabel, {
 				native = {
 					Size = UDim2.fromScale(0.9, 0.7),
-					Text = "Upgrade",
+					Text = string.format("Upgrade [%u]", NextLevelCost),
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.04,
+					Stroke = 0.02,
 					Color = Color3.new(0, 0, 0),
 					native = {
 						LineJoinMode = Enum.LineJoinMode.Bevel,

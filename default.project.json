@@ -146,7 +146,7 @@
         "CharacterWalkSpeed": 24,
         "CameraMaxZoomDistance": 400,
         "CharacterJumpPower": 7.2,
-        "CharacterUseJumpPower": true
+        "CharacterUseJumpPower": false
       },
       "StarterPlayerScripts": {
         "$className": "StarterPlayerScripts",

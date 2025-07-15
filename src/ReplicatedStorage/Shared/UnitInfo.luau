@@ -76,6 +76,13 @@ local UnitInfo: { [string]: UnitInfo } = {
 				Armor = "LeonidasArmor",
 				Cost = 100,
 			},
+			[1] = {
+				Damage = { 200 },
+				FireRate = 0.6,
+				Range = 25,
+				Armor = "LeonidasArmor",
+				Cost = 200,
+			},
 		},
 		CollisionRadius = 3,
 		Abilities = {},

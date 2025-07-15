@@ -224,15 +224,7 @@ local function CastCylinder(Position: Vector3, Params: OverlapParams?, RatioRadi
 	return workspace:GetPartsInPart(Cast, Params)
 end
 
-local function SyncFuncs(Table: { [number]: any })
-	local HighestLevel = 0
-
-	for Level, _ in ipairs(Table) do
-		if Level > HighestLevel then
-			HighestLevel = Level
-		end
-	end
-
+local function SyncFuncs(Table: { [number]: any }, HighestLevel: number)
 	local Closest = 0
 	local NewTable = {}
 
@@ -296,11 +288,13 @@ local function NewUnit(Input: Types.UnitInput, New: boolean)
 	self.CollisionRadius = self.UnitData.CollisionRadius
 	self.TotalCost = UnitInfo.CalculateTotalCost(self.UnitData.UnitData, self.Level)
 
+	local HighestLevel = #self.UnitData.UnitData
+
 	local Runs = UnitAttacks.DefaultRuns[self.UnitName]
 	local Attacks = UnitAttacks.UnitAttacks[self.UnitName]
 
-	self.DefaultRuns = Runs and SyncFuncs(Runs) or {}
-	self.UnitAttacks = Attacks and SyncFuncs(Attacks) or {}
+	self.DefaultRuns = Runs and SyncFuncs(Runs, HighestLevel) or {}
+	self.UnitAttacks = Attacks and SyncFuncs(Attacks, HighestLevel) or {}
 
 	self.Character = self.Trove:Clone(UnitModels[self.UnitName])
 	self.Root = self.Character.HumanoidRootPart
