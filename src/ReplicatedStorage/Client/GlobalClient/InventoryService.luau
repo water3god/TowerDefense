@@ -177,7 +177,7 @@ function Data:GetInventory()
 end
 
 function Data.UnitIsEquipped(UniqueId: string): number?
-	for Index, Id in ipairs(Data.EquippedUnits) do
+	for Index, Id in pairs(Data.EquippedUnits) do
 		if Id == UniqueId then
 			return Index
 		end
