@@ -722,7 +722,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		} :: any
 
 		local function IsEquipped(Id: string)
-			for _, Data in ipairs(EquippedUnits.Units) do
+			for _, Data in pairs(EquippedUnits.Units) do
 				if Data.UniqueId == Id then
 					return true
 				end

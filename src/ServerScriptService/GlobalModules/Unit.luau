@@ -20,6 +20,7 @@ local PriorityChanged = Network.UnitPriorityChanged
 local AbilityEvent = Network.UnitAbilityEvent
 local AnimationEvent = Network.UnitAnimationEvent
 local SpeedRatioEvent = Network.SpeedRatioEvent
+local UnitCoinsEvent = Network.UnitCoinsEvent
 
 local Packages = ReplicatedStorage.Packages
 local Trove = require(Packages.Trove)
@@ -69,7 +70,7 @@ export type UnitInput = {
 
 	-- Array of AttackFuncs per Level; --
 	AttackFuncs: { { (self: Unit, Damage: number) -> () } },
-	DefaultRuns: { [number]: (self: Unit, Damage: number) -> () },
+	DefaultRuns: { [number]: (self: Unit, Damage: number) -> (() -> ())? },
 
 	Abilities: { (self: Unit, Data: AbilityParam) -> () },
 }
@@ -94,7 +95,7 @@ type UnitData = {
 
 	UnitData: UnitInfo.UnitInfo,
 
-	DefaultRuns: { [number]: (self: Unit, Damage: number) -> () },
+	DefaultRuns: { [number]: (self: Unit, Damage: number) -> (() -> ())? },
 	AttackFuncs: { [number]: { (self: Unit, Damage: number) -> () } },
 	AttackIndex: number,
 
@@ -132,6 +133,8 @@ type UnitData = {
 	AllyAdded: Signal.Signal<Enemy.Enemy>,
 
 	Damaged: Signal.Signal<number>,
+	CoinsAdded: Signal.Signal<number>,
+
 	Destroying: Signal.Signal<>,
 }
 
@@ -159,6 +162,7 @@ type UnitImpl = {
 	EnableAttack: (self: Unit) -> (),
 
 	Stun: (self: Unit, Length: number) -> (),
+	AddCoins: (self: Unit, Coins: number) -> (),
 
 	_CalculateSpeedRatio: (self: Unit) -> (),
 	ChangeSpeedRatio: (self: Unit, Name: string, SpeedRatio: number, Duration: number) -> (),
@@ -259,6 +263,8 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 	self.AllyAdded = self._Trove:Construct(Signal)
 
 	self.Damaged = self._Trove:Construct(Signal)
+	self.CoinsAdded = self._Trove:Construct(Signal)
+
 	self.Destroying = self._Trove:Construct(Signal)
 
 	self.UnitName = Data.UnitName
@@ -321,10 +327,28 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 		end)
 	end)
 
+	self.CoinsAdded:Connect(function(Coins: number)
+		UnitCoinsEvent.FireList(self.ReplicateTo, {
+			UniqueId = self.UniqueId,
+			Coins = Coins,
+		})
+	end)
+
 	local function OnLevel(Level: number)
 		local Func = self.DefaultRuns[Level]
 		if Func then
-			Func(self, self.UnitData.UnitData[Level].Damage[1])
+			local Cleanup = Func(self, self.UnitData.UnitData[Level].Damage[1])
+
+			if Cleanup then
+				local DefaultRunTrove = Trove.new()
+
+				DefaultRunTrove:Add(function()
+					Cleanup()
+				end)
+
+				DefaultRunTrove:Connect(self.Upgraded, DefaultRunTrove:WrapClean())
+				DefaultRunTrove:Connect(self.Destroying, DefaultRunTrove:WrapClean())
+			end
 		end
 
 		if self.UnitData.UnitData[self.Level].FireRate ~= 0 then
@@ -526,6 +550,10 @@ end
 function Unit:Stun(Length: number)
 	self:DisableAttack(Length)
 	self:PlayAnimation("Stun", nil, nil, nil, Length)
+end
+
+function Unit:AddCoins(Coins: number)
+	self.CoinsAdded:Fire(Coins)
 end
 
 function Unit:DamageEnemy(EnemyInput: Enemy.Enemy, Damage: number)

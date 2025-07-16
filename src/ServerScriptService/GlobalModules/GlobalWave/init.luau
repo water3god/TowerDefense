@@ -24,6 +24,7 @@ local GameInfo = require(Shared.GameInfo)
 
 local GlobalModules = ServerScriptService.GlobalModules
 local Enemy = require(GlobalModules.Enemy)
+local Unit = require(GlobalModules.Unit)
 
 local Data = ServerStorage.Data
 local WaveData = require(Data.WaveData)
@@ -68,6 +69,8 @@ type Data = {
 	Coins: { [number]: number },
 	CoinsChangedSignals: { [number]: Signal.Signal<number> },
 
+	Units: { [string]: Unit.Unit },
+
 	Positions: { Vector3 },
 	Data: WaveData.WaveData,
 
@@ -87,6 +90,8 @@ type Data = {
 
 	EnemyAdded: Signal.Signal<Enemy.Enemy>,
 	EnemyDestroying: Signal.Signal<Enemy.Enemy>,
+
+	UnitAdded: Signal.Signal<Unit.Unit>,
 	Ended: Signal.Signal<boolean>,
 }
 
@@ -102,6 +107,8 @@ type Impl = {
 	SetCoinsUser: (self: GlobalWave, UserId: number, Coins: number) -> (),
 	SubtractCoinsFromUser: (self: GlobalWave, UserId: number, Coins: number) -> (),
 	AddCoinsToUser: (self: GlobalWave, UserId: number, Coins: number) -> (),
+
+	AddUnit: (self: GlobalWave, Unit: Unit.Unit) -> (),
 
 	GetCoinsChangedSignal: (self: GlobalWave, UserId: number) -> Signal.Signal<number>,
 
@@ -150,6 +157,9 @@ function GlobalWave.new(Input: Input)
 
 	self.EnemyAdded = self.Trove:Construct(Signal)
 	self.EnemyDestroying = self.Trove:Construct(Signal)
+
+	self.UnitAdded = self.Trove:Construct(Signal)
+
 	self.Ended = self.Trove:Construct(Signal)
 
 	self.Wave = 0
@@ -166,6 +176,8 @@ function GlobalWave.new(Input: Input)
 		self.DifficultyData.HeathIncrRatio = 1
 		self.DifficultyData.SpeedAdditive = 0
 	end
+
+	self.Units = {}
 
 	self.MaxHealth = self.DifficultyData.Health
 	self.BaseHealth = self.MaxHealth
@@ -219,7 +231,7 @@ function GlobalWave.new(Input: Input)
 	end)
 
 	self.EnemyDestroying:Connect(function(EnemyInput: Enemy.Enemy)
-		self:AddCoins(EnemyInput.MaxHealth / 5)
+		self:AddCoins(EnemyInput.MaxHealth / 3)
 	end)
 
 	CurrentWave = self
@@ -406,6 +418,22 @@ function GlobalWave:GetCoinsChangedSignal(UserId: number)
 	end
 
 	return self.CoinsChangedSignals[UserId]
+end
+
+function GlobalWave:AddUnit(UnitInput: Unit.Unit)
+	self.Units[UnitInput.UnitName] = UnitInput
+
+	UnitInput.CoinsAdded:Connect(function(Coins: number)
+		if UnitInput.OwnerId then
+			self:AddCoinsToUser(UnitInput.OwnerId, Coins)
+		end
+	end)
+
+	UnitInput.Destroying:Once(function()
+		self.Units[UnitInput.UnitName] = nil
+	end)
+
+	self.UnitAdded:Fire(UnitInput)
 end
 
 function GlobalWave:Damage(Damage: number)

@@ -7,6 +7,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
+local ReactSpring = require(Packages.ReactSpring)
 local React = require(Packages.React)
 local e = React.createElement
 
@@ -107,7 +108,7 @@ local function CreateBaseFrame(Properties: OtherProps)
 	})
 end
 
-local Size = UDim2.fromScale(0.25, 0.65)
+local UnitFrameSize = UDim2.fromScale(0.25, 0.65)
 
 type PlacementData = {
 	Trove: Trove.Trove,
@@ -119,6 +120,16 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 	local CurrencyContext = React.useContext(Currency.Context)
 	local WaveData = React.useContext(WaveContext.Context)
 	local Units = UnitsContext.Units
+
+	local SizeStyles = ReactSpring.useSpring({
+		from = {
+			Size = 1.2,
+		},
+		to = {
+			Size = 1,
+		},
+		config = { mass = 1, tension = 100, friction = 20 },
+	}, { CurrencyContext.Value })
 
 	React.useImperativeHandle(ref, function()
 		return {
@@ -226,7 +237,9 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 		GoldFrame = e(Main.Frame, {
 			native = {
 				Position = UDim2.fromScale(0.5, -0.1),
-				Size = UDim2.fromScale(0.5, 0.2),
+				Size = SizeStyles.Size:map(function(Size: number)
+					return UDim2.fromScale(0.5 * Size, 0.2 * Size)
+				end),
 			},
 		}, {
 			UIListLayout = e("UIListLayout", {
@@ -275,7 +288,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 			OnClick = Click,
 			native = {
 				Position = UDim2.fromScale(0.15, 0.35),
-				Size = Size,
+				Size = UnitFrameSize,
 			},
 		}),
 		Frame2 = e(CreateBaseFrame, {
@@ -287,7 +300,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 			OnClick = Click,
 			native = {
 				Position = UDim2.fromScale(0.325, 0.35),
-				Size = Size,
+				Size = UnitFrameSize,
 			},
 		}),
 		Frame3 = e(CreateBaseFrame, {
@@ -299,7 +312,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 			OnClick = Click,
 			native = {
 				Position = UDim2.fromScale(0.5, 0.35),
-				Size = Size,
+				Size = UnitFrameSize,
 			},
 		}),
 		Frame4 = e(CreateBaseFrame, {
@@ -311,7 +324,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 			OnClick = Click,
 			native = {
 				Position = UDim2.fromScale(0.675, 0.35),
-				Size = Size,
+				Size = UnitFrameSize,
 			},
 		}),
 		Frame5 = e(CreateBaseFrame, {
@@ -323,7 +336,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 			OnClick = Click,
 			native = {
 				Position = UDim2.fromScale(0.85, 0.35),
-				Size = Size,
+				Size = UnitFrameSize,
 			},
 		}),
 		LevelBar = e(Main.ImageLabel, {

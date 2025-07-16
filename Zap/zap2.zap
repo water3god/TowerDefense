@@ -25,25 +25,6 @@ event LevelXPChanged = {
 	data: XP,
 }
 
--- Marketplace --
-
--- Maybe don't use --
-event ProductPurchased = {
-	from: Server,
-	type: Reliable,
-	call: SingleAsync,
-}
-
-event UseProduct = {
-	from: Client,
-	type: Reliable,
-	call: SingleAsync,
-	data: (
-		ProductId,
-		boolean,
-	),
-}
-
 -- Roll --
 
 type RollData = struct {
@@ -324,6 +305,16 @@ event UnitUpgradeEvent = {
 	data: struct {
 		UniqueId: string,
 		Level: Level,
+	},
+}
+
+event UnitCoinsEvent = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: struct {
+		UniqueId: string,
+		Coins: f64,
 	},
 }
 

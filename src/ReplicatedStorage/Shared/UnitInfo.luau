@@ -239,6 +239,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 		UnitData = {
 			[0] = {
 				Damage = { 0 },
+				Coins = 50,
 				FireRate = 0,
 				Range = 5,
 				Cost = 100,

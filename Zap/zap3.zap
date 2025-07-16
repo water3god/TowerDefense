@@ -14,6 +14,25 @@ type Time = f64
 type Wave = u16
 type Vote = u16
 
+-- Marketplace --
+
+-- Maybe don't use --
+event ProductPurchased = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+}
+
+event UseProduct = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: (
+		ProductId,
+		boolean,
+	),
+}
+
 event OnEnd = {
 	from: Server,
 	type: Reliable,

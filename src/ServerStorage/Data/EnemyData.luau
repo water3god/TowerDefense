@@ -71,6 +71,17 @@ local Data: { [string]: Enemy.EnemyInfo } = {
 		IsBoss = true,
 		Ally = false,
 	},
+
+	-- Allies --
+
+	["Legionary"] = {
+		ModelName = "Legionary",
+		AdornmentName = "LegionaryArmor",
+		Health = 20,
+		Speed = 2,
+		IsBoss = false,
+		Ally = true,
+	},
 }
 
 return Data

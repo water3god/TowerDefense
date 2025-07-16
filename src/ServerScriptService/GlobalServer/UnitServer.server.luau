@@ -29,7 +29,6 @@ local Constants = require(Shared.Constants)
 local GlobalModules = ServerScriptService.GlobalModules
 local Unit = require(GlobalModules.Unit)
 local GlobalWave = require(GlobalModules.GlobalWave)
-
 local PlayerData = require(GlobalModules.PlayerData)
 
 local UnitData = require(ServerStorage.Data.UnitData)
@@ -131,11 +130,12 @@ local function PlaceUnit(Player: Player, Wave: GlobalWave.GlobalWave, Data: Plac
 		if Wave:HasEnoughCoins(Player.UserId, Cost) then
 			local Result = CheckPlacement(InputCFrame, UnitUnitInfo)
 			if Result then
-				Unit.new({
+				local NewUnit = Unit.new({
 					CFrame = InputCFrame,
 					OwnerId = Player.UserId,
 					Level = 0,
 				}, UnitUnitData)
+				Wave:AddUnit(NewUnit)
 				Wave:SubtractCoinsFromUser(Player.UserId, Cost)
 			else
 				SendWarning.Fire(Player, "Incorrect Placement!")

@@ -131,11 +131,17 @@ local function OnFrame()
 		end
 	end
 
+	local _, Bezier = next(Enemy.GetBeziers())
+	if not Bezier then
+		return
+	end
+	local DifferenceNeeded = 1 / Bezier.PathLength
+
 	for _, Ally in pairs(Enemies) do
 		if Ally.Ally then
 			for _, self in pairs(Enemies) do
-				if not self.Ally then
-					if Ally.TimePosition <= self.TimePosition then
+				if not self.Ally and getmetatable(self) and getmetatable(Ally) then
+					if Ally.TimePosition - DifferenceNeeded <= self.TimePosition + DifferenceNeeded then
 						if Ally.Health == self.Health then
 							Ally.Damaged:Fire(Ally.Health)
 							self:Destroy(false)

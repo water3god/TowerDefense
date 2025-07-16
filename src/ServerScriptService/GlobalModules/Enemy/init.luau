@@ -284,7 +284,7 @@ function Enemy:Destroy(Animate: boolean)
 	if self.Trove then
 		self.Trove:Destroy()
 		Enemies[self.UniqueId] = nil
-		GenerateId.RemoveId(self.UniqueId)
+		task.defer(GenerateId.RemoveId, self.UniqueId)
 	end
 	table.clear(self :: any)
 	setmetatable(self :: any, nil)

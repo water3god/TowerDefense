@@ -221,6 +221,7 @@ type UnitData = {
 	SpeedRatioChanged: Signal.Signal<number>,
 	PriorityChanged: Signal.Signal<UnitInfo.SortType | string>,
 	PropertyChanged: Signal.Signal<string>, -- Does not fire on Upgrade --
+	CoinsAdded: Signal.Signal<number>,
 	Destroying: Signal.Signal<>,
 }
 

@@ -65,32 +65,38 @@ local function WeldParts(Character: typeof(ModelStorage.Extra.Rig), Adornment: M
 		if not CharLimb then
 			continue
 		end
+		Limb:ScaleTo(SizeRatio)
+
+		local Bases: { [BasePart]: CFrame } = {}
 
 		for _, BasePart in ipairs(Limb:GetDescendants()) do
 			if BasePart:IsA("BasePart") and BasePart.Name ~= "Middle" then
 				BasePart.CanCollide = false
 				BasePart.Anchored = false
 
-				local Offset = Middle.CFrame:ToObjectSpace(BasePart.CFrame)
-				local ScaledOffset = CFrame.new(Offset.X * SizeRatio, Offset.Y * SizeRatio, Offset.Z * SizeRatio)
-					* Offset.Rotation
-
-				local WorldCFrame = ScaledOffset:ToWorldSpace(CharLimb.CFrame)
-
-				local Weld = Instance.new("WeldConstraint")
-				BasePart.CFrame = WorldCFrame
-				Weld.Name = BasePart.Name
-				Weld.Part0 = BasePart
-				Weld.Part1 = Middle
-				Weld.Parent = Middle
+				local Motor = Instance.new("Motor6D")
+				Motor.C0 = BasePart.CFrame:Inverse()
+				Motor.C1 = Middle.CFrame:Inverse()
+				Motor.Name = BasePart.Name
+				Motor.Part0 = BasePart
+				Motor.Part1 = Middle
+				Bases[BasePart] = Middle.CFrame:ToObjectSpace(BasePart.CFrame)
+				Motor.Parent = Middle
 			end
 		end
 
 		Middle.CFrame = CharLimb.CFrame
-		local Weld = Instance.new("WeldConstraint")
+		for Base, CFrame in pairs(Bases) do
+			Base.CFrame = Middle.CFrame:ToWorldSpace(CFrame)
+		end
+
+		local Weld = Instance.new("Motor6D")
+		Weld.C0 = CFrame.new()
+		Weld.C1 = CFrame.new()
 		Weld.Name = "MainMiddleWeld"
 		Weld.Part0 = Middle
 		Weld.Part1 = CharLimb
+
 		Weld.Parent = Middle
 	end
 end
@@ -327,6 +333,9 @@ RunService.PostSimulation:Connect(function()
 
 		self.TimePosition = TimePosition
 		local NewCFrame = self.Bezier:CalculateUniformCFrame(TimePosition) + self.VectorOffset
+		if self.Ally then
+			NewCFrame = NewCFrame * CFrame.fromEulerAnglesXYZ(0, math.rad(180), 0)
+		end
 		self.CFrame = NewCFrame
 		self.Root.CFrame = self.CFrame + Vector3.new(0, self.YOffset, 0)
 	end

@@ -58,7 +58,10 @@ local InputLib = require(Packages.Input)
 local React = require(Packages.React)
 local ReactRoblox = require(Packages.ReactRoblox)
 
-local MobilePlacementFrame = require(ReplicatedStorage.Gui.GameFrames.MobilePlacementFrame)
+local Gui = ReplicatedStorage.Gui
+local GameFrames = Gui.GameFrames
+local MobilePlacementFrame = require(GameFrames.MobilePlacementFrame)
+local CoinsAdded = require(GameFrames.CoinsAdded)
 
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
@@ -75,6 +78,7 @@ local AbilityEvent = Network.UnitAbilityEvent
 local AnimationEvent = Network.UnitAnimationEvent
 local SpeedRatioEvent = Network.SpeedRatioEvent
 local Destroy = Network.UnitDestroyEvent
+local UnitCoinsEvent = Network.UnitCoinsEvent
 
 local PlaceUnit = Network.PlaceUnit
 local SellUnit = Network.SellUnit
@@ -271,6 +275,8 @@ local function NewUnit(Input: Types.UnitInput, New: boolean)
 	self.PropertyChanged = self.Trove:Construct(Signal)
 	self.AnimationPlayed = self.Trove:Construct(Signal)
 	self.SpeedRatioChanged = self.Trove:Construct(Signal)
+	self.CoinsAdded = self.Trove:Construct(Signal)
+
 	self.Destroying = self.Trove:Construct(Signal)
 
 	self.UnitName = Input.UnitName
@@ -338,6 +344,24 @@ local function NewUnit(Input: Types.UnitInput, New: boolean)
 	self.RangePart.Anchored = true
 	self.RangePart.CFrame = self.CFrame
 	self.Trove:Add(RangeTrove)
+
+	self.CoinsAdded:Connect(function(Coins: number)
+		local BillboardGui = Instance.new("BillboardGui")
+		BillboardGui.Name = "CoinsAddedTempGui"
+		BillboardGui.Size = UDim2.fromScale(6, 4)
+		BillboardGui.StudsOffset = Vector3.new(0, 3 * self.SizeRatio, 0)
+		BillboardGui.Adornee = self.Character.Head
+		BillboardGui.Parent = self.Character.Head
+
+		local Root = ReactRoblox.createRoot(BillboardGui)
+		Root:render(React.createElement(CoinsAdded, {
+			Coins = Coins,
+		}))
+		task.delay(5, function()
+			Root:unmount()
+			BillboardGui:Destroy()
+		end)
+	end)
 
 	local function GetRange()
 		return self.UnitData.UnitData[self.Level].Range
@@ -1191,6 +1215,14 @@ AbilityEvent.SetCallback(function(UniqueId: string, Index: number, TimeUsed: num
 			})
 		end
 		Unit.AbilityUsed:Fire(Index, TimeUsed)
+	end
+end)
+
+UnitCoinsEvent.SetCallback(function(Data: { Coins: number, UniqueId: string })
+	local Unit = UnitModule.GetUnit(Data.UniqueId)
+
+	if Unit then
+		Unit.CoinsAdded:Fire(Data.Coins)
 	end
 end)
 

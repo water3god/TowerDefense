@@ -1,4 +1,6 @@
 --!strict
+--!native
+--#selene: allow(unused_variable, global_usage)
 
 -- By Wa1er_God --
 
@@ -7,6 +9,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local Packages = ReplicatedStorage.Packages
 local Promise = require(Packages.Promise)
+local Timer = require(Packages.Timer)
 
 local GlobalModules = ServerScriptService.GlobalModules
 local UnitModule = require(GlobalModules.Unit)
@@ -17,6 +20,49 @@ local function AddAlly(Ally: string, Data: {}?)
 	if Wave then
 		Wave:AddAlly(Ally, Data)
 	end
+end
+
+local function AddAllyToWave(Unit: UnitModule.Unit, Delay: number, Ally: string, Data: {}?)
+	local AllyTrove = Unit._Trove:Extend()
+	local Wave = GlobalWave.GetWave()
+	local AllyTimer = AllyTrove:Construct(Timer, Delay)
+	local function HandleWave(Input: GlobalWave.GlobalWave)
+		if Input.Wave == 0 then
+			AllyTrove:Connect(Input.Passed, function()
+				AllyTimer:Start()
+			end)
+		else
+			AllyTimer:Start()
+		end
+	end
+
+	if Wave then
+		HandleWave(Wave)
+	else
+		AllyTrove:Connect(GlobalWave.Added, HandleWave)
+	end
+
+	AllyTimer.Tick:Connect(function()
+		AddAlly(Ally, Data)
+	end)
+
+	return AllyTrove:WrapClean()
+end
+
+local function AddCoinsPerWave(Unit: UnitModule.Unit, Callback: (Wave: number) -> number)
+	local Wave = GlobalWave.GetWave()
+
+	if Wave then
+		local Connection = Wave.Passed:Connect(function()
+			Unit:AddCoins(Callback(Wave.Wave))
+		end)
+
+		return function()
+			Connection:Disconnect()
+		end
+	end
+
+	return function() end
 end
 
 local function DelayAttack(Unit: UnitModule.Unit, Damage: number, Delay: number)
@@ -30,6 +76,10 @@ local function DelayAttack(Unit: UnitModule.Unit, Damage: number, Delay: number)
 			"DelayAttack"
 		)
 	end
+end
+
+local function GetCoinsFromUnit(Unit: UnitModule.Unit): number
+	return Unit.UnitData.UnitData[Unit.Level].Coins :: number
 end
 
 local UnitData: { [string]: UnitModule.UnitInput } = {
@@ -169,7 +219,13 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 				function() end,
 			},
 		},
-		DefaultRuns = {},
+		DefaultRuns = {
+			[0] = function(Unit)
+				return AddCoinsPerWave(Unit, function(Wave: number)
+					return GetCoinsFromUnit(Unit)
+				end)
+			end,
+		},
 		Abilities = {},
 	},
 	["Trajan"] = {
@@ -177,11 +233,9 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 
 		AttackFuncs = {},
 		DefaultRuns = {
-			--[[[0] = function(Unit, Damage: number)
-				AddAlly("Ally", {
-					Health = Damage,
-				})
-			end,]]
+			[0] = function(Unit, Damage: number)
+				return AddAllyToWave(Unit, 10, "Legionary", { Health = Damage })
+			end,
 		},
 		Abilities = {},
 	},
