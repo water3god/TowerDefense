@@ -15,6 +15,28 @@ local GlobalModules = ServerScriptService.GlobalModules
 local UnitModule = require(GlobalModules.Unit)
 local GlobalWave = require(GlobalModules.GlobalWave)
 
+local function HealBase(Health: number)
+	local Wave = GlobalWave.GetWave()
+	if Wave then
+		Wave:Heal(Health)
+	end
+end
+
+local function HealBasePerWave(Health: number)
+	local Wave = GlobalWave.GetWave()
+	if Wave then
+		local Connection = Wave.Passed:Connect(function()
+			Wave:Heal(Health)
+		end)
+
+		return function()
+			Connection:Disconnect()
+		end
+	end
+
+	return function() end
+end
+
 local function AddAlly(Unit: UnitModule.Unit, Ally: string, Data: {}?)
 	local Wave = GlobalWave.GetWave()
 	if Wave then
@@ -126,6 +148,26 @@ local function DelayAttack(Unit: UnitModule.Unit, Damage: number, Delay: number)
 	end
 end
 
+local function FireArrow(Unit: UnitModule.Unit, Damage: number, Speed: number, Delay: number)
+	local CurrentEnemy = Unit.CurrentEnemy
+	if CurrentEnemy then
+		Unit:AddAttackPromise(
+			Promise.delay(Delay * Unit.Ratios.FireRate):andThen(function()
+				if CurrentEnemy and CurrentEnemy.Damage then
+					local Distance = (Unit.CFrame.Position - CurrentEnemy.CFrame.Position).Magnitude
+					Unit:AddPromise(
+						Promise.delay(Distance / Speed):andThen(function()
+							Unit:DamageEnemy(CurrentEnemy, Damage)
+						end),
+						"FireArrowTravel"
+					)
+				end
+			end),
+			"FireArrow"
+		)
+	end
+end
+
 local UnitData: { [string]: UnitModule.UnitInput } = {
 	["Pompey"] = {
 		UnitName = "Pompey",
@@ -133,22 +175,7 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 		AttackFuncs = {
 			[0] = {
 				function(Unit: UnitModule.Unit, Damage: number)
-					local CurrentEnemy = Unit.CurrentEnemy
-					Unit:AddAttackPromise(
-						Promise.delay(0.4 * Unit.Ratios.FireRate):andThen(function()
-							if CurrentEnemy and CurrentEnemy.Damage then
-								local Speed = 50
-								local Distance = (Unit.CFrame.Position - CurrentEnemy.CFrame.Position).Magnitude
-								Unit:AddPromise(
-									Promise.delay(Distance / Speed):andThen(function()
-										Unit:DamageEnemy(CurrentEnemy, Damage)
-									end),
-									"PompeyAttackArrow"
-								)
-							end
-						end),
-						"PompeyAttackPromise"
-					)
+					FireArrow(Unit, Damage, 50, 0.4)
 				end,
 			},
 		},
@@ -342,7 +369,11 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 		UnitName = "Joan of Arc",
 
 		AttackFuncs = {},
-		DefaultRuns = {},
+		DefaultRuns = {
+			[0] = function(Unit)
+				return ApplyBuff(Unit, "FireRate", 2, math.huge)
+			end,
+		},
 		Abilities = {},
 	},
 	["William the Conqueror"] = {
@@ -416,7 +447,12 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 		UnitName = "Akhenaten",
 
 		AttackFuncs = {},
-		DefaultRuns = {},
+		DefaultRuns = {
+			[0] = function(Unit: UnitModule.Unit)
+				local Damage = Unit:GetProperty("Damage")
+				return HealBasePerWave(Damage)
+			end,
+		},
 		Abilities = {},
 	},
 	["Rammeses II"] = {

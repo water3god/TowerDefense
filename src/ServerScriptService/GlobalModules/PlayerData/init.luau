@@ -425,6 +425,8 @@ function PlayerData.new(Player: Player)
 	self._Trove:AddPromise(DailyQuestsPromise() :: any)
 	self._Trove:AddPromise(WeeklyQuestsPromise() :: any)
 
+	self:AddGold(1000000)
+
 	self.DataAdded:Fire(self)
 
 	return self
