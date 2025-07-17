@@ -321,6 +321,9 @@ function Trade:_Complete()
 		end
 	end
 
+	Data1.Profile:Save()
+	Data2.Profile:Save()
+
 	self:Delete()
 end
 

@@ -148,6 +148,7 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 				OtherSendData.NewLevel = PlayerDataModule.Profile.Data.Level
 
 				WaveEnded.Fire(Player, Win, SendData, OtherSendData, WavePercentage)
+				task.defer(PlayerDataModule.Profile.Save, PlayerDataModule.Profile)
 			end
 		end
 	end)

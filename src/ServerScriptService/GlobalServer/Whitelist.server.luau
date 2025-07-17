@@ -24,15 +24,17 @@ local WhiteListedIds = {
 	1025769455,
 	2671136136,
 	621274712,
+	604935177,
+	3574179167,
 }
 
 SafePlayerAdded:Connect(function(Player: Player)
 	if not table.find(WhiteListedIds, Player.UserId) and Player.UserId > 0 then
 		Promise.try(function()
-			return Player:GetRankInGroup(Constants.GroupId)
+			return Player:GetRankInGroup(Constants.GroupId), Player:IsFriendsWith(343804839)
 		end)
-			:andThen(function(Rank: number)
-				if Rank < 200 then
+			:andThen(function(Rank: number, IsFriend: boolean)
+				if Rank < 200 or not IsFriend then
 					Player:Kick("You Are not Whitelisted!")
 				end
 			end)

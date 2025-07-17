@@ -370,6 +370,10 @@ function PlayerData.new(Player: Player)
 		return
 	end
 
+	self._Trove:Connect(self.Destroying, function()
+		self.Profile:EndSession()
+	end)
+
 	self.NeededXP = CalculatePlayerXP(self.Profile.Data.Level)
 
 	do
@@ -559,6 +563,7 @@ function PlayerData:RedeemGamepass(GamepassId: number)
 		table.insert(self.Profile.Data.Gamepasses, GamepassId)
 		self.ProductRedeemed:Fire(GamepassId, true)
 		self:RemoveProduct(GamepassId, 1)
+		self.Profile:Save()
 	end
 end
 
@@ -579,6 +584,7 @@ function PlayerData:RedeemProduct(ProductId: number)
 		Data.CachedProducts[ProductId] = 1
 	end
 	self:RemoveProduct(ProductId, 1)
+	self.Profile:Save()
 end
 
 function PlayerData:AddProduct(ProductId: number, CountInput: number?)

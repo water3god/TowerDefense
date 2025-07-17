@@ -5,6 +5,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local ServerStorage = game:GetService("ServerStorage")
+local Players = game:GetService("Players")
 
 local Packages = ReplicatedStorage.Packages
 local Timer = require(Packages.Timer)
@@ -32,6 +33,7 @@ local PlayerData = require(GlobalModules.PlayerData)
 local Utility = ServerScriptService.Utility
 local SafePlayer = Utility.SafePlayer
 local SafePlayerAdded = require(SafePlayer.SafePlayerAdded)
+local SafePlayerRemoving = require(SafePlayer.SafePlayerRemoving)
 
 local ServerData = ServerStorage.Data
 local ChanceData = require(ServerData.ChanceData)
@@ -129,8 +131,10 @@ local function InitTimer(Data: PlayerData.PlayerData, Count: number)
 		StopAutoRollServer.Fire(Data.Player)
 	end)
 
-	TimerTrove:Connect(Data.Player.Destroying, function()
-		Delays[Data.Player].Timer:Destroy()
+	TimerTrove:Connect(Players.PlayerRemoving, function(OtherPlayer: Player)
+		if OtherPlayer == Data.Player then
+			Delays[Data.Player].Timer:Destroy()
+		end
 	end)
 
 	if Delays[Data.Player].Timer then
@@ -186,7 +190,8 @@ end)
 
 SafePlayerAdded:Connect(function(Player: Player)
 	Delays[Player] = { MinimumTime = 0, Timer = nil }
-	Player.Destroying:Connect(function()
-		Delays[Player] = nil
-	end)
 end, true)
+
+SafePlayerRemoving:Connect(function(Player: Player)
+	Delays[Player] = nil
+end)

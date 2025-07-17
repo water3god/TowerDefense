@@ -45,8 +45,10 @@ SafePlayerAdded:Connect(function(Player: Player)
 					CoinCount.Value = Coins
 				end)
 
-				local OtherConnection = Player.Destroying:Once(function()
-					Connection:Disconnect()
+				local OtherConnection = Players.PlayerRemoving:Connect(function(OtherPlayer: Player)
+					if Player == OtherPlayer then
+						Connection:Disconnect()
+					end
 				end)
 
 				Wave.Ended:Once(function()

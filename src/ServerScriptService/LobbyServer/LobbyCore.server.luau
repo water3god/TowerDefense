@@ -39,6 +39,9 @@ local Constants = require(Shared.Constants)
 local ServerData = ServerStorage.Data
 local MapData = require(ServerData.MapData)
 
+local GlobalModules = ServerScriptService.GlobalModules
+local PlayerData = require(GlobalModules.PlayerData)
+
 local LobbyModules = ServerScriptService.LobbyModules
 local Booth = require(LobbyModules.Booth)
 

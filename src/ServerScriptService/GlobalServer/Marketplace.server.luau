@@ -48,6 +48,7 @@ MarketplaceService.ProcessReceipt = function(ReceiptInfo: ReceiptInfo): Enum.Pro
 
 				if Success then
 					Data:AddRobuxSpent(ReceiptInfo.CurrencySpent)
+					Data.Profile:Save()
 					return Enum.ProductPurchaseDecision.PurchaseGranted
 				end
 			else
@@ -56,6 +57,7 @@ MarketplaceService.ProcessReceipt = function(ReceiptInfo: ReceiptInfo): Enum.Pro
 				if GiftId then
 					Data:AddProduct(GiftId)
 					Data:AddRobuxSpent(ReceiptInfo.CurrencySpent)
+					Data.Profile:Save()
 					return Enum.ProductPurchaseDecision.PurchaseGranted
 				else
 					task.spawn(function()
@@ -111,6 +113,7 @@ local function OnPlayerData(Data: PlayerData.PlayerData)
 				ProfData.CachedProducts[ProductId] -= 1
 			end
 		end
+		Data.Profile:Save()
 	end
 
 	if HelperFunctions.Len(ProfData.CachedProducts) ~= 0 then
