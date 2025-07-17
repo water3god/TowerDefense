@@ -26,6 +26,20 @@ export type Data = {
 	UniqueId: string,
 	UnitName: string,
 	UpgradeData: UnitClient.TotalUnitData,
+	Properties: {
+		Damage: number,
+		FireRate: number,
+		Range: number,
+		Coins: number?,
+		Special: string?,
+	},
+	NextProperties: {
+		Damage: number,
+		FireRate: number,
+		Range: number,
+		Coins: number?,
+		Special: string?,
+	}?,
 	TotalCost: number,
 	Level: number,
 	Priority: UnitInfo.SortType | string,
@@ -43,6 +57,18 @@ local DefaultValue: Data = {
 			FireRate = 1,
 			Range = 10,
 		},
+	},
+	Properties = {
+		Damage = 1,
+		FireRate = 1,
+		Range = 10,
+		Coins = 1,
+	},
+	NextProperties = {
+		Damage = 1,
+		FireRate = 1,
+		Range = 10,
+		Coins = 1,
 	},
 	Priority = UnitInfo.SortTypes[1],
 	Level = 0,
@@ -86,6 +112,8 @@ local function UpgradeProvider(props: Props)
 					UniqueId = Unit.UniqueId,
 					UnitName = Unit.UnitName,
 					UpgradeData = Unit.UnitData.UnitData,
+					Properties = Unit:GetProperties() :: any,
+					NextProperties = Unit:GetNextProperties() :: any,
 					TotalCost = Unit.TotalCost,
 					Level = Unit.Level,
 					Enabled = Enabled,
@@ -99,6 +127,7 @@ local function UpgradeProvider(props: Props)
 			UpgradeTrove:Connect(Unit.Upgraded, Set)
 			UpgradeTrove:Connect(Unit.PriorityChanged, Set)
 			UpgradeTrove:Connect(Unit.AbilityUsed, Set)
+			UpgradeTrove:Connect(Unit.PropertyChanged, Set)
 
 			UpgradeTrove:Connect(Unit.Destroying, function()
 				Set(false)

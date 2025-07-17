@@ -466,11 +466,7 @@ local UnitAttacks: {
 	}
 
 local DefaultRuns: { [string]: { [number]: (Unit: Types.Unit) -> () } } = {
-	["Trajan"] = {
-		[0] = function(Unit)
-			Unit:PlayAnimation("Ability")
-		end,
-	},
+	["Trajan"] = {},
 }
 
 local Abilities: {

@@ -150,10 +150,12 @@ export type UnitInput = {
 	AttackPriority: string,
 	Level: number,
 
-	Ratios: {
-		Damage: number,
-		FireRate: number,
-		Range: number,
+	RatioData: {
+		[string]: {
+			Type: string,
+			Ratio: number,
+			EndTime: number,
+		},
 	},
 	Abilities: { number },
 }
@@ -271,6 +273,7 @@ export type UnitModule = {
 	Sell: (self: Unit) -> (),
 
 	GetProperties: (self: Unit) -> { [UnitInfo.StatProperty]: number },
+	GetNextProperties: (self: Unit) -> { [UnitInfo.StatProperty]: number }?,
 	GetSpecial: (self: Unit) -> string?,
 
 	NewUnit: Signal.Signal<Unit, boolean>,

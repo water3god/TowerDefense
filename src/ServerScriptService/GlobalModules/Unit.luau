@@ -221,7 +221,7 @@ local function SendInfo(UnitInput: { [string]: Unit }, PlayerInput: { Player }, 
 			Level = Unit.Level,
 			Abilities = ConvertAbilityData(Unit.Abilities),
 
-			Ratios = Unit.Ratios,
+			RatioData = Unit.RatioData,
 		}
 	end
 

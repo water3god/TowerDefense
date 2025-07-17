@@ -286,8 +286,33 @@ local function NewUnit(Input: Types.UnitInput, New: boolean)
 
 	self.Promises = {}
 
-	self.RatioData = {}
-	self.Ratios = Input.Ratios
+	self.RatioData = Input.RatioData
+	self.Ratios = {
+		Damage = 1,
+		FireRate = 1,
+		Range = 1,
+	}
+
+	for Name, Data in pairs(self.RatioData) do
+		local PromiseName = "Ratio" .. Name
+		local Difference = Data.EndTime - workspace:GetServerTimeNow()
+
+		if Data.EndTime ~= math.huge then
+			if Difference > 0 then
+				self:AddPromise(
+					Promise.delay(Data.EndTime - workspace:GetServerTimeNow()):andThen(function()
+						self.RatioData[Name] = nil
+						self:_CalculateRatio()
+					end),
+					PromiseName
+				)
+			else
+				self.RatioData[Name] = nil
+			end
+		end
+	end
+
+	self:_CalculateRatio()
 
 	self.UnitData = UnitInfo.UnitInfo[self.UnitName]
 	self.CollisionRadius = self.UnitData.CollisionRadius
@@ -690,9 +715,28 @@ function UnitModule:GetProperties()
 	local UnitData = self.UnitData.UnitData
 	local Level = self.Level
 	return {
-		Damage = UnitData[Level].Damage[1],
-		FireRate = UnitData[Level].FireRate,
-		Range = UnitData[Level].Range,
+		Damage = UnitData[Level].Damage[1] * self.Ratios.Damage,
+		FireRate = UnitData[Level].FireRate * self.Ratios.FireRate,
+		Range = UnitData[Level].Range * self.Ratios.Range,
+		Coins = UnitData[Level].Coins,
+		Special = UnitData[Level].Special,
+	}
+end
+
+function UnitModule:GetNextProperties()
+	local UnitData = self.UnitData.UnitData
+	local Level = self.Level + 1
+
+	if not UnitData[Level] then
+		return nil
+	end
+
+	return {
+		Damage = UnitData[Level].Damage[1] * self.Ratios.Damage,
+		FireRate = UnitData[Level].FireRate * self.Ratios.FireRate,
+		Range = UnitData[Level].Range * self.Ratios.Range,
+		Coins = UnitData[Level].Coins,
+		Special = UnitData[Level].Special,
 	}
 end
 
@@ -1180,24 +1224,27 @@ RatioEvent.SetCallback(function(UniqueId: string, Name: string, Data: { Type: st
 		if Data then
 			Unit:CancelPromise(PromiseName)
 			Unit.RatioData[Name] = Data
-			Unit:_CalculateRatio()
 
 			local Difference = Data.EndTime - workspace:GetServerTimeNow()
 
-			if Difference > 0 and Data.EndTime ~= math.huge then
-				Unit:AddPromise(
-					Promise.delay(Data.EndTime - workspace:GetServerTimeNow()):andThen(function()
-						Unit.RatioData[Name] = nil
-						Unit:_CalculateRatio()
-					end),
-					PromiseName
-				)
+			if Data.EndTime ~= math.huge then
+				if Difference > 0 then
+					Unit:AddPromise(
+						Promise.delay(Data.EndTime - workspace:GetServerTimeNow()):andThen(function()
+							Unit.RatioData[Name] = nil
+							Unit:_CalculateRatio()
+						end),
+						PromiseName
+					)
+				else
+					Unit.RatioData[Name] = nil
+				end
 			end
 		else
 			Unit:CancelPromise(PromiseName)
 			Unit.RatioData[Name] = nil
-			Unit:_CalculateRatio()
 		end
+		Unit:_CalculateRatio()
 	end
 end)
 

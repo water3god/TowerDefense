@@ -72,7 +72,7 @@ local function CreatePropertyFrame(Props: PropertyProperties)
 	local Color = Stats.Colors[Props.PropertyName]
 	local Order = Hooks.LayoutOrder()
 
-	local IsSpecial = Props.PropertyName == "Specials"
+	local IsSpecial = Props.PropertyName == "Special"
 
 	return e(Main.Frame, {
 		native = Join({
@@ -256,31 +256,23 @@ local function CreateUpgradeFrame(Properties: Properties)
 	end, { UpgradeData })
 
 	local UpgradeFrames = React.useMemo(function()
-		local LevelData = UpgradeData.UpgradeData[UpgradeData.Level]
-		local AboveData = UpgradeData.UpgradeData[UpgradeData.Level + 1]
+		local LevelData = UpgradeData.Properties
+		local AboveData = UpgradeData.NextProperties
 
 		local Frames: { [string]: React.Node } = {}
 
 		if AboveData then
-			for Property, Data in pairs(LevelData) do
+			for Property, Value in pairs(AboveData) do
+				if Value == 0 then
+					continue
+				end
+
 				if table.find(Stats.StatProperties, Property) then
-					local function GetValue(PropData: number & { number }, PropertyInput: string): number
-						if PropertyInput == "Damage" then
-							return (PropData :: any)[1] :: number
-						else
-							return PropData :: number
-						end
-					end
-
-					if GetValue(Data, Property) == 0 then
-						continue
-					end
-
 					Frames[Property] = CreatePropertyFrame({
 						PropertyName = Property :: any,
-						Inital = GetValue(Data, Property) :: any,
-						Final = GetValue(AboveData[Property], Property) :: any,
-						Other = tostring(Data),
+						Inital = if Property ~= "Special" then LevelData[Property] else 1,
+						Final = if Property ~= "Special" then Value else 1,
+						Other = tostring(Value),
 						Maxxed = false,
 						native = {
 							LayoutOrder = Stats.Layout[Property :: any],
@@ -289,25 +281,17 @@ local function CreateUpgradeFrame(Properties: Properties)
 				end
 			end
 		else
-			for Property, Data in pairs(LevelData) do
+			for Property, Value in pairs(LevelData) do
 				if table.find(Stats.StatProperties, Property) then
-					local function GetValue(DataInput: number & { number }, PropertyInput: string): number
-						if PropertyInput == "Damage" then
-							return (DataInput :: any)[1] :: number
-						else
-							return DataInput :: number
-						end
-					end
-
-					if GetValue(Data, Property) == 0 then
+					if Value == 0 then
 						continue
 					end
 
 					Frames[Property] = CreatePropertyFrame({
 						PropertyName = Property :: any,
-						Inital = GetValue(Data, Property) :: any,
+						Inital = if Property ~= "Special" then Value else 1,
 						Final = 1,
-						Other = tostring(Data),
+						Other = tostring(Value),
 						Maxxed = true,
 						native = {
 							LayoutOrder = Stats.Layout[Property :: any],

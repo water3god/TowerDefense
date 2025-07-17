@@ -228,6 +228,7 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 		DefaultRuns = {
 			[0] = function(Unit, Damage: number)
 				return AddAllyToWave(Unit, function()
+					Unit:PlayAnimation("Ability")
 					return "Legionary", { Health = Damage }
 				end)
 			end,

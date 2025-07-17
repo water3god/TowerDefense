@@ -15,6 +15,7 @@ export type UnitData = {
 	Range: number,
 	Armor: string?,
 	Cost: number,
+	Special: string?,
 }
 
 export type UnitInfo = {
@@ -513,15 +514,15 @@ end
 
 local Stats = {}
 
-export type StatProperty = "Damage" | "Range" | "FireRate" | "Specials"
-local StatProperties = { "Damage", "Range", "FireRate", "Coins", "Specials" }
+export type StatProperty = "Damage" | "Range" | "FireRate" | "Coins" | "Special"
+local StatProperties = { "Damage", "Range", "FireRate", "Coins", "Special" }
 
 local Icons: { [StatProperty]: string } = {
 	Damage = "rbxassetid://116153831042938",
 	FireRate = "rbxassetid://117289508099114",
 	Range = "rbxassetid://95171919754669",
 	Coins = "rbxassetid://72304165589077",
-	Specials = "rbxassetid://134876951462162",
+	Special = "rbxassetid://134876951462162",
 }
 
 local Colors: { [StatProperty]: Color3 } = {
@@ -529,14 +530,14 @@ local Colors: { [StatProperty]: Color3 } = {
 	FireRate = Color3.new(0.113725, 0.247059, 0.784314),
 	Range = Color3.new(0.749020, 0.843137, 0.133333),
 	Coins = Color3.new(0.105882, 0.47451, 0.231373),
-	Specials = Color3.new(0.921569, 0.600000, 0.149020),
+	Special = Color3.new(0.921569, 0.600000, 0.149020),
 }
 
 local Layout: { [StatProperty]: number } = {
 	Damage = 1,
 	FireRate = 2,
 	Range = 3,
-	Specials = 4,
+	Special = 4,
 }
 
 Stats.StatProperties = StatProperties

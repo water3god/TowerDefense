@@ -204,11 +204,11 @@ type UnitInput = struct {
 	OwnerId: f64?,
 	AttackPriority: string,
 	Level: Level,
-	Ratios: struct {
-		Damage: f32,
-		FireRate: f32,
-		Range: f32,
-	},
+	RatioData: map { [string]: struct {
+		Type: string,
+		Ratio: f32,
+		EndTime: Time,
+	} },
 	Abilities: f64[],
 }
 

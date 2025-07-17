@@ -133,11 +133,11 @@ local function NewEnemy(Input: Types.EnemyInput, SpectateFire: boolean)
 	GenerateId.AddId(self.UniqueId)
 	self.Trove = Trove.new()
 
-	self.SpeedChanged = self.Trove:Add(Signal.new(), "DisconnectAll")
-	self.HealthChanged = self.Trove:Add(Signal.new(), "DisconnectAll")
-	self.MaxHealthChanged = self.Trove:Add(Signal.new(), "DisconnectAll")
-	self.ReachedEnd = self.Trove:Add(Signal.new(), "DisconnectAll")
-	self.Destroying = self.Trove:Add(Signal.new(), "DisconnectAll")
+	self.SpeedChanged = self.Trove:Construct(Signal)
+	self.HealthChanged = self.Trove:Construct(Signal)
+	self.MaxHealthChanged = self.Trove:Construct(Signal)
+	self.ReachedEnd = self.Trove:Construct(Signal)
+	self.Destroying = self.Trove:Construct(Signal)
 
 	self.ModelName = Input.ModelName
 	self.Health = Input.Health
