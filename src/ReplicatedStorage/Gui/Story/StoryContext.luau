@@ -68,9 +68,15 @@ local function Provider(props)
 		end
 	end, { Value })
 
+	React.useEffect(function()
+		local NewTable = table.clone(Value)
+		NewTable.CompletedMaps = table.clone(StoryService.MapData or {})
+		SetValue(NewTable)
+	end, {})
+
 	Hooks.useEventConnection(StoryService.MapDataChanged, function(Data)
 		local NewTable = table.clone(Value)
-		NewTable.CompletedMaps = Data
+		NewTable.CompletedMaps = table.clone(Data)
 		SetValue(NewTable)
 	end, { Value })
 
