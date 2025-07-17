@@ -144,16 +144,16 @@ local function OnFrame()
 					if Ally.TimePosition - DifferenceNeeded <= self.TimePosition + DifferenceNeeded then
 						if Ally.Health == self.Health then
 							Ally.Damaged:Fire(Ally.Health)
-							self:Destroy(false)
-							Ally:Destroy(false)
+							self:Destroy(true)
+							Ally:Destroy(true)
 						elseif Ally.Health < self.Health then
 							Ally.Damaged:Fire(Ally.Health)
 							self:Damage(Ally.Health)
-							Ally:Destroy(false)
+							Ally:Destroy(true)
 						elseif Ally.Health > self.Health then
 							Ally.Damaged:Fire(self.Health)
 							Ally:Damage(self.Health)
-							self:Destroy(false)
+							self:Destroy(true)
 						end
 					end
 				end

@@ -15,17 +15,17 @@ local GlobalModules = ServerScriptService.GlobalModules
 local UnitModule = require(GlobalModules.Unit)
 local GlobalWave = require(GlobalModules.GlobalWave)
 
-local function AddAlly(Ally: string, Data: {}?)
+local function AddAlly(Unit: UnitModule.Unit, Ally: string, Data: {}?)
 	local Wave = GlobalWave.GetWave()
 	if Wave then
-		Wave:AddAlly(Ally, Data)
+		Unit:AddAlly(Wave:AddAlly(Ally, Data))
 	end
 end
 
-local function AddAllyToWave(Unit: UnitModule.Unit, Delay: number, Ally: string, Data: {}?)
+local function AddAllyToWave(Unit: UnitModule.Unit, Callback: () -> (string, {}?))
 	local AllyTrove = Unit._Trove:Extend()
 	local Wave = GlobalWave.GetWave()
-	local AllyTimer = AllyTrove:Construct(Timer, Delay)
+	local AllyTimer = AllyTrove:Construct(Timer, Unit:GetProperty("FireRate"))
 	local function HandleWave(Input: GlobalWave.GlobalWave)
 		if Input.Wave == 0 then
 			AllyTrove:Connect(Input.Passed, function()
@@ -42,8 +42,15 @@ local function AddAllyToWave(Unit: UnitModule.Unit, Delay: number, Ally: string,
 		AllyTrove:Connect(GlobalWave.Added, HandleWave)
 	end
 
+	AllyTrove:Connect(Unit.PropertyChanged, function(Property: string, Value: number)
+		if Property == "FireRate" then
+			AllyTimer.Interval = Value
+		end
+	end)
+
 	AllyTimer.Tick:Connect(function()
-		AddAlly(Ally, Data)
+		local Ally, Data = Callback()
+		AddAlly(Unit, Ally, Data)
 	end)
 
 	return AllyTrove:WrapClean()
@@ -65,12 +72,53 @@ local function AddCoinsPerWave(Unit: UnitModule.Unit, Callback: (Wave: number) -
 	return function() end
 end
 
+local function ApplyBuff(Unit: UnitModule.Unit, BuffType: string, Ratio: number, Duration: number)
+	local BuffTrove = Unit._Trove:Extend()
+
+	local HandlingUnits = {}
+
+	local function Handle(OtherUnit: UnitModule.Unit)
+		local Name = string.format("Buff_%s_%s", OtherUnit.UniqueId, BuffType)
+		OtherUnit:ChangeRatio(Name, "Damage", Ratio, Duration)
+		table.insert(HandlingUnits, OtherUnit)
+
+		BuffTrove:Connect(OtherUnit.Destroying, function()
+			local Index = table.find(HandlingUnits, OtherUnit)
+			if Index then
+				table.remove(HandlingUnits, Index)
+			end
+		end)
+	end
+
+	BuffTrove:Add(function()
+		for _, OtherUnit in pairs(HandlingUnits) do
+			local Name = string.format("Buff_%s_%s", OtherUnit.UniqueId, BuffType)
+			OtherUnit:CancelRatio(Name)
+		end
+		HandlingUnits = {}
+	end)
+
+	for _, OtherUnit in pairs(Unit:GetUnitsInRange()) do
+		Handle(OtherUnit)
+	end
+
+	BuffTrove:Connect(Unit.Added, function(OtherUnit: UnitModule.Unit)
+		if Unit:UnitIsInRange(OtherUnit) then
+			Handle(OtherUnit)
+		end
+	end)
+
+	BuffTrove:Connect(Unit.Upgraded, BuffTrove:WrapClean())
+
+	return BuffTrove:WrapClean()
+end
+
 local function DelayAttack(Unit: UnitModule.Unit, Damage: number, Delay: number)
 	local CurrentEnemy = Unit.CurrentEnemy
 
 	if CurrentEnemy then
 		Unit:AddAttackPromise(
-			Promise.delay(Delay * Unit.SpeedRatio):andThen(function()
+			Promise.delay(Delay * Unit.Ratios.FireRate):andThen(function()
 				Unit:DamageEnemy(CurrentEnemy, Damage)
 			end),
 			"DelayAttack"
@@ -78,84 +126,7 @@ local function DelayAttack(Unit: UnitModule.Unit, Damage: number, Delay: number)
 	end
 end
 
-local function GetCoinsFromUnit(Unit: UnitModule.Unit): number
-	return Unit.UnitData.UnitData[Unit.Level].Coins :: number
-end
-
 local UnitData: { [string]: UnitModule.UnitInput } = {
-	["Alexander The Great"] = {
-		UnitName = "Alexander The Great",
-
-		AttackFuncs = {
-			[0] = {
-				function(Unit: UnitModule.Unit, Damage: number)
-					DelayAttack(Unit, Damage, 0.42)
-				end,
-			},
-		},
-		DefaultRuns = {},
-		Abilities = {},
-	},
-	["Leonidas"] = {
-		UnitName = "Leonidas",
-
-		AttackFuncs = {
-			[0] = {
-				function(Unit: UnitModule.Unit, Damage: number)
-					DelayAttack(Unit, Damage, 0.28)
-				end,
-			},
-		},
-		DefaultRuns = {},
-		Abilities = {},
-	},
-	["Pericles"] = {
-		UnitName = "Pericles",
-
-		AttackFuncs = {},
-		DefaultRuns = {},
-		Abilities = {},
-	},
-	["Pyrrhus"] = {
-		UnitName = "Pyrrhus",
-
-		AttackFuncs = {
-			[0] = {
-				function(Unit: UnitModule.Unit, Damage: number)
-					DelayAttack(Unit, Damage, 0.35)
-				end,
-			},
-		},
-		DefaultRuns = {},
-		Abilities = {},
-	},
-	["Socrates"] = {
-		UnitName = "Socrates",
-
-		AttackFuncs = {},
-		DefaultRuns = {},
-		Abilities = {},
-	},
-	["Themistocles"] = {
-		UnitName = "Themistocles",
-
-		AttackFuncs = {},
-		DefaultRuns = {},
-		Abilities = {},
-	},
-	["Julius Caesar"] = {
-		UnitName = "Julius Caesar",
-
-		AttackFuncs = {
-			[0] = {
-				function(Unit: UnitModule.Unit, Damage: number)
-					DelayAttack(Unit, Damage, 0.23)
-				end,
-			},
-		},
-		DefaultRuns = {},
-		Abilities = {},
-	},
 	["Pompey"] = {
 		UnitName = "Pompey",
 
@@ -164,7 +135,7 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 				function(Unit: UnitModule.Unit, Damage: number)
 					local CurrentEnemy = Unit.CurrentEnemy
 					Unit:AddAttackPromise(
-						Promise.delay(0.4 * Unit.SpeedRatio):andThen(function()
+						Promise.delay(0.4 * Unit.Ratios.FireRate):andThen(function()
 							if CurrentEnemy and CurrentEnemy.Damage then
 								local Speed = 50
 								local Distance = (Unit.CFrame.Position - CurrentEnemy.CFrame.Position).Magnitude
@@ -207,25 +178,47 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 					"SpartacusRage"
 				)
 
-				Unit:ChangeSpeedRatio("SpartacusRage", 0.7, Data.Length)
+				Unit:ChangeRatio("SpartacusRage", "FireRate", 0.7, Data.Length)
 			end,
 		},
 	},
 	["Cicero"] = {
 		UnitName = "Cicero",
 
-		AttackFuncs = {
-			[0] = {
-				function() end,
-			},
-		},
+		AttackFuncs = {},
 		DefaultRuns = {
 			[0] = function(Unit)
 				return AddCoinsPerWave(Unit, function(Wave: number)
-					return GetCoinsFromUnit(Unit)
+					return Unit:GetProperty("Coins")
 				end)
 			end,
 		},
+		Abilities = {},
+	},
+	["Julius Caesar"] = {
+		UnitName = "Julius Caesar",
+
+		AttackFuncs = {
+			[0] = {
+				function(Unit: UnitModule.Unit, Damage: number)
+					DelayAttack(Unit, Damage, 0.23)
+				end,
+			},
+		},
+		DefaultRuns = {},
+		Abilities = {},
+	},
+	["Augustus"] = {
+		UnitName = "Augustus",
+
+		AttackFuncs = {
+			[0] = {
+				function(Unit: UnitModule.Unit, Damage: number)
+					DelayAttack(Unit, Damage, 0.35)
+				end,
+			},
+		},
+		DefaultRuns = {},
 		Abilities = {},
 	},
 	["Trajan"] = {
@@ -234,15 +227,80 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 		AttackFuncs = {},
 		DefaultRuns = {
 			[0] = function(Unit, Damage: number)
-				return AddAllyToWave(Unit, 10, "Legionary", { Health = Damage })
+				return AddAllyToWave(Unit, function()
+					return "Legionary", { Health = Damage }
+				end)
 			end,
 		},
 		Abilities = {},
 	},
-	["Augustus"] = {
-		UnitName = "Augustus",
+	["Pyrrhus"] = {
+		UnitName = "Pyrrhus",
+
+		AttackFuncs = {
+			[0] = {
+				function(Unit: UnitModule.Unit, Damage: number)
+					DelayAttack(Unit, Damage, 0.35)
+				end,
+			},
+		},
+		DefaultRuns = {},
+		Abilities = {},
+	},
+	["Socrates"] = {
+		UnitName = "Socrates",
 
 		AttackFuncs = {},
+		DefaultRuns = {
+			[0] = function(Unit)
+				return AddCoinsPerWave(Unit, function(Wave: number)
+					return Unit:GetProperty("Coins")
+				end)
+			end,
+		},
+		Abilities = {},
+	},
+	["Pericles"] = {
+		UnitName = "Pericles",
+
+		AttackFuncs = {},
+		DefaultRuns = {
+			[0] = function(Unit)
+				return ApplyBuff(Unit, "Damage", 1.5, math.huge)
+			end,
+		},
+		Abilities = {},
+	},
+	["Themistocles"] = {
+		UnitName = "Themistocles",
+
+		AttackFuncs = {},
+		DefaultRuns = {},
+		Abilities = {},
+	},
+	["Alexander The Great"] = {
+		UnitName = "Alexander The Great",
+
+		AttackFuncs = {
+			[0] = {
+				function(Unit: UnitModule.Unit, Damage: number)
+					DelayAttack(Unit, Damage, 0.42)
+				end,
+			},
+		},
+		DefaultRuns = {},
+		Abilities = {},
+	},
+	["Leonidas"] = {
+		UnitName = "Leonidas",
+
+		AttackFuncs = {
+			[0] = {
+				function(Unit: UnitModule.Unit, Damage: number)
+					DelayAttack(Unit, Damage, 0.28)
+				end,
+			},
+		},
 		DefaultRuns = {},
 		Abilities = {},
 	},
@@ -314,35 +372,8 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 		DefaultRuns = {},
 		Abilities = {},
 	},
-	["Rammeses II"] = {
-		UnitName = "Rammeses II",
-
-		AttackFuncs = {
-			[0] = {
-				function(Unit: UnitModule.Unit, Damage: number)
-					DelayAttack(Unit, Damage, 0.35)
-				end,
-			},
-		},
-		DefaultRuns = {},
-		Abilities = {},
-	},
-	["Akhenaten"] = {
-		UnitName = "Akhenaten",
-
-		AttackFuncs = {},
-		DefaultRuns = {},
-		Abilities = {},
-	},
-	["Tutankhamun"] = {
-		UnitName = "Tutankhamun",
-
-		AttackFuncs = {},
-		DefaultRuns = {},
-		Abilities = {},
-	},
-	["Narmer"] = {
-		UnitName = "Narmer",
+	["Ptolemy"] = {
+		UnitName = "Ptolemy",
 
 		AttackFuncs = {
 			[0] = {
@@ -367,8 +398,8 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 		DefaultRuns = {},
 		Abilities = {},
 	},
-	["Ptolemy"] = {
-		UnitName = "Ptolemy",
+	["Narmer"] = {
+		UnitName = "Narmer",
 
 		AttackFuncs = {
 			[0] = {
@@ -377,6 +408,33 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 				end,
 			},
 		},
+		DefaultRuns = {},
+		Abilities = {},
+	},
+	["Akhenaten"] = {
+		UnitName = "Akhenaten",
+
+		AttackFuncs = {},
+		DefaultRuns = {},
+		Abilities = {},
+	},
+	["Rammeses II"] = {
+		UnitName = "Rammeses II",
+
+		AttackFuncs = {
+			[0] = {
+				function(Unit: UnitModule.Unit, Damage: number)
+					DelayAttack(Unit, Damage, 0.35)
+				end,
+			},
+		},
+		DefaultRuns = {},
+		Abilities = {},
+	},
+	["Tutankhamun"] = {
+		UnitName = "Tutankhamun",
+
+		AttackFuncs = {},
 		DefaultRuns = {},
 		Abilities = {},
 	},

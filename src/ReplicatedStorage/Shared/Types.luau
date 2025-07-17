@@ -150,7 +150,11 @@ export type UnitInput = {
 	AttackPriority: string,
 	Level: number,
 
-	SpeedRatio: number,
+	Ratios: {
+		Damage: number,
+		FireRate: number,
+		Range: number,
+	},
 	Abilities: { number },
 }
 
@@ -196,8 +200,12 @@ type UnitData = {
 	CollisionRadius: number,
 	UnitData: UnitInfo.UnitInfo,
 
-	SpeedRatioData: { [string]: { SpeedRatio: number, EndTime: number } },
-	SpeedRatio: number,
+	RatioData: { [string]: { Type: string, Ratio: number, EndTime: number } },
+	Ratios: {
+		Damage: number,
+		FireRate: number,
+		Range: number,
+	},
 
 	SizeRatio: number,
 
@@ -218,9 +226,8 @@ type UnitData = {
 	CharacterClicked: Signal.Signal<boolean>,
 	Upgraded: Signal.Signal<number>,
 	AbilityUsed: Signal.Signal<number, number>, -- First Index, Second TimeUsed --
-	SpeedRatioChanged: Signal.Signal<number>,
 	PriorityChanged: Signal.Signal<UnitInfo.SortType | string>,
-	PropertyChanged: Signal.Signal<string>, -- Does not fire on Upgrade --
+	PropertyChanged: Signal.Signal<string, number>, -- Does not fire on Upgrade --
 	CoinsAdded: Signal.Signal<number>,
 	Destroying: Signal.Signal<>,
 }
@@ -246,7 +253,7 @@ export type UnitModule = {
 	PartIsDescendantOf: (self: Unit, Part: BasePart) -> boolean,
 	ClickCharacter: (self: Unit, Enabled: boolean) -> (),
 
-	_CalculateSpeedRatio: (self: Unit) -> (),
+	_CalculateRatio: (self: Unit) -> (),
 
 	WeldAdornment: (self: Unit, Adornment: Model) -> Model,
 

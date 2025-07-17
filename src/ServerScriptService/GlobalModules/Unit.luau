@@ -19,7 +19,7 @@ local UpgradeEvent = Network.UnitUpgradeEvent
 local PriorityChanged = Network.UnitPriorityChanged
 local AbilityEvent = Network.UnitAbilityEvent
 local AnimationEvent = Network.UnitAnimationEvent
-local SpeedRatioEvent = Network.SpeedRatioEvent
+local RatioEvent = Network.RatioEvent
 local UnitCoinsEvent = Network.UnitCoinsEvent
 
 local Packages = ReplicatedStorage.Packages
@@ -90,8 +90,8 @@ type UnitData = {
 	TotalCost: number,
 
 	CFrame: CFrame,
-	SpeedRatioData: { [string]: { SpeedRatio: number, EndTime: number } },
-	SpeedRatio: number,
+	RatioData: { [string]: { Type: string, Ratio: number, EndTime: number } },
+	Ratios: { Damage: number, FireRate: number, Range: number },
 
 	UnitData: UnitInfo.UnitInfo,
 
@@ -127,7 +127,7 @@ type UnitData = {
 	Attacked: Signal.Signal<>,
 	Upgraded: Signal.Signal<number>,
 	AbilityUsed: Signal.Signal<number, number>, -- First is Index, Second is Fire Time
-	SpeedRatioChanged: Signal.Signal<number>,
+	PropertyChanged: Signal.Signal<string, number>,
 
 	KilledEnemy: Signal.Signal<Enemy.Enemy>,
 	AllyAdded: Signal.Signal<Enemy.Enemy>,
@@ -158,14 +158,17 @@ type UnitImpl = {
 	) -> (),
 	StopAnimation: (self: Unit, AnimationName: string, FadeTime: number?) -> (),
 
+	GetProperty: (self: Unit, PropertyName: string) -> number,
+
 	DisableAttack: (self: Unit, Length: number) -> (),
 	EnableAttack: (self: Unit) -> (),
 
 	Stun: (self: Unit, Length: number) -> (),
 	AddCoins: (self: Unit, Coins: number) -> (),
 
-	_CalculateSpeedRatio: (self: Unit) -> (),
-	ChangeSpeedRatio: (self: Unit, Name: string, SpeedRatio: number, Duration: number) -> (),
+	_CalculateRatio: (self: Unit) -> (),
+	ChangeRatio: (self: Unit, Type: string, Name: string, Ratio: number, Duration: number) -> (),
+	CancelRatio: (self: Unit, Name: string) -> (),
 
 	AddPromise: (self: Unit, Promise: Promise.Promise, PromiseName: string) -> (),
 	AddAttackPromise: (self: Unit, Promise: Promise.Promise, PromiseName: string) -> (),
@@ -179,6 +182,8 @@ type UnitImpl = {
 	DamageEnemy: (self: Unit, Enemy: Enemy.Enemy, Damage: number) -> (),
 
 	IsOwnedBy: (self: Unit, Player: Player) -> boolean,
+	UnitIsInRange: (self: Unit, Unit: Unit) -> boolean,
+	GetUnitsInRange: (self: Unit) -> { [string]: Unit },
 
 	Delete: (self: Unit) -> (),
 	Destroy: (self: Unit) -> (),
@@ -216,7 +221,7 @@ local function SendInfo(UnitInput: { [string]: Unit }, PlayerInput: { Player }, 
 			Level = Unit.Level,
 			Abilities = ConvertAbilityData(Unit.Abilities),
 
-			SpeedRatio = Unit.SpeedRatio,
+			Ratios = Unit.Ratios,
 		}
 	end
 
@@ -257,7 +262,7 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 	self.Attacked = self._Trove:Construct(Signal)
 	self.Upgraded = self._Trove:Construct(Signal)
 	self.AbilityUsed = self._Trove:Construct(Signal)
-	self.SpeedRatioChanged = self._Trove:Construct(Signal)
+	self.PropertyChanged = self._Trove:Construct(Signal)
 
 	self.KilledEnemy = self._Trove:Construct(Signal)
 	self.AllyAdded = self._Trove:Construct(Signal)
@@ -291,8 +296,12 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 	self.AttackPriority = UnitInfo.SortTypes[1]
 	self.CollisionRadius = self.UnitData.CollisionRadius
 
-	self.SpeedRatioData = {}
-	self.SpeedRatio = 1
+	self.RatioData = {}
+	self.Ratios = {
+		Damage = 1,
+		FireRate = 1,
+		Range = 1,
+	}
 
 	self.Promises = {}
 
@@ -318,7 +327,7 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 	SendInfo({ [self.UniqueId] = self }, self.ReplicateTo, true)
 
 	self.AbilityUsed:Connect(function(Index: number, TimeUsed: number)
-		AbilityEvent:FireList(self.UniqueId, Index, TimeUsed)
+		AbilityEvent.FireList(self.ReplicateTo, self.UniqueId, Index, TimeUsed)
 	end)
 
 	self.AllyAdded:Connect(function(Ally: Enemy.Enemy)
@@ -351,7 +360,7 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 			end
 		end
 
-		if self.UnitData.UnitData[self.Level].FireRate ~= 0 then
+		if self:GetProperty("FireRate") ~= 0 then
 			local Connection = self._Trove:Connect(RunService.PostSimulation, function()
 				self:UpdateEnemy()
 			end)
@@ -372,9 +381,8 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 end
 
 function Unit:UpdateEnemy()
-	local LevelData: UnitInfo.UnitData = self.UnitData.UnitData[self.Level]
-	local Range: number = LevelData.Range
-	local FireRate: number = LevelData.FireRate
+	local Range: number = self:GetProperty("Range")
+	local FireRate: number = self:GetProperty("FireRate")
 
 	local EnemiesInRange = Enemy.GetEnemiesInRange(self.CFrame.Position, Range)
 	local ClosestEnemy = Enemy.GetSortedEnemy(EnemiesInRange, self.AttackPriority)
@@ -404,7 +412,7 @@ function Unit:UpdateEnemy()
 
 	local TimeDef: number = workspace:GetServerTimeNow() - self.LastFired
 
-	if TimeDef >= FireRate * self.SpeedRatio then
+	if TimeDef >= FireRate * self.Ratios.FireRate then
 		self:Attack()
 	end
 end
@@ -434,7 +442,7 @@ function Unit:Attack()
 		self.AttackIndex = 1
 	end
 
-	local Damage: number = LevelData.Damage[self.AttackIndex]
+	local Damage: number = LevelData.Damage[self.AttackIndex] * self.Ratios.Damage
 
 	self.AttackTrove:Destroy()
 
@@ -443,7 +451,7 @@ function Unit:Attack()
 		Index = self.AttackIndex,
 		EnemyId = self.CurrentEnemy.UniqueId,
 		Firetime = workspace:GetServerTimeNow(),
-		SpeedRatio = self.SpeedRatio,
+		SpeedRatio = self.Ratios.FireRate,
 	} :: {
 		UniqueId: string,
 		Index: number,
@@ -528,6 +536,20 @@ function Unit:StopAnimation(AnimationName: string)
 	}, false)
 end
 
+function Unit:GetProperty(PropertyName: string): number
+	if PropertyName == "Damage" then
+		return self.UnitData.UnitData[self.Level].Damage[1] * self.Ratios.Damage
+	elseif PropertyName == "FireRate" then
+		return self.UnitData.UnitData[self.Level].FireRate * self.Ratios.FireRate
+	elseif PropertyName == "Range" then
+		return self.UnitData.UnitData[self.Level].Range * self.Ratios.Range
+	elseif PropertyName == "Coins" then
+		return self.UnitData.UnitData[self.Level].Coins :: number
+	else
+		error("Invalid Property: " .. tostring(PropertyName))
+	end
+end
+
 function Unit:DisableAttack(Length: number)
 	self:CancelPromise("DisablePromise")
 	self.Disabled = true
@@ -568,34 +590,51 @@ function Unit:DamageEnemy(EnemyInput: Enemy.Enemy, Damage: number)
 	end
 end
 
-function Unit:_CalculateSpeedRatio()
-	local OldRatio: number = self.SpeedRatio
-	local SpeedRatio: number = 1
+function Unit:_CalculateRatio()
+	local Ratios = {
+		Damage = 1,
+		FireRate = 1,
+		Range = 1,
+	}
 
-	for _, Data in pairs(self.SpeedRatioData) do
-		SpeedRatio *= Data.SpeedRatio
+	for _, Data in pairs(self.RatioData) do
+		Ratios[Data.Type] *= Data.Ratio
 	end
 
-	if OldRatio ~= SpeedRatio then
-		self.SpeedRatio = SpeedRatio
-		self.SpeedRatioChanged:Fire(self.SpeedRatio)
+	for Type, Ratio in pairs(Ratios) do
+		if self.Ratios[Type] ~= Ratio then
+			self.Ratios[Type] = Ratio
+			self.PropertyChanged:Fire(Type, Ratio)
+		end
 	end
 end
 
-function Unit:ChangeSpeedRatio(Name: string, SpeedRatio: number, Duration: number)
+function Unit:ChangeRatio(Name: string, Type: string, Ratio: number, Duration: number)
 	local PromiseName = "SpeedRatio" .. Name
 	self:CancelPromise(PromiseName)
-	local Data = { SpeedRatio = SpeedRatio, EndTime = workspace:GetServerTimeNow() + Duration }
-	self.SpeedRatioData[Name] = Data
-	SpeedRatioEvent.FireList(self.ReplicateTo, self.UniqueId, Name, Data)
-	self:_CalculateSpeedRatio()
-	self:AddPromise(
-		Promise.delay(Duration):andThen(function()
-			self.SpeedRatioData[Name] = nil
-			self:_CalculateSpeedRatio()
-		end),
-		PromiseName
-	)
+	local Data = { Type = Type, Ratio = Ratio, EndTime = workspace:GetServerTimeNow() + Duration }
+	self.RatioData[Name] = Data
+	RatioEvent.FireList(self.ReplicateTo, self.UniqueId, Name, Data)
+	self:_CalculateRatio()
+	if Duration ~= math.huge then
+		self:AddPromise(
+			Promise.delay(Duration):andThen(function()
+				self.RatioData[Name] = nil
+				self:_CalculateRatio()
+			end),
+			PromiseName
+		)
+	end
+end
+
+function Unit:CancelRatio(Name: string)
+	local PromiseName = "SpeedRatio" .. Name
+	self:CancelPromise(PromiseName)
+	if self.RatioData[Name] then
+		self.RatioData[Name] = nil
+		self:_CalculateRatio()
+		RatioEvent.FireList(self.ReplicateTo, self.UniqueId, Name, nil)
+	end
 end
 
 function Unit:AddPromise(UnitPromise: Promise.Promise, PromiseName: string)
@@ -630,7 +669,7 @@ end
 
 function Unit:Watch(Time: number, Funcs: { { Func: () -> (), TimeRatio: number } })
 	for _, FuncData in ipairs(Funcs) do
-		local NewTime: number = (Time * self.SpeedRatio) * FuncData.TimeRatio
+		local NewTime: number = (Time * self.Ratios.FireRate) * FuncData.TimeRatio
 		self.AttackTrove:Add(task.delay(NewTime, FuncData.Func))
 	end
 end
@@ -653,6 +692,26 @@ end
 
 function Unit:IsOwnedBy(Player: Player)
 	return self.Owner == Player
+end
+
+function Unit:UnitIsInRange(OtherUnit: Unit)
+	local Range: number = self:GetProperty("Range")
+	local PositionA = Vector2.new(self.CFrame.X, self.CFrame.Z)
+	local PositionB = Vector2.new(OtherUnit.CFrame.X, OtherUnit.CFrame.Z)
+	return (PositionA - PositionB).Magnitude <= Range
+end
+
+function Unit:GetUnitsInRange()
+	local OtherUnits = {}
+	for _, OtherUnit in pairs(Units) do
+		if OtherUnit ~= self then
+			if self:UnitIsInRange(OtherUnit) then
+				OtherUnits[OtherUnit.UniqueId] = OtherUnit
+			end
+		end
+	end
+
+	return OtherUnits
 end
 
 function Unit:Delete()

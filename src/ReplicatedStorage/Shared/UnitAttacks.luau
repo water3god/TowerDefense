@@ -324,6 +324,13 @@ local UnitAttacks: {
 				end,
 			},
 		},
+		["Augustus"] = {
+			[0] = {
+				function(Unit, AttackInput, Enemy, Delay)
+					DefaultAttack(Unit, AttackInput, Enemy, Delay)
+				end,
+			},
+		},
 		["Alexander The Great"] = {
 			[0] = {
 				function(Unit, AttackInput, Enemy, Delay)

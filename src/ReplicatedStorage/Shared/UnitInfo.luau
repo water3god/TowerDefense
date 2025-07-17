@@ -129,9 +129,10 @@ local UnitInfo: { [string]: UnitInfo } = {
 		UnitData = {
 			[0] = {
 				Damage = { 0 },
+				Coins = 100,
 				FireRate = 0,
 				Range = 5,
-				Cost = 100,
+				Cost = 200,
 			},
 		},
 		CollisionRadius = 3,
@@ -196,7 +197,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 		UnitData = {
 			[0] = {
 				Damage = { 5 },
-				FireRate = 0,
+				FireRate = 10,
 				Range = 0,
 				Armor = "TrajanArmor",
 				Cost = 100,
@@ -255,9 +256,9 @@ local UnitInfo: { [string]: UnitInfo } = {
 
 		UnitData = {
 			[0] = {
-				Damage = { 0 },
-				FireRate = 0,
-				Range = 5,
+				Damage = { 10 },
+				FireRate = 1,
+				Range = 12,
 				Armor = "AugustusArmor",
 				Cost = 100,
 			},

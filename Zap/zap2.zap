@@ -204,7 +204,11 @@ type UnitInput = struct {
 	OwnerId: f64?,
 	AttackPriority: string,
 	Level: Level,
-	SpeedRatio: f32,
+	Ratios: struct {
+		Damage: f32,
+		FireRate: f32,
+		Range: f32,
+	},
 	Abilities: f64[],
 }
 
@@ -285,7 +289,7 @@ event UnitPriorityChanged = {
 	},
 }
 
-event SpeedRatioEvent = {
+event RatioEvent = {
 	from: Server,
 	type: Reliable,
 	call: SingleAsync,
@@ -293,9 +297,10 @@ event SpeedRatioEvent = {
 		string,
 		string,
 		struct {
-			SpeedRatio: f32,
+			Type: string,
+			Ratio: f32,
 			EndTime: Time,
-		},
+		}?,
 	),
 }
 event UnitUpgradeEvent = {

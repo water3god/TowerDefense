@@ -76,7 +76,7 @@ local OnUpgrade = Network.UnitUpgradeEvent
 local PriorityChanged = Network.UnitPriorityChanged
 local AbilityEvent = Network.UnitAbilityEvent
 local AnimationEvent = Network.UnitAnimationEvent
-local SpeedRatioEvent = Network.SpeedRatioEvent
+local RatioEvent = Network.RatioEvent
 local Destroy = Network.UnitDestroyEvent
 local UnitCoinsEvent = Network.UnitCoinsEvent
 
@@ -274,7 +274,6 @@ local function NewUnit(Input: Types.UnitInput, New: boolean)
 	self.PriorityChanged = self.Trove:Construct(Signal)
 	self.PropertyChanged = self.Trove:Construct(Signal)
 	self.AnimationPlayed = self.Trove:Construct(Signal)
-	self.SpeedRatioChanged = self.Trove:Construct(Signal)
 	self.CoinsAdded = self.Trove:Construct(Signal)
 
 	self.Destroying = self.Trove:Construct(Signal)
@@ -287,8 +286,8 @@ local function NewUnit(Input: Types.UnitInput, New: boolean)
 
 	self.Promises = {}
 
-	self.SpeedRatioData = {}
-	self.SpeedRatio = Input.SpeedRatio
+	self.RatioData = {}
+	self.Ratios = Input.Ratios
 
 	self.UnitData = UnitInfo.UnitInfo[self.UnitName]
 	self.CollisionRadius = self.UnitData.CollisionRadius
@@ -545,7 +544,7 @@ function UnitModule:Watch(AnimationName: string, Funcs: { { Func: () -> (), Play
 	for _, FuncData in ipairs(Funcs) do
 		if FuncData.TimeRatio >= CurrentRatio or FuncData.PlayAfter then
 			local RatioDifference = FuncData.TimeRatio - CurrentRatio
-			local Time = RatioDifference * (Anim.Length / self.SpeedRatio)
+			local Time = RatioDifference * (Anim.Length / self.Ratios.FireRate)
 
 			self.AttackTrove:Add(task.delay(Time, FuncData.Func))
 		end
@@ -590,17 +589,22 @@ function UnitModule:ApplyDetail()
 	end
 end
 
-function UnitModule:_CalculateSpeedRatio()
-	local OldRatio = self.SpeedRatio
-	local SpeedRatio = 1
+function UnitModule:_CalculateRatio()
+	local Ratios = {
+		Damage = 1,
+		FireRate = 1,
+		Range = 1,
+	}
 
-	for _, Data in pairs(self.SpeedRatioData) do
-		SpeedRatio *= Data.SpeedRatio
+	for _, Data in pairs(self.RatioData) do
+		Ratios[Data.Type] *= Data.Ratio
 	end
 
-	if OldRatio ~= SpeedRatio then
-		self.SpeedRatio = SpeedRatio
-		self.SpeedRatioChanged:Fire(self.SpeedRatio)
+	for Type, Ratio in pairs(Ratios) do
+		if self.Ratios[Type] ~= Ratio then
+			self.Ratios[Type] = Ratio
+			self.PropertyChanged:Fire(Type, Ratio)
+		end
 	end
 end
 --[[Clones adornment automatically]]
@@ -1168,27 +1172,31 @@ AnimationEvent.SetCallback(function(
 	end
 end)
 
-SpeedRatioEvent.SetCallback(function(UniqueId: string, Name: string, Data: { SpeedRatio: number, EndTime: number })
+RatioEvent.SetCallback(function(UniqueId: string, Name: string, Data: { Type: string, Ratio: number, EndTime: number }?)
 	local Unit = UnitModule.GetUnit(UniqueId)
+	local PromiseName = "Ratio" .. Name
 
 	if Unit then
-		local PromiseName = "SpeedRatio" .. Name
+		if Data then
+			Unit:CancelPromise(PromiseName)
+			Unit.RatioData[Name] = Data
+			Unit:_CalculateRatio()
 
-		Unit:CancelPromise(PromiseName)
-		Unit.SpeedRatioData[Name] = Data
+			local Difference = Data.EndTime - workspace:GetServerTimeNow()
 
-		Unit:_CalculateSpeedRatio()
-
-		local Difference = Data.EndTime - workspace:GetServerTimeNow()
-
-		if Difference > 0 then
-			Unit:AddPromise(
-				Promise.delay(Data.EndTime - workspace:GetServerTimeNow()):andThen(function()
-					Unit.SpeedRatioData[Name] = nil
-					Unit:_CalculateSpeedRatio()
-				end),
-				PromiseName
-			)
+			if Difference > 0 and Data.EndTime ~= math.huge then
+				Unit:AddPromise(
+					Promise.delay(Data.EndTime - workspace:GetServerTimeNow()):andThen(function()
+						Unit.RatioData[Name] = nil
+						Unit:_CalculateRatio()
+					end),
+					PromiseName
+				)
+			end
+		else
+			Unit:CancelPromise(PromiseName)
+			Unit.RatioData[Name] = nil
+			Unit:_CalculateRatio()
 		end
 	end
 end)
