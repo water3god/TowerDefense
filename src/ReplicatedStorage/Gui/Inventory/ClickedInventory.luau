@@ -273,11 +273,11 @@ local function Connected(props)
 					OnClick(TouchPosition)
 				end)
 
-				Touch.TouchMoved:Connect(function(TouchPosition: Vector2, Processed: boolean)
+				Touch.TouchMoved:Connect(function(Input: InputObject, Processed: boolean)
 					if Processed then
 						return
 					end
-					UpdatePosition(TouchPosition)
+					UpdatePosition(Vector2.new(Input.Position.X, Input.Position.Y))
 				end)
 			elseif PreferredInput == "MouseKeyboard" then
 				local Mouse = ClickedTrove:Construct(Input.Mouse)

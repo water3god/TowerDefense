@@ -116,11 +116,13 @@ local function PlaceUnit(Player: Player, Wave: GlobalWave.GlobalWave, Data: Plac
 	local UnitUnitData = UnitData.UnitData[Data.Unit]
 
 	if not UnitUnitData then
-		warn(`No UnitData for '{Data.Unit}`)
+		warn(`No UnitInfo for '{Data.Unit}`)
+		return
 	end
 	local UnitUnitInfo = UnitInfo.UnitInfo[Data.Unit]
 	if not UnitUnitInfo then
-		warn(`No UnitData for '{Data.Unit}`)
+		warn(`No UnitData for {Data.Unit}`)
+		return
 	end
 
 	local PData = PlayerData.GetPlayerData(Player)

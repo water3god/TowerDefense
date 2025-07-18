@@ -17,9 +17,6 @@ local TweenService = game:GetService("TweenService")
 local Player = Players.LocalPlayer
 local PlayerGui: PlayerGui = Player:WaitForChild("PlayerGui")
 
-local InventoryService =
-	require(ReplicatedStorage:WaitForChild("Client"):WaitForChild("GlobalClient"):WaitForChild("InventoryService"))
-
 local ArrivingGui = TeleportService:GetArrivingTeleportGui()
 
 local Images = {
@@ -131,6 +128,8 @@ local function PreloadAsync()
 	if not Player.Character then
 		Player.CharacterAdded:Wait()
 	end
+	local InventoryService =
+		require(ReplicatedStorage:WaitForChild("Client"):WaitForChild("GlobalClient"):WaitForChild("InventoryService"))
 	if not InventoryService.IsSynced then
 		InventoryService.Synced:Wait()
 	end

@@ -858,7 +858,7 @@ function PlayerData:GetQuestFromId(Id: string)
 			continue
 		end
 		for _, Quest in pairs(QuestTypes) do
-			if Quest.Id == Id then
+			if Quest and Quest.Id == Id then
 				return Quest
 			end
 		end

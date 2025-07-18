@@ -455,8 +455,8 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 		},
 		Abilities = {},
 	},
-	["Rammeses II"] = {
-		UnitName = "Rammeses II",
+	["Ramesses II"] = {
+		UnitName = "Ramesses II",
 
 		AttackFuncs = {
 			[0] = {
