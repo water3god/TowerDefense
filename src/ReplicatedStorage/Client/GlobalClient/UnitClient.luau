@@ -750,7 +750,7 @@ function UnitModule:GetProperties()
 	local UnitData = self.UnitData.UnitData
 	local Level = self.Level
 	return {
-		Damage = UnitData[Level].Damage[1] * self.Ratios.Damage,
+		Damage = math.floor(UnitData[Level].Damage[1] * self.Ratios.Damage),
 		FireRate = UnitData[Level].FireRate * self.Ratios.FireRate,
 		Range = UnitData[Level].Range * self.Ratios.Range,
 		Coins = UnitData[Level].Coins,
@@ -767,7 +767,7 @@ function UnitModule:GetNextProperties()
 	end
 
 	return {
-		Damage = UnitData[Level].Damage[1] * self.Ratios.Damage,
+		Damage = math.floor(UnitData[Level].Damage[1] * self.Ratios.Damage),
 		FireRate = UnitData[Level].FireRate * self.Ratios.FireRate,
 		Range = UnitData[Level].Range * self.Ratios.Range,
 		Coins = UnitData[Level].Coins,

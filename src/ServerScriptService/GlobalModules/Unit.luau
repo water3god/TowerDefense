@@ -542,13 +542,18 @@ end
 
 function Unit:GetProperty(PropertyName: string): number
 	if PropertyName == "Damage" then
-		return self.UnitData.UnitData[self.Level].Damage[1] * self.Ratios.Damage
+		return math.floor(self.UnitData.UnitData[self.Level].Damage[1] * self.Ratios.Damage)
 	elseif PropertyName == "FireRate" then
-		return self.UnitData.UnitData[self.Level].FireRate * self.Ratios.FireRate
+		return math.floor(self.UnitData.UnitData[self.Level].FireRate * self.Ratios.FireRate)
 	elseif PropertyName == "Range" then
-		return self.UnitData.UnitData[self.Level].Range * self.Ratios.Range
+		return math.floor(self.UnitData.UnitData[self.Level].Range * self.Ratios.Range)
 	elseif PropertyName == "Coins" then
-		return self.UnitData.UnitData[self.Level].Coins :: number
+		local Coins = self.UnitData.UnitData[self.Level].Coins
+		if not Coins then
+			error("Unit does not generate coins!")
+		end
+
+		return math.floor(Coins)
 	else
 		error("Invalid Property: " .. tostring(PropertyName))
 	end
