@@ -81,7 +81,6 @@ function Module.RedeemQuest(Id: string)
 end
 
 QuestChanged.SetCallback(function(Data)
-	print(Data)
 	for _, SentQuestData in pairs(Data) do
 		local Quest = Module.GetQuestFromId(SentQuestData.Id)
 		if not Quest then

@@ -504,7 +504,7 @@ local function CalculateTotalCost(UpgradeData: TotalUnitData, GivenLevel: number
 	local TotalCost = 0
 
 	for Level, Info in pairs(UpgradeData) do
-		if Level >= GivenLevel then
+		if Level <= GivenLevel then
 			TotalCost += Info.Cost
 		end
 	end
