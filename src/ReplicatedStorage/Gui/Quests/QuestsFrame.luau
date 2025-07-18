@@ -321,7 +321,7 @@ local function CreateQuestsFrame(props: Properties)
 
 		for Index, Data in ipairs(QuestInnerData) do
 			Frames["Quest" .. Data.Id] = e(CreateQuest, {
-				QuestData = Data,
+				QuestData = table.clone(Data),
 				native = {
 					LayoutOrder = Index,
 				},

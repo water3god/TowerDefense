@@ -26,6 +26,7 @@ local WhiteListedIds = {
 	621274712,
 	604935177,
 	3574179167,
+	1361762028,
 
 	-- new Testers --
 

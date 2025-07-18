@@ -234,9 +234,8 @@ local function Connected(props)
 					if Player and Player ~= LocalPlayer then
 						SetHovered(true)
 						SetOtherCharacter(Character)
+						return
 					end
-
-					return
 				end
 			end
 
