@@ -133,7 +133,7 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 					local OldData = PlayerDataModule:GetUnitFromId(EquippedUnit) :: any
 
 					local Data = { Name = OldData.Unit, OldLevel = OldData.Level, OldXP = OldData.XP }
-					PlayerDataModule:AddUnitXP(EquippedUnit, TotalXP * 4)
+					PlayerDataModule:AddUnitXP(EquippedUnit, TotalXP * 30)
 					Data.NewLevel = OldData.Level
 					Data.NewXP = OldData.XP
 					table.insert(SendData.ExistingUnits, Data)
@@ -142,7 +142,7 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 				OtherSendData.OldXP = PlayerDataModule.Profile.Data.XP
 				OtherSendData.OldLevel = PlayerDataModule.Profile.Data.Level
 
-				PlayerDataModule:AddXP(TotalXP)
+				PlayerDataModule:AddXP(TotalXP * 10)
 
 				OtherSendData.NewXP = PlayerDataModule.Profile.Data.XP
 				OtherSendData.NewLevel = PlayerDataModule.Profile.Data.Level

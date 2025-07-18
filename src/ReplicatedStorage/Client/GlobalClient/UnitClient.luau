@@ -19,6 +19,7 @@ local DefaultWalk = UnitsAnimations.Walk
 local _Global = UnitsAnimations.Global
 
 local GlobalWorkspace = workspace.GlobalWorkspace
+local ParticlesFolder = GlobalWorkspace.Particles
 local UnitsFolder = GlobalWorkspace.Units
 local PlacementClient = GlobalWorkspace.PlacementClient
 
@@ -32,6 +33,11 @@ for _, Model in ipairs(ModelStorage.Adornments:GetChildren()) do
 end
 
 local Camera = workspace.CurrentCamera
+
+local Emitters = ModelStorage.Emitters
+local SmokeEmitter = Emitters.Smoke
+local DestroyParticle = Emitters.poof
+local OtherDestroyParticle = Emitters.Pops
 
 local Extra = ModelStorage.Extra
 local RadiusReference = Extra.CollisionRadius
@@ -170,7 +176,8 @@ local function GetRotatingRange()
 
 		local ShrunkRange = Range * 0.5
 		local NumberLerp = Enabled and Lerps.number(ShrunkRange, Range) or Lerps.number(Range, ShrunkRange)
-		local NewPromise = NewTrove:AddPromise(HelperFunctions.TweenPromise(0.05, function(alpha: number)
+
+		local NewPromise = NewTrove:AddPromise(HelperFunctions.TweenPromise(0.3, function(alpha: number)
 			local Direction = if Enabled then Enum.EasingDirection.Out else Enum.EasingDirection.In
 			local NewAlpha = TweenService:GetValue(alpha, Enum.EasingStyle.Cubic, Direction)
 			local LerpedRange = NumberLerp(NewAlpha)
@@ -498,6 +505,32 @@ local function NewUnit(Input: Types.UnitInput, New: boolean)
 	OnLevel(self.Level)
 	self.Upgraded:Connect(OnLevel)
 
+	local Part = HelperFunctions.EmitParticle(
+		{ SmokeEmitter },
+		self.CFrame - Vector3.new(0, 0.2, 0),
+		20,
+		function(Particle)
+			local Raycast = workspace:Raycast(self.CFrame.Position + Vector3.new(0, 1, 0), Vector3.new(0, -100, 0))
+			if Raycast and Raycast.Instance then
+				Particle.Color = ColorSequence.new(Raycast.Instance.Color)
+			end
+		end
+	)
+
+	local function SetColor(Particle: ParticleEmitter)
+		Particle.Color = ColorSequence.new(self.Character["Body Colors"].TorsoColor3)
+	end
+
+	self.Destroying:Connect(function()
+		local Particle = HelperFunctions.EmitParticle({ DestroyParticle }, self.Root.CFrame, 1, SetColor, true)
+		local OtherParticle =
+			HelperFunctions.EmitParticle({ OtherDestroyParticle }, self.Root.CFrame, 16, SetColor, true)
+		Particle.Parent = ParticlesFolder
+		OtherParticle.Parent = ParticlesFolder
+	end)
+
+	Part.Parent = ParticlesFolder
+
 	self.NewUnit:Fire(self, New)
 end
 
@@ -697,7 +730,9 @@ function UnitModule:OnAttack(Input: Types.UnitAttackInput)
 
 	self.AttackTrove:Destroy()
 	if self.UnitAttacks and self.UnitAttacks[self.Level] and self.UnitAttacks[self.Level][Input.Index] then
-		self.UnitAttacks[self.Level][Input.Index](self, Input, Enemy, Difference)
+		task.spawn(function()
+			self.UnitAttacks[self.Level][Input.Index](self, Input, Enemy, Difference)
+		end)
 	end
 
 	self.Attacked:Fire()

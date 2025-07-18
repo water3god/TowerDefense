@@ -150,7 +150,7 @@ local function CreateUnitFrame(props: UnitProperties)
 			local OtherPart = HelperFunctions.EmitParticle({ SummonParticle2 }, CFrame.new(), 12, function(Particle)
 				Particle.Size = ChangeSize(Particle.Size, Size.X / 800)
 				Particle.Color = Data.RarityData.BackgroundColor
-			end)
+			end, true)
 
 			local Connection = RunService.PreRender:Connect(function()
 				local NewPos = GuiService:GetGuiInset() + Viewport.AbsolutePosition + Size / 2

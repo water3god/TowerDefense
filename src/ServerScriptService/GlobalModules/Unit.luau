@@ -167,7 +167,7 @@ type UnitImpl = {
 	AddCoins: (self: Unit, Coins: number) -> (),
 
 	_CalculateRatio: (self: Unit) -> (),
-	ChangeRatio: (self: Unit, Type: string, Name: string, Ratio: number, Duration: number) -> (),
+	ChangeRatio: (self: Unit, Name: string, Type: string, Ratio: number, Duration: number) -> (),
 	CancelRatio: (self: Unit, Name: string) -> (),
 
 	AddPromise: (self: Unit, Promise: Promise.Promise, PromiseName: string) -> (),
@@ -309,6 +309,10 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 	self.ReplicateTo = UserInput.ReplicateTo or Players:GetPlayers()
 
 	self.TotalCost = UnitInfo.CalculateTotalCost(self.UnitData.UnitData, self.Level)
+
+	if UserInput.DamageMultiplier then
+		self:ChangeRatio("__DamageMultiplier", "Damage", UserInput.DamageMultiplier, math.huge)
+	end
 
 	if #SharedUnitData.Abilities ~= #Data.Abilities then
 		warn("Incorrect Ability Configuration for: " .. self.UnitName)

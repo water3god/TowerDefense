@@ -123,17 +123,32 @@ local function PlaceUnit(Player: Player, Wave: GlobalWave.GlobalWave, Data: Plac
 		warn(`No UnitData for '{Data.Unit}`)
 	end
 
-	if UnitData then
+	local PData = PlayerData.GetPlayerData(Player)
+	local PDataUnit = nil
+
+	if PData then
+		for _, UnitName in pairs(PData:GetEquippedUnits()) do
+			local Info = PData:GetUnitFromId(UnitName)
+			if Info and Info.Unit == Data.Unit then
+				PDataUnit = Info
+				break
+			end
+		end
+	end
+
+	if UnitData and PDataUnit then
 		local Cost = UnitUnitInfo.UnitData[0].Cost
 		local PlayerCoins = Wave.Coins[Player.UserId]
 
 		if Wave:HasEnoughCoins(Player.UserId, Cost) then
 			local Result = CheckPlacement(InputCFrame, UnitUnitInfo)
+			local DamageMultiplier = 1 + PDataUnit.Level * 0.01
 			if Result then
 				local NewUnit = Unit.new({
 					CFrame = InputCFrame,
 					OwnerId = Player.UserId,
 					Level = 0,
+					DamageMultiplier = DamageMultiplier,
 				}, UnitUnitData)
 				Wave:AddUnit(NewUnit)
 				Wave:SubtractCoinsFromUser(Player.UserId, Cost)
@@ -158,16 +173,6 @@ local function OnPlacement(Player: Player, Data: PlacementData)
 end
 
 Placement.SetCallback(function(Player: Player, Data: PlacementData)
-	if typeof(Data) ~= "table" then
-		return
-	end
-	if
-		typeof(Data.Unit) ~= "string"
-		or typeof(Data.UnitPosition) ~= "Vector3"
-		or typeof(Data.RotationIndex) ~= "number"
-	then
-		return
-	end
 	if
 		HelperFunctions.IsNan(Data.UnitPosition)
 		or HelperFunctions.IsNan(Data.RotationIndex)

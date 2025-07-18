@@ -356,7 +356,7 @@ function Enemy.GetEnemiesInRange(Position: Vector3, Range: number)
 	local EnemiesTable = {}
 
 	for _, self in pairs(Enemies) do
-		if self:IsInRange(StandardizedPos, Range) then
+		if self:IsInRange(StandardizedPos, Range) and not self.Ally then
 			table.insert(EnemiesTable, self)
 		end
 	end

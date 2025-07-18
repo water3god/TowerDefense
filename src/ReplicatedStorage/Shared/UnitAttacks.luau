@@ -254,6 +254,69 @@ local function EasyWeld(Part0: BasePart, Part1: BasePart)
 	return Weld
 end
 
+local function FireArrow(
+	Unit: Types.Unit,
+	AttackInput: Types.UnitAttackInput,
+	Enemy: Types.EnemyClient?,
+	Delay: number,
+	Data: {
+		DelayTime: number,
+		Realigned: CFrame,
+		Speed: number,
+	}
+)
+	if not Enemy then
+		return
+	end
+	local SpeedRatio = AttackInput.SpeedRatio
+	PlayAnimation(Unit, AttackInput, Delay)
+
+	local Arrow = Unit:WeldAdornment(PompeyArrow)
+	Arrow.Parent = ParticlesFolder
+
+	local DelayTime = CalculateDelay(Data.DelayTime, SpeedRatio, Delay)
+	DestroyBeforeTime(Unit, Arrow, DelayTime)
+
+	local LastPosition: Vector3? = nil
+
+	Enemy.Destroying:Once(function()
+		LastPosition = Enemy.CFrame.Position + Vector3.new(0, Enemy.YOffset, 0)
+		Enemy = nil
+	end)
+
+	Unit:AddAttackPromise(
+		Promise.delay(DelayTime)
+			:andThen(function()
+				if Enemy then
+					Unit:RotateToEnemy(Enemy)
+				end
+				ClearWelds(Arrow)
+				local Middle = FindFirstMiddle(Arrow)
+				if Middle then
+					Middle.Anchored = true
+					if Enemy then
+						LastPosition = Enemy.CFrame.Position + Vector3.new(0, Enemy.YOffset, 0)
+					end
+					Realign(Arrow, Data.Realigned)
+					if LastPosition then
+						TweenBetweenPositions(
+							Middle,
+							Middle.CFrame.Position,
+							LastPosition + RandomVector() / 2,
+							Data.Speed,
+							Unit.CFrame.Position
+						):await()
+						PlayAttackHit(Enemy)
+					end
+				end
+			end)
+			:finally(function()
+				Arrow:Destroy()
+			end),
+		"AttackPompeyArrow"
+	)
+end
+
 local UnitAttacks: {
 	[string]: {
 		[number --[[Level]]]: {
@@ -271,56 +334,11 @@ local UnitAttacks: {
 		["Pompey"] = {
 			[0] = {
 				function(Unit, AttackInput, Enemy, Delay)
-					if not Enemy then
-						return
-					end
-					local SpeedRatio = AttackInput.SpeedRatio
-					PlayAnimation(Unit, AttackInput, Delay)
-
-					local Arrow = Unit:WeldAdornment(PompeyArrow)
-					Arrow.Parent = ParticlesFolder
-
-					local DelayTime = CalculateDelay(0.4, SpeedRatio, Delay)
-					DestroyBeforeTime(Unit, Arrow, DelayTime)
-
-					local LastPosition: Vector3? = nil
-
-					Enemy.Destroying:Once(function()
-						LastPosition = Enemy.CFrame.Position + Vector3.new(0, Enemy.YOffset, 0)
-						Enemy = nil
-					end)
-
-					Unit:AddAttackPromise(
-						Promise.delay(DelayTime)
-							:andThen(function()
-								if Enemy then
-									Unit:RotateToEnemy(Enemy)
-								end
-								ClearWelds(Arrow)
-								local Middle = FindFirstMiddle(Arrow)
-								if Middle then
-									Middle.Anchored = true
-									if Enemy then
-										LastPosition = Enemy.CFrame.Position + Vector3.new(0, Enemy.YOffset, 0)
-									end
-									Realign(Arrow, CFrame.Angles(0, math.rad(90), 0))
-									if LastPosition then
-										TweenBetweenPositions(
-											Middle,
-											Middle.CFrame.Position,
-											LastPosition + RandomVector() / 2,
-											50,
-											Unit.CFrame.Position
-										):await()
-										PlayAttackHit(Enemy)
-									end
-								end
-							end)
-							:finally(function()
-								Arrow:Destroy()
-							end),
-						"AttackPompeyArrow"
-					)
+					FireArrow(Unit, AttackInput, Enemy, Delay, {
+						DelayTime = 0.4,
+						Realigned = CFrame.Angles(0, math.rad(90), 0),
+						Speed = 50,
+					})
 				end,
 			},
 		},
@@ -420,7 +438,25 @@ local UnitAttacks: {
 		},
 		["Leonidas"] = {
 			[0] = {
-				DefaultAttack,
+				function(Unit, AttackInput, Enemy, Delay)
+					DefaultAttack(Unit, AttackInput, Enemy, Delay)
+
+					local DelayTime = CalculateDelay(0.3, AttackInput.SpeedRatio, Delay)
+
+					local DelProm = Promise.delay(DelayTime):andThen(function()
+						EmitOnPart(
+							Unit,
+							{ Emitters.pierce },
+							{ Unit.Character.LeonidasArmor.RightHand.Spear.MainPole.Pole },
+							true,
+							true,
+							30
+						)
+						PlayAttackHit(Enemy)
+					end)
+
+					Unit:AddAttackPromise(DelProm, "LeonidasAttackEmit")
+				end,
 			},
 		},
 		["William the Conqueror"] = {
@@ -445,12 +481,27 @@ local UnitAttacks: {
 		},
 		["Ptolemy"] = {
 			[0] = {
-				DefaultAttack,
+				function(Unit, AttackInput, Enemy, Delay)
+					FireArrow(Unit, AttackInput, Enemy, Delay, {
+						DelayTime = 0.4,
+						Realigned = CFrame.Angles(0, math.rad(90), 0),
+						Speed = 50,
+					})
+				end,
 			},
 		},
 		["Cleopatra"] = {
 			[0] = {
-				DefaultAttack,
+				function(Unit, AttackInput, Enemy, Delay)
+					for _ = 1, 3, 1 do
+						task.wait(0.1)
+						FireArrow(Unit, AttackInput, Enemy, Delay, {
+							DelayTime = 0.4,
+							Realigned = CFrame.Angles(0, math.rad(90), 0),
+							Speed = 50,
+						})
+					end
+				end,
 			},
 		},
 		["Narmer"] = {

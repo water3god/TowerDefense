@@ -216,7 +216,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 			[0] = {
 				Damage = { 5 },
 				FireRate = 1,
-				Range = 8,
+				Range = 13,
 				Armor = "SpartacusArmor",
 				Cost = 100,
 			},
@@ -327,7 +327,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 			[0] = {
 				Damage = { 10 },
 				FireRate = 2,
-				Range = 5,
+				Range = 10,
 				Armor = "CharlemagneArmor",
 				Cost = 100,
 			},
@@ -344,7 +344,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 			[0] = {
 				Damage = { 0 },
 				FireRate = 0,
-				Range = 5,
+				Range = 10,
 				Armor = "JoanArmor",
 				Cost = 100,
 			},
@@ -361,7 +361,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 			[0] = {
 				Damage = { 0 },
 				FireRate = 0,
-				Range = 5,
+				Range = 10,
 				Armor = "LeifArmor",
 				Cost = 100,
 			},
@@ -376,9 +376,9 @@ local UnitInfo: { [string]: UnitInfo } = {
 
 		UnitData = {
 			[0] = {
-				Damage = { 5 },
+				Damage = { 10 },
 				FireRate = 3,
-				Range = 5,
+				Range = 10,
 				Armor = "PtolemyArmor",
 				Cost = 100,
 			},
@@ -393,9 +393,9 @@ local UnitInfo: { [string]: UnitInfo } = {
 
 		UnitData = {
 			[0] = {
-				Damage = { 5 },
+				Damage = { 10 },
 				FireRate = 2,
-				Range = 5,
+				Range = 10,
 				Armor = "CleopatraArmor",
 				Cost = 100,
 			},
@@ -410,9 +410,9 @@ local UnitInfo: { [string]: UnitInfo } = {
 
 		UnitData = {
 			[0] = {
-				Damage = { 5 },
+				Damage = { 10 },
 				FireRate = 2,
-				Range = 5,
+				Range = 10,
 				Armor = "NarmerArmor",
 				Cost = 100,
 			},
@@ -429,7 +429,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 			[0] = {
 				Damage = { 0 },
 				FireRate = 0,
-				Range = 5,
+				Range = 10,
 				Cost = 100,
 			},
 		},
@@ -445,7 +445,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 			[0] = {
 				Damage = { 5 },
 				FireRate = 2,
-				Range = 5,
+				Range = 10,
 				Armor = "RamessesArmor",
 				Cost = 100,
 			},
@@ -462,7 +462,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 			[0] = {
 				Damage = { 0 },
 				FireRate = 0,
-				Range = 5,
+				Range = 10,
 				Cost = 100,
 			},
 		},

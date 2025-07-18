@@ -234,23 +234,17 @@ local remotes = ReplicatedStorage:WaitForChild("Zap2")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
-export type Health = (number)
-export type SortType = ("First" | "Last" | "Strongest" | "Weakest")
-export type Time = (number)
+export type ProductId = (number)
 export type PlacementData = ({
 	["Unit"]: (string),
 	["UnitPosition"]: (Vector3),
 	["RotationIndex"]: (number),
 })
-export type RollData = ({
-	["SentTime"]: (number),
-	["Data"]: ({ ({
-		["Name"]: (string),
-		["Id"]: (string),
-	}) }),
-	["AutoRoll"]: (boolean),
-})
+export type Level = (number)
+export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
 export type AbilityIndex = (number)
+export type SortType = ("First" | "Last" | "Strongest" | "Weakest")
+export type Time = (number)
 export type UnitInput = ({
 	["UniqueId"]: (string),
 	["UnitName"]: (string),
@@ -265,10 +259,17 @@ export type UnitInput = ({
 	}) }),
 	["Abilities"]: ({ (number) }),
 })
-export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
-export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
 export type XP = (number)
-export type ProductId = (number)
+export type Health = (number)
+export type RollData = ({
+	["SentTime"]: (number),
+	["Data"]: ({ ({
+		["Name"]: (string),
+		["Id"]: (string),
+	}) }),
+	["AutoRoll"]: (boolean),
+})
+export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
 export type UnitAttackInput = ({
 	["UniqueId"]: (string),
 	["Index"]: (number),
@@ -276,7 +277,6 @@ export type UnitAttackInput = ({
 	["Firetime"]: (number),
 	["SpeedRatio"]: (number),
 })
-export type Level = (number)
 
 local function SendEvents()
 	if outgoing_used ~= 0 then

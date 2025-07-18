@@ -709,21 +709,26 @@ function Funcs.EmitParticle(
 	ParticleEmitter: { ParticleEmitter },
 	CFrame: CFrame,
 	Times: number?,
-	Func: ((Particle: ParticleEmitter) -> ())?
+	Func: ((Particle: ParticleEmitter, Part: Part) -> ())?,
+	HasAttachment: boolean?
 )
 	local Part = CreateRaw()
 	Part.Size = Vector3.one
 	Part.Transparency = 1
 	Part.CFrame = CFrame
-	local Attachment = Instance.new("Attachment")
-	Attachment.Parent = Part
+	local Attachment
+	if HasAttachment then
+		Attachment = Instance.new("Attachment")
+		Attachment.Parent = Part
+	end
+
 	local Longest = 0
 	for _, Particle in ipairs(ParticleEmitter) do
 		local ParticleClone = Particle:Clone()
 		ParticleClone.Enabled = false
-		ParticleClone.Parent = Attachment
+		ParticleClone.Parent = if HasAttachment then Attachment else Part
 		if Func then
-			Func(ParticleClone)
+			Func(ParticleClone, Part)
 		end
 		ParticleClone:Emit(Times)
 		if Longest < Particle.Lifetime.Max then
