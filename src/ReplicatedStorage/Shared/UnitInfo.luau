@@ -49,14 +49,14 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Alexander The Great"] = {
 		Rarity = "Mythic",
-		Description = "A Scout",
+		Description = "A fearless conqueror who united empires with unmatched strategy and ambition. His legacy shaped the ancient world—and your battlefield.",
 		Image = "rbxassetid://123087615935684",
 
 		UnitData = {
 			[0] = {
-				Damage = { 5 },
-				FireRate = 2,
-				Range = 10,
+				Damage = { 20 },
+				FireRate = 1.75,
+				Range = 15,
 				Armor = "AlexanderArmor",
 				Cost = 100,
 			},
@@ -66,16 +66,16 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Leonidas"] = {
 		Rarity = "Godly",
-		Description = "A Scout",
+		Description = "Spartan king who defied fate with 300 warriors. A wall of muscle, honor, and pure determination. Enemies fear his final stand.",
 		Image = "rbxassetid://121547000533197",
 
 		UnitData = {
 			[0] = {
 				Damage = { 100 },
-				FireRate = 0.6,
-				Range = 20,
+				FireRate = 3,
+				Range = 15,
 				Armor = "LeonidasArmor",
-				Cost = 100,
+				Cost = 250,
 			},
 			[1] = {
 				Damage = { 200 },
@@ -90,14 +90,14 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Pericles"] = {
 		Rarity = "Epic",
-		Description = "A Scout",
+		Description = "Master of politics and warfare. A golden-tongued leader who boosts allies, inspires armies, and fortifies defenses with sharp intellect.",
 		Image = "rbxassetid://106430561053468",
 
 		UnitData = {
 			[0] = {
-				Damage = { 0 },
-				FireRate = 0,
-				Range = 5,
+				Damage = { 15 },
+				FireRate = 2.5,
+				Range = 12,
 				Armor = "PericlesArmor",
 				Cost = 100,
 			},
@@ -107,16 +107,16 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Pyrrhus"] = {
 		Rarity = "Common",
-		Description = "A Scout",
+		Description = "A brilliant tactician whose costly victories coined the phrase “Pyrrhic victory.” He wins—but at what price?",
 		Image = "rbxassetid://122873675701138",
 
 		UnitData = {
 			[0] = {
-				Damage = { 5 },
+				Damage = { 8 },
 				FireRate = 1,
-				Range = 10,
+				Range = 15,
 				Armor = "PyrrhusArmor",
-				Cost = 100,
+				Cost = 50,
 			},
 		},
 		CollisionRadius = 3,
@@ -124,16 +124,16 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Socrates"] = {
 		Rarity = "Rare",
-		Description = "A Scout",
+		Description = "A philosopher-warrior who questions everything—especially your enemies' life choices. Wields wisdom like a weapon, breaking minds before bodies.",
 		Image = "rbxassetid://92733001424959",
 
 		UnitData = {
 			[0] = {
 				Damage = { 0 },
-				Coins = 100,
+				Coins = 50,
 				FireRate = 0,
 				Range = 5,
-				Cost = 200,
+				Cost = 100,
 			},
 		},
 		CollisionRadius = 3,
@@ -141,16 +141,16 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Themistocles"] = {
 		Rarity = "Legendary",
-		Description = "A Scout",
+		Description = "Naval genius of Athens. His cunning tactics crushed Persia at sea. Commands water-based units and outmaneuvers enemies with ease.",
 		Image = "rbxassetid://101001750083065",
 
 		UnitData = {
 			[0] = {
-				Damage = { 0 },
-				FireRate = 0,
-				Range = 5,
+				Damage = { 10 },
+				FireRate = 1,
+				Range = 20,
 				Armor = "ThemistoclesArmor",
-				Cost = 100,
+				Cost = 115,
 			},
 		},
 		CollisionRadius = 3,
@@ -158,14 +158,14 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Julius Caesar"] = {
 		Rarity = "Legendary",
-		Description = "A Scout",
+		Description = "The conqueror of Gaul. Strategic, ruthless, and charismatic. Leads elite troops with cold precision—cross him, and you’ll regret it.",
 		Image = "rbxassetid://123255834687209",
 
 		UnitData = {
 			[0] = {
-				Damage = { 5 },
-				FireRate = 1,
-				Range = 50,
+				Damage = { 6 },
+				FireRate = 0.4,
+				Range = 13,
 				Armor = "JuliusCaesarArmor",
 				Cost = 100,
 			},
@@ -175,16 +175,16 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Pompey"] = {
 		Rarity = "Common",
-		Description = "A Scout",
+		Description = "The general who ruled the seas. Commands disciplined legions and swift naval support. His tactics are as sharp as his ambition.",
 		Image = "rbxassetid://117170171575136",
 
 		UnitData = {
 			[0] = {
-				Damage = { 5 },
-				FireRate = 1,
-				Range = 50,
+				Damage = { 10 },
+				FireRate = 2,
+				Range = 40,
 				Armor = "PompeyArmor",
-				Cost = 100,
+				Cost = 75,
 			},
 		},
 		CollisionRadius = 3,
@@ -192,16 +192,16 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Trajan"] = {
 		Rarity = "Godly",
-		Description = "A Scout",
+		Description = "Rome's greatest builder and conqueror. Expands your base, strengthens structures, and commands with both hammer and sword.",
 		Image = "rbxassetid://129329108626021",
 
 		UnitData = {
 			[0] = {
-				Damage = { 5 },
+				Damage = { 125 },
 				FireRate = 10,
-				Range = 0,
+				Range = 40,
 				Armor = "TrajanArmor",
-				Cost = 100,
+				Cost = 500,
 			},
 		},
 		CollisionRadius = 3,
@@ -209,16 +209,16 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Spartacus"] = {
 		Rarity = "Rare",
-		Description = "A Scout",
+		Description = "The rebel gladiator. Breaks chains, bones, and expectations. Leads slave uprisings with unstoppable rage and raw strength.",
 		Image = "rbxassetid://121520471894961",
 
 		UnitData = {
 			[0] = {
-				Damage = { 5 },
-				FireRate = 1,
+				Damage = { 12 },
+				FireRate = 2,
 				Range = 13,
 				Armor = "SpartacusArmor",
-				Cost = 100,
+				Cost = 150,
 			},
 		},
 		CollisionRadius = 3,
@@ -235,13 +235,13 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Cicero"] = {
 		Rarity = "Epic",
-		Description = "A Scout",
+		Description = "Master of rhetoric and reason. Weak in battle but buffs allies with persuasive speeches and cripples foes with sharp logic.",
 		Image = "rbxassetid://73965035363559",
 
 		UnitData = {
 			[0] = {
 				Damage = { 0 },
-				Coins = 50,
+				Coins = 75,
 				FireRate = 0,
 				Range = 5,
 				Cost = 100,
@@ -252,14 +252,14 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Augustus"] = {
 		Rarity = "Mythic",
-		Description = "A Scout",
+		Description = "The first emperor. Stabilizer of empires and perfectionist of control. Boosts economy, morale, and order across your defenses.",
 		Image = "rbxassetid://117008785997390",
 
 		UnitData = {
 			[0] = {
-				Damage = { 10 },
-				FireRate = 1,
-				Range = 12,
+				Damage = { 25 },
+				FireRate = 2.2,
+				Range = 13,
 				Armor = "AugustusArmor",
 				Cost = 100,
 			},
@@ -269,16 +269,16 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["William the Conqueror"] = {
 		Rarity = "Mythic",
-		Description = "A Scout",
+		Description = "Master of invasion. Crushes defenses with calculated aggression and powerful siege support. The battlefield bends to his rule.",
 		Image = "rbxassetid://127237964660825",
 
 		UnitData = {
 			[0] = {
-				Damage = { 5 },
+				Damage = { 20 },
 				FireRate = 1.5,
-				Range = 5,
+				Range = 14,
 				Armor = "WilliamArmor",
-				Cost = 100,
+				Cost = 200,
 			},
 		},
 		CollisionRadius = 3,
@@ -286,16 +286,16 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Robert the Bruce"] = {
 		Rarity = "Common",
-		Description = "A Scout",
+		Description = "Scottish king and freedom fighter. Fights with guerrilla tactics, rallying peasants and knights alike in a storm of resistance.",
 		Image = "rbxassetid://118958489112206",
 
 		UnitData = {
 			[0] = {
-				Damage = { 5 },
-				FireRate = 1,
-				Range = 5,
+				Damage = { 12 },
+				FireRate = 1.4,
+				Range = 15,
 				Armor = "RobertArmor",
-				Cost = 100,
+				Cost = 75,
 			},
 		},
 		CollisionRadius = 3,
@@ -303,16 +303,16 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Richard the Lionheart"] = {
 		Rarity = "Godly",
-		Description = "A Scout",
+		Description = "Crusader king with unmatched bravery. Leads knights into battle with roaring strength and undying loyalty to the cross.",
 		Image = "rbxassetid://131934169872463",
 
 		UnitData = {
 			[0] = {
-				Damage = { 10 },
-				FireRate = 1.5,
-				Range = 5,
+				Damage = { 90 },
+				FireRate = 6,
+				Range = 25,
 				Armor = "RichardArmor",
-				Cost = 100,
+				Cost = 1000,
 			},
 		},
 		CollisionRadius = 3,
@@ -320,16 +320,16 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Charlemagne"] = {
 		Rarity = "Epic",
-		Description = "A Scout",
+		Description = "Father of Europe. Commands holy knights and scholars. Spreads law and steel across the battlefield with unstoppable unity.",
 		Image = "rbxassetid://135616277878704",
 
 		UnitData = {
 			[0] = {
-				Damage = { 10 },
-				FireRate = 2,
-				Range = 10,
+				Damage = { 20 },
+				FireRate = 3,
+				Range = 5,
 				Armor = "CharlemagneArmor",
-				Cost = 100,
+				Cost = 125,
 			},
 		},
 		CollisionRadius = 3,
@@ -337,16 +337,16 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Joan of Arc"] = {
 		Rarity = "Legendary",
-		Description = "A Scout",
+		Description = "Divinely inspired warrior-maiden. Fights with faith-fueled fervor and inspires troops with holy conviction and fierce courage.",
 		Image = "rbxassetid://108269486400086",
 
 		UnitData = {
 			[0] = {
-				Damage = { 0 },
-				FireRate = 0,
-				Range = 10,
+				Damage = { 50 },
+				FireRate = 4,
+				Range = 15,
 				Armor = "JoanArmor",
-				Cost = 100,
+				Cost = 200,
 			},
 		},
 		CollisionRadius = 3,
@@ -354,14 +354,14 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Leif Erikson"] = {
 		Rarity = "Rare",
-		Description = "A Scout",
+		Description = "Viking explorer. Strikes from sea and snow. Hardy, wild, and fearless—his raids weaken enemies before the real battle begins.",
 		Image = "rbxassetid://111147011911639",
 
 		UnitData = {
 			[0] = {
-				Damage = { 0 },
-				FireRate = 0,
-				Range = 10,
+				Damage = { 10 },
+				FireRate = 1,
+				Range = 20,
 				Armor = "LeifArmor",
 				Cost = 100,
 			},
@@ -371,16 +371,16 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Ptolemy"] = {
 		Rarity = "Common",
-		Description = "A Scout",
+		Description = "Scholar, general, and ruler. Blends Hellenistic knowledge with Egyptian power. Summons star charts—and maybe meteor showers.",
 		Image = "rbxassetid://84772192162069",
 
 		UnitData = {
 			[0] = {
-				Damage = { 10 },
-				FireRate = 3,
-				Range = 10,
+				Damage = { 8 },
+				FireRate = 2,
+				Range = 50,
 				Armor = "PtolemyArmor",
-				Cost = 100,
+				Cost = 50,
 			},
 		},
 		CollisionRadius = 3,
@@ -388,14 +388,14 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Cleopatra"] = {
 		Rarity = "Rare",
-		Description = "A Scout",
+		Description = "Queen of charm and cunning. Commands loyalty and strikes with political precision. Beauty and brains make her battlefield royalty.",
 		Image = "rbxassetid://137545520172915",
 
 		UnitData = {
 			[0] = {
-				Damage = { 10 },
+				Damage = { 12 },
 				FireRate = 2,
-				Range = 10,
+				Range = 50,
 				Armor = "CleopatraArmor",
 				Cost = 100,
 			},
@@ -405,16 +405,16 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Narmer"] = {
 		Rarity = "Epic",
-		Description = "A Scout",
+		Description = "The first pharaoh. United Upper and Lower Egypt through conquest and will. Ancient but deadly—commands unity and brute force.",
 		Image = "rbxassetid://123302243147194",
 
 		UnitData = {
 			[0] = {
-				Damage = { 10 },
-				FireRate = 2,
-				Range = 10,
+				Damage = { 15 },
+				FireRate = 1.7,
+				Range = 12,
 				Armor = "NarmerArmor",
-				Cost = 100,
+				Cost = 150,
 			},
 		},
 		CollisionRadius = 3,
@@ -422,15 +422,15 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Akhenaten"] = {
 		Rarity = "Legendary",
-		Description = "A Scout",
+		Description = "The heretic king. Worshipper of one god, master of disruption. Alters enemy formations with divine chaos and radiant power.",
 		Image = "rbxassetid://140319991588251",
 
 		UnitData = {
 			[0] = {
-				Damage = { 0 },
-				FireRate = 0,
-				Range = 10,
-				Cost = 100,
+				Damage = { 15 },
+				FireRate = 1.2,
+				Range = 25,
+				Cost = 150,
 			},
 		},
 		CollisionRadius = 3,
@@ -438,14 +438,14 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Ramesses II"] = {
 		Rarity = "Mythic",
-		Description = "A Scout",
+		Description = "The living god of war. Leads with overwhelming might and divine authority. His name alone strikes fear into enemy lines.",
 		Image = "rbxassetid://115676624628103",
 
 		UnitData = {
 			[0] = {
-				Damage = { 5 },
-				FireRate = 2,
-				Range = 10,
+				Damage = { 3 },
+				FireRate = 0.15,
+				Range = 15,
 				Armor = "RamessesArmor",
 				Cost = 100,
 			},
@@ -455,15 +455,15 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Tutankhamun"] = {
 		Rarity = "Godly",
-		Description = "A Scout",
+		Description = "The boy king, shrouded in mystery and gold. His ancient magic resurrects fallen allies and curses trespassers of his legacy.",
 		Image = "rbxassetid://127377869922808",
 
 		UnitData = {
 			[0] = {
-				Damage = { 0 },
-				FireRate = 0,
-				Range = 10,
-				Cost = 100,
+				Damage = { 50 },
+				FireRate = 2,
+				Range = 25,
+				Cost = 400,
 			},
 		},
 		CollisionRadius = 3,
