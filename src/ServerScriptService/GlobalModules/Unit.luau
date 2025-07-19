@@ -583,7 +583,8 @@ function Unit:Stun(Length: number)
 	self:PlayAnimation("Stun", nil, nil, nil, Length)
 end
 
-function Unit:AddCoins(Coins: number)
+function Unit:AddCoins(CoinsInput: number)
+	local Coins = math.floor(math.max(CoinsInput, 0))
 	self.CoinsAdded:Fire(Coins)
 end
 

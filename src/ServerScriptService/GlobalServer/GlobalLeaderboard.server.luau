@@ -65,8 +65,8 @@ local function HandleData(PData: PlayerData.PlayerData)
 
 		pcall(function()
 			DamageStore:UpdateAsync(UserId, function(Damage: number?): number?
-				if Damage ~= Data.TotalDamageDone then
-					return Data.TotalDamageDone
+				if Damage and math.floor(Damage) ~= math.floor(Data.TotalDamageDone) then
+					return math.floor(Data.TotalDamageDone)
 				else
 					return nil
 				end

@@ -253,7 +253,7 @@ function Enemy:AdjustSpeed(Speed: number)
 end
 
 function Enemy:SetHealth(Health: number)
-	self.Health = math.clamp(Health, 0, self.MaxHealth)
+	self.Health = math.floor(math.clamp(Health, 0, self.MaxHealth))
 	self.HealthChanged:Fire(self.Health)
 end
 

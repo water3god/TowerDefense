@@ -425,7 +425,9 @@ function PlayerData.new(Player: Player)
 	self._Trove:AddPromise(DailyQuestsPromise() :: any)
 	self._Trove:AddPromise(WeeklyQuestsPromise() :: any)
 
-	self:AddGold(1000000)
+	if self.Profile.Data.Gold < 20 then
+		self:AddGold(1000000)
+	end
 
 	self.DataAdded:Fire(self)
 
@@ -730,13 +732,15 @@ function PlayerData:SubtractGold(Gold: number)
 	self:SetGold(CurrentGold - Gold)
 end
 
-function PlayerData:AddDamageDone(Damage: number)
+function PlayerData:AddDamageDone(DamageInput: number)
+	local Damage = math.floor(math.max(DamageInput, 0))
 	local Data = self.Profile.Data
 	Data.TotalDamageDone += Damage
 	self.DamageDone:Fire(Data.TotalDamageDone)
 end
 
-function PlayerData:AddRobuxSpent(RobuxSpent: number)
+function PlayerData:AddRobuxSpent(RobuxSpentInput: number)
+	local RobuxSpent = math.floor(math.max(RobuxSpentInput, 0))
 	local Data = self.Profile.Data
 	Data.RobuxSpent += RobuxSpent
 	self.RobuxSpent:Fire(Data.RobuxSpent, RobuxSpent)

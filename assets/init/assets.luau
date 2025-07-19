@@ -10,6 +10,7 @@ local assets = {
 	audio = {
 		["657948__lilmati__family-friendly-inspect-sound-ui-or-in-game-notification.wav"] = "rbxassetid://72255888882620",
 		["explosion.mp3"] = "rbxassetid://133965358324268",
+		["lobby2.mp3"] = "rbxassetid://73590791751799",
 	},
 	images = {
 		["GreecePhoto.png"] = "rbxassetid://140359005328317",

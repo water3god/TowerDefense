@@ -248,11 +248,6 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 				HorizontalAlignment = Enum.HorizontalAlignment.Center,
 				Padding = UDim.new(0, 0),
 			}),
-			Frame = e(Main.Frame, {
-				native = {
-					Size = UDim2.fromScale(0.45, 1),
-				},
-			}),
 			Icon = e(Main.ImageLabel, {
 				native = {
 					Position = UDim2.fromScale(0.5, 0.5),
@@ -266,13 +261,14 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 			Label = e(Main.TextLabel, {
 				native = {
 					Text = CurrencyValue,
+					AutomaticSize = Enum.AutomaticSize.X,
 					AutoLocalize = false,
 					TextXAlignment = Enum.TextXAlignment.Left,
-					Size = UDim2.fromScale(0.6, 1),
+					Size = UDim2.fromScale(0.1, 1),
 				},
 			}, {
-				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.02,
+				UIStroke = e(UIStroke.UIStrokeBasic, {
+					Stroke = 0.0015,
 				}),
 				UIPadding = e("UIPadding", {
 					PaddingLeft = UDim.new(0.05, 0),

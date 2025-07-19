@@ -14,7 +14,7 @@ local ContentProvider = game:GetService("ContentProvider")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 
-local Player = Players:WaitForChild("LocalPlayer")
+local Player = Players.LocalPlayer
 local PlayerGui: PlayerGui = Player:WaitForChild("PlayerGui")
 
 local ArrivingGui = TeleportService:GetArrivingTeleportGui()
