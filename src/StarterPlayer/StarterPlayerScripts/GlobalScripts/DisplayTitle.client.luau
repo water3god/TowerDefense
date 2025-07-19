@@ -72,7 +72,7 @@ local function HandleCharacter(Player: Player, Character: Model)
 			end
 		end)
 
-	Character.Destroying:Once(function()
+	Player.CharacterRemoving:Once(function()
 		CharPromise:cancel()
 		Cancel()
 	end)

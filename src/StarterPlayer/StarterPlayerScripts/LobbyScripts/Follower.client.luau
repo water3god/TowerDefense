@@ -65,8 +65,11 @@ local function InitalizePlayer(Player: Player)
 			end
 		end)
 
-		Character.Destroying:Once(function()
+		Player.CharacterRemoving:Once(function()
 			Connection:Disconnect()
+			for _, FollowerData in pairs(FollowerCache[Player]) do
+				FollowerData.Follower:Destroy()
+			end
 		end)
 	end
 
