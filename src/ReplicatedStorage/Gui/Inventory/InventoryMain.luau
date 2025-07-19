@@ -813,7 +813,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			Image = "rbxassetid://103903141717286",
 		}, Properties.native),
 	}, {
-		StatsFrame = e(StatsFrame, {
+		InventoryStatsFrame = e(StatsFrame, {
 			UnitName = if OpenFrame == "Unit" and InfoFrameData.Visible then InfoFrameData.Name else nil,
 			Visible = InfoVisible,
 			CloseClick = CloseInfoClick,

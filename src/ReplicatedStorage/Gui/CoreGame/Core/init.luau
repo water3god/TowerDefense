@@ -7,6 +7,7 @@ local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local GuiService = game:GetService("GuiService")
+local ContextActionService = game:GetService("ContextActionService")
 
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
@@ -677,34 +678,42 @@ local function Render()
 				Humanoid.WalkSpeed = 24
 			end
 
+			local InSprint = VisibleFrame and not table.find(NoBlur, VisibleFrame)
+
+			local function Start()
+				if not StopFrame then
+					API.start({
+						FieldOfView = 80,
+						config = CharacterConfig,
+					})
+					Humanoid.WalkSpeed = 40
+					InSprint = true
+				end
+			end
+
+			local function Stop()
+				if not StopFrame then
+					API.start({
+						FieldOfView = 70,
+						config = CharacterConfig,
+					})
+					Humanoid.WalkSpeed = 24
+					InSprint = false
+				end
+			end
+
+			SprintTrove:Connect(GuiService.MenuOpened, function()
+				Stop()
+			end)
+
 			local CleanUp = Input.PreferredInput.Observe(function(PreferredInput)
 				if PreferredInput == "MouseKeyboard" then
 					local Keyboard = SprintTrove:Construct(Input.Keyboard)
 
 					Keyboard.KeyDown:Connect(function(Key: Enum.KeyCode)
 						if Key == Enum.KeyCode.LeftShift then
-							if not StopFrame then
-								API.start({
-									FieldOfView = 80,
-									config = CharacterConfig,
-								})
-								Humanoid.WalkSpeed = 40
-							end
+							Start()
 						end
-					end)
-
-					local function Stop()
-						if not StopFrame then
-							API.start({
-								FieldOfView = 70,
-								config = CharacterConfig,
-							})
-							Humanoid.WalkSpeed = 24
-						end
-					end
-
-					SprintTrove:Connect(GuiService.MenuOpened, function()
-						Stop()
 					end)
 
 					Keyboard.KeyUp:Connect(function(Key: Enum.KeyCode)
@@ -712,12 +721,24 @@ local function Render()
 							Stop()
 						end
 					end)
+				elseif PreferredInput == "Touch" then
+					ContextActionService:BindAction("Sprint", function(_, input)
+						if input == Enum.UserInputState.Begin then
+							if InSprint then
+								Stop()
+							else
+								Start()
+							end
+						end
+					end, true)
+					ContextActionService:SetTitle("Sprint", "Sprint")
 				end
 			end)
 
 			return function()
 				SprintTrove:Destroy()
 				CleanUp()
+				ContextActionService:UnbindAction("Sprint")
 			end
 		else
 			API.start({

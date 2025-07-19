@@ -853,8 +853,8 @@ end
 function PlayerData:GetQuestFromId(Id: string)
 	local Quests = self.Profile.Data.Quests
 
-	for _, QuestTypes in pairs(Quests) do
-		if typeof(QuestTypes) ~= "table" then
+	for Name, QuestTypes in pairs(Quests) do
+		if Name == "MetaData" then
 			continue
 		end
 		for _, Quest in pairs(QuestTypes) do

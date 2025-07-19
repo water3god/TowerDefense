@@ -36,10 +36,19 @@ local function HandlePlayerData(PData: PlayerData.PlayerData)
 		ExtraData: any
 	)
 		if typeof(Amount) == "number" then
-			PData:ProgressQuests({ Type = Type, Amount = Amount, ExtraData = ExtraData })
+			if PData.ProgressQuests then
+				PData:ProgressQuests({ Type = Type, Amount = Amount, ExtraData = ExtraData })
+			end
 		else
 			for QuestType, QuestAmount in pairs(Amount) do
-				PData:ProgressQuests({ Type = Type, SubType = QuestType, Amount = QuestAmount, ExtraData = ExtraData })
+				if PData.ProgressQuests then
+					PData:ProgressQuests({
+						Type = Type,
+						SubType = QuestType,
+						Amount = QuestAmount,
+						ExtraData = ExtraData,
+					})
+				end
 			end
 		end
 	end

@@ -216,7 +216,7 @@ local function CreateUnitInfo(Props: Props)
 					return 1 - alphaInput / 6
 				end),
 			}),
-			StatsFrame = e(StatsFrame, {
+			UnitInfoStatsFrame = e(StatsFrame, {
 				UnitName = CurrentStats,
 				Visible = StatsVisible,
 				CloseClick = StatsCloseClick,
