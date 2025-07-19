@@ -124,12 +124,12 @@ local function ConvertIdsToDecals(ImagesInput: { string })
 end
 
 local function PreloadAsync()
+	if not game:IsLoaded() then
+		game.Loaded:Wait()
+	end
 	ContentProvider:PreloadAsync(ConvertIdsToDecals(Images))
 	if not Player.Character then
 		Player.CharacterAdded:Wait()
-	end
-	if not game:IsLoaded() then
-		game.Loaded:Wait()
 	end
 	local InventoryService = require(ReplicatedStorage.Client.GlobalClient.InventoryService)
 	if not InventoryService.IsSynced then
