@@ -112,7 +112,7 @@ if game["Run Service"]:IsStudio() then
 	Init({
 		PlayerIds = Ids,
 		MapId = "Rome",
-		LevelId = "Hastingsv1",
+		LevelId = "Rome_LegionsMarch",
 		Difficulty = "Insane",
 	})
 	return

@@ -40,7 +40,9 @@ end
 local function AddAlly(Unit: UnitModule.Unit, Ally: string, Data: {}?)
 	local Wave = GlobalWave.GetWave()
 	if Wave then
-		Unit:AddAlly(Wave:AddAlly(Ally, Data))
+		task.defer(function()
+			Unit:AddAlly(Wave:AddAlly(Ally, Data))
+		end)
 	end
 end
 

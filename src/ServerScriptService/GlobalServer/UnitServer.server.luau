@@ -191,9 +191,14 @@ Upgrade.SetCallback(function(Player: Player, UniqueId: string)
 	end
 
 	local CurrentUnit = Unit.GetUnit(UniqueId)
+	local Wave = GlobalWave.GetWave()
 
-	if CurrentUnit and CurrentUnit:IsOwnedBy(Player) then
-		CurrentUnit:Upgrade()
+	if Wave and CurrentUnit and CurrentUnit:IsOwnedBy(Player) then
+		local Data = CurrentUnit.UnitData.UnitData[CurrentUnit.Level + 1]
+
+		if Data and Data.Cost <= Wave.Coins[Player.UserId] then
+			CurrentUnit:Upgrade()
+		end
 	end
 end)
 

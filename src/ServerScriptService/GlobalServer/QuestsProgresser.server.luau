@@ -101,7 +101,9 @@ local function HandlePlayerData(PData: PlayerData.PlayerData)
 					UnitName = OtherUnit.UnitName,
 				})
 
-				PData:AddDamageDone(Damage)
+				if PData.AddDamageDone then
+					PData:AddDamageDone(Damage)
+				end
 			end)
 
 			OtherUnit.KilledEnemy:Connect(function(Enemy)

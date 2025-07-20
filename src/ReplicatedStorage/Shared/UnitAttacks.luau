@@ -279,10 +279,12 @@ local function FireArrow(
 
 	local LastPosition: Vector3? = nil
 
-	Enemy.Destroying:Once(function()
-		LastPosition = Enemy.CFrame.Position + Vector3.new(0, Enemy.YOffset, 0)
-		Enemy = nil
-	end)
+	if Enemy then
+		Enemy.Destroying:Once(function()
+			LastPosition = Enemy.CFrame.Position + Vector3.new(0, Enemy.YOffset, 0)
+			Enemy = nil
+		end)
+	end
 
 	Unit:AddAttackPromise(
 		Promise.delay(DelayTime)

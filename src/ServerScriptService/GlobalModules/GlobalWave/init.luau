@@ -429,6 +429,13 @@ function GlobalWave:AddUnit(UnitInput: Unit.Unit)
 		end
 	end)
 
+	UnitInput.Upgraded:Connect(function(Level: number)
+		local Cost = UnitInput.UnitData.UnitData[Level].Cost
+		if UnitInput.OwnerId then
+			self:SubtractCoinsFromUser(UnitInput.OwnerId, Cost)
+		end
+	end)
+
 	UnitInput.Destroying:Once(function()
 		self.Units[UnitInput.UnitName] = nil
 	end)

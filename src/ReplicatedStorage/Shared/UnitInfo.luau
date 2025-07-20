@@ -55,28 +55,28 @@ local UnitInfo: { [string]: UnitInfo } = {
 		UnitData = {
 			[0] = {
 				Damage = { 20 },
-				FireRate = 1.75,
+				FireRate = 2.5,
 				Range = 15,
 				Armor = "AlexanderArmor",
 				Cost = 100,
 			},
 			[1] = {
 				Damage = { 25 },
-				FireRate = 1.75,
+				FireRate = 2.5,
 				Range = 17,
 				Armor = "AlexanderArmor",
 				Cost = 175,
 			},
 			[2] = {
 				Damage = { 30 },
-				FireRate = 1.6,
+				FireRate = 2.3,
 				Range = 17,
 				Armor = "AlexanderArmor",
 				Cost = 250,
 			},
 			[3] = {
 				Damage = { 35 },
-				FireRate = 1.5,
+				FireRate = 2,
 				Range = 18,
 				Armor = "AlexanderArmor",
 				Cost = 500,

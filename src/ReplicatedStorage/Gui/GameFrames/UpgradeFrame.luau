@@ -28,6 +28,8 @@ local BaseFrame = require(CoreGame.BaseFrame)
 
 local GameFrames = Gui.GameFrames
 local UpgradeContext = require(GameFrames.UpgradeContext)
+local CurrencyContext = require(GameFrames.Currency)
+local WarningContext = require(Gui.Warning.WarningContext)
 
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
@@ -197,6 +199,8 @@ end
 
 local function CreateUpgradeFrame(Properties: Properties)
 	local UpgradeData = React.useContext(UpgradeContext.Context)
+	local CurrencyData = React.useContext(CurrencyContext.Context)
+	local WarningData = React.useContext(WarningContext.Context)
 
 	local Styles, API = ReactSpring.useSpring(function()
 		return {
@@ -345,11 +349,22 @@ local function CreateUpgradeFrame(Properties: Properties)
 
 	local UpgradeClick = React.useCallback(function()
 		local Unit = UnitClient.GetUnit(UpgradeData.UniqueId)
+		local Data = UpgradeData.UpgradeData[UpgradeData.Level + 1]
 
 		if Unit then
-			Unit:LevelUp()
+			if Data then
+				if Data.Cost <= CurrencyData.Value then
+					Unit:LevelUp()
+				else
+					WarningData.Add(string.format("You are missing %u Gold!", Data.Cost - CurrencyData.Value))
+					return
+				end
+			else
+				WarningData.Add("Max Level Reached!")
+				return
+			end
 		end
-	end, { UpgradeData.UniqueId })
+	end, { UpgradeData.UniqueId, CurrencyData.Value, WarningData.Warnings } :: { unknown })
 
 	local CloseClick = React.useCallback(function()
 		SetVisible(false)

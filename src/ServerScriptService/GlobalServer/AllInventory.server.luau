@@ -18,6 +18,9 @@ local function Update(Data: PlayerData.PlayerData)
 	local SendData = {}
 
 	for Index, Id in pairs(Data.Profile.Data.EquippedUnits) do
+		if not Id then
+			continue
+		end
 		local UnitData = Data:GetUnitFromId(Id)
 
 		if UnitData then
