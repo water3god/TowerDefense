@@ -300,7 +300,7 @@ local function FireArrow(
 						LastPosition = Enemy.CFrame.Position + Vector3.new(0, Enemy.YOffset, 0)
 					end
 					Realign(Arrow, Data.Realigned)
-					if LastPosition then
+					if Enemy and LastPosition then
 						TweenBetweenPositions(
 							Middle,
 							Middle.CFrame.Position,
