@@ -24,6 +24,9 @@ local ChanceData: {
 	Narmer = 1,
 	Akhenaten = 0.1,
 	["Ramesses II"] = 0.05,
+	["Tutankhamun"] = 0.01,
+	["Cao Cao"] = 0.05,
+	["Qin Shi Huang"] = 0.01,
 }
 
 return ChanceData

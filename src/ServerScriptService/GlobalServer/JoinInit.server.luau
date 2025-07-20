@@ -63,7 +63,7 @@ local function Init(DataInput: Types.RecieveData?)
 	local _, LevelInfo = GameInfo.GetDataFromInfo(Data.MapId, Data.LevelId)
 	local XPMultiplier: number = (LevelInfo :: any).XPMultiplier
 
-	local FoundData = WaveData[Data.LevelId]
+	local FoundData = WaveData.WaveData[Data.LevelId]
 
 	if FoundData then
 		for _, Unit in pairs(UnitModule.GetUnits()) do

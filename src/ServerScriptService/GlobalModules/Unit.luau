@@ -159,6 +159,7 @@ type UnitImpl = {
 	StopAnimation: (self: Unit, AnimationName: string, FadeTime: number?) -> (),
 
 	GetProperty: (self: Unit, PropertyName: string) -> number,
+	GetPropertyRaw: (self: Unit, PropertyName: string) -> number,
 
 	DisableAttack: (self: Unit, Length: number) -> (),
 	EnableAttack: (self: Unit) -> (),
@@ -350,7 +351,7 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 	local function OnLevel(Level: number)
 		local Func = self.DefaultRuns[Level]
 		if Func then
-			local Cleanup = Func(self, self.UnitData.UnitData[Level].Damage[1])
+			local Cleanup = Func(self, self:GetProperty("Damage"))
 
 			if Cleanup then
 				local DefaultRunTrove = Trove.new()
@@ -554,6 +555,25 @@ function Unit:GetProperty(PropertyName: string): number
 		end
 
 		return math.floor(Coins)
+	else
+		error("Invalid Property: " .. tostring(PropertyName))
+	end
+end
+
+function Unit:GetPropertyRaw(PropertyName: string): number
+	if PropertyName == "Damage" then
+		return self.UnitData.UnitData[self.Level].Damage[1]
+	elseif PropertyName == "FireRate" then
+		return self.UnitData.UnitData[self.Level].FireRate
+	elseif PropertyName == "Range" then
+		return self.UnitData.UnitData[self.Level].Range
+	elseif PropertyName == "Coins" then
+		local Coins = self.UnitData.UnitData[self.Level].Coins
+		if not Coins then
+			error("Unit does not generate coins!")
+		end
+
+		return Coins
 	else
 		error("Invalid Property: " .. tostring(PropertyName))
 	end

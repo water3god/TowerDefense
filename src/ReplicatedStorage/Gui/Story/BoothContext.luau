@@ -38,7 +38,7 @@ export type BoothData = {
 
 local Default: BoothData = {
 	MapId = "Rome",
-	LevelId = "Hastingsv1",
+	LevelId = "Rome_LegionsMarch",
 	Difficulty = "Normal",
 	PlayerCount = 1,
 	MaxPlayerCount = 2,

@@ -256,7 +256,7 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 			[0] = function(Unit, Damage: number)
 				return AddAllyToWave(Unit, function()
 					Unit:PlayAnimation("Ability")
-					return "Legionary", { Health = Damage }
+					return "Trajan's Legionary", { Health = Unit:GetProperty("Damage") }
 				end)
 			end,
 		},
@@ -294,7 +294,8 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 		AttackFuncs = {},
 		DefaultRuns = {
 			[0] = function(Unit)
-				return ApplyBuff(Unit, "Damage", 1.5, math.huge)
+				local Damage = Unit:GetPropertyRaw("Damage")
+				return ApplyBuff(Unit, "Damage", Damage, math.huge)
 			end,
 		},
 		Abilities = {},

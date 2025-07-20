@@ -13,7 +13,9 @@ local assets = {
 		["lobby2.mp3"] = "rbxassetid://73590791751799",
 	},
 	images = {
+		["Cao_Cao.png"] = "rbxassetid://73915227461302",
 		["GreecePhoto.png"] = "rbxassetid://140359005328317",
+		["Qin_Shi_Huang.png"] = "rbxassetid://72049353436342",
 		["calendar.png"] = "rbxassetid://118717037434015",
 		["person.png"] = "rbxassetid://95049959452468",
 		["quest.png"] = "rbxassetid://126483259351802",

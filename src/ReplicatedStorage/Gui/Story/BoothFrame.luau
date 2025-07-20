@@ -38,6 +38,7 @@ local function CreateBoothFrame(Props: Properties)
 
 	React.useEffect(function()
 		local MapData, StageData = GameInfo.GetDataFromInfo(BoothData.MapId, BoothData.LevelId)
+
 		SetGameData({
 			MapData = MapData :: any,
 			StageData = StageData :: any,

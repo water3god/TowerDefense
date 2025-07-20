@@ -216,8 +216,8 @@ local GameInfo: { MapInfo } = {
 		Image = "rbxassetid://87671289193280",
 		LevelInfo = {
 			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
+				Name = "Spartan Defense",
+				GameId = "Greece_SpartanDefense",
 				Index = 1,
 				XPMultiplier = 1,
 				RewardInfo = {
@@ -230,169 +230,143 @@ local GameInfo: { MapInfo } = {
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 120, UniqueId = "" },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 250, UniqueId = "" },
 						},
 					},
 				},
 			},
 			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
-				Index = 1,
-				XPMultiplier = 1,
-				RewardInfo = {
-					Normal = {
-						Units = {},
-						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
-						},
-					},
-					Hard = {
-						Units = {},
-						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
-						},
-					},
-					Insane = {
-						Units = {},
-						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
-						},
-					},
-				},
-			},
-			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
+				Name = "Olympian Challenge",
+				GameId = "Greece_OlympianChallenge",
 				Index = 2,
 				XPMultiplier = 1,
 				RewardInfo = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 60, UniqueId = "" },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 140, UniqueId = "" },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 280, UniqueId = "" },
 						},
 					},
 				},
 			},
 			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
+				Name = "Athenian Walls",
+				GameId = "Greece_AthenianWalls",
 				Index = 3,
 				XPMultiplier = 1,
 				RewardInfo = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 70, UniqueId = "" },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 160, UniqueId = "" },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 320, UniqueId = "" },
 						},
 					},
 				},
 			},
 			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
+				Name = "Phalanx Advance",
+				GameId = "Greece_PhalanxAdvance",
 				Index = 4,
 				XPMultiplier = 1,
 				RewardInfo = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 80, UniqueId = "" },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 180, UniqueId = "" },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 360, UniqueId = "" },
 						},
 					},
 				},
 			},
 			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
+				Name = "Oracle's Prophecy",
+				GameId = "Greece_OraclesProphecy",
 				Index = 5,
 				XPMultiplier = 1,
 				RewardInfo = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 90, UniqueId = "" },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 400, UniqueId = "" },
 						},
 					},
 				},
 			},
 			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
+				Name = "Final Stand",
+				GameId = "Greece_FinalStand",
 				Index = 6,
 				XPMultiplier = 1,
 				RewardInfo = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 220, UniqueId = "" },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 440, UniqueId = "" },
 						},
 					},
 				},
@@ -406,8 +380,8 @@ local GameInfo: { MapInfo } = {
 		Image = "rbxassetid://81260716481225",
 		LevelInfo = {
 			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
+				Name = "Legion's March",
+				GameId = "Rome_LegionsMarch",
 				Index = 1,
 				XPMultiplier = 1,
 				RewardInfo = {
@@ -420,169 +394,143 @@ local GameInfo: { MapInfo } = {
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 120, UniqueId = "" },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 250, UniqueId = "" },
 						},
 					},
 				},
 			},
 			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
-				Index = 1,
-				XPMultiplier = 1,
-				RewardInfo = {
-					Normal = {
-						Units = {},
-						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
-						},
-					},
-					Hard = {
-						Units = {},
-						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
-						},
-					},
-					Insane = {
-						Units = {},
-						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
-						},
-					},
-				},
-			},
-			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
+				Name = "Centurion's Charge",
+				GameId = "Rome_CenturionsCharge",
 				Index = 2,
 				XPMultiplier = 1,
 				RewardInfo = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 60, UniqueId = "" },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 140, UniqueId = "" },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 280, UniqueId = "" },
 						},
 					},
 				},
 			},
 			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
+				Name = "Imperial Walls",
+				GameId = "Rome_ImperialWalls",
 				Index = 3,
 				XPMultiplier = 1,
 				RewardInfo = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 70, UniqueId = "" },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 160, UniqueId = "" },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 320, UniqueId = "" },
 						},
 					},
 				},
 			},
 			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
+				Name = "Chariot Onslaught",
+				GameId = "Rome_ChariotOnslaught",
 				Index = 4,
 				XPMultiplier = 1,
 				RewardInfo = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 80, UniqueId = "" },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 180, UniqueId = "" },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 360, UniqueId = "" },
 						},
 					},
 				},
 			},
 			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
+				Name = "Sacred Arena",
+				GameId = "Rome_SacredArena",
 				Index = 5,
 				XPMultiplier = 1,
 				RewardInfo = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 90, UniqueId = "" },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 400, UniqueId = "" },
 						},
 					},
 				},
 			},
 			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
+				Name = "Final Triumph",
+				GameId = "Rome_FinalTriumph",
 				Index = 6,
 				XPMultiplier = 1,
 				RewardInfo = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 220, UniqueId = "" },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 440, UniqueId = "" },
 						},
 					},
 				},
@@ -596,8 +544,8 @@ local GameInfo: { MapInfo } = {
 		Image = "rbxassetid://96878463422313",
 		LevelInfo = {
 			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
+				Name = "Yellow River Defense",
+				GameId = "China_YellowRiverDefense",
 				Index = 1,
 				XPMultiplier = 1,
 				RewardInfo = {
@@ -610,169 +558,143 @@ local GameInfo: { MapInfo } = {
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 120, UniqueId = "" },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 250, UniqueId = "" },
 						},
 					},
 				},
 			},
 			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
-				Index = 1,
-				XPMultiplier = 1,
-				RewardInfo = {
-					Normal = {
-						Units = {},
-						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
-						},
-					},
-					Hard = {
-						Units = {},
-						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
-						},
-					},
-					Insane = {
-						Units = {},
-						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
-						},
-					},
-				},
-			},
-			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
+				Name = "Terracotta Barrage",
+				GameId = "China_TerracottaBarrage",
 				Index = 2,
 				XPMultiplier = 1,
 				RewardInfo = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 60, UniqueId = "" },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 140, UniqueId = "" },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 280, UniqueId = "" },
 						},
 					},
 				},
 			},
 			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
+				Name = "Great Wall Stand",
+				GameId = "China_GreatWallStand",
 				Index = 3,
 				XPMultiplier = 1,
 				RewardInfo = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 70, UniqueId = "" },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 160, UniqueId = "" },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 320, UniqueId = "" },
 						},
 					},
 				},
 			},
 			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
+				Name = "Imperial Cavalry",
+				GameId = "China_ImperialCavalry",
 				Index = 4,
 				XPMultiplier = 1,
 				RewardInfo = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 80, UniqueId = "" },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 180, UniqueId = "" },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 360, UniqueId = "" },
 						},
 					},
 				},
 			},
 			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
+				Name = "Sacred Scrolls",
+				GameId = "China_SacredScrolls",
 				Index = 5,
 				XPMultiplier = 1,
 				RewardInfo = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 90, UniqueId = "" },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 400, UniqueId = "" },
 						},
 					},
 				},
 			},
 			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
+				Name = "Final Dynasty",
+				GameId = "China_FinalDynasty",
 				Index = 6,
 				XPMultiplier = 1,
 				RewardInfo = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 220, UniqueId = "" },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 440, UniqueId = "" },
 						},
 					},
 				},
@@ -786,8 +708,8 @@ local GameInfo: { MapInfo } = {
 		Image = "rbxassetid://74203135188399",
 		LevelInfo = {
 			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
+				Name = "Knight's Stand",
+				GameId = "Medieval_KnightsStand",
 				Index = 1,
 				XPMultiplier = 1,
 				RewardInfo = {
@@ -800,169 +722,143 @@ local GameInfo: { MapInfo } = {
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 120, UniqueId = "" },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 250, UniqueId = "" },
 						},
 					},
 				},
 			},
 			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
-				Index = 1,
-				XPMultiplier = 1,
-				RewardInfo = {
-					Normal = {
-						Units = {},
-						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
-						},
-					},
-					Hard = {
-						Units = {},
-						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
-						},
-					},
-					Insane = {
-						Units = {},
-						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
-						},
-					},
-				},
-			},
-			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
+				Name = "Archer's Volley",
+				GameId = "Medieval_ArchersVolley",
 				Index = 2,
 				XPMultiplier = 1,
 				RewardInfo = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 60, UniqueId = "" },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 140, UniqueId = "" },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 280, UniqueId = "" },
 						},
 					},
 				},
 			},
 			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
+				Name = "Shield Wall",
+				GameId = "Medieval_ShieldWall",
 				Index = 3,
 				XPMultiplier = 1,
 				RewardInfo = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 70, UniqueId = "" },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 160, UniqueId = "" },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 320, UniqueId = "" },
 						},
 					},
 				},
 			},
 			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
+				Name = "Cavalry Charge",
+				GameId = "Medieval_CavalryCharge",
 				Index = 4,
 				XPMultiplier = 1,
 				RewardInfo = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 80, UniqueId = "" },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 180, UniqueId = "" },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 360, UniqueId = "" },
 						},
 					},
 				},
 			},
 			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
+				Name = "Sacred Relics",
+				GameId = "Medieval_SacredRelics",
 				Index = 5,
 				XPMultiplier = 1,
 				RewardInfo = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 90, UniqueId = "" },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 200, UniqueId = "" },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 400, UniqueId = "" },
 						},
 					},
 				},
 			},
 			{
-				Name = "The Flood",
-				GameId = "Hastingsv1",
+				Name = "Final Crusade",
+				GameId = "Medieval_FinalCrusade",
 				Index = 6,
 				XPMultiplier = 1,
 				RewardInfo = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 100, UniqueId = "" },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 220, UniqueId = "" },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 440, UniqueId = "" },
 						},
 					},
 				},

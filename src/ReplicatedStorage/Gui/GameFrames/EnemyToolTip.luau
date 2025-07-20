@@ -102,7 +102,7 @@ local function CreateEnemyToolTip(Props: Props)
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.002,
+					Stroke = 0.001,
 				}),
 			}),
 		}),
