@@ -3,14 +3,17 @@
 -- By Wa1er_God --
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 local ServerStorage = game:GetService("ServerStorage")
 local TweenService = game:GetService("TweenService")
+local SoundService = game:GetService("SoundService")
 
 local Packages = ReplicatedStorage.Packages
-local EnemyClient = require(ReplicatedStorage.Client.GlobalClient.EnemyClient)
 local HelperFunctions = require(ReplicatedStorage.Modules.HelperFunctions)
 local Promise = require(Packages.Promise)
+
+local Client = ReplicatedStorage.Client
+local GlobalClient = Client.GlobalClient
+local SFXService = require(GlobalClient.SFXService)
 
 local ModelStorage = ReplicatedStorage.ModelStorage
 local Adornments = ModelStorage.Adornments
@@ -25,6 +28,9 @@ local Slash = Emitters.Alpha
 
 local Shared = ReplicatedStorage.Shared
 local Types = require(Shared.Types)
+
+local SoundEffects = SoundService.SoundEffects
+local Sounds = SoundEffects.Sounds
 
 local GlobalWorkspace = workspace.GlobalWorkspace
 local ParticlesFolder = GlobalWorkspace.Particles
@@ -245,6 +251,50 @@ local function PlayAttackHit(Enemy: Types.EnemyClient?)
 	end)
 end
 
+local function DelayedAttackHit(
+	Unit: Types.Unit,
+	AttackInput: Types.UnitAttackInput,
+	Enemy: Types.EnemyClient?,
+	Time: number,
+	Delay: number,
+	Name: string?
+)
+	if not Enemy or not Enemy.Root then
+		return
+	end
+
+	local CalculatedDelay = CalculateDelay(Time, AttackInput.SpeedRatio, Delay)
+
+	local Attack = Promise.delay(CalculatedDelay):andThen(function()
+		PlayAttackHit(Enemy)
+	end)
+
+	Unit:AddAttackPromise(Attack, "DelayedAttackHit" .. (Name or ""))
+end
+
+local function DelayedSound(
+	Unit: Types.Unit,
+	SoundsList: { Sound },
+	AttackInput: Types.UnitAttackInput,
+	Enemy: Types.EnemyClient?,
+	Time: number,
+	Delay: number,
+	Name: string?
+)
+	if not Enemy or not Enemy.Root then
+		return
+	end
+
+	local CalculatedDelay = CalculateDelay(Time, AttackInput.SpeedRatio, Delay)
+
+	local Attack = Promise.delay(CalculatedDelay):andThen(function()
+		PlayAttackHit(Enemy)
+		SFXService.PlaySoundAtRandom(SoundsList, Unit.Root.CFrame)
+	end)
+
+	Unit:AddAttackPromise(Attack, "DelayedAttackHitWithSound" .. (Name or ""))
+end
+
 local function EasyWeld(Part0: BasePart, Part1: BasePart)
 	local Weld = Instance.new("Weld")
 	Weld.Name = Part0.Name
@@ -270,6 +320,7 @@ local function FireArrow(
 	end
 	local SpeedRatio = AttackInput.SpeedRatio
 	PlayAnimation(Unit, AttackInput, Delay)
+	SFXService.PlaySoundAt(Sounds.bow_pull, Unit.Root.CFrame)
 
 	local Arrow = Unit:WeldAdornment(PompeyArrow)
 	Arrow.Parent = ParticlesFolder
@@ -292,6 +343,7 @@ local function FireArrow(
 				if Enemy then
 					Unit:RotateToEnemy(Enemy)
 				end
+				SFXService.PlaySoundAt(Sounds.bow_release, Unit.Root.CFrame)
 				ClearWelds(Arrow)
 				local Middle = FindFirstMiddle(Arrow)
 				if Middle then
@@ -308,7 +360,12 @@ local function FireArrow(
 							Data.Speed,
 							Unit.CFrame.Position
 						):await()
-						PlayAttackHit(Enemy)
+						if Enemy then
+							PlayAttackHit(Enemy)
+							SFXService.PlaySoundAt(Sounds.arrow_hit, Middle.CFrame)
+						else
+							SFXService.PlaySoundAt(Sounds.arrow_miss, Middle.CFrame)
+						end
 					end
 				end
 			end)
@@ -348,6 +405,8 @@ local UnitAttacks: {
 			[0] = {
 				function(Unit, AttackInput, Enemy, Delay)
 					DefaultAttack(Unit, AttackInput, Enemy, Delay)
+					DelayedAttackHit(Unit, AttackInput, Enemy, 0.35, Delay)
+					DelayedSound(Unit, { Sounds.SwordSwing }, AttackInput, Enemy, 0.2, Delay)
 				end,
 			},
 		},
@@ -363,9 +422,11 @@ local UnitAttacks: {
 						end
 						local EmitPromise =
 							Emit(Unit, { Emitters.AlexanderSpark }, Enemy.Root.CFrame + RandomVector() / 2, true, true)
-						PlayAttackHit(Enemy)
 						Unit:AddAttackPromise(EmitPromise, "AlexanderAttackEmitReal")
 					end)
+
+					DelayedAttackHit(Unit, AttackInput, Enemy, 0.38, Delay)
+					DelayedSound(Unit, { Sounds.SwordSwing }, AttackInput, Enemy, 0.32, Delay)
 					Unit:AddAttackPromise(DelProm, "AlexanderAttackEmit")
 				end,
 			},
@@ -374,6 +435,7 @@ local UnitAttacks: {
 			[0] = {
 				function(Unit, AttackInput, Enemy, Delay)
 					DefaultAttack(Unit, AttackInput, Enemy, Delay)
+					SFXService.PlaySoundAt(Sounds.LightSwing, Unit.Root.CFrame)
 
 					local DelayTime = CalculateDelay(0.15, AttackInput.SpeedRatio, Delay)
 
@@ -386,8 +448,9 @@ local UnitAttacks: {
 							true,
 							2
 						)
-						PlayAttackHit(Enemy)
 					end)
+
+					DelayedAttackHit(Unit, AttackInput, Enemy, 0.15, Delay)
 
 					Unit:AddAttackPromise(DelProm, "JuliusAttackEmit")
 				end,
@@ -409,8 +472,10 @@ local UnitAttacks: {
 							true,
 							2
 						)
-						PlayAttackHit(Enemy)
 					end)
+
+					DelayedAttackHit(Unit, AttackInput, Enemy, 0.3, Delay)
+					DelayedSound(Unit, { Sounds.SwordSwing }, AttackInput, Enemy, 0.2, Delay)
 
 					Unit:AddAttackPromise(DelProm, "PyrrhusAttackEmit")
 				end,
@@ -431,8 +496,10 @@ local UnitAttacks: {
 							true,
 							2
 						)
-						PlayAttackHit(Enemy)
 					end)
+
+					DelayedSound(Unit, { Sounds.SwordSwing }, AttackInput, Enemy, 0.34, Delay)
+					DelayedAttackHit(Unit, AttackInput, Enemy, 0.42, Delay)
 
 					Unit:AddAttackPromise(DelProm, "SpartacusAttackEmit")
 				end,
@@ -454,8 +521,10 @@ local UnitAttacks: {
 							true,
 							30
 						)
-						PlayAttackHit(Enemy)
 					end)
+
+					DelayedAttackHit(Unit, AttackInput, Enemy, 0.3, Delay)
+					DelayedSound(Unit, { Sounds.LightSwing }, AttackInput, Enemy, 0.2, Delay)
 
 					Unit:AddAttackPromise(DelProm, "LeonidasAttackEmit")
 				end,
@@ -463,22 +532,42 @@ local UnitAttacks: {
 		},
 		["William the Conqueror"] = {
 			[0] = {
-				DefaultAttack,
+				function(Unit, AttackInput, Enemy, Delay)
+					DefaultAttack(Unit, AttackInput, Enemy, Delay)
+					DelayedAttackHit(Unit, AttackInput, Enemy, 0.3, Delay, "1")
+					DelayedAttackHit(Unit, AttackInput, Enemy, 0.5, Delay, "2")
+					DelayedAttackHit(Unit, AttackInput, Enemy, 0.8, Delay, "3")
+					DelayedSound(Unit, { Sounds.SwordSwing, Sounds.LightSwing }, AttackInput, Enemy, 0.2, Delay, "1")
+					DelayedSound(Unit, { Sounds.SwordSwing, Sounds.LightSwing }, AttackInput, Enemy, 0.4, Delay, "2")
+					DelayedSound(Unit, { Sounds.SwordSwing, Sounds.LightSwing }, AttackInput, Enemy, 0.7, Delay, "3")
+				end,
 			},
 		},
 		["Charlemagne"] = {
 			[0] = {
-				DefaultAttack,
+				function(Unit, AttackInput, Enemy, Delay)
+					DefaultAttack(Unit, AttackInput, Enemy, Delay)
+					DelayedAttackHit(Unit, AttackInput, Enemy, 0.6, Delay)
+					DelayedSound(Unit, { Sounds.HeavySwordSwing, Sounds.HeavySwing2 }, AttackInput, Enemy, 0.3, Delay)
+				end,
 			},
 		},
 		["Richard the Lionheart"] = {
 			[0] = {
-				DefaultAttack,
+				function(Unit, AttackInput, Enemy, Delay)
+					DefaultAttack(Unit, AttackInput, Enemy, Delay)
+					DelayedAttackHit(Unit, AttackInput, Enemy, 0.6, Delay)
+					DelayedSound(Unit, { Sounds.HeavySwordSwing, Sounds.HeavySwing2 }, AttackInput, Enemy, 0.3, Delay)
+				end,
 			},
 		},
 		["Robert the Bruce"] = {
 			[0] = {
-				DefaultAttack,
+				function(Unit, AttackInput, Enemy, Delay)
+					DefaultAttack(Unit, AttackInput, Enemy, Delay)
+					DelayedAttackHit(Unit, AttackInput, Enemy, 0.5, Delay)
+					SFXService.PlaySoundAt(Sounds.SwordSwing, Unit.Root.CFrame)
+				end,
 			},
 		},
 		["Ptolemy"] = {
@@ -508,12 +597,16 @@ local UnitAttacks: {
 		},
 		["Narmer"] = {
 			[0] = {
-				DefaultAttack,
+				function(Unit, AttackInput, Enemy, Delay)
+					DefaultAttack(Unit, AttackInput, Enemy, Delay)
+				end,
 			},
 		},
 		["Ramesses II"] = {
 			[0] = {
-				DefaultAttack,
+				function(Unit, AttackInput, Enemy, Delay)
+					DefaultAttack(Unit, AttackInput, Enemy, Delay)
+				end,
 			},
 		},
 	}

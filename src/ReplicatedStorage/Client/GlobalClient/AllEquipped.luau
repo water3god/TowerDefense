@@ -31,7 +31,7 @@ export type UnitDataSent = {
 export type DataSent = {
 	Title: string,
 	Level: number,
-	EquippedUnits: { UnitDataSent },
+	EquippedUnits: { UnitDataSent? },
 }
 
 export type AllDataSent = { [Player]: DataSent }

@@ -137,7 +137,7 @@ local function ApplyBuff(Unit: UnitModule.Unit, BuffType: string, Ratio: number,
 	return BuffTrove:WrapClean()
 end
 
-local function DelayAttack(Unit: UnitModule.Unit, Damage: number, Delay: number)
+local function DelayAttack(Unit: UnitModule.Unit, Damage: number, Delay: number, Name: string?)
 	local CurrentEnemy = Unit.CurrentEnemy
 
 	if CurrentEnemy then
@@ -145,7 +145,7 @@ local function DelayAttack(Unit: UnitModule.Unit, Damage: number, Delay: number)
 			Promise.delay(Delay * Unit.Ratios.FireRate):andThen(function()
 				Unit:DamageEnemy(CurrentEnemy, Damage)
 			end),
-			"DelayAttack"
+			"DelayAttack" .. (Name or "")
 		)
 	end
 end
@@ -385,9 +385,9 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 		AttackFuncs = {
 			[0] = {
 				function(Unit: UnitModule.Unit, Damage: number)
-					DelayAttack(Unit, Damage, 0.3)
-					DelayAttack(Unit, Damage, 0.5)
-					DelayAttack(Unit, Damage, 0.8)
+					DelayAttack(Unit, Damage / 3, 0.3, "1")
+					DelayAttack(Unit, Damage / 3, 0.5, "2")
+					DelayAttack(Unit, Damage / 3, 0.8, "3")
 				end,
 			},
 		},

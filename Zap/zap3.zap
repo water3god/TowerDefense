@@ -225,7 +225,7 @@ event AllEquippedSync = {
 			Id: string,
 			Level: Level,
 			UnitName: string,
-		}[],
+		}?[],
 	} },
 }
 

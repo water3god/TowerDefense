@@ -42,12 +42,17 @@ local function RemoveSound(Sound: Sound)
 	end
 end
 
+local function RandomizeSound(Sound: Sound)
+	Sound.PlaybackSpeed = math.random(95, 105) / 100
+end
+
 local function PlaySoundAt(SoundInput: Sound, CFrame: CFrame, Func: ((Sound: Sound) -> ())?)
 	local Sound = SoundInput:Clone()
 	Sound.SoundGroup = SoundGroup
 	local Part = NewPart()
 
 	if Func then
+		RandomizeSound(Sound)
 		Func(Sound)
 	end
 
@@ -65,11 +70,21 @@ local function PlaySoundAt(SoundInput: Sound, CFrame: CFrame, Func: ((Sound: Sou
 	end)
 end
 
+local function PlaySoundAtRandom(Sounds: { Sound }, CFrame: CFrame, Func: ((Sound: Sound) -> ())?)
+	if #Sounds == 0 then
+		return
+	end
+
+	local RandomSound = Sounds[math.random(1, #Sounds)]
+	PlaySoundAt(RandomSound, CFrame, Func)
+end
+
 local function PlaySoundGlobal(SoundInput: Sound, Func: ((Sound: Sound) -> ())?)
 	local Sound = SoundInput:Clone()
 	Sound.SoundGroup = SoundGroup
 
 	if Func then
+		RandomizeSound(Sound)
 		Func(Sound)
 	end
 
@@ -90,6 +105,7 @@ local function PlaySoundGlobalWithId(SoundId: string, Func: ((Sound: Sound) -> (
 	Sound.SoundGroup = SoundGroup
 
 	if Func then
+		RandomizeSound(Sound)
 		Func(Sound)
 	end
 
@@ -109,6 +125,7 @@ local Module: {
 	SoundPlayed: Signal.Signal<Sound>,
 	Synced: boolean,
 	PlaySoundAt: (SoundInput: Sound, CFrame: CFrame, Func: ((Sound: Sound) -> ())?) -> (),
+	PlaySoundAtRandom: (Sounds: { Sound }, CFrame: CFrame, Func: ((Sound: Sound) -> ())?) -> (),
 	PlaySoundGlobal: (SoundInput: Sound, Func: ((Sound: Sound) -> ())?) -> (),
 	PlaySoundGlobalWithId: (SoundId: string, Func: ((Sound: Sound) -> ())?) -> (),
 } =
@@ -117,6 +134,7 @@ local Module: {
 		SoundPlayed = Signal.new(),
 		Synced = false,
 		PlaySoundAt = PlaySoundAt,
+		PlaySoundAtRandom = PlaySoundAtRandom,
 		PlaySoundGlobal = PlaySoundGlobal,
 		PlaySoundGlobalWithId = PlaySoundGlobalWithId,
 	}

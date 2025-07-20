@@ -198,12 +198,20 @@ local remotes = ReplicatedStorage:WaitForChild("Zap3")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
-export type Health = (number)
-export type QuestRemoteInfo = ({
-	["Id"]: (string),
-	["CurrentValue"]: (number),
-	["Redeemed"]: (boolean),
+export type MainXPData = ({
+	["OldXP"]: (number),
+	["NewXP"]: (number),
+	["OldLevel"]: (number),
+	["NewLevel"]: (number),
 })
+export type WaveData = ({
+	["Wave"]: (number),
+	["BaseHealth"]: (number),
+	["MaxHealth"]: (number),
+	["Time"]: (number),
+	["StartTime"]: (number),
+})
+export type Level = (number)
 export type ResourceData = ({
 	["Units"]: ({ (string) }),
 	["Resources"]: ({ ({
@@ -218,31 +226,23 @@ export type ResourceData = ({
 		["NewXP"]: (number),
 	}) }),
 })
+export type XP = (number)
 export type Vote = (number)
+export type Wave = (number)
+export type ProductId = (number)
+export type Health = (number)
 export type VoteData = ({
 	["Time"]: (number),
 	["StartTime"]: (number),
 	["CurrentCount"]: (number),
 	["NeededCount"]: (number),
 })
+export type QuestRemoteInfo = ({
+	["Id"]: (string),
+	["CurrentValue"]: (number),
+	["Redeemed"]: (boolean),
+})
 export type Time = (number)
-export type Level = (number)
-export type MainXPData = ({
-	["OldXP"]: (number),
-	["NewXP"]: (number),
-	["OldLevel"]: (number),
-	["NewLevel"]: (number),
-})
-export type Wave = (number)
-export type ProductId = (number)
-export type XP = (number)
-export type WaveData = ({
-	["Wave"]: (number),
-	["BaseHealth"]: (number),
-	["MaxHealth"]: (number),
-	["Time"]: (number),
-	["StartTime"]: (number),
-})
 
 local function SendEvents()
 	if outgoing_used ~= 0 then
@@ -623,13 +623,18 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 					local len_20 = buffer.readu16(incoming_buff, read(2))
 					val_10["EquippedUnits"] = table.create(len_20)
 					for i_10 = 1, len_20 do
+						local bool_11 = buffer.readu8(incoming_buff, read(1))
 						local val_11
-						val_11 = {  }
-						local len_21 = buffer.readu16(incoming_buff, read(2))
-						val_11["Id"] = buffer.readstring(incoming_buff, read(len_21), len_21)
-						val_11["Level"] = buffer.readu16(incoming_buff, read(2))
-						local len_22 = buffer.readu16(incoming_buff, read(2))
-						val_11["UnitName"] = buffer.readstring(incoming_buff, read(len_22), len_22)
+						if bit32.btest(bool_11, 0b0000000000000001) then
+							val_11 = {  }
+							local len_21 = buffer.readu16(incoming_buff, read(2))
+							val_11["Id"] = buffer.readstring(incoming_buff, read(len_21), len_21)
+							val_11["Level"] = buffer.readu16(incoming_buff, read(2))
+							local len_22 = buffer.readu16(incoming_buff, read(2))
+							val_11["UnitName"] = buffer.readstring(incoming_buff, read(len_22), len_22)
+						else
+							val_11 = nil
+						end
 						val_10["EquippedUnits"][i_10] = val_11
 					end
 					value[key_1] = val_10
@@ -755,14 +760,14 @@ local returns = {
 		Fire = function(Value: (number), Value2: (boolean))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-			local bool_11 = 0
-			local bool_11_pos_1 = alloc(1)
+			local bool_12 = 0
+			local bool_12_pos_1 = alloc(1)
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value)
 			if Value2 then
-				bool_11 = bit32.bor(bool_11, 0b0000000000000001)
+				bool_12 = bit32.bor(bool_12, 0b0000000000000001)
 			end
-			buffer.writeu8(outgoing_buff, bool_11_pos_1, bool_11)
+			buffer.writeu8(outgoing_buff, bool_12_pos_1, bool_12)
 		end,
 	},
 	TimeChanged = {
@@ -784,12 +789,12 @@ local returns = {
 		Fire = function(Value: (boolean))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
-			local bool_12 = 0
-			local bool_12_pos_1 = alloc(1)
+			local bool_13 = 0
+			local bool_13_pos_1 = alloc(1)
 			if Value then
-				bool_12 = bit32.bor(bool_12, 0b0000000000000001)
+				bool_13 = bit32.bor(bool_13, 0b0000000000000001)
 			end
-			buffer.writeu8(outgoing_buff, bool_12_pos_1, bool_12)
+			buffer.writeu8(outgoing_buff, bool_13_pos_1, bool_13)
 		end,
 	},
 	SendWarning = {
@@ -977,11 +982,11 @@ local returns = {
 		SetCallback = function(Callback: (Value: ({ [(Player)]: ({
 			["Title"]: (string),
 			["Level"]: (number),
-			["EquippedUnits"]: ({ ({
+			["EquippedUnits"]: ({ (({
 				["Id"]: (string),
 				["Level"]: (number),
 				["UnitName"]: (string),
-			}) }),
+			})?) }),
 		}) })) -> ()): () -> ()
 			reliable_events[14] = Callback
 			for _, value in reliable_event_queue[14] do
