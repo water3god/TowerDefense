@@ -69,6 +69,7 @@ export type UnitProperties = {
 	UniqueId: string,
 	UnitName: string,
 	Visible: boolean,
+	Total: number,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
@@ -114,7 +115,9 @@ local function CreateUnitFrame(props: UnitProperties)
 		elseif Data.Rarity == "Mythic" then
 			return
 		else
-			SFXService.PlaySoundGlobal(SummonSound)
+			SFXService.PlaySoundGlobal(SummonSound, function(Sound: Sound)
+				Sound.Volume = 0.04 + (0.05 * (props.Total - 1) / 3)
+			end)
 		end
 	end, { props.UnitName, Data :: any })
 
@@ -274,6 +277,7 @@ local function CreateInRoll(props: Properties)
 						UnitName = UnitData.Name,
 						UniqueId = UnitData.Id,
 						Visible = Visible,
+						Total = MaxPerRow,
 						native = {
 							LayoutOrder = j,
 						},

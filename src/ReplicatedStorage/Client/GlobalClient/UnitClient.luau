@@ -9,6 +9,7 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
+local SoundService = game:GetService("SoundService")
 
 local Player = Players.LocalPlayer
 
@@ -49,6 +50,7 @@ local CylinderCast = Extra.CylinderCast
 local Client = ReplicatedStorage.Client
 local GlobalClient = Client.GlobalClient
 local EnemyClient = require(GlobalClient.EnemyClient)
+local SFXService = require(GlobalClient.SFXService)
 
 local Shared = ReplicatedStorage.Shared
 local UnitAttacks = require(Shared.UnitAttacks)
@@ -94,6 +96,9 @@ local UseAbility = Network.UseUnitAbility
 
 local WarningEvents = require(ReplicatedStorage.Network.ClientOnly)
 local SendWarning = WarningEvents.Warning
+
+local Sounds = SoundService.SoundEffects.Sounds
+local PlacementSound = Sounds.Placement
 
 export type Unit = Types.Unit
 export type UnitModule = Types.UnitModule
@@ -530,6 +535,8 @@ local function NewUnit(Input: Types.UnitInput, New: boolean)
 	end)
 
 	Part.Parent = ParticlesFolder
+
+	SFXService.PlaySoundAt(PlacementSound, self.Root.CFrame)
 
 	self.NewUnit:Fire(self, New)
 end
