@@ -121,15 +121,23 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 	local WaveData = React.useContext(WaveContext.Context)
 	local Units = UnitsContext.Units
 
-	local SizeStyles = ReactSpring.useSpring({
-		from = {
-			Size = 1.2,
-		},
-		to = {
+	local SizeStyles, API = ReactSpring.useSpring(function()
+		return {
 			Size = 1,
-		},
-		config = { mass = 1, tension = 100, friction = 20 },
-	}, { CurrencyContext.Value })
+		}
+	end)
+
+	React.useEffect(function()
+		API.start({
+			Size = 1.2,
+			immediate = true,
+		}):andThen(function()
+			API.start({
+				Size = 1,
+				config = { mass = 1, tension = 400, friction = 30 },
+			})
+		end)
+	end, { CurrencyContext.Value })
 
 	React.useImperativeHandle(ref, function()
 		return {

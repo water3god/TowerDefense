@@ -558,6 +558,70 @@ local UnitAttacks: {
 					DefaultAttack(Unit, AttackInput, Enemy, Delay)
 					DelayedAttackHit(Unit, AttackInput, Enemy, 0.6, Delay)
 					DelayedSound(Unit, { Sounds.HeavySwordSwing, Sounds.HeavySwing2 }, AttackInput, Enemy, 0.3, Delay)
+
+					for i = 1, 3, 1 do
+						local NewDelay = CalculateDelay(0.2, AttackInput.SpeedRatio, Delay)
+						local SmashPromise = Promise.delay(NewDelay + i / 10):andThen(function()
+							local Part = Instance.new("Part")
+							Part.Size = Vector3.new(3, 3, 3)
+							Part.Anchored = true
+							Part.CanCollide = false
+							Part.CanQuery = false
+							Part.Transparency = 1
+							Part.CFrame = (Unit.CFrame + Unit.CFrame.LookVector * i * 5)
+									* CFrame.Angles(
+										math.rad(Random:NextNumber(0, 360)),
+										math.rad(Random:NextNumber(0, 360)),
+										math.rad(Random:NextNumber(0, 360))
+									)
+								- Vector3.new(0, 5, 0)
+
+							local Raycast = workspace:Raycast(Part.CFrame.Position + Vector3.yAxis, -Vector3.yAxis * 2)
+
+							if Raycast and Raycast.Instance then
+								Part.Material = Raycast.Instance.Material
+								Part.Color = Raycast.Instance.Color
+							else
+								Part.Material = Enum.Material.Concrete
+							end
+
+							Promise.resolve()
+								:andThen(function()
+									TweenService
+										:Create(
+											Part,
+											TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+											{
+												CFrame = Part.CFrame + Vector3.new(0, 5, 0),
+												Transparency = 0,
+											}
+										)
+										:Play()
+									Part.Parent = ParticlesFolder
+									wait(3)
+								end)
+								:andThen(function()
+									local Tween = TweenService:Create(
+										Part,
+										TweenInfo.new(0.7, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+										{
+											CFrame = Part.CFrame - Vector3.new(0, 5, 0),
+											Transparency = 1,
+										}
+									)
+
+									Tween:Play()
+									Tween.Completed:Wait()
+								end)
+								:andThen(function()
+									Part:Destroy()
+								end)
+
+							return Part
+						end)
+
+						Unit:AddAttackPromise(SmashPromise, "RichardGroundHit" .. i)
+					end
 				end,
 			},
 		},

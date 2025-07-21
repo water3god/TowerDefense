@@ -184,6 +184,7 @@ type UnitImpl = {
 
 	IsOwnedBy: (self: Unit, Player: Player) -> boolean,
 	UnitIsInRange: (self: Unit, Unit: Unit) -> boolean,
+	GetEnemiesInRange: (self: Unit) -> { Enemy.Enemy },
 	GetUnitsInRange: (self: Unit) -> { [string]: Unit },
 
 	Delete: (self: Unit) -> (),
@@ -729,6 +730,13 @@ function Unit:UnitIsInRange(OtherUnit: Unit)
 	local PositionA = Vector2.new(self.CFrame.X, self.CFrame.Z)
 	local PositionB = Vector2.new(OtherUnit.CFrame.X, OtherUnit.CFrame.Z)
 	return (PositionA - PositionB).Magnitude <= Range
+end
+
+function Unit:GetEnemiesInRange()
+	local Range: number = self:GetProperty("Range")
+	local EnemiesInRange = Enemy.GetEnemiesInRange(self.CFrame.Position, Range)
+
+	return EnemiesInRange
 end
 
 function Unit:GetUnitsInRange()

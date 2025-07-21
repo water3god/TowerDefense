@@ -757,7 +757,7 @@ function UnitModule:GetProperties()
 	local UnitData = self.UnitData.UnitData
 	local Level = self.Level
 	return {
-		Damage = math.floor(UnitData[Level].Damage[1] * self.Ratios.Damage),
+		Damage = math.ceil(UnitData[Level].Damage[1] * self.Ratios.Damage),
 		FireRate = UnitData[Level].FireRate * self.Ratios.FireRate,
 		Range = UnitData[Level].Range * self.Ratios.Range,
 		Coins = UnitData[Level].Coins,
@@ -774,7 +774,7 @@ function UnitModule:GetNextProperties()
 	end
 
 	return {
-		Damage = math.floor(UnitData[Level].Damage[1] * self.Ratios.Damage),
+		Damage = math.ceil(UnitData[Level].Damage[1] * self.Ratios.Damage),
 		FireRate = UnitData[Level].FireRate * self.Ratios.FireRate,
 		Range = UnitData[Level].Range * self.Ratios.Range,
 		Coins = UnitData[Level].Coins,
@@ -1049,7 +1049,7 @@ function UnitModule.InitPlacement(Unit: string)
 
 		local NumberLerp = Lerps.number(AnimatedRotation, FinalIndex)
 
-		CurrentPromise = InitTrove:AddPromise(HelperFunctions.TweenPromise(0.1, function(alpha: number)
+		CurrentPromise = InitTrove:AddPromise(HelperFunctions.TweenPromise(0.2, function(alpha: number)
 			local Value = TweenService:GetValue(alpha, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
 			AnimatedRotation = NumberLerp(Value)
 		end) :: any)

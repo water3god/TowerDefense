@@ -150,6 +150,56 @@ local function DelayAttack(Unit: UnitModule.Unit, Damage: number, Delay: number,
 	end
 end
 
+local function DelayAOE(
+	Unit: UnitModule.Unit,
+	Damage: number,
+	Delay: number,
+	ShapeData: {
+		Type: string,
+		Size: number,
+	},
+	Name: string?
+)
+	Unit:AddAttackPromise(
+		Promise.delay(Delay * Unit.Ratios.FireRate):andThen(function()
+			if Unit.CurrentEnemy then
+				if ShapeData.Type == "Cone" then
+					local UnitToTarget = (Unit.CurrentEnemy.CFrame.Position - Unit.CFrame.Position).Unit
+					local ConeThreshold = math.cos(math.rad(ShapeData.Size / 2))
+
+					for _, Enemy in pairs(Unit:GetEnemiesInRange()) do
+						local UnitToEnemy = (Enemy.CFrame.Position - Unit.CFrame.Position).Unit
+						local DotProduct = UnitToTarget:Dot(UnitToEnemy)
+
+						if DotProduct >= ConeThreshold then
+							Unit:DamageEnemy(Enemy, Damage)
+						end
+					end
+				elseif ShapeData.Type == "Line" then
+					local UnitToTarget = (Unit.CurrentEnemy.CFrame.Position - Unit.CFrame.Position).Unit
+
+					for _, Enemy in pairs(Unit:GetEnemiesInRange()) do
+						local UnitToEnemy = Enemy.CFrame.Position - Unit.CFrame.Position
+						local ProjectionLength = UnitToTarget:Dot(UnitToEnemy)
+						local RejectionMagnitude = math.sqrt(UnitToEnemy.Magnitude ^ 2 - ProjectionLength ^ 2)
+
+						if ProjectionLength >= 0 and ProjectionLength <= ShapeData.Size and RejectionMagnitude <= 5 then
+							Unit:DamageEnemy(Enemy, Damage)
+						end
+					end
+				elseif ShapeData.Type == "Circle" then
+					for _, Enemy in pairs(Unit:GetEnemiesInRange()) do
+						Unit:DamageEnemy(Enemy, Damage)
+					end
+				else
+					warn("Unknown ShapeData Type", ShapeData.Type)
+				end
+			end
+		end),
+		"DelayAOE" .. (Name or "")
+	)
+end
+
 local function FireArrow(Unit: UnitModule.Unit, Damage: number, Speed: number, Delay: number)
 	local CurrentEnemy = Unit.CurrentEnemy
 	if CurrentEnemy then
@@ -400,7 +450,10 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 		AttackFuncs = {
 			[0] = {
 				function(Unit: UnitModule.Unit, Damage: number)
-					DelayAttack(Unit, Damage, 0.6)
+					DelayAOE(Unit, Damage, 0.6, {
+						Type = "Cone",
+						Size = 30,
+					})
 				end,
 			},
 		},

@@ -17,6 +17,7 @@ local Network = require(ReplicatedStorage.Network.Server)
 local EquipUnit = Network.EquipUnit
 local Sell = Network.ItemSell
 local EquipTitle = Network.EquipTitle
+local SendWarning = Network.SendWarning
 
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
@@ -40,7 +41,24 @@ EquipUnit.SetCallback(function(Player: Player, Data: { UniqueId: string, Equip: 
 		if PData.CurrentWave then
 			return
 		end
+		local Duplicate = false
 		if Data.Equip then
+			local CurrentUnit = PData.Profile.Data.Units[Data.UniqueId]
+			if CurrentUnit then
+				for _, UniqueId in pairs(PData.Profile.Data.EquippedUnits) do
+					if UniqueId then
+						local Unit = PData.Profile.Data.Units[UniqueId]
+						if Unit and CurrentUnit.Unit == Unit.Unit then
+							Duplicate = true
+							break
+						end
+					end
+				end
+			end
+			if Duplicate then
+				SendWarning.Fire(Player, "You cannot equip duplicate units.")
+				return
+			end
 			PData:EquipUnit(Data.UniqueId)
 		else
 			PData:UnequipUnit(Data.UniqueId)
