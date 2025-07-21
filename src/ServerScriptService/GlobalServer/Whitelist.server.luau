@@ -51,6 +51,8 @@ local WhiteListedIds = {
 	2267421684,
 	3332765179,
 	2214619892,
+	4659449284,
+	2669290922,
 }
 
 SafePlayerAdded:Connect(function(Player: Player)

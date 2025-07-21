@@ -46,7 +46,7 @@ local Titles: {
 		Description = "A player who has achieved God status.",
 		Priority = 8,
 	},
-	["Destroyer of Worlds"] = {
+	["Destroyer Of Worlds"] = {
 		Color = ColorSequence.new(Color3.fromRGB(255, 0, 255), Color3.fromRGB(255, 100, 200)),
 		Description = "A player who has achieved Destroyer of Worlds status.",
 		Priority = 7,
