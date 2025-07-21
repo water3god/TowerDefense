@@ -21,6 +21,10 @@ local PlayingSounds = SoundService.PlayingSounds
 
 local GlobalSounds = workspace.GlobalWorkspace.Sounds
 
+if not RunService:IsRunning() then
+	PlayingSounds = nil
+end
+
 local function NewPart()
 	local Part = Instance.new("Part")
 	Part.Transparency = 1

@@ -1,0 +1,169 @@
+--!strict
+
+-- By Wa1er_God --
+
+-- Services --
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+-- Libraries --
+local Packages = ReplicatedStorage.Packages
+local Promise = require(Packages.Promise)
+local Trove = require(Packages.Trove)
+local Input = require(Packages.Input)
+local React = require(Packages.React)
+local e = React.createElement
+
+local Modules = ReplicatedStorage.Modules
+local HelperFunctions = require(Modules.HelperFunctions)
+local Join = HelperFunctions.joinDicts
+
+-- Reference UI --
+local Gui = ReplicatedStorage.Gui
+local CoreGame = Gui.CoreGame
+local Main = require(CoreGame.Main)
+local UIStroke = require(CoreGame.UIStroke)
+local CloseButton = require(CoreGame.CloseButton)
+
+export type Properties = {
+	SpeakerName: string,
+	Messages: { string },
+	CloseClick: (() -> ())?,
+	native: { [any]: any }?,
+	children: { [any]: any }?,
+}
+
+local function CreateMessage(props: Properties)
+	local LerpedMessage, SetLerpedMessage = React.useState("")
+	local CurrentMessageIndex, SetCurrentMessageIndex = React.useState(1)
+
+	React.useEffect(function()
+		SetCurrentMessageIndex(1)
+	end, { props.Messages })
+
+	local function GoToLastMessage()
+		if CurrentMessageIndex > 1 then
+			SetCurrentMessageIndex(CurrentMessageIndex - 1)
+		else
+			SetCurrentMessageIndex(#props.Messages)
+		end
+	end
+
+	local function GoToNextMessage()
+		if CurrentMessageIndex < #props.Messages then
+			SetCurrentMessageIndex(CurrentMessageIndex + 1)
+		else
+			SetCurrentMessageIndex(1)
+		end
+	end
+
+	React.useEffect(function()
+		local InputTrove = Trove.new()
+		local Disconnect = Input.PreferredInput.Observe(function(PreferredInput)
+			if PreferredInput == "MouseKeyboard" then
+				local Keyboard = InputTrove:Construct(Input.Keyboard)
+
+				Keyboard.KeyUp:Connect(function(Key: Enum.KeyCode)
+					if Key == Enum.KeyCode.KeypadEnter then
+						GoToNextMessage()
+					end
+				end)
+			end
+		end)
+
+		return function()
+			Disconnect()
+		end
+	end, { props.Messages, CurrentMessageIndex } :: { unknown })
+
+	React.useEffect(function()
+		SetLerpedMessage("")
+		local CurrentMessage = props.Messages[CurrentMessageIndex] or ""
+		local MessageTrove = Trove.new()
+
+		for i = 1, #CurrentMessage do
+			local MessagePromise = Promise.delay(0.02 * i):andThen(function()
+				SetLerpedMessage(string.sub(CurrentMessage, 1, i))
+			end)
+			MessageTrove:AddPromise(MessagePromise :: any)
+		end
+		return function()
+			MessageTrove:Destroy()
+		end
+	end, { CurrentMessageIndex, props.Messages } :: { unknown })
+
+	return e(Main.TextButton, {
+		native = Join({
+			Text = "",
+			Position = UDim2.fromScale(0.5, 0.65),
+			Size = UDim2.fromScale(0.4, 0.25),
+			BackgroundTransparency = 0,
+			BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
+		}, props.native),
+	}, {
+		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+			AspectRatio = 3,
+		}),
+		UICorner = e("UICorner", {
+			CornerRadius = UDim.new(0.04, 0),
+		}),
+		CloseButton = e(CloseButton, {
+			OnClick = props.CloseClick,
+			native = {
+				Position = UDim2.fromScale(1, 0),
+				Size = UDim2.fromScale(0.4, 0.3),
+			},
+		}),
+		UIStroke = e(UIStroke.UIStrokeAdvanced, {
+			Color = Color3.new(0.866667, 0.866667, 0.866667),
+			Stroke = 0.002,
+			native = {
+				LineJoinMode = Enum.LineJoinMode.Round,
+				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+			},
+		}),
+		SpeakerLabel = e(Main.TextLabel, {
+			native = {
+				Position = UDim2.fromScale(0.5, 0.16),
+				Size = UDim2.fromScale(0.9, 0.15),
+				Text = props.SpeakerName,
+				TextXAlignment = Enum.TextXAlignment.Left,
+			},
+		}),
+		LeftArrow = e(Main.Animateables.ImageButton, {
+			native = {
+				Position = UDim2.fromScale(-0.08, 0.5),
+				Size = UDim2.fromScale(0.1, 0.25),
+				Image = "rbxassetid://73864431143188",
+				Rotation = 180,
+				Visible = CurrentMessageIndex > 1,
+				[React.Event.MouseButton1Click] = GoToLastMessage,
+			},
+		}),
+		RightArrow = e(Main.Animateables.ImageButton, {
+			native = {
+				Position = UDim2.fromScale(1.08, 0.5),
+				Size = UDim2.fromScale(0.1, 0.25),
+				Image = "rbxassetid://73864431143188",
+				Visible = CurrentMessageIndex < #props.Messages,
+				[React.Event.MouseButton1Click] = GoToNextMessage,
+			},
+		}),
+		MessageLabel = e(Main.TextLabel, {
+			native = {
+				AnchorPoint = Vector2.new(0.5, 0),
+				Position = UDim2.fromScale(0.5, 0.3),
+				Size = UDim2.fromScale(0.9, 0.65),
+				Text = LerpedMessage,
+				TextXAlignment = Enum.TextXAlignment.Left,
+				TextYAlignment = Enum.TextYAlignment.Top,
+			},
+		}, {
+
+			UITextSizeConstraint = e("UITextSizeConstraint", {
+				MaxTextSize = 16,
+			}),
+		}),
+	}, props.children)
+end
+
+return CreateMessage

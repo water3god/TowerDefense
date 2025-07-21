@@ -364,7 +364,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 				return
 			end
 		end
-	end, { UpgradeData.UniqueId, CurrencyData.Value, WarningData.Warnings } :: { unknown })
+	end, { UpgradeData, CurrencyData.Value, WarningData.Warnings } :: { unknown })
 
 	local CloseClick = React.useCallback(function()
 		SetVisible(false)

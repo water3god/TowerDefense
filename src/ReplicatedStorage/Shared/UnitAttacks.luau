@@ -372,7 +372,7 @@ local function FireArrow(
 			:finally(function()
 				Arrow:Destroy()
 			end),
-		"AttackPompeyArrow"
+		"AttackArrow"
 	)
 end
 
@@ -640,7 +640,7 @@ local UnitAttacks: {
 					FireArrow(Unit, AttackInput, Enemy, Delay, {
 						DelayTime = 0.4,
 						Realigned = CFrame.Angles(0, math.rad(90), 0),
-						Speed = 50,
+						Speed = 70,
 					})
 				end,
 			},
@@ -648,14 +648,11 @@ local UnitAttacks: {
 		["Cleopatra"] = {
 			[0] = {
 				function(Unit, AttackInput, Enemy, Delay)
-					for _ = 1, 3, 1 do
-						task.wait(0.1)
-						FireArrow(Unit, AttackInput, Enemy, Delay, {
-							DelayTime = 0.4,
-							Realigned = CFrame.Angles(0, math.rad(90), 0),
-							Speed = 50,
-						})
-					end
+					FireArrow(Unit, AttackInput, Enemy, Delay, {
+						DelayTime = 0.4,
+						Realigned = CFrame.Angles(0, math.rad(90), 0),
+						Speed = 100,
+					})
 				end,
 			},
 		},

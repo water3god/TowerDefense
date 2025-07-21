@@ -21,6 +21,9 @@ local Touch = Input.Touch
 local Mouse = Input.Mouse
 local Gamepad = Input.Gamepad
 
+local Network = ReplicatedStorage.Network
+local ClientOnly = require(Network.ClientOnly)
+
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 
@@ -536,7 +539,7 @@ local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (strin
 end
 
 local PlayCFrame = CFrame.new(145.5, 7.834, 143.5) * CFrame.Angles(0, math.rad(25), 0)
-local SummonCFrame = CFrame.new(-170, 10, -215)
+local SummonCFrame = CFrame.new(-155, 10, -215)
 
 local VisibleFrames = {
 	[Constants.INVENTORY_FRAME] = { "Bottom" },
@@ -667,7 +670,6 @@ local function Render()
 	React.useEffect(function()
 		local StopFrame = VisibleFrame and not table.find(NoBlur, VisibleFrame)
 		if Character then
-			local Humanoid = Character.Humanoid
 			local SprintTrove = Trove.new()
 
 			if not SprintAnim then
@@ -675,7 +677,8 @@ local function Render()
 			end
 
 			if StopFrame then
-				Humanoid.WalkSpeed = 24
+				Character:SetAttribute("WalkSpeed", 24)
+				ClientOnly.ChangeWalk:Fire(false)
 			end
 
 			local InSprint = VisibleFrame and not table.find(NoBlur, VisibleFrame)
@@ -686,7 +689,9 @@ local function Render()
 						FieldOfView = 80,
 						config = CharacterConfig,
 					})
-					Humanoid.WalkSpeed = 40
+					Character:SetAttribute("WalkSpeed", 40)
+					ClientOnly.ChangeWalk:Fire(true)
+
 					InSprint = true
 				end
 			end
@@ -697,7 +702,8 @@ local function Render()
 						FieldOfView = 70,
 						config = CharacterConfig,
 					})
-					Humanoid.WalkSpeed = 24
+					Character:SetAttribute("WalkSpeed", 24)
+					ClientOnly.ChangeWalk:Fire(false)
 					InSprint = false
 				end
 			end

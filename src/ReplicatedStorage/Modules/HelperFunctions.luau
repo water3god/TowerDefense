@@ -465,6 +465,28 @@ function Funcs.TweenPromise(TotalTime: number, Handler: (alpha: number) -> ())
 	end)
 end
 
+function Funcs.ConventialTween(Instance: Instance, TweenInfo: TweenInfo, Properties: { [string]: any })
+	local TweenService = game:GetService("TweenService")
+	local Tween = TweenService:Create(Instance, TweenInfo, Properties)
+
+	return Promise.new(function(resolve, reject, onCancel)
+		onCancel(function()
+			Tween:Cancel()
+		end)
+
+		Tween.Completed:Once(function(Status)
+			if Status == Enum.PlaybackState.Completed then
+				resolve()
+			else
+				reject("Tween was cancelled or failed.")
+			end
+		end)
+
+		Tween:Play()
+		Tween.Completed:Wait()
+	end)
+end
+
 local NumberScaler = {}
 
 local Suffixes = {

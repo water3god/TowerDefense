@@ -466,7 +466,7 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 		AttackFuncs = {
 			[0] = {
 				function(Unit: UnitModule.Unit, Damage: number)
-					DelayAttack(Unit, Damage, 0.35)
+					FireArrow(Unit, Damage, 70, 0.4)
 				end,
 			},
 		},
@@ -479,7 +479,7 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 		AttackFuncs = {
 			[0] = {
 				function(Unit: UnitModule.Unit, Damage: number)
-					DelayAttack(Unit, Damage, 0.35)
+					FireArrow(Unit, Damage, 100, 0.4)
 				end,
 			},
 		},
@@ -517,7 +517,8 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 		AttackFuncs = {
 			[0] = {
 				function(Unit: UnitModule.Unit, Damage: number)
-					DelayAttack(Unit, Damage, 0.35)
+					DelayAttack(Unit, Damage, 0.4)
+					DelayAttack(Unit, Damage, 0.65)
 				end,
 			},
 		},
