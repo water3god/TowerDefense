@@ -269,3 +269,18 @@ event RedeemQuest = {
 	call: SingleAsync,
 	data: string,
 }
+
+-- Starter --
+
+event FirstJoin = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+}
+
+event ChooseStarter = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: string,
+}

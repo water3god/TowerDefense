@@ -51,6 +51,7 @@ local EndFrame = require(GameFrames.EndFrame)
 local UpgradeFrame = require(GameFrames.UpgradeFrame)
 local UnitToolTip = require(GameFrames.UnitToolTip)
 local EnemyToolTip = require(GameFrames.EnemyToolTip)
+local StarterChoose = require(GameFrames.StarterChoose)
 
 local Story = Gui.Story
 local MainStory = require(Story.MainStory)
@@ -331,6 +332,22 @@ local function RenderQuestsFrame(Props: any)
 	})
 end
 
+local function RenderStarterChoose(Props: any)
+	local Position, Visiblity = AnimateWrapper({
+		Visible = Props.Visible,
+		Name = Constants.STARTER_CHOOSE,
+	})
+
+	return e(StarterChoose, {
+		CloseClick = Props.CloseClick,
+		SetVisible = Props.SetVisible,
+		native = {
+			Position = Position,
+			Visible = Visiblity,
+		},
+	})
+end
+
 local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (string: string?) -> () })
 	local HoveredDataRef = React.useRef(nil :: {
 		Type: "Unit" | "Enemy",
@@ -553,6 +570,7 @@ local VisibleFrames = {
 	[Constants.DAILY_FRAME] = {},
 	[Constants.TITLES_FRAME] = {},
 	[Constants.QUESTS_FRAME] = {},
+	[Constants.STARTER_CHOOSE] = {},
 }
 
 local NoBlur = {
@@ -866,6 +884,15 @@ local function Render()
 						Visible = if VisibleFrame == Constants.QUESTS_FRAME then true else false,
 						CloseClick = function()
 							OnCloseClick(Constants.QUESTS_FRAME)
+						end,
+					}),
+					[Constants.STARTER_CHOOSE] = e(RenderStarterChoose, {
+						Visible = if VisibleFrame == Constants.STARTER_CHOOSE then true else false,
+						CloseClick = function()
+							OnCloseClick(Constants.STARTER_CHOOSE)
+						end,
+						SetVisible = function(Visible: boolean)
+							SetVisibleInternal(Constants.STARTER_CHOOSE, Visible)
 						end,
 					}),
 				} :: { [string]: React.Node }

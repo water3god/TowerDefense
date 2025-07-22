@@ -55,9 +55,10 @@ local CreateUnitView = React.forwardRef(function(Props: Properties, ref)
 
 	local FixedViewportCFrame = React.useMemo(function()
 		if Props.UnitName then
+			local DistanceInput = Props.Distance or Distance
 			local UnitData = UnitInfo.UnitInfo[Props.UnitName]
-			local ViewportOffset = UnitData.ViewportOffset or Vector3.zero
-			local DistanceVector = Vector3.new(0, 0, -Distance)
+			local ViewportOffset = Props.Offset or UnitData.ViewportOffset or Vector3.zero
+			local DistanceVector = Vector3.new(0, 0, -DistanceInput)
 
 			return (CoreCFrame + DistanceVector :: any) + ViewportOffset
 		else

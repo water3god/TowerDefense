@@ -17,6 +17,7 @@ local OriginalPositions: {
 	[Constants.DAILY_FRAME] = UDim2.fromScale(0.5, 0.5),
 	[Constants.TITLES_FRAME] = UDim2.fromScale(0.5, 0.5),
 	[Constants.QUESTS_FRAME] = UDim2.fromScale(0.5, 0.5),
+	[Constants.STARTER_CHOOSE] = UDim2.fromScale(0.5, 0.5),
 }
 
 return OriginalPositions

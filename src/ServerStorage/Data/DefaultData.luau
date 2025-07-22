@@ -64,6 +64,7 @@ export type Data = {
 	LeaderboardData: { [string]: number },
 	Quests: Quests.Quests,
 	QuestData: Quests.TotalPlayerData,
+	StarterChosen: boolean,
 }
 
 local Data: Data = {
@@ -92,6 +93,7 @@ local Data: Data = {
 	LeaderboardData = {},
 	Quests = Quests.Quests,
 	QuestData = Quests.QuestPlayerData,
+	StarterChosen = false,
 }
 
 return Data

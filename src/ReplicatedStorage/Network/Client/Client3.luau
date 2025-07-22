@@ -173,6 +173,9 @@ if not RunService:IsRunning() then
 		OnEnd = table.freeze({
 			SetCallback = noop
 		}),
+		FirstJoin = table.freeze({
+			SetCallback = noop
+		}),
 		EndVoteAction = table.freeze({
 			Fire = noop
 		}),
@@ -184,6 +187,9 @@ if not RunService:IsRunning() then
 		}),
 		CurrencyChanged = table.freeze({
 			SetCallback = noop
+		}),
+		ChooseStarter = table.freeze({
+			Fire = noop
 		}),
 		AllEquippedSync = table.freeze({
 			SetCallback = noop
@@ -198,20 +204,6 @@ local remotes = ReplicatedStorage:WaitForChild("Zap3")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
-export type MainXPData = ({
-	["OldXP"]: (number),
-	["NewXP"]: (number),
-	["OldLevel"]: (number),
-	["NewLevel"]: (number),
-})
-export type WaveData = ({
-	["Wave"]: (number),
-	["BaseHealth"]: (number),
-	["MaxHealth"]: (number),
-	["Time"]: (number),
-	["StartTime"]: (number),
-})
-export type Level = (number)
 export type ResourceData = ({
 	["Units"]: ({ (string) }),
 	["Resources"]: ({ ({
@@ -226,23 +218,37 @@ export type ResourceData = ({
 		["NewXP"]: (number),
 	}) }),
 })
-export type XP = (number)
 export type Vote = (number)
-export type Wave = (number)
-export type ProductId = (number)
+export type XP = (number)
+export type Time = (number)
 export type Health = (number)
+export type QuestRemoteInfo = ({
+	["Id"]: (string),
+	["CurrentValue"]: (number),
+	["Redeemed"]: (boolean),
+})
 export type VoteData = ({
 	["Time"]: (number),
 	["StartTime"]: (number),
 	["CurrentCount"]: (number),
 	["NeededCount"]: (number),
 })
-export type QuestRemoteInfo = ({
-	["Id"]: (string),
-	["CurrentValue"]: (number),
-	["Redeemed"]: (boolean),
+export type MainXPData = ({
+	["OldXP"]: (number),
+	["NewXP"]: (number),
+	["OldLevel"]: (number),
+	["NewLevel"]: (number),
 })
-export type Time = (number)
+export type ProductId = (number)
+export type Wave = (number)
+export type WaveData = ({
+	["Wave"]: (number),
+	["BaseHealth"]: (number),
+	["MaxHealth"]: (number),
+	["Time"]: (number),
+	["StartTime"]: (number),
+})
+export type Level = (number)
 
 local function SendEvents()
 	if outgoing_used ~= 0 then
@@ -260,8 +266,8 @@ end
 
 RunService.Heartbeat:Connect(SendEvents)
 
-local reliable_events = table.create(17)
-local reliable_event_queue: { [number]: { any } } = table.create(17)
+local reliable_events = table.create(18)
+local reliable_event_queue: { [number]: { any } } = table.create(18)
 reliable_event_queue[7] = {}
 reliable_event_queue[6] = {}
 reliable_event_queue[9] = {}
@@ -275,6 +281,7 @@ reliable_event_queue[0] = 0
 reliable_event_queue[3] = {}
 reliable_event_queue[2] = {}
 reliable_event_queue[1] = {}
+reliable_event_queue[17] = 0
 reliable_event_queue[12] = {}
 reliable_event_queue[13] = {}
 reliable_event_queue[11] = {}
@@ -565,6 +572,16 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 				table.insert(reliable_event_queue[1], value)
 				if #reliable_event_queue[1] > 64 then
 					warn(`[ZAP] {#reliable_event_queue[1]} events in queue for OnEnd. Did you forget to attach a listener?`)
+				end
+			end
+		elseif id == 17 then
+			local value
+			if reliable_events[17] then
+				task.spawn(reliable_events[17], value)
+			else
+				reliable_event_queue[17] += 1
+				if reliable_event_queue[17] > 16 then
+					warn(`[ZAP] {reliable_event_queue[17]} events in queue for FirstJoin. Did you forget to attach a listener?`)
 				end
 			end
 		elseif id == 12 then
@@ -930,6 +947,18 @@ local returns = {
 			end
 		end,
 	},
+	FirstJoin = {
+		SetCallback = function(Callback: () -> ()): () -> ()
+			reliable_events[17] = Callback
+			for _ = 1, reliable_event_queue[17] do
+				task.spawn(Callback)
+			end
+			reliable_event_queue[17] = 0
+			return function()
+				reliable_events[17] = nil
+			end
+		end,
+	},
 	EndVoteAction = {
 		Fire = function()
 			alloc(1)
@@ -976,6 +1005,17 @@ local returns = {
 			return function()
 				reliable_events[11] = nil
 			end
+		end,
+	},
+	ChooseStarter = {
+		Fire = function(Value: (string))
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			local len_24 = #Value
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_24)
+			alloc(len_24)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_24)
 		end,
 	},
 	AllEquippedSync = {

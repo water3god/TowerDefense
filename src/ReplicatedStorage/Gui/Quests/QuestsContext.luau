@@ -63,7 +63,6 @@ local function QuestsProvider(props)
 	end, {})
 
 	Hooks.useEventConnection(QuestsService.QuestChanged, function()
-		print(QuestsService.Data)
 		if QuestsService.Data then
 			SetQuestsData({
 				Loading = false,
