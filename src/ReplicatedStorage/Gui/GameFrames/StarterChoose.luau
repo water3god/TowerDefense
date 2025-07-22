@@ -181,11 +181,14 @@ local function CreateStarterChoose(props: Properties)
 			Size = UDim2.fromScale(0.7, 0.6),
 		}, props.native),
 	}, {
+		UIAspectRatio = e("UIAspectRatioConstraint", {
+			AspectRatio = 1.5,
+		}),
 		Title = e(Main.TextLabel, {
 			native = {
 				Position = UDim2.fromScale(0.5, 0.05),
 				Size = UDim2.fromScale(0.8, 0.1),
-				Text = "Choose Your Starter",
+				Text = "Choose Your Starter Unit",
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {

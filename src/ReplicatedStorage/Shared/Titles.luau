@@ -101,20 +101,25 @@ local Titles: {
 		Description = "A player who excels in defeating waves of enemies.",
 		Priority = 42,
 	},
+	["Winner I"] = {
+		Color = ColorSequence.new(Color3.fromRGB(255, 0, 0), Color3.fromRGB(255, 100, 100)),
+		Description = "A player who has won a specific competition or event.",
+		Priority = 43,
+	},
 	["First Place"] = {
 		Color = ColorSequence.new(Color3.fromRGB(255, 215, 0), Color3.fromRGB(255, 230, 150)),
 		Description = "A player who achieved first place in a competition.",
-		Priority = 50,
+		Priority = 44,
 	},
 	["Cleared"] = {
 		Color = ColorSequence.new(Color3.fromRGB(0, 255, 0), Color3.fromRGB(100, 255, 100)),
 		Description = "A player who has cleared a specific challenge or level.",
-		Priority = 51,
+		Priority = 45,
 	},
 	["Demolisher"] = {
 		Color = ColorSequence.new(Color3.fromRGB(255, 0, 0), Color3.fromRGB(255, 100, 100)),
 		Description = "A player who excels in demolishing structures or enemies.",
-		Priority = 52,
+		Priority = 46,
 	},
 	["Group Member"] = {
 		Color = ColorSequence.new(Color3.fromRGB(0, 213, 255), Color3.fromRGB(100, 219, 255)),
