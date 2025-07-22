@@ -3,7 +3,21 @@
 -- By Wa1er_God --
 
 -- Services --
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Player = Players.LocalPlayer
+local PlayerGui = Player.PlayerGui
+
+local Packages = ReplicatedStorage.Packages
+local React = require(Packages.React)
+local ReactRoblox = require(Packages.ReactRoblox)
+local e = React.createElement
+
+local Gui = ReplicatedStorage.Gui
+local CoreGame = Gui.CoreGame
+local Main = require(CoreGame.Main)
+local UIStroke = require(CoreGame.UIStroke)
 
 local Modules = ReplicatedStorage.Modules
 local ObserveTag = require(Modules.ObserveTag)
@@ -23,7 +37,7 @@ local ActivePrompt: NPCTalk.NPCTalk? = nil
 
 ObserveTag.ObserveTag("NPCTalk", function(NPC)
 	if NPC:IsA("Model") then
-		local Root = NPC:WaitForChild("HumanoidRootPart") :: BasePart
+		local HumanoidRoot = NPC:WaitForChild("HumanoidRootPart") :: BasePart
 		local Humanoid = NPC:WaitForChild("Humanoid") :: Humanoid
 		local Animator = Humanoid:WaitForChild("Animator") :: Animator
 		Animator:LoadAnimation(Idle):Play()
@@ -37,8 +51,31 @@ ObserveTag.ObserveTag("NPCTalk", function(NPC)
 		local Input = {
 			Name = NPC.Name,
 			Messages = NPCTalks[NPC.Name] and NPCTalks[NPC.Name].Messages or {},
-			NPCCFrame = Root.CFrame,
+			NPCCFrame = HumanoidRoot.CFrame,
 		}
+
+		local Folder = Instance.new("Folder")
+		Folder.Name = "NPCTalk"
+		Folder.Parent = HumanoidRoot
+
+		local Root = ReactRoblox.createRoot(Folder)
+
+		Root:render(e("BillboardGui", {
+			Adornee = HumanoidRoot,
+			Size = UDim2.fromScale(5, 5),
+			StudsOffsetWorldSpace = Vector3.new(0, 4, 0),
+		}, {
+			Label = e(Main.TextLabel, {
+				native = {
+					Text = NPC.Name,
+					Size = UDim2.fromScale(1, 0.2),
+				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.02,
+				}),
+			}),
+		}))
 
 		local ProximityPrompt = Instance.new("ProximityPrompt")
 		ProximityPrompt.ActionText = "Talk"
@@ -58,7 +95,11 @@ ObserveTag.ObserveTag("NPCTalk", function(NPC)
 			end)
 		end)
 
-		ProximityPrompt.Parent = Root
+		ProximityPrompt.Parent = HumanoidRoot
+
+		return function()
+			Root:unmount()
+		end
 	else
 		warn("NPCTalk: ObserveTag called on non-Model instance:", NPC:GetFullName())
 	end

@@ -39,7 +39,6 @@ local DefaultText = {
 	Text = "DefaultText",
 	FontFace = DefaultFont,
 	TextScaled = true,
-	RichText = true,
 	TextColor3 = Color3.new(1, 1, 1),
 }
 

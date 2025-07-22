@@ -32,7 +32,7 @@ local function HandleCharacter(Player: Player, Character: Model)
 			Billboard.Adornee = RootPart
 			Billboard.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 			Billboard.Size = UDim2.fromScale(5, 5)
-			Billboard.StudsOffsetWorldSpace = Vector3.new(0, 4, 0)
+			Billboard.StudsOffsetWorldSpace = Vector3.new(0, 3, 0)
 			Billboard.Parent = RootPart
 
 			return Billboard
