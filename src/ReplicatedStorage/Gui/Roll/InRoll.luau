@@ -21,7 +21,6 @@ local e = React.createElement
 
 local Trove = require(Packages.Trove)
 local Input = require(Packages.Input)
-local Promise = require(Packages.Promise)
 
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
@@ -69,7 +68,6 @@ export type UnitProperties = {
 	UniqueId: string,
 	UnitName: string,
 	Visible: boolean,
-	Total: number,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
@@ -108,18 +106,6 @@ local function CreateUnitFrame(props: UnitProperties)
 			return {} :: any
 		end
 	end, { props.UnitName })
-
-	React.useEffect(function()
-		if Data.Rarity == "Godly" then
-			return
-		elseif Data.Rarity == "Mythic" then
-			return
-		else
-			SFXService.PlaySoundGlobal(SummonSound, function(Sound: Sound)
-				Sound.Volume = 0.04 + (0.05 * (props.Total - 1) / 3)
-			end)
-		end
-	end, { props.UnitName, Data :: any })
 
 	local RotationCFrame = React.useBinding(CFrame.Angles(math.rad(20), 0, 0))
 
@@ -277,13 +263,16 @@ local function CreateInRoll(props: Properties)
 						UnitName = UnitData.Name,
 						UniqueId = UnitData.Id,
 						Visible = Visible,
-						Total = MaxPerRow,
 						native = {
 							LayoutOrder = j,
 						},
 					})
 				end
 			end
+
+			SFXService.PlaySoundGlobal(SummonSound, function(Sound: Sound)
+				Sound.Volume = 0.04 + (0.05 * (MaxPerRow - 1) / 3)
+			end)
 
 			Frames["CoverFrame" .. i] = e(Main.Frame, {
 				native = {

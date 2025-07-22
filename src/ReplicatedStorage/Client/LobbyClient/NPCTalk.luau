@@ -65,7 +65,7 @@ function NPCTalk.new(Input: NPCInput): NPCTalk
 	local OldCFrame = self.Camera.CFrame
 
 	local Prom = Promise.resolve(
-		(self.NPCCFrame * CFrame.Angles(0, math.rad(180), 0) + self.NPCCFrame.LookVector * 6 + Vector3.new(0, 1, 0))
+		(self.NPCCFrame * CFrame.Angles(0, math.rad(180), 0) + self.NPCCFrame.LookVector * 7 + Vector3.new(0, 1, 0))
 	)
 		:andThen(function(NPCCFrame: CFrame)
 			local Character = LocalPlayer.Character

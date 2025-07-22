@@ -40,7 +40,24 @@ ObserveTag.ObserveTag("NPCTalk", function(NPC)
 		local HumanoidRoot = NPC:WaitForChild("HumanoidRootPart") :: BasePart
 		local Humanoid = NPC:WaitForChild("Humanoid") :: Humanoid
 		local Animator = Humanoid:WaitForChild("Animator") :: Animator
-		Animator:LoadAnimation(Idle):Play()
+
+		local OverrideAnim = NPC:GetAttribute("OverrideAnimation") :: string
+		local PlayedOverride = false
+		if OverrideAnim then
+			local CharFolder = Units:FindFirstChild(NPC.Name)
+
+			if CharFolder then
+				local Animation = CharFolder:FindFirstChild(OverrideAnim) :: Animation
+				if Animation then
+					Animator:LoadAnimation(Animation):Play()
+					PlayedOverride = true
+				end
+			end
+		end
+
+		if not PlayedOverride then
+			Animator:LoadAnimation(Idle):Play()
+		end
 
 		for _, BasePart in ipairs(NPC:GetDescendants()) do
 			if BasePart:IsA("BasePart") then
@@ -72,7 +89,7 @@ ObserveTag.ObserveTag("NPCTalk", function(NPC)
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.02,
+					Stroke = 0.015,
 				}),
 			}),
 		}))

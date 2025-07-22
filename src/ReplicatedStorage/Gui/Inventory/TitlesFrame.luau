@@ -91,7 +91,7 @@ local function CreateTitle(props: TitleProps)
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.02,
+					Stroke = 0.015,
 				}),
 			}),
 			ToggleButton = e(Main.Animateables.ImageButton, {
