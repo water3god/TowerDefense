@@ -959,6 +959,8 @@ local function Render()
 					Size = UDim2.fromScale(0.1, 0.15),
 					Name = "Inventory",
 					Icon = "rbxassetid://126162489334707",
+					IconColor = ColorSequence.new(Color3.fromRGB(255, 200, 50), Color3.fromRGB(180, 120, 0)), -- Bright Yellow to Dark Orange
+					BackgroundColor = ColorSequence.new(Color3.fromRGB(80, 80, 80), Color3.fromRGB(50, 50, 50)), -- Light Gray to Medium Gray
 					OnClick = function()
 						OnMainButtonClick(Constants.INVENTORY_FRAME)
 					end,
@@ -968,6 +970,8 @@ local function Render()
 					Size = UDim2.fromScale(0.1, 0.15),
 					Name = "Play",
 					Icon = "rbxassetid://123087872755553",
+					IconColor = ColorSequence.new(Color3.fromRGB(50, 255, 50), Color3.fromRGB(0, 150, 0)), -- Bright Green to Dark Green
+					BackgroundColor = ColorSequence.new(Color3.fromRGB(30, 110, 70), Color3.fromRGB(20, 70, 50)), -- Light Green to Medium Green
 					OnClick = OnPlay,
 				}),
 				StoreButton = e(MainButtonFrame, {
@@ -975,6 +979,8 @@ local function Render()
 					Size = UDim2.fromScale(0.1, 0.15),
 					Name = "Store",
 					Icon = "rbxassetid://101802087294765",
+					IconColor = ColorSequence.new(Color3.fromRGB(255, 100, 255), Color3.fromRGB(150, 0, 150)), -- Bright Magenta to Dark Magenta
+					BackgroundColor = ColorSequence.new(Color3.fromRGB(90, 50, 90), Color3.fromRGB(60, 30, 60)), -- Light Purple to Medium Purple
 					OnClick = function()
 						OnMainButtonClick(Constants.STORE)
 					end,
@@ -984,6 +990,8 @@ local function Render()
 					Size = UDim2.fromScale(0.1, 0.15),
 					Name = "Summon",
 					Icon = "rbxassetid://103961311594276",
+					IconColor = ColorSequence.new(Color3.fromRGB(100, 200, 255), Color3.fromRGB(0, 100, 200)), -- Bright Blue to Dark Blue
+					BackgroundColor = ColorSequence.new(Color3.fromRGB(50, 90, 110), Color3.fromRGB(30, 60, 80)), -- Light Blue to Medium Blue
 					OnClick = OnSummon,
 				}),
 				TradeButton = e(MainButtonFrame, {
@@ -991,7 +999,8 @@ local function Render()
 					Size = UDim2.fromScale(0.1, 0.15),
 					Name = "Trade",
 					Icon = "rbxassetid://71136210616050",
-					IconColor = ColorSequence.new(Color3.fromRGB(137, 77, 178)),
+					IconColor = ColorSequence.new(Color3.fromRGB(255, 150, 50), Color3.fromRGB(200, 80, 0)), -- Bright Orange to Dark Orange
+					BackgroundColor = ColorSequence.new(Color3.fromRGB(110, 70, 50), Color3.fromRGB(80, 50, 30)), -- Light Brown to Medium Brown
 					OnClick = function()
 						OnMainButtonClick(Constants.TRADE_MENU)
 					end,
@@ -1018,6 +1027,8 @@ local function Render()
 					Size = UDim2.fromScale(0.1, 0.15),
 					Name = "Daily",
 					Icon = "rbxassetid://118717037434015",
+					IconColor = ColorSequence.new(Color3.fromRGB(255, 50, 50), Color3.fromRGB(180, 0, 0)), -- Bright Red to Dark Red
+					BackgroundColor = ColorSequence.new(Color3.fromRGB(110, 50, 50), Color3.fromRGB(80, 30, 30)), -- Light Red to Medium Red
 					OnClick = function()
 						OnMainButtonClick(Constants.DAILY_FRAME)
 					end,
@@ -1027,6 +1038,8 @@ local function Render()
 					Size = UDim2.fromScale(0.1, 0.15),
 					Name = "Titles",
 					Icon = "rbxassetid://95049959452468",
+					IconColor = ColorSequence.new(Color3.fromRGB(100, 255, 200), Color3.fromRGB(0, 180, 120)), -- Bright Cyan to Dark Teal
+					BackgroundColor = ColorSequence.new(Color3.fromRGB(50, 110, 90), Color3.fromRGB(30, 70, 60)), -- Light Teal to Medium Teal
 					OnClick = function()
 						OnMainButtonClick(Constants.TITLES_FRAME)
 					end,
@@ -1036,6 +1049,8 @@ local function Render()
 					Size = UDim2.fromScale(0.1, 0.15),
 					Name = "Quests",
 					Icon = "rbxassetid://126483259351802",
+					IconColor = ColorSequence.new(Color3.fromRGB(200, 100, 255), Color3.fromRGB(120, 0, 200)), -- Bright Purple to Dark Purple
+					BackgroundColor = ColorSequence.new(Color3.fromRGB(90, 60, 110), Color3.fromRGB(60, 40, 80)), -- Light Purple to Medium Purple
 					OnClick = function()
 						OnMainButtonClick(Constants.QUESTS_FRAME)
 					end,
@@ -1046,6 +1061,8 @@ local function Render()
 				Size = UDim2.fromScale(0.1, 0.08),
 				Name = "Settings",
 				Icon = "rbxassetid://133964081103849",
+				IconColor = ColorSequence.new(Color3.fromRGB(255, 255, 100), Color3.fromRGB(200, 200, 0)), -- Bright Yellow to Dark Yellow
+				BackgroundColor = ColorSequence.new(Color3.fromRGB(110, 110, 50), Color3.fromRGB(80, 80, 30)), -- Light Yellow to Medium Yellow
 				OnClick = function()
 					OnMainButtonClick(Constants.SETTINGS)
 				end,
