@@ -14,6 +14,22 @@ type Time = f64
 type Wave = u16
 type Vote = u16
 
+-- Level --
+
+event LevelChanged = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: Level,
+}
+
+event LevelXPChanged = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: XP,
+}
+
 -- Marketplace --
 
 -- Maybe don't use --

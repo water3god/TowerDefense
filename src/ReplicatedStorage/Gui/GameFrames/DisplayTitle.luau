@@ -19,6 +19,7 @@ local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
 local UIStroke = require(CoreGame.UIStroke)
+local AnimatedGradient = require(CoreGame.AnimatedGradient)
 
 local Shared = ReplicatedStorage.Shared
 local Titles = require(Shared.Titles)
@@ -70,8 +71,10 @@ local function CreateDisplayTitle(props: Properties)
 				Position = UDim2.fromScale(0.5, 0.5),
 			},
 		}, {
-			UIGradient = e("UIGradient", {
-				Color = TitleData.Color,
+			UIGradient = e(AnimatedGradient, {
+				GradColor = TitleData.Color,
+				Animate = true,
+				Speed = 1,
 			}),
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
 				Stroke = 0.015,
@@ -85,8 +88,10 @@ local function CreateDisplayTitle(props: Properties)
 				Position = UDim2.fromScale(0.5, 0.75),
 			},
 		}, {
-			UIGradient = e("UIGradient", {
-				Color = LevelColor,
+			UIGradient = e(AnimatedGradient, {
+				GradColor = LevelColor,
+				Animate = true,
+				Speed = 1,
 			}),
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
 				Stroke = 0.015,

@@ -35,6 +35,7 @@ local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
 local RarityInfo = require(Shared.RarityInfo)
 local Constants = require(Shared.Constants)
+local Traits = require(Shared.Traits)
 local Stats = UnitInfo.Stats
 
 local Client = ReplicatedStorage.Client
@@ -414,6 +415,14 @@ local function CreateUpgradeFrame(Properties: Properties)
 		return RarityInfo[Rarity :: any]
 	end, { UpgradeData.UniqueId })
 
+	local TraitData = React.useMemo(function(): Traits.TraitData?
+		if UpgradeData.Trait then
+			return Traits.Traits[UpgradeData.Trait]
+		else
+			return nil
+		end
+	end, { UpgradeData.Trait })
+
 	return e(Main.ImageLabel, {
 		native = Join({
 			Size = UDim2.fromScale(0.8, 0.8),
@@ -458,6 +467,18 @@ local function CreateUpgradeFrame(Properties: Properties)
 				native = {
 					LineJoinMode = Enum.LineJoinMode.Miter,
 				},
+			}),
+		}),
+		Trait = e(Main.ImageLabel, {
+			native = {
+				Size = UDim2.fromScale(0.1, 0.1),
+				Position = UDim2.fromScale(0.37, 0.34),
+				Image = if TraitData then TraitData.Icon else "rbxassetid://127454767718648",
+				Visible = TraitData ~= nil,
+			},
+		}, {
+			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+				AspectRatio = 1,
 			}),
 		}),
 		UnitFrame = e(UnitView, {

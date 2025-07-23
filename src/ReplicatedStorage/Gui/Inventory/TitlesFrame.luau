@@ -27,6 +27,7 @@ local Title = require(CoreGame.Title)
 local CloseButton = require(CoreGame.CloseButton)
 local UIStroke = require(CoreGame.UIStroke)
 local Hooks = require(CoreGame.Hooks)
+local AnimatedGradient = require(CoreGame.AnimatedGradient)
 
 local Shared = ReplicatedStorage.Shared
 local TitleInfo = require(Shared.Titles)
@@ -67,7 +68,7 @@ local function CreateTitle(props: TitleProps)
 				BackgroundColor3 = Color3.new(0.298039, 0.094118, 0.470588),
 			},
 		}, {
-			TextLabel = e(Main.TextLabel, {
+			Label = e(Main.TextLabel, {
 				native = {
 					Position = UDim2.fromScale(0.375, 0.35),
 					Size = UDim2.fromScale(0.6, 0.4),
@@ -75,8 +76,10 @@ local function CreateTitle(props: TitleProps)
 					TextXAlignment = Enum.TextXAlignment.Left,
 				},
 			}, {
-				UIGradient = e("UIGradient", {
-					Color = TitleData and TitleData.Color or ColorSequence.new(Color3.new(1, 1, 1)),
+				UIGradient = e(AnimatedGradient, {
+					GradColor = TitleData and TitleData.Color or ColorSequence.new(Color3.new(1, 1, 1)),
+					Animate = true,
+					Speed = 1,
 				}),
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {
 					Stroke = 0.02,

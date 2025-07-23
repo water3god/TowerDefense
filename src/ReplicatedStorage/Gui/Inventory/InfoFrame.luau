@@ -13,6 +13,7 @@ local CoreGame = Gui.CoreGame
 local UIStroke = require(CoreGame.UIStroke)
 local Main = require(CoreGame.Main)
 local UnitView = require(CoreGame.UnitView)
+local AnimatedGradient = require(CoreGame.AnimatedGradient)
 
 local Shared = ReplicatedStorage.Shared
 local GameInfo = require(Shared.GameInfo)
@@ -245,12 +246,15 @@ local function CreateInfoFrame(Properties: Properties)
 				TextXAlignment = Enum.TextXAlignment.Left,
 			},
 		}, {
-			UIStroke = e(UIStroke.UIStroke, {
-				Stroke = 0.0015,
+			UIStroke = e(UIStroke.UIStrokeGradient, {
+				Stroke = 0.02,
 				GradColor = Properties.RarityInfo and Properties.RarityInfo.StrokeColor,
 			}),
-			UIGradient = e("UIGradient", {
-				Color = Properties.RarityInfo and Properties.RarityInfo.Color,
+			UIGradient = e(AnimatedGradient, {
+				GradColor = Properties.RarityInfo and Properties.RarityInfo.Color
+					or ColorSequence.new(Color3.new(1, 1, 1)),
+				Animate = true,
+				Speed = 1,
 			}),
 		}),
 		RarityLabel = e(Main.TextLabel, {
@@ -261,12 +265,16 @@ local function CreateInfoFrame(Properties: Properties)
 				TextXAlignment = Enum.TextXAlignment.Left,
 			},
 		}, {
-			UIStroke = e(UIStroke.UIStroke, {
-				Stroke = 0.001,
+			UIStroke = e(UIStroke.UIStrokeGradient, {
+				Stroke = 0.02,
 				GradColor = Properties.RarityInfo and Properties.RarityInfo.StrokeColor,
 			}),
-			UIGradient = e("UIGradient", {
-				Color = Properties.RarityInfo and Properties.RarityInfo.Color,
+
+			UIGradient = e(AnimatedGradient, {
+				GradColor = Properties.RarityInfo and Properties.RarityInfo.Color
+					or ColorSequence.new(Color3.new(1, 1, 1)),
+				Animate = true,
+				Speed = 1,
 			}),
 		}),
 	})

@@ -128,6 +128,7 @@ local function CreateWaitingFrame(Props: Properties)
 				Position = UDim2.fromScale(0.35, 0.575),
 				Size = UDim2.fromScale(0.5, 0.1),
 				Text = StoryData.Data and GameInfo.GetDifficultyString(StoryData.Data.Difficulty) or "Difficulty: N/A",
+				RichText = true,
 			},
 		}),
 		PlayersLabel = e(Main.TextLabel, {

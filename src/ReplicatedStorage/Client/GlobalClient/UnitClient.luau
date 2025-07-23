@@ -304,6 +304,7 @@ local function NewUnit(Input: Types.UnitInput, New: boolean)
 		FireRate = 1,
 		Range = 1,
 	}
+	self.Trait = Input.Trait
 
 	for Name, Data in pairs(self.RatioData) do
 		local PromiseName = "Ratio" .. Name

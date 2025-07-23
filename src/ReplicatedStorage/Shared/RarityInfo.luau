@@ -25,50 +25,75 @@ local RarityInfo: { [Rarity]: RarityInfo } = {
 	Common = {
 		Priority = 1,
 		Value = 10,
-		Color = ColorSequence.new(Color3.new(0.878431, 0.878431, 0.878431)),
-		StrokeColor = ColorSequence.new(Color3.new(0.113725, 0.113725, 0.113725)),
-		BackgroundColor = ColorSequence.new(Color3.new(0.596078, 0.596078, 0.596078)),
+		Color = ColorSequence.new(Color3.new(0.9, 0.9, 0.9)),
+		StrokeColor = ColorSequence.new(Color3.new(0.2, 0.2, 0.2)),
+		BackgroundColor = ColorSequence.new(Color3.new(0.7, 0.7, 0.7)),
 	},
 	Rare = {
 		Priority = 2,
 		Value = 20,
-		Color = ColorSequence.new(Color3.new(0.862745, 0.619608, 0.137255)),
-		StrokeColor = ColorSequence.new(Color3.new(0.341176, 0.258824, 0.117647)),
-		BackgroundColor = ColorSequence.new(Color3.new(0.894118, 0.611765, 0.152941)),
+		Color = ColorSequence.new(Color3.new(0.1, 0.8, 0.1)),
+		StrokeColor = ColorSequence.new(Color3.new(0.05, 0.4, 0.05)),
+		BackgroundColor = ColorSequence.new(Color3.new(0.2, 0.9, 0.2)),
 	},
 	Epic = {
 		Priority = 3,
 		Value = 50,
-		Color = ColorSequence.new(Color3.new(0.7149, 0, 1)),
-		StrokeColor = ColorSequence.new(Color3.new(0.243137, 0.078431, 0.403922)),
-		BackgroundColor = ColorSequence.new(Color3.new(0.403922, 0.145098, 0.698039)),
+		Color = ColorSequence.new(Color3.new(0.1, 0.5, 1)),
+		StrokeColor = ColorSequence.new(Color3.new(0.05, 0.25, 0.5)),
+		BackgroundColor = ColorSequence.new(Color3.new(0.2, 0.6, 1)),
 	},
 	Legendary = {
 		Priority = 4,
 		Value = 100,
-		Color = ColorSequence.new(Color3.new(0.992157, 0.952941, 0.235294)),
-		StrokeColor = ColorSequence.new(Color3.new(0.376471, 0.345098, 0.07451)),
-		BackgroundColor = ColorSequence.new(Color3.new(0.819608, 0.819608, 0.129412)),
+		Color = ColorSequence.new({
+			ColorSequenceKeypoint.new(0, Color3.new(1, 1, 0.2)),
+			ColorSequenceKeypoint.new(0.5, Color3.new(0.9, 0.7, 0.1)),
+			ColorSequenceKeypoint.new(1, Color3.new(1, 0.95, 0.3)),
+		}),
+		StrokeColor = ColorSequence.new(Color3.new(0.5, 0.4, 0.05), Color3.new(0.3, 0.25, 0.02)),
+		BackgroundColor = ColorSequence.new(Color3.new(0.95, 0.85, 0.15), Color3.new(0.75, 0.65, 0.08)),
 	},
 	Mythic = {
 		Priority = 5,
 		Value = 200,
-		Color = ColorSequence.new(Color3.new(1, 0, 0.941604)),
-		StrokeColor = ColorSequence.new(Color3.new(0.294118, 0.098039, 0.25098)),
-		BackgroundColor = ColorSequence.new(
-			Color3.new(0.721569, 0.152941, 0.835294),
-			Color3.new(0.768627, 0.117647, 0.917647)
-		),
+		Color = ColorSequence.new({
+			ColorSequenceKeypoint.new(0, Color3.new(1, 0.2, 1)),
+			ColorSequenceKeypoint.new(0.3, Color3.new(0.8, 0, 0.9)),
+			ColorSequenceKeypoint.new(0.7, Color3.new(1, 0.4, 0.8)),
+			ColorSequenceKeypoint.new(1, Color3.new(0.9, 0.6, 1)),
+		}),
+		StrokeColor = ColorSequence.new({
+			ColorSequenceKeypoint.new(0, Color3.new(0.4, 0.1, 0.35)),
+			ColorSequenceKeypoint.new(1, Color3.new(0.2, 0.05, 0.2)),
+		}),
+		BackgroundColor = ColorSequence.new({
+			ColorSequenceKeypoint.new(0, Color3.new(0.8, 0.2, 0.9)),
+			ColorSequenceKeypoint.new(0.5, Color3.new(0.6, 0.1, 0.7)),
+			ColorSequenceKeypoint.new(1, Color3.new(0.85, 0.15, 0.95)),
+		}),
 	},
 	Godly = {
 		Priority = 6,
 		Value = 400,
-		Color = ColorSequence.new(Color3.new(1, 0.815686, 0.14902)),
-		StrokeColor = ColorSequence.new(Color3.new(0.372549, 0.305882, 0.05098)),
-		BackgroundColor = ColorSequence.new(
-			Color3.new(0.929412, 0.768627, 0.117647),
-			Color3.new(0.819608, 0.690196, 0.121569)
-		),
+		Color = ColorSequence.new({
+			ColorSequenceKeypoint.new(0, Color3.new(1, 0.9, 0.1)),
+			ColorSequenceKeypoint.new(0.2, Color3.new(1, 0.5, 0.2)),
+			ColorSequenceKeypoint.new(0.5, Color3.new(1, 0.8, 0.05)),
+			ColorSequenceKeypoint.new(0.8, Color3.new(0.9, 0.4, 0.1)),
+			ColorSequenceKeypoint.new(1, Color3.new(1, 0.7, 0.15)),
+		}),
+		StrokeColor = ColorSequence.new({
+			ColorSequenceKeypoint.new(0, Color3.new(0.5, 0.4, 0.02)),
+			ColorSequenceKeypoint.new(0.5, Color3.new(0.3, 0.2, 0.01)),
+			ColorSequenceKeypoint.new(1, Color3.new(0.4, 0.35, 0.03)),
+		}),
+		BackgroundColor = ColorSequence.new({
+			ColorSequenceKeypoint.new(0, Color3.new(1, 0.85, 0.12)),
+			ColorSequenceKeypoint.new(0.3, Color3.new(0.95, 0.6, 0.08)),
+			ColorSequenceKeypoint.new(0.7, Color3.new(0.9, 0.75, 0.1)),
+			ColorSequenceKeypoint.new(1, Color3.new(0.85, 0.7, 0.15)),
+		}),
 	},
 }
 

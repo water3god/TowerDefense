@@ -958,7 +958,6 @@ local UnitInfo: { [string]: UnitInfo } = {
 				Damage = { 20 },
 				FireRate = 1.2,
 				Range = 15,
-				Armor = "QinShiHuangArmor",
 				Cost = 200,
 			},
 		},

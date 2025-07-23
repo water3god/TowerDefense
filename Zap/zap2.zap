@@ -9,22 +9,6 @@ type Health = u32
 
 type Time = f64
 
--- Level --
-
-event LevelChanged = {
-	from: Server,
-	type: Reliable,
-	call: SingleAsync,
-	data: Level,
-}
-
-event LevelXPChanged = {
-	from: Server,
-	type: Reliable,
-	call: SingleAsync,
-	data: XP,
-}
-
 -- Roll --
 
 type RollData = struct {
@@ -209,6 +193,7 @@ type UnitInput = struct {
 		Ratio: f32,
 		EndTime: Time,
 	} },
+	Trait: string?,
 	Abilities: f64[],
 }
 

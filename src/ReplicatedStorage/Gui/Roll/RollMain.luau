@@ -22,6 +22,7 @@ local Title = require(CoreGame.Title)
 local UIStroke = require(CoreGame.UIStroke)
 local UnitView = require(CoreGame.UnitView)
 local Hooks = require(CoreGame.Hooks)
+local AnimatedGradient = require(CoreGame.AnimatedGradient)
 
 local Inventory = Gui.Inventory
 local InventoryContext = require(Inventory.InventoryContext)
@@ -108,8 +109,10 @@ local function CreateUnitViewport(props: ViewportProps)
 				Stroke = 0.02,
 				GradColor = Data.RarityData and Data.RarityData.StrokeColor,
 			}),
-			UIGradient = e("UIGradient", {
-				Color = Data.RarityData and Data.RarityData.Color,
+			UIGradient = e(AnimatedGradient, {
+				GradColor = Data.RarityData and Data.RarityData.Color or ColorSequence.new(Color3.new(1, 1, 1)),
+				Animate = true,
+				Speed = 1,
 			}),
 		}),
 		RarityLabel = e(Main.TextLabel, {
@@ -124,8 +127,10 @@ local function CreateUnitViewport(props: ViewportProps)
 				Stroke = 0.02,
 				GradColor = Data.RarityData and Data.RarityData.StrokeColor,
 			}),
-			UIGradient = e("UIGradient", {
-				Color = Data.RarityData and Data.RarityData.Color,
+			UIGradient = e(AnimatedGradient, {
+				GradColor = Data.RarityData and Data.RarityData.Color or ColorSequence.new(Color3.new(1, 1, 1)),
+				Animate = true,
+				Speed = 1,
 			}),
 		}),
 	}, props.children)

@@ -28,6 +28,7 @@ local CloseButton = require(CoreGame.CloseButton)
 local UIStroke = require(CoreGame.UIStroke)
 local BaseButton = require(CoreGame.BaseButton)
 local Hooks = require(CoreGame.Hooks)
+local AnimatedGradient = require(CoreGame.AnimatedGradient)
 
 local QuestsFolder = Gui.Quests
 local QuestsContext = require(QuestsFolder.QuestsContext)
@@ -92,12 +93,14 @@ local function CreateQuest(props: QuestProps)
 				return e(Main.TextLabel, {
 					native = {
 						Position = UDim2.fromScale(0.86, 0.325),
-						Size = UDim2.fromScale(0.3, 0.3),
+						Size = UDim2.fromScale(0.25, 0.3),
 						Text = QuestReward.Value,
 					},
 				}, {
-					UIGradient = e("UIGradient", {
-						Color = TitleData.Color,
+					UIGradient = e(AnimatedGradient, {
+						GradColor = TitleData.Color,
+						Animate = true,
+						Speed = 1,
 					}),
 					UIStroke = e(UIStroke.UIStrokeAdvanced, {
 						Stroke = 0.015,

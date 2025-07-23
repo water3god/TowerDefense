@@ -26,7 +26,7 @@ local Story = {
 	reactRoblox = ReactRoblox,
 	--controls = controls,
 	story = function(Properties)
-		local UpgradeFrame = e(UpgradeContext.Context.Provider, {
+		local Component = e(UpgradeContext.Context.Provider, {
 			value = {
 				UnitName = "Trajan",
 				UpgradeData = {
@@ -43,6 +43,17 @@ local Story = {
 						Range = 20,
 					},
 				},
+				Properties = {
+					Damage = 1,
+					FireRate = 1,
+					Range = 10,
+				},
+				NextProperties = {
+					Damage = 1,
+					FireRate = 1,
+					Range = 10,
+				},
+				Trait = "Damage I",
 				Priority = "First",
 				Level = 0,
 				TotalCost = 10,
@@ -65,7 +76,7 @@ local Story = {
 				IsVisible = true,
 			}),
 		})
-		return UpgradeFrame
+		return Component
 	end,
 }
 

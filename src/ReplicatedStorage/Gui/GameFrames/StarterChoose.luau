@@ -142,7 +142,7 @@ local Units = {
 
 local function CreateStarterChoose(props: Properties)
 	local Highlighted, SetHighlighted = React.useState(nil :: string?)
-	local Springs, API = ReactSpring.useSprings(3, function(i)
+	local Springs, API = ReactSpring.useSprings(3, function()
 		return {
 			alpha = 0,
 			otheralpha = 0,

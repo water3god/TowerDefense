@@ -487,6 +487,16 @@ function Funcs.ConventialTween(Instance: Instance, TweenInfo: TweenInfo, Propert
 	end)
 end
 
+function Funcs.FormatNumberConditional(number: number, maxDecimals: number?): string
+	local decimals = maxDecimals or 2
+	local formatted = string.format("%." .. decimals .. "f", number)
+
+	-- Remove trailing zeros and decimal point if not needed
+	formatted = string.gsub(formatted, "%.?0+$", "")
+
+	return formatted
+end
+
 local NumberScaler = {}
 
 local Suffixes = {

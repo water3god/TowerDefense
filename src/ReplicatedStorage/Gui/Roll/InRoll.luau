@@ -33,6 +33,7 @@ local Main = require(CoreGame.Main)
 local UnitView = require(CoreGame.UnitView)
 local UIStroke = require(CoreGame.UIStroke)
 local Hooks = require(CoreGame.Hooks)
+local AnimatedGradient = require(CoreGame.AnimatedGradient)
 
 local SettingsContext = require(Gui.Settings.SettingsContext)
 
@@ -197,8 +198,10 @@ local function CreateUnitFrame(props: UnitProperties)
 					Stroke = 0.015,
 					GradColor = Data.RarityData and Data.RarityData.StrokeColor,
 				}),
-				UIGradient = e("UIGradient", {
-					Color = Data.RarityData and Data.RarityData.Color,
+				UIGradient = e(AnimatedGradient, {
+					GradColor = Data.RarityData and Data.RarityData.Color or ColorSequence.new(Color3.new(1, 1, 1)),
+					Animate = true,
+					Speed = 1,
 				}),
 			}),
 			RarityLabel = e(Main.TextLabel, {
@@ -213,8 +216,10 @@ local function CreateUnitFrame(props: UnitProperties)
 					Stroke = 0.015,
 					GradColor = Data.RarityData and Data.RarityData.StrokeColor,
 				}),
-				UIGradient = e("UIGradient", {
-					Color = Data.RarityData and Data.RarityData.Color,
+				UIGradient = e(AnimatedGradient, {
+					GradColor = Data.RarityData and Data.RarityData.Color or ColorSequence.new(Color3.new(1, 1, 1)),
+					Animate = true,
+					Speed = 1,
 				}),
 			}),
 			SoldLabel = e(Main.TextLabel, {

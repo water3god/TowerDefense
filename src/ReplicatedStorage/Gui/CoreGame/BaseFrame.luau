@@ -20,6 +20,7 @@ local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
 local UIStroke = require(CoreGame.UIStroke)
+local AnimatedGradient = require(CoreGame.AnimatedGradient)
 
 export type Properties = {
 	Position: UDim2?,
@@ -137,8 +138,10 @@ local function CreateBaseFrame(Properties: Properties)
 						Enabled = if Properties.NameStrokeColor then true else false,
 					},
 				}),
-				UIGradient = e("UIGradient", {
-					Color = Properties.NameColor or ColorSequence.new(Color3.new(1, 1, 1)),
+				UIGradient = e(AnimatedGradient, {
+					GradColor = Properties.NameColor or ColorSequence.new(Color3.new(1, 1, 1)),
+					Animate = true,
+					Speed = 1,
 				}),
 			}),
 			TopLeftLabel = e(Main.TextLabel, {
@@ -159,8 +162,10 @@ local function CreateBaseFrame(Properties: Properties)
 						Enabled = if Properties.LeftStrokeColor then true else false,
 					},
 				}),
-				UIGradient = e("UIGradient", {
-					Color = Properties.LeftColor or ColorSequence.new(Color3.new(1, 1, 1)),
+				UIGradient = e(AnimatedGradient, {
+					GradColor = Properties.LeftColor or ColorSequence.new(Color3.new(1, 1, 1)),
+					Animate = true,
+					Speed = 1,
 				}),
 			}),
 			TopRightLabel = e(Main.TextLabel, {
@@ -181,8 +186,10 @@ local function CreateBaseFrame(Properties: Properties)
 						Enabled = if Properties.RightStrokeColor then true else false,
 					},
 				}),
-				UIGradient = e("UIGradient", {
-					Color = Properties.RightColor or ColorSequence.new(Color3.new(1, 1, 1)),
+				UIGradient = e(AnimatedGradient, {
+					GradColor = Properties.RightColor or ColorSequence.new(Color3.new(1, 1, 1)),
+					Animate = true,
+					Speed = 1,
 				}),
 			}),
 		}, Properties.containerChildren),

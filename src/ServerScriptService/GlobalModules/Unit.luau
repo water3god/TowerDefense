@@ -33,6 +33,7 @@ local HelperFunctions = require(Modules.HelperFunctions)
 
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
+local Traits = require(Shared.Traits)
 
 local Utility = ServerScriptService.Utility
 local SafePlayer = Utility.SafePlayer
@@ -55,6 +56,7 @@ export type UserInput = {
 	OwnerId: number?,
 	CFrame: CFrame,
 	Level: number,
+	Trait: string?,
 
 	ReplicateTo: { Player }?,
 
@@ -84,6 +86,8 @@ type UnitData = {
 	UnitName: string,
 	ModelReference: Model,
 	AttackPriority: UnitInfo.SortType | string,
+
+	Trait: string?,
 
 	ReplicateTo: { Player },
 	IsGlobal: boolean,
@@ -221,9 +225,9 @@ local function SendInfo(UnitInput: { [string]: Unit }, PlayerInput: { Player }, 
 			OwnerId = Unit.OwnerId,
 			AttackPriority = Unit.AttackPriority,
 			Level = Unit.Level,
-			Abilities = ConvertAbilityData(Unit.Abilities),
-
 			RatioData = Unit.RatioData,
+			Trait = Unit.Trait,
+			Abilities = ConvertAbilityData(Unit.Abilities),
 		}
 	end
 
@@ -303,7 +307,17 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 		Damage = 1,
 		FireRate = 1,
 		Range = 1,
+		Coins = 1,
 	}
+
+	self.Trait = UserInput.Trait
+
+	if self.Trait then
+		local TraitData = Traits.Traits[self.Trait]
+		for TraitType, TraitValue in pairs(TraitData.Data) do
+			self:ChangeRatio("__Trait__" .. TraitType, TraitType, TraitValue, math.huge)
+		end
+	end
 
 	self.Promises = {}
 
@@ -626,6 +640,7 @@ function Unit:_CalculateRatio()
 		Damage = 1,
 		FireRate = 1,
 		Range = 1,
+		Coins = 1,
 	}
 
 	for _, Data in pairs(self.RatioData) do

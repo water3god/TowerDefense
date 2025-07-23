@@ -15,6 +15,10 @@ local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
 
+local Gui = ReplicatedStorage.Gui
+local CoreGame = Gui.CoreGame
+local AnimatedGradient = require(CoreGame.AnimatedGradient)
+
 local Camera = workspace.CurrentCamera
 
 local IsRunning = RunService:IsRunning()
@@ -31,10 +35,18 @@ export type PropertiesBasic = {
 
 export type PropertiesNormal = PropertiesBasic & { GradColor: ColorSequence? }
 
-local function CreateUIGrad(Properties: { Color: ColorSequence? })
-	return React.createElement("UIGradient", {
-		Color = Properties.Color,
-	})
+local function CreateUIGrad(Properties: { Color: ColorSequence? }): React.Node
+	if Properties.Color then
+		return React.createElement(AnimatedGradient, {
+			GradColor = Properties.Color,
+			Animate = true,
+			Speed = 1,
+		})
+	else
+		return React.createElement("UIGradient", {
+			Color = Properties.Color,
+		})
+	end
 end
 
 local function CalculateRatio(Ratio: number)

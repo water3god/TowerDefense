@@ -150,6 +150,7 @@ export type UnitInput = {
 	AttackPriority: string,
 	Level: number,
 
+	Trait: string?,
 	RatioData: {
 		[string]: {
 			Type: string,
@@ -201,6 +202,7 @@ type UnitData = {
 	TotalCost: number,
 	CollisionRadius: number,
 	UnitData: UnitInfo.UnitInfo,
+	Trait: string?,
 
 	RatioData: { [string]: { Type: string, Ratio: number, EndTime: number } },
 	Ratios: {
