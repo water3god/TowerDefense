@@ -7,11 +7,11 @@ local LevelData: { [number]: number } = {
 }
 
 local Colors: { [number]: ColorSequence } = {
-	[5] = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(200, 200, 200)), -- Default
-	[10] = ColorSequence.new(Color3.fromRGB(0, 255, 0), Color3.fromRGB(100, 255, 100)), -- Green
-	[20] = ColorSequence.new(Color3.fromRGB(0, 128, 255), Color3.fromRGB(100, 200, 255)), -- Blue
-	[50] = ColorSequence.new(Color3.fromRGB(255, 128, 0), Color3.fromRGB(255, 200, 100)), -- Orange
-	[100] = ColorSequence.new(Color3.fromRGB(255, 0, 0), Color3.fromRGB(255, 100, 100)), -- Red
+	[5] = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(150, 150, 150)), -- Default (White to Medium Gray)
+	[10] = ColorSequence.new(Color3.fromRGB(50, 255, 50), Color3.fromRGB(0, 180, 0)), -- Green (Vibrant Light Green to Vibrant Dark Green)
+	[20] = ColorSequence.new(Color3.fromRGB(50, 180, 255), Color3.fromRGB(0, 100, 200)), -- Blue (Vibrant Light Blue to Vibrant Dark Blue)
+	[50] = ColorSequence.new(Color3.fromRGB(255, 180, 50), Color3.fromRGB(200, 100, 0)), -- Orange (Vibrant Light Orange to Vibrant Dark Orange)
+	[100] = ColorSequence.new(Color3.fromRGB(255, 50, 50), Color3.fromRGB(180, 0, 0)), -- Red (Vibrant Light Red to Vibrant Dark Red)
 }
 
 return {

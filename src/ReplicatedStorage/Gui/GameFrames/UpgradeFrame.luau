@@ -25,6 +25,7 @@ local UIStroke = require(CoreGame.UIStroke)
 local Hooks = require(CoreGame.Hooks)
 local UnitView = require(CoreGame.UnitView)
 local BaseFrame = require(CoreGame.BaseFrame)
+local AnimatedGradient = require(CoreGame.AnimatedGradient)
 
 local GameFrames = Gui.GameFrames
 local UpgradeContext = require(GameFrames.UpgradeContext)
@@ -458,8 +459,10 @@ local function CreateUpgradeFrame(Properties: Properties)
 				Text = UpgradeData.UnitName,
 			},
 		}, {
-			UIGradient = e("UIGradient", {
-				Color = RarityData.Color,
+			UIGradient = e(AnimatedGradient, {
+				GradColor = RarityData.Color,
+				Animate = true,
+				Speed = 1,
 			}),
 			UIStroke = e(UIStroke.UIStrokeGradient, {
 				Stroke = 0.01,
