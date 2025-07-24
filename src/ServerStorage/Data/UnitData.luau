@@ -96,14 +96,14 @@ local function AddCoinsPerWave(Unit: UnitModule.Unit, Callback: (Wave: number) -
 	return function() end
 end
 
-local function ApplyBuff(Unit: UnitModule.Unit, BuffType: string, Ratio: number, Duration: number)
+local function ApplyBuff(Unit: UnitModule.Unit, BuffType: string, Ratio: number, Duration: number): () -> ()
 	local BuffTrove = Unit._Trove:Extend()
 
 	local HandlingUnits = {}
 
 	local function Handle(OtherUnit: UnitModule.Unit)
 		local Name = string.format("Buff_%s_%s", OtherUnit.UniqueId, BuffType)
-		OtherUnit:ChangeRatio(Name, "Damage", Ratio, Duration)
+		OtherUnit:ChangeRatio(Name, "Damage", Unit.UniqueId, Ratio, Duration)
 		table.insert(HandlingUnits, OtherUnit)
 
 		BuffTrove:Connect(OtherUnit.Destroying, function()
@@ -117,7 +117,7 @@ local function ApplyBuff(Unit: UnitModule.Unit, BuffType: string, Ratio: number,
 	BuffTrove:Add(function()
 		for _, OtherUnit in pairs(HandlingUnits) do
 			local Name = string.format("Buff_%s_%s", OtherUnit.UniqueId, BuffType)
-			OtherUnit:CancelRatio(Name)
+			OtherUnit:CancelRatio(Name, Unit.UniqueId)
 		end
 		HandlingUnits = {}
 	end)
@@ -257,7 +257,7 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 					"SpartacusRage"
 				)
 
-				Unit:ChangeRatio("SpartacusRage", "FireRate", 0.7, Data.Length)
+				Unit:ChangeRatio("SpartacusRage", "Global", "FireRate", 0.7, Data.Length)
 			end,
 		},
 	},
@@ -452,7 +452,7 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 				function(Unit: UnitModule.Unit, Damage: number)
 					DelayAOE(Unit, Damage, 0.6, {
 						Type = "Cone",
-						Size = 30,
+						Size = 50,
 					})
 				end,
 			},
@@ -529,7 +529,19 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 		UnitName = "Tutankhamun",
 
 		AttackFuncs = {},
-		DefaultRuns = {},
+		DefaultRuns = {
+			[0] = function(Unit: UnitModule.Unit)
+				local Ratio = Unit:GetProperty("Damage")
+				local Damage = ApplyBuff(Unit, "Damage", Ratio, math.huge)
+				local FireRate = ApplyBuff(Unit, "FireRate", Ratio, math.huge)
+				local Range = ApplyBuff(Unit, "Range", Ratio, math.huge)
+				return function()
+					Damage()
+					FireRate()
+					Range()
+				end
+			end,
+		},
 		Abilities = {},
 	},
 }

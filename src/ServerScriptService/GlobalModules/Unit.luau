@@ -94,7 +94,7 @@ type UnitData = {
 	TotalCost: number,
 
 	CFrame: CFrame,
-	RatioData: { [string]: { Type: string, Ratio: number, EndTime: number } },
+	RatioData: { [string]: { [string]: { Type: string, Ratio: number, EndTime: number } } },
 	Ratios: { Damage: number, FireRate: number, Range: number },
 
 	UnitData: UnitInfo.UnitInfo,
@@ -172,8 +172,8 @@ type UnitImpl = {
 	AddCoins: (self: Unit, Coins: number) -> (),
 
 	_CalculateRatio: (self: Unit) -> (),
-	ChangeRatio: (self: Unit, Name: string, Type: string, Ratio: number, Duration: number) -> (),
-	CancelRatio: (self: Unit, Name: string) -> (),
+	ChangeRatio: (self: Unit, Name: string, SubName: string, Type: string, Ratio: number, Duration: number) -> (),
+	CancelRatio: (self: Unit, Name: string, SubName: string) -> (),
 
 	AddPromise: (self: Unit, Promise: Promise.Promise, PromiseName: string) -> (),
 	AddAttackPromise: (self: Unit, Promise: Promise.Promise, PromiseName: string) -> (),
@@ -315,7 +315,7 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 	if self.Trait then
 		local TraitData = Traits.Traits[self.Trait]
 		for TraitType, TraitValue in pairs(TraitData.Data) do
-			self:ChangeRatio("__Trait__" .. TraitType, TraitType, TraitValue, math.huge)
+			self:ChangeRatio("__Trait__" .. TraitType, "Global", TraitType, TraitValue, math.huge)
 		end
 	end
 
@@ -327,7 +327,7 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 	self.TotalCost = UnitInfo.CalculateTotalCost(self.UnitData.UnitData, self.Level)
 
 	if UserInput.DamageMultiplier then
-		self:ChangeRatio("__DamageMultiplier", "Damage", UserInput.DamageMultiplier, math.huge)
+		self:ChangeRatio("__DamageMultiplier", "Global", "Damage", UserInput.DamageMultiplier, math.huge)
 	end
 
 	if #SharedUnitData.Abilities ~= #Data.Abilities then
@@ -644,7 +644,29 @@ function Unit:_CalculateRatio()
 	}
 
 	for _, Data in pairs(self.RatioData) do
-		Ratios[Data.Type] *= Data.Ratio
+		local _, OtherData = next(Data)
+
+		if not OtherData then
+			continue
+		end
+
+		local HighestRatio: number? = nil
+
+		for _, Ratio in pairs(Data) do
+			if Ratio.Type == "FireRate" then
+				if not HighestRatio or Ratio.Ratio < HighestRatio then
+					HighestRatio = Ratio.Ratio
+				end
+			else
+				if not HighestRatio or Ratio.Ratio > HighestRatio then
+					HighestRatio = Ratio.Ratio
+				end
+			end
+		end
+
+		if HighestRatio then
+			Ratios[OtherData.Type] *= HighestRatio
+		end
 	end
 
 	for Type, Ratio in pairs(Ratios) do
@@ -655,12 +677,15 @@ function Unit:_CalculateRatio()
 	end
 end
 
-function Unit:ChangeRatio(Name: string, Type: string, Ratio: number, Duration: number)
-	local PromiseName = "SpeedRatio" .. Name
+function Unit:ChangeRatio(Name: string, SubName: string, Type: string, Ratio: number, Duration: number)
+	local PromiseName = "SpeedRatio" .. Name .. SubName
 	self:CancelPromise(PromiseName)
 	local Data = { Type = Type, Ratio = Ratio, EndTime = workspace:GetServerTimeNow() + Duration }
-	self.RatioData[Name] = Data
-	RatioEvent.FireList(self.ReplicateTo, self.UniqueId, Name, Data)
+	if not self.RatioData[Name] then
+		self.RatioData[Name] = {}
+	end
+	self.RatioData[Name][SubName] = Data
+	RatioEvent.FireList(self.ReplicateTo, self.UniqueId, Name, SubName, Data)
 	self:_CalculateRatio()
 	if Duration ~= math.huge then
 		self:AddPromise(
@@ -673,13 +698,18 @@ function Unit:ChangeRatio(Name: string, Type: string, Ratio: number, Duration: n
 	end
 end
 
-function Unit:CancelRatio(Name: string)
-	local PromiseName = "SpeedRatio" .. Name
+function Unit:CancelRatio(Name: string, SubName: string)
+	local PromiseName = "SpeedRatio" .. Name .. SubName
 	self:CancelPromise(PromiseName)
 	if self.RatioData[Name] then
-		self.RatioData[Name] = nil
-		self:_CalculateRatio()
-		RatioEvent.FireList(self.ReplicateTo, self.UniqueId, Name, nil)
+		if self.RatioData[Name][SubName] then
+			self.RatioData[Name][SubName] = nil
+			self:_CalculateRatio()
+			RatioEvent.FireList(self.ReplicateTo, self.UniqueId, Name, SubName, nil)
+		end
+		if not next(self.RatioData[Name]) then
+			self.RatioData[Name] = nil
+		end
 	end
 end
 

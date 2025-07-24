@@ -153,9 +153,11 @@ export type UnitInput = {
 	Trait: string?,
 	RatioData: {
 		[string]: {
-			Type: string,
-			Ratio: number,
-			EndTime: number,
+			[string]: {
+				Type: string,
+				Ratio: number,
+				EndTime: number,
+			},
 		},
 	},
 	Abilities: { number },
@@ -204,11 +206,12 @@ type UnitData = {
 	UnitData: UnitInfo.UnitInfo,
 	Trait: string?,
 
-	RatioData: { [string]: { Type: string, Ratio: number, EndTime: number } },
+	RatioData: { [string]: { [string]: { Type: string, Ratio: number, EndTime: number } } },
 	Ratios: {
 		Damage: number,
 		FireRate: number,
 		Range: number,
+		Coins: number,
 	},
 
 	SizeRatio: number,

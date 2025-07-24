@@ -26,7 +26,7 @@ local Constants = {
 	EndTime = 1, -- Unix Timestamp of event end time
 
 	ROLLDELAYTIME = 3,
-	STARTCOINS = 200,
+	STARTCOINS = 2000,
 	ROLLCOSTS = { MAIN = 40 },
 	ROLLPERCENT = 1,
 	GroupId = 34745901,

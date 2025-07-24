@@ -667,6 +667,10 @@ local UnitAttacks: {
 			[0] = {
 				function(Unit, AttackInput, Enemy, Delay)
 					DefaultAttack(Unit, AttackInput, Enemy, Delay)
+					DelayedAttackHit(Unit, AttackInput, Enemy, 0.4, Delay, "1")
+					DelayedAttackHit(Unit, AttackInput, Enemy, 0.65, Delay, "2")
+					DelayedSound(Unit, { Sounds.LightSwing }, AttackInput, Enemy, 0.35, Delay, "1")
+					DelayedSound(Unit, { Sounds.LightSwing }, AttackInput, Enemy, 0.6, Delay, "2")
 				end,
 			},
 		},

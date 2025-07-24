@@ -39,6 +39,8 @@ local Emitters = ModelStorage.Emitters
 local SmokeEmitter = Emitters.Smoke
 local DestroyParticle = Emitters.poof
 local OtherDestroyParticle = Emitters.Pops
+local UpgradeArrowParticle = Emitters.Arrows
+local UpgradeCircleParticle = Emitters.Circle
 
 local Extra = ModelStorage.Extra
 local RadiusReference = Extra.CollisionRadius
@@ -65,6 +67,7 @@ local Promise = require(Packages.Promise)
 local InputLib = require(Packages.Input)
 local React = require(Packages.React)
 local ReactRoblox = require(Packages.ReactRoblox)
+local e = React.createElement
 
 local Gui = ReplicatedStorage.Gui
 local GameFrames = Gui.GameFrames
@@ -99,6 +102,7 @@ local SendWarning = WarningEvents.Warning
 
 local Sounds = SoundService.SoundEffects.Sounds
 local PlacementSound = Sounds.Placement
+local UpgradeSound = Sounds.Upgrade
 
 export type Unit = Types.Unit
 export type UnitModule = Types.UnitModule
@@ -303,24 +307,30 @@ local function NewUnit(Input: Types.UnitInput, New: boolean)
 		Damage = 1,
 		FireRate = 1,
 		Range = 1,
+		Coins = 1,
 	}
 	self.Trait = Input.Trait
 
 	for Name, Data in pairs(self.RatioData) do
-		local PromiseName = "Ratio" .. Name
-		local Difference = Data.EndTime - workspace:GetServerTimeNow()
+		for SubName, SubData in pairs(Data) do
+			local PromiseName = "Ratio" .. Name .. SubName
+			local Difference = SubData.EndTime - workspace:GetServerTimeNow()
 
-		if Data.EndTime ~= math.huge then
-			if Difference > 0 then
-				self:AddPromise(
-					Promise.delay(Data.EndTime - workspace:GetServerTimeNow()):andThen(function()
-						self.RatioData[Name] = nil
-						self:_CalculateRatio()
-					end),
-					PromiseName
-				)
-			else
-				self.RatioData[Name] = nil
+			if SubData.EndTime ~= math.huge then
+				if Difference > 0 then
+					self:AddPromise(
+						Promise.delay(SubData.EndTime - workspace:GetServerTimeNow()):andThen(function()
+							self.RatioData[Name][SubName] = nil
+							if not next(self.RatioData[Name]) then
+								self.RatioData[Name] = nil
+							end
+							self:_CalculateRatio()
+						end),
+						PromiseName
+					)
+				else
+					self.RatioData[Name] = nil
+				end
 			end
 		end
 	end
@@ -403,6 +413,14 @@ local function NewUnit(Input: Types.UnitInput, New: boolean)
 	local function GetRange()
 		return self.UnitData.UnitData[self.Level].Range
 	end
+
+	self.Upgraded:Connect(function()
+		SFXService.PlaySoundGlobal(UpgradeSound)
+		local Arrow = HelperFunctions.EmitParticle({ UpgradeArrowParticle }, self.CFrame, 10)
+		local Circle = HelperFunctions.EmitParticle({ UpgradeCircleParticle }, self.CFrame + Vector3.yAxis, 1)
+		Arrow.Parent = ParticlesFolder
+		Circle.Parent = ParticlesFolder
+	end)
 
 	local function OnClick()
 		Animate(GetRange(), true)
@@ -660,10 +678,32 @@ function UnitModule:_CalculateRatio()
 		Damage = 1,
 		FireRate = 1,
 		Range = 1,
+		Coins = 1,
 	}
 
 	for _, Data in pairs(self.RatioData) do
-		Ratios[Data.Type] *= Data.Ratio
+		local _, OtherData = next(Data)
+
+		if not OtherData then
+			continue
+		end
+		local HighestRatio: number? = nil
+
+		for _, Ratio in pairs(Data) do
+			if Ratio.Type == "FireRate" then
+				if not HighestRatio or Ratio.Ratio < HighestRatio then
+					HighestRatio = Ratio.Ratio
+				end
+			else
+				if not HighestRatio or Ratio.Ratio > HighestRatio then
+					HighestRatio = Ratio.Ratio
+				end
+			end
+		end
+
+		if HighestRatio then
+			Ratios[OtherData.Type] *= HighestRatio
+		end
 	end
 
 	for Type, Ratio in pairs(Ratios) do
@@ -1259,37 +1299,45 @@ AnimationEvent.SetCallback(function(
 	end
 end)
 
-RatioEvent.SetCallback(function(UniqueId: string, Name: string, Data: { Type: string, Ratio: number, EndTime: number }?)
-	local Unit = UnitModule.GetUnit(UniqueId)
-	local PromiseName = "Ratio" .. Name
+RatioEvent.SetCallback(
+	function(UniqueId: string, Name: string, SubName: string, Data: { Type: string, Ratio: number, EndTime: number }?)
+		local Unit = UnitModule.GetUnit(UniqueId)
+		local PromiseName = "Ratio" .. Name .. SubName
 
-	if Unit then
-		if Data then
-			Unit:CancelPromise(PromiseName)
-			Unit.RatioData[Name] = Data
-
-			local Difference = Data.EndTime - workspace:GetServerTimeNow()
-
-			if Data.EndTime ~= math.huge then
-				if Difference > 0 then
-					Unit:AddPromise(
-						Promise.delay(Data.EndTime - workspace:GetServerTimeNow()):andThen(function()
-							Unit.RatioData[Name] = nil
-							Unit:_CalculateRatio()
-						end),
-						PromiseName
-					)
-				else
-					Unit.RatioData[Name] = nil
+		if Unit then
+			if Data then
+				Unit:CancelPromise(PromiseName)
+				if not Unit.RatioData[Name] then
+					Unit.RatioData[Name] = {}
 				end
+				Unit.RatioData[Name][SubName] = Data
+
+				local Difference = Data.EndTime - workspace:GetServerTimeNow()
+
+				if Data.EndTime ~= math.huge then
+					if Difference > 0 then
+						Unit:AddPromise(
+							Promise.delay(Data.EndTime - workspace:GetServerTimeNow()):andThen(function()
+								Unit.RatioData[Name][SubName] = nil
+								if not next(Unit.RatioData[Name]) then
+									Unit.RatioData[Name] = nil
+								end
+								Unit:_CalculateRatio()
+							end),
+							PromiseName
+						)
+					else
+						Unit.RatioData[Name] = nil
+					end
+				end
+			else
+				Unit:CancelPromise(PromiseName)
+				Unit.RatioData[Name] = nil
 			end
-		else
-			Unit:CancelPromise(PromiseName)
-			Unit.RatioData[Name] = nil
+			Unit:_CalculateRatio()
 		end
-		Unit:_CalculateRatio()
 	end
-end)
+)
 
 OnUpgrade.SetCallback(function(Data: { UniqueId: string, Level: number })
 	local Unit = UnitModule.GetUnit(Data.UniqueId)

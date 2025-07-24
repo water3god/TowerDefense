@@ -960,7 +960,7 @@ local function Render()
 					Name = "Inventory",
 					Icon = "rbxassetid://126162489334707",
 					IconColor = ColorSequence.new(Color3.fromRGB(255, 200, 50), Color3.fromRGB(180, 120, 0)), -- Bright Yellow to Dark Orange
-					BackgroundColor = ColorSequence.new(Color3.fromRGB(80, 80, 80), Color3.fromRGB(50, 50, 50)), -- Light Gray to Medium Gray
+					BackgroundColor = ColorSequence.new(Color3.fromRGB(120, 90, 30), Color3.fromRGB(90, 60, 15)), -- Orange-Yellow to Dark Orange-Yellow
 					OnClick = function()
 						OnMainButtonClick(Constants.INVENTORY_FRAME)
 					end,
@@ -980,7 +980,7 @@ local function Render()
 					Name = "Store",
 					Icon = "rbxassetid://101802087294765",
 					IconColor = ColorSequence.new(Color3.fromRGB(255, 100, 255), Color3.fromRGB(150, 0, 150)), -- Bright Magenta to Dark Magenta
-					BackgroundColor = ColorSequence.new(Color3.fromRGB(90, 50, 90), Color3.fromRGB(60, 30, 60)), -- Light Purple to Medium Purple
+					BackgroundColor = ColorSequence.new(Color3.fromRGB(120, 50, 120), Color3.fromRGB(75, 15, 75)), -- Magenta to Dark Magenta
 					OnClick = function()
 						OnMainButtonClick(Constants.STORE)
 					end,

@@ -188,11 +188,11 @@ type UnitInput = struct {
 	OwnerId: f64?,
 	AttackPriority: string,
 	Level: Level,
-	RatioData: map { [string]: struct {
+	RatioData: map { [string]: map { [string]: struct {
 		Type: string,
 		Ratio: f32,
 		EndTime: Time,
-	} },
+	} } },
 	Trait: string?,
 	Abilities: f64[],
 }
@@ -279,6 +279,7 @@ event RatioEvent = {
 	type: Reliable,
 	call: SingleAsync,
 	data: (
+		string,
 		string,
 		string,
 		struct {
