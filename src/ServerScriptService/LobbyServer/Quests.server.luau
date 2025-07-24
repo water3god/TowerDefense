@@ -67,7 +67,6 @@ local function HandlePlayerData(PData: PlayerData.PlayerData)
 	end
 
 	local function OnRedeemed(Quest: QuestData.DefaultQuestData)
-		print("Redeemed")
 		QuestChanged.Fire(PData.Player, {
 			{
 				Id = Quest.Id,

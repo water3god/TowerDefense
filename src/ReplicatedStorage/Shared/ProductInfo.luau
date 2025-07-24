@@ -35,6 +35,21 @@ local function GetProductFromName(Data: { Name: string, IsGamepass: boolean }): 
 	return
 end
 
+local function GetProductFromNameOnly(Name: string): (ProductData?, number?)
+	for ProductId, OtherData in pairs(ProductInfo) do
+		if Name == OtherData.Name then
+			return OtherData, ProductId
+		end
+	end
+	for ProductId, OtherData in pairs(GamepassInfo) do
+		if Name == OtherData.Name then
+			return OtherData, ProductId
+		end
+	end
+
+	return
+end
+
 local function GetProductFromId(Data: { Id: number, IsGamepass: boolean }): (ProductData?, number?)
 	if Data.IsGamepass then
 		for ProductId, OtherData in pairs(ProductInfo) do
@@ -53,10 +68,27 @@ local function GetProductFromId(Data: { Id: number, IsGamepass: boolean }): (Pro
 	return
 end
 
+local function GetProductFromIdOnly(Id: number): (ProductData?, number?)
+	for ProductId, OtherData in pairs(ProductInfo) do
+		if Id == ProductId then
+			return OtherData, ProductId
+		end
+	end
+	for ProductId, OtherData in pairs(GamepassInfo) do
+		if Id == ProductId then
+			return OtherData, ProductId
+		end
+	end
+
+	return
+end
+
 return {
 	GiftIds = GiftIds,
 	ProductInfo = ProductInfo,
 	GamepassInfo = GamepassInfo,
 	GetProductFromId = GetProductFromId,
 	GetProductFromName = GetProductFromName,
+	GetProductFromIdOnly = GetProductFromIdOnly,
+	GetProductFromNameOnly = GetProductFromNameOnly,
 }

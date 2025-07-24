@@ -53,7 +53,7 @@ local function HandleData(PData: PlayerData.PlayerData)
 	local Connection = Updated:Connect(function(Data)
 		for _, Leaderboard: { Pages: { [number]: { key: number, value: number } }, Name: string } in pairs(Data) do
 			for Position, Entry in ipairs(Leaderboard.Pages) do
-				if Entry.key == PData.Player.UserId then
+				if tonumber(Entry.key) == PData.Player.UserId then
 					PData:ChangeLeaderboardPosition(Leaderboard.Name, Position)
 				end
 			end
@@ -78,7 +78,7 @@ IntTimer.Tick:Connect(function()
 end)
 
 IntTimer:Start()
-task.wait(10)
+task.wait(2)
 HandleAll():catch(function(Error)
 	warn("Error while updating leaderboard data:", Error)
 end)

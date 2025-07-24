@@ -835,11 +835,11 @@ function PlayerData:RedeemDaily()
 			self:AddResource(RewardData.Name, RewardData.Count)
 		end
 	elseif RewardData.Type == "Product" then
-		if RewardData.ExtraData and RewardData.ExtraData.ProductId then
-			self:AddProduct(RewardData.ExtraData.ProductId, RewardData.Count)
+		local _, ProductId = ProductInfo.GetProductFromName({ Name = RewardData.Name, IsGamepass = true })
+		if ProductId then
+			self:AddProduct(ProductId, RewardData.Count)
 		else
-			warn("PlayerData:RedeemDaily (Invalid Product Data)", RewardData)
-			return
+			warn("No Product with Name: " .. RewardData.Name)
 		end
 	end
 
@@ -965,6 +965,31 @@ function PlayerData:RedeemQuest(Id: string)
 	end
 
 	Quest.Redeemed = true
+
+	local Reward = Quest.QuestReward
+	if Reward.Type == "Unit" then
+		self:AddUnit(Reward.Value)
+	elseif Reward.Type == "Resource" then
+		if Reward.Value == "Gold" then
+			self:AddGold(Reward.Count)
+		else
+			self:AddResource(Reward.Value, Reward.Count)
+		end
+	elseif Reward.Type == "Product" then
+		local _, ProductId = ProductInfo.GetProductFromName({ Name = Reward.Value, IsGamepass = true })
+		if ProductId then
+			self:AddProduct(ProductId, Reward.Count)
+		else
+			warn("No Product with Name: " .. Reward.Value)
+		end
+	elseif Reward.Type == "Title" then
+		if TitleData[Reward.Value] then
+			self:AddTitle(Reward.Value)
+		else
+			warn("No Title with Name: " .. Reward.Value)
+		end
+	end
+
 	self.QuestRedeemed:Fire(Quest)
 end
 
