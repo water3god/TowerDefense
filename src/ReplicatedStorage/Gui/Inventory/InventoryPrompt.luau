@@ -34,6 +34,7 @@ local Main = require(CoreGame.Main)
 local Title = require(CoreGame.Title)
 local BaseButton = require(CoreGame.BaseButton)
 local Hooks = require(CoreGame.Hooks)
+local UIStroke = require(CoreGame.UIStroke)
 
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
@@ -623,12 +624,13 @@ local function InventoryPrompt(Properties: Properties)
 		} :: { unknown }
 	)
 
-	return e(Main.ImageLabel, {
+	return e(Main.Frame, {
 		native = JoinDicts({
+			BackgroundTransparency = 0,
+			BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
 			Size = Styles.alpha:map(function(alpha)
 				return UDim2.fromScale(0.475, 0.45):Lerp(UDim2.fromScale(0.55, 0.5), alpha)
 			end),
-			Image = "rbxassetid://103903141717286",
 			Visible = Styles.alpha:map(function(alpha)
 				return alpha > 0
 			end),
@@ -636,6 +638,34 @@ local function InventoryPrompt(Properties: Properties)
 	}, {
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 2,
+		}),
+		UICorner = e("UICorner", {
+			CornerRadius = UDim.new(0.02, 0),
+		}),
+		InnerFrame = e(Main.Frame, {
+			native = {
+				Position = UDim2.fromScale(0.5, 0.52),
+				Size = UDim2.fromScale(0.94, 0.9),
+			},
+		}, {
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.015, 0),
+			}),
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Color = Color3.new(0.388235, 0.101961, 0.486275),
+				Stroke = 0.002,
+				native = {
+					Transparency = 0.1,
+					LineJoinMode = Enum.LineJoinMode.Round,
+				},
+			}),
+		}),
+		UIStroke = e(UIStroke.UIStrokeAdvanced, {
+			Color = Color3.new(0.866667, 0.866667, 0.866667),
+			Stroke = 0.002,
+			native = {
+				LineJoinMode = Enum.LineJoinMode.Round,
+			},
 		}),
 		MainDataFrame = e(Main.ScrollingFrame, {
 			BarSize = 0.02,
