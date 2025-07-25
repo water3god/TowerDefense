@@ -2,12 +2,16 @@
 
 -- By Wa1er_God --
 
+-- Services --
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local GuiService = game:GetService("GuiService")
 local ContextActionService = game:GetService("ContextActionService")
+
+-- Packages --
 
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
@@ -26,6 +30,8 @@ local ClientOnly = require(Network.ClientOnly)
 
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
+
+-- Gui --
 
 local Gui = ReplicatedStorage.Gui
 
@@ -79,8 +85,12 @@ local DailyFrame = require(DailyFolder.DailyFrame)
 local QuestsFolder = Gui.Quests
 local QuestsFrame = require(QuestsFolder.QuestsFrame)
 
+local TraitsFolder = Gui.Traits
+local Evolution = require(TraitsFolder.Evolution)
+
 -- Contexts --
 local InventoryContext = require(Inventory.InventoryContext)
+local PromptContext = require(Inventory.PromptContext)
 local TradeMenuContext = require(Trade.TradeContext)
 local EquippedUnitsContext = require(GameFrames.EquippedUnitsContext)
 local WaveContext = require(GameFrames.WaveContext)
@@ -246,7 +256,7 @@ local function RenderRollFrame(Props: any)
 	})
 
 	return e(RollContext.Provider, {}, {
-		MainStory = e(RollMain, {
+		RollFrame = e(RollMain, {
 			CloseClick = Props.CloseClick,
 			SetVisible = Props.SetVisible,
 			native = {
@@ -339,6 +349,22 @@ local function RenderStarterChoose(Props: any)
 	})
 
 	return e(StarterChoose, {
+		CloseClick = Props.CloseClick,
+		SetVisible = Props.SetVisible,
+		native = {
+			Position = Position,
+			Visible = Visiblity,
+		},
+	})
+end
+
+local function RenderEvolution(Props: any)
+	local Position, Visiblity = AnimateWrapper({
+		Visible = Props.Visible,
+		Name = Constants.EVOLUTION,
+	})
+
+	return e(Evolution, {
 		CloseClick = Props.CloseClick,
 		SetVisible = Props.SetVisible,
 		native = {
@@ -571,6 +597,7 @@ local VisibleFrames = {
 	[Constants.TITLES_FRAME] = {},
 	[Constants.QUESTS_FRAME] = {},
 	[Constants.STARTER_CHOOSE] = {},
+	[Constants.EVOLUTION] = {},
 }
 
 local NoBlur = {
@@ -798,6 +825,7 @@ local function Render()
 				TipsContext.Provider,
 				DailyContext.Provider,
 				QuestsContext.Provider,
+				PromptContext.Provider,
 			},
 		},
 		{
@@ -893,6 +921,15 @@ local function Render()
 						end,
 						SetVisible = function(Visible: boolean)
 							SetVisibleInternal(Constants.STARTER_CHOOSE, Visible)
+						end,
+					}),
+					[Constants.EVOLUTION] = e(RenderEvolution, {
+						Visible = if VisibleFrame == Constants.EVOLUTION then true else false,
+						CloseClick = function()
+							OnCloseClick(Constants.EVOLUTION)
+						end,
+						SetVisible = function()
+							SetVisibleRetricted(Constants.EVOLUTION, true)
 						end,
 					}),
 				} :: { [string]: React.Node }

@@ -32,6 +32,7 @@ export type Properties = {
 	MainImage: string?,
 	Hovered: boolean?,
 	Disabled: boolean?,
+	Hidden: boolean?,
 
 	Animated: boolean?,
 
@@ -98,6 +99,7 @@ local function CreateBaseFrame(Properties: Properties)
 					Size = UDim2.fromScale(1, 1),
 					ZIndex = 0,
 					Image = if Properties.Hovered then HighlightedBackgroundImage else DefaultBackgroundImage,
+					ImageTransparency = if Properties.Hidden then 0.5 else 0,
 				},
 			}, {
 				UIGradient = e("UIGradient", {

@@ -194,6 +194,7 @@ event EnemySpeedEvent = {
 type VisualUnitData = struct {
 	Unit: string,
 	Level: Level,
+	Trait: string?,
 	UniqueId: string,
 	XP: f64,
 	NeededXP: f64,

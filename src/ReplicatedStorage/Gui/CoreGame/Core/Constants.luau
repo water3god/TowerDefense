@@ -15,6 +15,7 @@ local Constants = {
 	TITLES_FRAME = "TitlesFrame",
 	QUESTS_FRAME = "QuestsFrame",
 	STARTER_CHOOSE = "StarterChoose",
+	EVOLUTION = "Evolution",
 }
 
 return Constants

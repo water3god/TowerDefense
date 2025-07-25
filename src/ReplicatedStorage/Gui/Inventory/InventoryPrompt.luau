@@ -5,6 +5,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Packages = ReplicatedStorage.Packages
+local ReactSpring = require(Packages.ReactSpring)
 local React = require(Packages.React)
 local e = React.createElement
 
@@ -16,7 +17,6 @@ local Gui = ReplicatedStorage.Gui
 local InventoryGUI = Gui.Inventory
 local InfoFrame = require(InventoryGUI.InfoFrame)
 local InventoryContext = require(InventoryGUI.InventoryContext)
-local StatsFrame = require(InventoryGUI.StatsFrame)
 
 local UnitFrame = require(InventoryGUI.UnitFrame)
 local ProductFrame = require(InventoryGUI.ProductFrame)
@@ -28,15 +28,9 @@ local EquippedUnitsContext = require(GameFrames.EquippedUnitsContext)
 local Store = Gui.Store
 local PurchaseContext = require(Store.PurchaseContext)
 
-local Client = ReplicatedStorage.Client
-local GlobalClient = Client.GlobalClient
-local InventoryService = require(GlobalClient.InventoryService)
-local PurchaseService = require(GlobalClient.PurchaseService)
-
 local CoreGame = Gui.CoreGame
 local CloseButton = require(CoreGame.CloseButton)
 local Main = require(CoreGame.Main)
-local Confirm = require(CoreGame.Confirm)
 local Title = require(CoreGame.Title)
 local BaseButton = require(CoreGame.BaseButton)
 local Hooks = require(CoreGame.Hooks)
@@ -47,7 +41,11 @@ local RarityInfo = require(Shared.RarityInfo)
 local ProductInfo = require(Shared.ProductInfo)
 local GameInfo = require(Shared.GameInfo)
 local Types = require(Shared.Types)
+
 export type Properties = {
+	FilteredIds: { string },
+	Add: (HoveredId: string) -> (),
+	Visible: boolean,
 	CloseClick: () -> ()?,
 	native: { [any]: any }?,
 }
@@ -90,28 +88,6 @@ do
 			return a.Name < b.Name
 		end
 	end
-end
-
-local function Sell(UniqueIds: { string }, Type: string)
-	if Type == "Unit" then
-		InventoryService.SellUnits(UniqueIds)
-	elseif Type == "Product" then
-		InventoryService.SellProducts(UniqueIds)
-	elseif Type == "Resource" then
-		InventoryService.SellResources(UniqueIds)
-	end
-end
-
-local function BeingSoldFrame(props)
-	return e(Main.ImageLabel, {
-		native = {
-			Visible = props.Visible,
-			Size = UDim2.fromScale(0.9, 0.9),
-			Image = "rbxassetid://84303396250595",
-			ImageColor3 = Color3.fromRGB(255, 6, 0),
-			ZIndex = 3,
-		},
-	})
 end
 
 export type UnitData = {
@@ -165,10 +141,6 @@ local function HandleUnit(Data: UnitData)
 				},
 			}),
 		},
-	}, {
-		BeingSoldFrame = e(BeingSoldFrame, {
-			Visible = Data.XVisible,
-		}),
 	}, Data.children)
 end
 
@@ -214,10 +186,6 @@ local function HandleProduct(props: ProductData)
 		Count = Data.Count,
 		ProductId = Data.ProductId,
 		native = props.native,
-	}, {
-		BeingSoldFrame = e(BeingSoldFrame, {
-			Visible = props.XVisible,
-		}),
 	}, props.children)
 end
 
@@ -256,10 +224,6 @@ local function HandleResource(props: ResourceData)
 			})
 		end,
 		native = props.native,
-	}, {
-		BeingSoldFrame = e(BeingSoldFrame, {
-			Visible = props.XVisible,
-		}),
 	}, props.children)
 end
 
@@ -269,14 +233,12 @@ export type ClickedUnitData = {
 	RarityData: typeof(RarityInfo["Common" :: RarityInfo.Rarity]),
 }?
 
-local CreateInventory = React.forwardRef(function(Properties, ref)
+local function InventoryPrompt(Properties: Properties)
 	local InventoryData = React.useContext(InventoryContext.Context)
 	local EquippedUnits = React.useContext(EquippedUnitsContext.Context)
 	local PurchaseData = React.useContext(PurchaseContext.Context)
 
-	local SellingItems, SetSellingItems = React.useState({} :: { string })
 	local HoveredId: string?, SetHovered = React.useState(nil :: string?)
-	local InSell, ToggleSell = React.useState(false)
 
 	local ClickedUnitData: ClickedUnitData, SetClickedUnitData = React.useState(nil :: ClickedUnitData)
 	local ClickedProductData: ClickedUnitData, SetClickedProductData = React.useState(nil :: ClickedUnitData)
@@ -284,16 +246,34 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 
 	local OpenFrame: string, SetOpenFrame = React.useState("Unit")
 
-	local BulkEnabled, SetBulkEnabled = React.useState(false)
-	local IndEnabled, SetIndEnabled = React.useState(false)
-
 	local Translator = Hooks.useTranslator()
 
+	local Styles, API = ReactSpring.useSpring(function()
+		return {
+			alpha = 0,
+			config = { mass = 1, tension = 500, friction = 40, clamp = true, precision = 0.01, velocity = 0.03 :: any },
+		}
+	end)
+
 	React.useEffect(function()
-		SetBulkEnabled(false)
-		SetIndEnabled(false)
-		SetSellingItems({})
-		ToggleSell(false)
+		if Properties.Visible then
+			API.start({
+				alpha = 1,
+			})
+		else
+			API.start({
+				alpha = 0,
+			})
+		end
+	end, { Properties.Visible })
+
+	React.useEffect(function()
+		if HoveredId and table.find(Properties.FilteredIds, HoveredId) then
+			SetHovered(nil)
+		end
+	end, { Properties.FilteredIds, HoveredId } :: { unknown })
+
+	React.useEffect(function()
 		SetHovered(nil)
 		if OpenFrame == "Unit" then
 			SetClickedProductData(nil)
@@ -307,39 +287,6 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		end
 	end, { OpenFrame })
 
-	React.useEffect(function()
-		if InSell == false then
-			SetBulkEnabled(false)
-		end
-		if not HoveredId then
-			SetIndEnabled(false)
-		end
-	end, { InSell, HoveredId } :: { unknown })
-
-	React.useEffect(function()
-		local SellingUnitsCloned = table.clone(SellingItems)
-		for i = #SellingUnitsCloned, 1, -1 do
-			local Id = SellingUnitsCloned[i]
-
-			if OpenFrame == "Unit" then
-				if not InventoryData.Units[Id] then
-					table.remove(SellingUnitsCloned, i)
-				end
-			elseif OpenFrame == "Product" then
-				if not InventoryData.Products[Id] then
-					table.remove(SellingUnitsCloned, i)
-				end
-			elseif OpenFrame == "Resource" then
-				if not InventoryData.Resources[Id] then
-					table.remove(SellingUnitsCloned, i)
-				end
-			end
-		end
-		if #SellingItems ~= #SellingUnitsCloned then
-			SetSellingItems(SellingUnitsCloned)
-		end
-	end, { InventoryData })
-
 	local SmallFrameClick = React.useCallback(function(Data: { Data: any, UniqueId: string })
 		local function SetClicked(ClickData: any)
 			if OpenFrame == "Unit" then
@@ -351,107 +298,14 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			end
 		end
 
-		if (HoveredId ~= Data.UniqueId) and not InSell then
+		if HoveredId ~= Data.UniqueId then
 			SetClicked(Data.Data)
 			SetHovered(Data.UniqueId)
-		end
-		if InSell then
-			local Index = table.find(SellingItems, Data.UniqueId)
-			local NewTable = table.clone(SellingItems)
-			if Index then
-				table.remove(NewTable, Index)
-			else
-				table.insert(NewTable, Data.UniqueId)
-			end
-			SetSellingItems(NewTable)
 		else
-			if HoveredId == Data.UniqueId then
-				SetClickedUnitData(nil)
-				SetHovered(nil)
-			else
-				SetClicked(Data.Data)
-				SetHovered(Data.UniqueId)
-			end
+			SetClickedUnitData(nil)
+			SetHovered(nil)
 		end
-	end, { InSell, HoveredId, ClickedUnitData, SellingItems, OpenFrame } :: { unknown })
-
-	React.useImperativeHandle(ref, function()
-		return {
-			Hover = function(Id: string)
-				local Info = InventoryData.Units[Id]
-				if Info then
-					local UnitData = UnitInfo.UnitInfo[Info.Unit]
-					local RarityData = RarityInfo[UnitData.Rarity]
-					SmallFrameClick({
-						Data = {
-							CurrentUnit = Info,
-							Rarity = UnitData.Rarity,
-							RarityData = RarityData,
-						},
-						UniqueId = Id,
-					})
-				end
-			end,
-			GetHovered = function()
-				return HoveredId
-			end,
-		}
-	end, { HoveredId, InventoryData } :: { unknown })
-
-	local OnEquip = React.useCallback(function()
-		if HoveredId then
-			if InventoryService.UnitIsEquipped(HoveredId) then
-				InventoryService.EquipUnit(HoveredId, false)
-			else
-				InventoryService.EquipUnit(HoveredId, true)
-			end
-		end
-	end, { HoveredId })
-
-	local IndSellClick = React.useCallback(function()
-		SetIndEnabled(true)
-	end, { IndEnabled })
-
-	local IndividualSell = React.useCallback(function(Input: boolean?)
-		if HoveredId then
-			if Input == true then
-				Sell({ HoveredId }, OpenFrame)
-			end
-		end
-
-		SetIndEnabled(false)
-	end, { HoveredId, IndEnabled, OpenFrame } :: { unknown })
-
-	local OnSellPressed = React.useCallback(function()
-		SetHovered(nil)
-		SetSellingItems({})
-		ToggleSell(not InSell)
-	end, { InSell, HoveredId, SellingItems } :: { unknown })
-
-	local OnCheckPressed = React.useCallback(function()
-		if InSell and #SellingItems > 0 then
-			SetBulkEnabled(true)
-		end
-	end, { BulkEnabled, SellingItems } :: { unknown })
-
-	local BulkSell = React.useCallback(function(Input: boolean?)
-		if not InSell then
-			return
-		end
-
-		if Input == true then
-			if #SellingItems > 0 then
-				Sell(SellingItems, OpenFrame)
-			end
-
-			ToggleSell(false)
-		elseif Input == false then
-			SetSellingItems({})
-			ToggleSell(false)
-		end
-
-		SetIndEnabled(false)
-	end, { SellingItems, InSell, OpenFrame } :: { unknown })
+	end, { HoveredId, ClickedUnitData, OpenFrame } :: { unknown })
 
 	local Filter, SetFilter = React.useState("")
 	local FilterMethod, SetFilterMethod = React.useState(Filters[1])
@@ -557,13 +411,17 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 					end
 				end
 
+				if table.find(Properties.FilteredIds, Data.UniqueId) then
+					return
+				end
+
 				local Unit = e(HandleUnit, {
 					Data = Data,
 					HoveredId = HoveredId,
 					SmallFrameClick = SmallFrameClick,
 					UniqueId = Data.UniqueId,
 					IsEquipped = IsEquipped(Data.UniqueId),
-					XVisible = if table.find(SellingItems, Data.UniqueId) then true else false,
+					XVisible = false,
 					native = {
 						LayoutOrder = SortData[Data.UniqueId] or 1,
 					},
@@ -586,13 +444,17 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 					end
 				end
 
+				if table.find(Properties.FilteredIds, Data.UniqueId) then
+					return
+				end
+
 				local Product = e(HandleProduct, {
 					Data = Data,
 					Name = Name,
 					HoveredId = HoveredId,
 					SmallFrameClick = SmallFrameClick,
 					UniqueId = Data.UniqueId,
-					XVisible = if table.find(SellingItems, Data.UniqueId) then true else false,
+					XVisible = false,
 					native = {
 						LayoutOrder = SortData[Data.UniqueId] or 1,
 					},
@@ -607,12 +469,16 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 					end
 				end
 
+				if table.find(Properties.FilteredIds, Data.UniqueId) then
+					return
+				end
+
 				local Resource = e(HandleResource, {
 					Data = Data,
 					HoveredId = HoveredId,
 					SmallFrameClick = SmallFrameClick,
 					UniqueId = Data.UniqueId,
-					XVisible = if table.find(SellingItems, Data.UniqueId) then true else false,
+					XVisible = false,
 					native = {
 						LayoutOrder = SortData[Data.UniqueId] or 1,
 					},
@@ -635,27 +501,8 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			end
 			return Table
 		end,
-		{
-			InSell,
-			SellingItems,
-			HoveredId,
-			InventoryData,
-			Filter,
-			FilterMethod,
-			OpenFrame,
-			EquippedUnits,
-			Translator,
-		} :: { unknown }
+		{ HoveredId, InventoryData, Filter, FilterMethod, OpenFrame, EquippedUnits, Translator, Properties.FilteredIds } :: { unknown }
 	)
-
-	local UseProduct = React.useCallback(function()
-		if ClickedProductData then
-			local ProductId = ClickedProductData.CurrentUnit.ProductId
-			local IsGamepass = ClickedProductData.CurrentUnit.IsGamepass
-
-			PurchaseService.UsePurchase(ProductId, IsGamepass)
-		end
-	end, { ClickedProductData })
 
 	local FilterMethodCallback = React.useCallback(function()
 		if OpenFrame == "Unit" then
@@ -674,37 +521,6 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 	local SearchCallback = React.useCallback(function(rbx: TextBox)
 		SetFilter(rbx.Text)
 	end, {})
-
-	local IndConfirmDescription = React.useMemo(function()
-		if ClickedUnitData then
-			local UnitName = ClickedUnitData.CurrentUnit.Unit
-			local Rarity = UnitInfo.UnitInfo[UnitName].Rarity
-			local Cost = RarityInfo[Rarity :: any].Value
-			return string.format(Translate("Are you sure you want to Sell %s for %u Gold?"), UnitName, Cost)
-		else
-			return ""
-		end
-	end, { ClickedUnitData })
-
-	local BulkConfirmDescription = React.useMemo(function()
-		if SellingItems then
-			local TotalCost = 0
-
-			for _, Id in ipairs(SellingItems) do
-				local UnitData: Types.VisualUnitData = InventoryData.Units[Id]
-				local Rarity = UnitInfo.UnitInfo[UnitData.Unit].Rarity
-				TotalCost += RarityInfo[Rarity :: any].Value
-			end
-
-			return string.format(
-				Translate("Are you sure you want to Sell %u Units for %u Gold?"),
-				#SellingItems,
-				TotalCost
-			)
-		else
-			return ""
-		end
-	end, { SellingItems, Translator })
 
 	local UnitCountText = React.useMemo(function()
 		if OpenFrame == "Unit" then
@@ -748,14 +564,10 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 					then true
 					else false
 
-				local FirstClick = nil
-
-				if OpenFrame == "Unit" then
-					FirstClick = OnEquip
-				elseif OpenFrame == "Product" then
-					FirstClick = UseProduct
-				else
-					FirstClick = function() end
+				local FirstClick = function()
+					if HoveredId then
+						Properties.Add(HoveredId)
+					end
 				end
 
 				local Name = ""
@@ -784,7 +596,6 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 						Visible = if HoveredId then true else false,
 						IsEquipped = IsEquippedBool,
 						OnFirstClick = FirstClick,
-						OnSellClick = IndSellClick,
 					}
 				end
 
@@ -801,48 +612,28 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 
 			return Default
 		end,
-		{ OpenFrame, ClickedProductData, ClickedResourceData, ClickedUnitData, EquippedUnits, HoveredId } :: { unknown }
+		{
+			OpenFrame,
+			ClickedProductData,
+			ClickedResourceData,
+			ClickedUnitData,
+			EquippedUnits,
+			HoveredId,
+			Properties.Add,
+		} :: { unknown }
 	)
-
-	local InfoVisible, SetInfoVisible = React.useState(false)
-
-	local OpenInfoClick = React.useCallback(function()
-		SetInfoVisible(true)
-	end, {})
-
-	local CloseInfoClick = React.useCallback(function()
-		SetInfoVisible(false)
-	end, {})
-
-	React.useEffect(function()
-		if OpenFrame ~= "Unit" or HoveredId == nil then
-			SetInfoVisible(false)
-		end
-	end, { OpenFrame, HoveredId } :: { unknown })
 
 	return e(Main.ImageLabel, {
 		native = JoinDicts({
-			Size = UDim2.fromScale(0.55, 0.5),
+			Size = Styles.alpha:map(function(alpha)
+				return UDim2.fromScale(0.475, 0.45):Lerp(UDim2.fromScale(0.55, 0.5), alpha)
+			end),
 			Image = "rbxassetid://103903141717286",
+			Visible = Styles.alpha:map(function(alpha)
+				return alpha > 0
+			end),
 		}, Properties.native),
 	}, {
-		InventoryStatsFrame = e(StatsFrame, {
-			UnitName = if OpenFrame == "Unit" and InfoFrameData.Visible then InfoFrameData.Name else nil,
-			Visible = InfoVisible,
-			CloseClick = CloseInfoClick,
-		}),
-		IndConfirm = e(Confirm, {
-			Title = "Selling Unit",
-			Description = IndConfirmDescription,
-			Enabled = IndEnabled,
-			Handler = IndividualSell,
-		}),
-		BulkConfirm = e(Confirm, {
-			Title = "Selling Units",
-			Description = BulkConfirmDescription,
-			Enabled = BulkEnabled,
-			Handler = BulkSell,
-		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 2,
 		}),
@@ -872,34 +663,15 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 				PaddingRight = UDim.new(0.03, 0),
 			}),
 		}, InventoryNodes),
-		CheckButton = e(Main.Animateables.ImageButton, {
-			native = {
-				Visible = if InSell then true else false,
-				Position = UDim2.fromScale(0.875, 0.175),
-				Size = UDim2.fromScale(0.04, 0.08),
-				Image = "rbxassetid://78742556758797",
-				ImageColor3 = Color3.fromRGB(34, 255, 0),
-				[React.Event.MouseButton1Click] = OnCheckPressed,
-			},
-		}),
 		CloseButton = e(CloseButton, {
 			Position = UDim2.fromScale(1, 0),
 			Size = UDim2.fromScale(0.1, 0.2),
 			OnClick = Properties.CloseClick,
 		}),
-		SellButton = e(Main.Animateables.ImageButton, {
-			native = {
-				Position = UDim2.fromScale(0.93, 0.175),
-				Size = UDim2.fromScale(0.04, 0.08),
-				Image = "rbxassetid://135893657768702",
-				ImageColor3 = Color3.fromRGB(255, 0, 4),
-				[React.Event.MouseButton1Click] = OnSellPressed,
-			},
-		}),
 		InfoFrame = e(
 			InfoFrame,
 			JoinDicts(InfoFrameData, {
-				OnInfoClick = OpenInfoClick,
+				FirstText = "Use",
 			})
 		),
 		UnitsButton = e(BaseButton, {
@@ -998,6 +770,8 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			},
 		}),
 	})
-end)
+end
 
-return CreateInventory
+return {
+	Prompt = InventoryPrompt,
+}

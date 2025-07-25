@@ -8,7 +8,6 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local Packages = ReplicatedStorage.Packages
 local Timer = require(Packages.Timer)
-local Trove = require(Packages.Trove)
 
 local GlobalModules = ServerScriptService.GlobalModules
 local PlayerData = require(GlobalModules.PlayerData)

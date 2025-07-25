@@ -8,6 +8,7 @@ local Settings = require(Shared.Settings)
 export type UnitData = {
 	Unit: string,
 	Level: number,
+	Trait: string?,
 	UniqueId: string,
 	XP: number,
 	NeededXP: number,

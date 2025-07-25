@@ -24,6 +24,10 @@ local EquipTitle = Network.EquipTitle
 local Shared = ReplicatedStorage.Shared
 local Types = require(Shared.Types)
 
+export type VisualUnitData = Types.VisualUnitData
+export type ProductData = Types.ProductData
+export type ResourceData = Types.ResourceData
+
 local CurrentInventory: {
 	Units: {
 		[string]: Types.VisualUnitData,

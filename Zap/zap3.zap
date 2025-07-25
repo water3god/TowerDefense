@@ -300,3 +300,23 @@ event ChooseStarter = {
 	call: SingleAsync,
 	data: string,
 }
+
+-- Evolution --
+
+event EvolveUnit = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: struct {
+		UniqueId: string,
+	},
+}
+
+event UnitEvolved = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: struct {
+		UnitName: string,
+	},
+}

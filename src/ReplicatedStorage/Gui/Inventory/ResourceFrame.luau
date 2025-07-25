@@ -21,7 +21,8 @@ local RarityInfo = require(Shared.RarityInfo)
 
 export type ResourceProps = {
 	Name: string,
-	Value: number,
+	Value: number?,
+	LeftValue: string?,
 	OnClick: (() -> ())?,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
@@ -38,8 +39,8 @@ local function CreateResourceFrame(props: ResourceProps)
 	end, { ResourceData })
 
 	return e(BaseFrame, {
-		LeftText = "",
-		RightText = string.format("%ux", props.Value),
+		LeftText = props.LeftValue or "",
+		RightText = props.Value and string.format("%ux", props.Value) or "",
 		Name = props.Name,
 		OnClick = props.OnClick,
 		MainImage = ResourceData.Image,
@@ -47,6 +48,7 @@ local function CreateResourceFrame(props: ResourceProps)
 		BackgroundColor = RarityData.BackgroundColor,
 		NameColor = RarityData.Color,
 		NameStrokeColor = RarityData.StrokeColor,
+		LeftStrokeColor = ColorSequence.new(Color3.new()),
 		RightColor = RarityData.Color,
 		RightStrokeColor = RarityData.StrokeColor,
 		native = props.native,

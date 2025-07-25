@@ -451,7 +451,7 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 			[0] = {
 				function(Unit: UnitModule.Unit, Damage: number)
 					DelayAOE(Unit, Damage, 0.6, {
-						Type = "Cone",
+						Type = "Line",
 						Size = 50,
 					})
 				end,

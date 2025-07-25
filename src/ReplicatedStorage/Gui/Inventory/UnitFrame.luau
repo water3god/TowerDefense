@@ -12,17 +12,21 @@ local e = React.createElement
 
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
+local Main = require(CoreGame.Main)
 local BaseFrame = require(CoreGame.BaseFrame)
+local AnimatedGradient = require(CoreGame.AnimatedGradient)
 
 local Shared = ReplicatedStorage.Shared
 local RarityInfo = require(Shared.RarityInfo)
 local UnitInfo = require(Shared.UnitInfo)
-
+local Traits = require(Shared.Traits)
 export type Properties = {
 	UnitName: string,
 	Level: number | React.Binding<number>,
 	Cost: number,
 	Hovered: boolean?,
+	Trait: string?,
+	Hidden: boolean?,
 
 	UnitImage: string,
 	Color: ColorSequence?,
@@ -38,11 +42,36 @@ export type Properties = {
 }
 
 local function CreateUnitFrameRaw(Properties: Properties)
+	local TraitFrame = React.useMemo(function(): React.Node?
+		if Properties.Trait then
+			local TraitData = Traits.Traits[Properties.Trait]
+
+			if TraitData then
+				local RarityData = RarityInfo[TraitData.Rarity :: any]
+				return e(Main.ImageLabel, {
+					native = {
+						Size = UDim2.fromScale(0.3, 0.3),
+						Position = UDim2.fromScale(0.7, 0.5),
+					},
+				}, {
+					UIGradient = e(AnimatedGradient, {
+						GradColor = RarityData.Color,
+						Animate = true,
+						Speed = 1,
+					}),
+				})
+			end
+		end
+
+		return nil
+	end, { Properties.Trait })
+
 	return e(BaseFrame, {
 		Name = Properties.UnitName,
 		LeftText = typeof(Properties.Level) == "number" and tostring(Properties.Level) or Properties.Level :: any,
 		RightText = string.format("$%u", Properties.Cost),
 		RightColor = ColorSequence.new(Color3.new(1, 0.706813, 0.310231)),
+		Hidden = Properties.Hidden,
 
 		BackgroundColor = Properties.BackgroundColor,
 
@@ -58,15 +87,18 @@ local function CreateUnitFrameRaw(Properties: Properties)
 		OnClick = Properties.OnClick,
 
 		native = Properties.native,
-		children = Properties.children,
 		containerChildren = Properties.containerChildren,
-	})
+	}, {
+		TraitFrame = TraitFrame,
+	}, Properties.children)
 end
 
 export type PropertiesMain = {
 	UnitName: string,
 	Level: number | React.Binding<number>,
 	Hovered: boolean?,
+	Trait: string?,
+	Hidden: boolean?,
 
 	Disabled: boolean?,
 	OnClick: ((...any) -> ...any)?,
@@ -93,10 +125,12 @@ local function CreateUnitFrame(Properties: PropertiesMain)
 		UnitName = Properties.UnitName,
 		Level = Properties.Level,
 		Cost = UnitData.UnitData[0].Cost,
+		Trait = Properties.Trait,
 		Color = RarityData.Color,
 		StrokeColor = RarityData.StrokeColor,
 		BackgroundColor = RarityData.BackgroundColor,
 		UnitImage = UnitData.Image or DefaultImage,
+		Hidden = Properties.Hidden,
 
 		Disabled = Properties.Disabled,
 		Hovered = Properties.Hovered,

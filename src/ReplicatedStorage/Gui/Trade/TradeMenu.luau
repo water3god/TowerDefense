@@ -142,51 +142,48 @@ local function CreateTradeMenu(Properties: Properties)
 			Size = UDim2.fromScale(0.6, 0.65),
 			Image = "rbxassetid://85379476276657",
 		}, Properties.native),
-		children = {
-			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 1.355,
+	}, {
+		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+			AspectRatio = 1.355,
+		}),
+		MainFrame = e(Main.ScrollingFrame, {
+			BarSize = 0.002,
+			native = {
+				Position = UDim2.fromScale(0.5, 0.525),
+				Size = UDim2.fromScale(0.86, 0.8),
+				AutomaticCanvasSize = Enum.AutomaticSize.Y,
+			},
+		}, {
+			UIListLayout = e("UIListLayout", {
+				Padding = UDim.new(0, 0),
 			}),
-			MainFrame = e(Main.ScrollingFrame, {
-				BarSize = 0.002,
+			Padding = e("UIPadding", {
+				PaddingRight = UDim.new(0.04, 0),
+			}),
+		}, Frames),
+		NoPlayers = e(Main.Frame, {
+			native = {
+				Visible = HelperFunctions.Len(TradeStatuses) == 0,
+				Size = UDim2.fromScale(0.4, 0.15),
+			},
+		}, {
+			NoPlayersLabel = e(Main.TextLabel, {
 				native = {
-					Position = UDim2.fromScale(0.5, 0.525),
-					Size = UDim2.fromScale(0.86, 0.8),
-					AutomaticCanvasSize = Enum.AutomaticSize.Y,
-				},
-				children = Join({
-					UIListLayout = e("UIListLayout", {
-						Padding = UDim.new(0, 0),
-					}),
-					Padding = e("UIPadding", {
-						PaddingRight = UDim.new(0.04, 0),
-					}),
-				}, Frames),
-			}),
-			NoPlayers = e(Main.Frame, {
-				native = {
-					Visible = HelperFunctions.Len(TradeStatuses) == 0,
-					Size = UDim2.fromScale(0.4, 0.15),
-				},
-				children = {
-					NoPlayersLabel = e(Main.TextLabel, {
-						native = {
-							Size = UDim2.fromScale(1, 0.8),
-							Text = "No Players",
-						},
-					}),
+					Size = UDim2.fromScale(1, 0.8),
+					Text = "No Players",
 				},
 			}),
-			CloseButton = e(CloseButton, {
-				Position = UDim2.fromScale(1, 0),
-				Size = UDim2.fromScale(0.12, 0.15),
-				OnClick = Properties.CloseClick,
-			}),
-			Title = e(Title, {
-				Title = "TRADING",
-				Position = UDim2.fromScale(0.2, -0.02),
-				Size = UDim2.fromScale(0.6, 0.6),
-			}),
-		},
+		}),
+		CloseButton = e(CloseButton, {
+			Position = UDim2.fromScale(1, 0),
+			Size = UDim2.fromScale(0.12, 0.15),
+			OnClick = Properties.CloseClick,
+		}),
+		Title = e(Title, {
+			Title = "TRADING",
+			Position = UDim2.fromScale(0.2, -0.02),
+			Size = UDim2.fromScale(0.6, 0.6),
+		}),
 	})
 end
 

@@ -13,6 +13,13 @@ local FirstJoin = Network.FirstJoin
 local GlobalModules = ServerScriptService.GlobalModules
 local PlayerData = require(GlobalModules.PlayerData)
 
+local Shared = ReplicatedStorage.Shared
+local IsLobby = require(Shared.IsLobby)
+
+if not IsLobby then
+	return
+end
+
 local function HandleData(PData: PlayerData.PlayerData)
 	local Data = PData.Profile.Data
 

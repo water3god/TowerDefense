@@ -28,6 +28,7 @@ export type TradeStatusMessage = "Trading" | "CanTrade" | "TradeDisabled"
 export type VisualUnitData = {
 	Unit: string,
 	Level: number,
+	Trait: string?,
 	UniqueId: string,
 	XP: number,
 	NeededXP: number,

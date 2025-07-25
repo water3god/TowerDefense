@@ -15,9 +15,9 @@ local Trove = require(Packages.Trove)
 local InventoryService = require(ReplicatedStorage.Client.GlobalClient.InventoryService)
 
 local InventoryContext = React.createContext({
-	Units = {},
-	Products = {},
-	Resources = {},
+	Units = {} :: { [string]: InventoryService.VisualUnitData },
+	Products = {} :: { [string]: InventoryService.ProductData },
+	Resources = {} :: { [string]: InventoryService.ResourceData },
 	MaxUnitCount = 100,
 })
 

@@ -140,6 +140,9 @@ if not RunService:IsRunning() then
 		UseProduct = table.freeze({
 			Fire = noop
 		}),
+		UnitEvolved = table.freeze({
+			SetCallback = noop
+		}),
 		TimeChanged = table.freeze({
 			SetCallback = noop
 		}),
@@ -182,6 +185,9 @@ if not RunService:IsRunning() then
 		FirstJoin = table.freeze({
 			SetCallback = noop
 		}),
+		EvolveUnit = table.freeze({
+			Fire = noop
+		}),
 		EndVoteAction = table.freeze({
 			Fire = noop
 		}),
@@ -210,23 +216,36 @@ local remotes = ReplicatedStorage:WaitForChild("Zap3")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
+export type VoteData = ({
+	["Time"]: (number),
+	["StartTime"]: (number),
+	["CurrentCount"]: (number),
+	["NeededCount"]: (number),
+})
 export type Time = (number)
-export type Level = (number)
-export type XP = (number)
-export type ProductId = (number)
+export type Wave = (number)
 export type MainXPData = ({
 	["OldXP"]: (number),
 	["NewXP"]: (number),
 	["OldLevel"]: (number),
 	["NewLevel"]: (number),
 })
+export type QuestRemoteInfo = ({
+	["Id"]: (string),
+	["CurrentValue"]: (number),
+	["Redeemed"]: (boolean),
+})
+export type XP = (number)
+export type Level = (number)
 export type Health = (number)
+export type ProductId = (number)
 export type Vote = (number)
-export type VoteData = ({
+export type WaveData = ({
+	["Wave"]: (number),
+	["BaseHealth"]: (number),
+	["MaxHealth"]: (number),
 	["Time"]: (number),
 	["StartTime"]: (number),
-	["CurrentCount"]: (number),
-	["NeededCount"]: (number),
 })
 export type ResourceData = ({
 	["Units"]: ({ (string) }),
@@ -241,19 +260,6 @@ export type ResourceData = ({
 		["OldXP"]: (number),
 		["NewXP"]: (number),
 	}) }),
-})
-export type QuestRemoteInfo = ({
-	["Id"]: (string),
-	["CurrentValue"]: (number),
-	["Redeemed"]: (boolean),
-})
-export type Wave = (number)
-export type WaveData = ({
-	["Wave"]: (number),
-	["BaseHealth"]: (number),
-	["MaxHealth"]: (number),
-	["Time"]: (number),
-	["StartTime"]: (number),
 })
 
 local function SendEvents()
@@ -272,13 +278,14 @@ end
 
 RunService.Heartbeat:Connect(SendEvents)
 
-local reliable_events = table.create(20)
-local reliable_event_queue: { [number]: { any } } = table.create(20)
+local reliable_events = table.create(21)
+local reliable_event_queue: { [number]: { any } } = table.create(21)
 reliable_event_queue[9] = {}
 reliable_event_queue[8] = {}
 reliable_event_queue[11] = {}
 reliable_event_queue[7] = {}
 reliable_event_queue[6] = {}
+reliable_event_queue[20] = {}
 reliable_event_queue[10] = {}
 reliable_event_queue[12] = {}
 reliable_event_queue[17] = {}
@@ -412,6 +419,19 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 					warn(`[ZAP] {#reliable_event_queue[6]} events in queue for VoteRequest. Did you forget to attach a listener?`)
 				end
 			end
+		elseif id == 20 then
+			local value
+			value = {  }
+			local len_7 = buffer.readu16(incoming_buff, read(2))
+			value["UnitName"] = buffer.readstring(incoming_buff, read(len_7), len_7)
+			if reliable_events[20] then
+				task.spawn(reliable_events[20], value)
+			else
+				table.insert(reliable_event_queue[20], value)
+				if #reliable_event_queue[20] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[20]} events in queue for UnitEvolved. Did you forget to attach a listener?`)
+				end
+			end
 		elseif id == 10 then
 			local value
 			value = {  }
@@ -428,8 +448,8 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 		elseif id == 12 then
 			local value, value2
 			local bool_3 = buffer.readu8(incoming_buff, read(1))
-			local len_7 = buffer.readu16(incoming_buff, read(2))
-			value = buffer.readstring(incoming_buff, read(len_7), len_7)
+			local len_8 = buffer.readu16(incoming_buff, read(2))
+			value = buffer.readstring(incoming_buff, read(len_8), len_8)
 			if bit32.btest(bool_3, 0b0000000000000001) then
 				value2 = Color3.fromRGB(buffer.readu8(incoming_buff, read(1)), buffer.readu8(incoming_buff, read(1)), buffer.readu8(incoming_buff, read(1)))
 			else
@@ -446,50 +466,50 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 		elseif id == 17 then
 			local value
 			value = {  }
-			local len_8 = buffer.readu16(incoming_buff, read(2))
-			value["DailyQuests"] = table.create(len_8)
-			for i_4 = 1, len_8 do
+			local len_9 = buffer.readu16(incoming_buff, read(2))
+			value["DailyQuests"] = table.create(len_9)
+			for i_4 = 1, len_9 do
 				local bool_4 = buffer.readu8(incoming_buff, read(1))
 				local val_4
 				val_4 = {  }
-				local len_9 = buffer.readu16(incoming_buff, read(2))
-				val_4["Id"] = buffer.readstring(incoming_buff, read(len_9), len_9)
+				local len_10 = buffer.readu16(incoming_buff, read(2))
+				val_4["Id"] = buffer.readstring(incoming_buff, read(len_10), len_10)
 				val_4["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
 				val_4["Redeemed"] = bit32.btest(bool_4, 0b0000000000000001)
 				value["DailyQuests"][i_4] = val_4
 			end
-			local len_10 = buffer.readu16(incoming_buff, read(2))
-			value["WeeklyQuests"] = table.create(len_10)
-			for i_5 = 1, len_10 do
+			local len_11 = buffer.readu16(incoming_buff, read(2))
+			value["WeeklyQuests"] = table.create(len_11)
+			for i_5 = 1, len_11 do
 				local bool_5 = buffer.readu8(incoming_buff, read(1))
 				local val_5
 				val_5 = {  }
-				local len_11 = buffer.readu16(incoming_buff, read(2))
-				val_5["Id"] = buffer.readstring(incoming_buff, read(len_11), len_11)
+				local len_12 = buffer.readu16(incoming_buff, read(2))
+				val_5["Id"] = buffer.readstring(incoming_buff, read(len_12), len_12)
 				val_5["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
 				val_5["Redeemed"] = bit32.btest(bool_5, 0b0000000000000001)
 				value["WeeklyQuests"][i_5] = val_5
 			end
-			local len_12 = buffer.readu16(incoming_buff, read(2))
-			value["EventQuests"] = table.create(len_12)
-			for i_6 = 1, len_12 do
+			local len_13 = buffer.readu16(incoming_buff, read(2))
+			value["EventQuests"] = table.create(len_13)
+			for i_6 = 1, len_13 do
 				local bool_6 = buffer.readu8(incoming_buff, read(1))
 				local val_6
 				val_6 = {  }
-				local len_13 = buffer.readu16(incoming_buff, read(2))
-				val_6["Id"] = buffer.readstring(incoming_buff, read(len_13), len_13)
+				local len_14 = buffer.readu16(incoming_buff, read(2))
+				val_6["Id"] = buffer.readstring(incoming_buff, read(len_14), len_14)
 				val_6["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
 				val_6["Redeemed"] = bit32.btest(bool_6, 0b0000000000000001)
 				value["EventQuests"][i_6] = val_6
 			end
-			local len_14 = buffer.readu16(incoming_buff, read(2))
-			value["GlobalQuests"] = table.create(len_14)
-			for i_7 = 1, len_14 do
+			local len_15 = buffer.readu16(incoming_buff, read(2))
+			value["GlobalQuests"] = table.create(len_15)
+			for i_7 = 1, len_15 do
 				local bool_7 = buffer.readu8(incoming_buff, read(1))
 				local val_7
 				val_7 = {  }
-				local len_15 = buffer.readu16(incoming_buff, read(2))
-				val_7["Id"] = buffer.readstring(incoming_buff, read(len_15), len_15)
+				local len_16 = buffer.readu16(incoming_buff, read(2))
+				val_7["Id"] = buffer.readstring(incoming_buff, read(len_16), len_16)
 				val_7["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
 				val_7["Redeemed"] = bit32.btest(bool_7, 0b0000000000000001)
 				value["GlobalQuests"][i_7] = val_7
@@ -504,14 +524,14 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 18 then
 			local value
-			local len_16 = buffer.readu16(incoming_buff, read(2))
-			value = table.create(len_16)
-			for i_8 = 1, len_16 do
+			local len_17 = buffer.readu16(incoming_buff, read(2))
+			value = table.create(len_17)
+			for i_8 = 1, len_17 do
 				local bool_8 = buffer.readu8(incoming_buff, read(1))
 				local val_8
 				val_8 = {  }
-				local len_17 = buffer.readu16(incoming_buff, read(2))
-				val_8["Id"] = buffer.readstring(incoming_buff, read(len_17), len_17)
+				local len_18 = buffer.readu16(incoming_buff, read(2))
+				val_8["Id"] = buffer.readstring(incoming_buff, read(len_18), len_18)
 				val_8["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
 				val_8["Redeemed"] = bit32.btest(bool_8, 0b0000000000000001)
 				value[i_8] = val_8
@@ -564,9 +584,9 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			value = {  }
 			value["VotedCount"] = buffer.readu16(incoming_buff, read(2))
 			value["Win"] = bit32.btest(bool_9, 0b0000000000000001)
-			local len_18 = buffer.readu16(incoming_buff, read(2))
-			value["Players"] = table.create(len_18)
-			for i_9 = 1, len_18 do
+			local len_19 = buffer.readu16(incoming_buff, read(2))
+			value["Players"] = table.create(len_19)
+			for i_9 = 1, len_19 do
 				local val_9
 				incoming_ipos = incoming_ipos + 1
 				val_9 = incoming_inst[incoming_ipos]
@@ -664,21 +684,21 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 					assert(key_1 ~= nil, "received instance is nil!")
 					assert(key_1:IsA("Player"), "received instance is not of the Player class!")
 					val_10 = {  }
-					local len_19 = buffer.readu16(incoming_buff, read(2))
-					val_10["Title"] = buffer.readstring(incoming_buff, read(len_19), len_19)
-					val_10["Level"] = buffer.readu16(incoming_buff, read(2))
 					local len_20 = buffer.readu16(incoming_buff, read(2))
-					val_10["EquippedUnits"] = table.create(len_20)
-					for i_10 = 1, len_20 do
+					val_10["Title"] = buffer.readstring(incoming_buff, read(len_20), len_20)
+					val_10["Level"] = buffer.readu16(incoming_buff, read(2))
+					local len_21 = buffer.readu16(incoming_buff, read(2))
+					val_10["EquippedUnits"] = table.create(len_21)
+					for i_10 = 1, len_21 do
 						local bool_11 = buffer.readu8(incoming_buff, read(1))
 						local val_11
 						if bit32.btest(bool_11, 0b0000000000000001) then
 							val_11 = {  }
-							local len_21 = buffer.readu16(incoming_buff, read(2))
-							val_11["Id"] = buffer.readstring(incoming_buff, read(len_21), len_21)
-							val_11["Level"] = buffer.readu16(incoming_buff, read(2))
 							local len_22 = buffer.readu16(incoming_buff, read(2))
-							val_11["UnitName"] = buffer.readstring(incoming_buff, read(len_22), len_22)
+							val_11["Id"] = buffer.readstring(incoming_buff, read(len_22), len_22)
+							val_11["Level"] = buffer.readu16(incoming_buff, read(2))
+							local len_23 = buffer.readu16(incoming_buff, read(2))
+							val_11["UnitName"] = buffer.readstring(incoming_buff, read(len_23), len_23)
 						else
 							val_11 = nil
 						end
@@ -817,6 +837,20 @@ local returns = {
 			buffer.writeu8(outgoing_buff, bool_12_pos_1, bool_12)
 		end,
 	},
+	UnitEvolved = {
+		SetCallback = function(Callback: (Value: ({
+			["UnitName"]: (string),
+		})) -> ()): () -> ()
+			reliable_events[20] = Callback
+			for _, value in reliable_event_queue[20] do
+				task.spawn(Callback, value)
+			end
+			reliable_event_queue[20] = {}
+			return function()
+				reliable_events[20] = nil
+			end
+		end,
+	},
 	TimeChanged = {
 		SetCallback = function(Callback: (Value: ({
 			["Time"]: (number),
@@ -860,11 +894,11 @@ local returns = {
 		Fire = function(Value: (string))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
-			local len_23 = #Value
+			local len_24 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_23)
-			alloc(len_23)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_23)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_24)
+			alloc(len_24)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_24)
 		end,
 	},
 	RedeemDailyReward = {
@@ -1013,6 +1047,19 @@ local returns = {
 			end
 		end,
 	},
+	EvolveUnit = {
+		Fire = function(Value: ({
+			["UniqueId"]: (string),
+		}))
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
+			local len_25 = #Value["UniqueId"]
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_25)
+			alloc(len_25)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_25)
+		end,
+	},
 	EndVoteAction = {
 		Fire = function()
 			alloc(1)
@@ -1065,11 +1112,11 @@ local returns = {
 		Fire = function(Value: (string))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
-			local len_24 = #Value
+			local len_26 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_24)
-			alloc(len_24)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_24)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_26)
+			alloc(len_26)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_26)
 		end,
 	},
 	AllEquippedSync = {

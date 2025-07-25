@@ -402,7 +402,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 		else
 			return
 		end
-	end, { HasNextLevel, UpgradeData.Level } :: { unknown })
+	end, { UpgradeData, HasNextLevel } :: { unknown })
 
 	local UpgradeText = React.useMemo(function()
 		if HasNextLevel and NextLevelCost then
@@ -410,7 +410,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 		else
 			return "Maxxed"
 		end
-	end, { HasNextLevel, NextLevelCost } :: { unknown })
+	end, { UpgradeData.UnitName, UpgradeData.Level, HasNextLevel, NextLevelCost } :: { unknown })
 
 	local RarityData: RarityInfo.RarityInfo = React.useMemo(function()
 		local Rarity = UnitInfo.UnitInfo[UpgradeData.UnitName].Rarity

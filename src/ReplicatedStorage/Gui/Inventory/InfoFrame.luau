@@ -35,6 +35,8 @@ export type Properties = {
 	Rarity: string?,
 	IsEquipped: boolean,
 
+	FirstText: string?,
+
 	Data: any,
 	RarityInfo: RarityInfo.RarityInfo?,
 
@@ -57,7 +59,7 @@ local function CreateInfoFrame(Properties: Properties)
 		else
 			return UDim2.fromScale(0, 0)
 		end
-	end, { IsUnit, Properties.Data :: any })
+	end, { IsUnit, Properties.Data } :: { unknown })
 
 	local XPText = React.useMemo(function()
 		if IsUnit and Properties.Data then
@@ -65,7 +67,7 @@ local function CreateInfoFrame(Properties: Properties)
 		else
 			return ""
 		end
-	end, { IsUnit, Properties.Data :: any })
+	end, { IsUnit, Properties.Data } :: { unknown })
 
 	local Icon = React.useMemo(function()
 		if Properties.Type == "Resource" then
@@ -89,9 +91,13 @@ local function CreateInfoFrame(Properties: Properties)
 		else
 			return ""
 		end
-	end, { Properties.Type, Properties.Name :: any, Properties.Rarity :: any })
+	end, { Properties.Type, Properties.Name, Properties.Rarity } :: { unknown })
 
 	local FirstText = React.useMemo(function()
+		if Properties.FirstText then
+			return Properties.FirstText
+		end
+
 		if Properties.Type == "Unit" then
 			if Properties.IsEquipped then
 				return "Unequip"
@@ -103,7 +109,7 @@ local function CreateInfoFrame(Properties: Properties)
 		else
 			return ""
 		end
-	end, { Properties.Type, Properties.IsEquipped :: any })
+	end, { Properties.Type, Properties.IsEquipped, Properties.FirstText } :: { unknown })
 
 	local UnitName = React.useMemo(function()
 		if Properties.Name ~= "" and Properties.Type == "Unit" then
@@ -127,7 +133,7 @@ local function CreateInfoFrame(Properties: Properties)
 			RotationCFrame = RotationCFrame,
 			Offset = Vector3.new(0, -1, 0),
 			native = {
-				Position = UDim2.fromScale(0.5, 0.55),
+				Position = Properties.OnSellClick and UDim2.fromScale(0.5, 0.55) or UDim2.fromScale(0.5, 0.6),
 				Size = UDim2.fromScale(0.9, 0.5),
 				Visible = IsUnit,
 			},
@@ -165,7 +171,7 @@ local function CreateInfoFrame(Properties: Properties)
 				},
 			}),
 		}),
-		InfoButton = e(Main.Animateables.ImageButton, {
+		InfoButton = Properties.OnInfoClick and e(Main.Animateables.ImageButton, {
 			native = {
 				Position = UDim2.fromScale(0.78, 0.66),
 				Size = UDim2.fromScale(0.21, 0.12),
@@ -179,7 +185,7 @@ local function CreateInfoFrame(Properties: Properties)
 				AspectRatio = 1,
 			}),
 		}),
-		SellButton = e(Main.Animateables.ImageButton, {
+		SellButton = Properties.OnSellClick and e(Main.Animateables.ImageButton, {
 			native = {
 				Position = UDim2.fromScale(0.5, 0.79),
 				Size = UDim2.fromScale(0.8, 0.125),

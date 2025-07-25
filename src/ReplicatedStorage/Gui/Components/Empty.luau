@@ -1,0 +1,47 @@
+--!strict
+
+-- By Wa1er_God --
+
+local PlusFont =
+	Font.new("rbxasset://fonts/families/HighwayGothic.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+
+-- Services --
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+-- Libraries --
+local Packages = ReplicatedStorage.Packages
+local React = require(Packages.React)
+local e = React.createElement
+
+local Modules = ReplicatedStorage.Modules
+local HelperFunctions = require(Modules.HelperFunctions)
+local Join = HelperFunctions.joinDicts
+
+-- Reference UI --
+local Gui = ReplicatedStorage.Gui
+local CoreGame = Gui.CoreGame
+local Main = require(CoreGame.Main)
+
+return function(props)
+	return e(Main.Animateables.ImageButton, {
+		native = Join({
+			Image = "",
+		}, props.native),
+	}, {
+		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+			AspectRatio = 1,
+		}),
+		BackgroundImage = e(Main.ImageLabel, {
+			native = {
+				Image = "rbxassetid://122297615155487",
+			},
+		}, {
+			UIGradient = e("UIGradient", {
+				Color = ColorSequence.new(
+					Color3.new(0.258824, 0.043137, 0.384314),
+					Color3.new(0.564706, 0.113725, 0.827451)
+				),
+			}),
+		}),
+	}, props.children)
+end
