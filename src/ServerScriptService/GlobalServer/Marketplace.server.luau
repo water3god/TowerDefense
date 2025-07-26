@@ -116,7 +116,7 @@ local function OnPlayerData(Data: PlayerData.PlayerData)
 		Data.Profile:Save()
 	end
 
-	if HelperFunctions.Len(ProfData.CachedProducts) ~= 0 then
+	if next(ProfData.CachedProducts) then
 		for CachedProduct, Count in ipairs(ProfData.CachedProducts) do
 			for _ = 1, Count, 1 do
 				task.spawn(Redeem, CachedProduct)

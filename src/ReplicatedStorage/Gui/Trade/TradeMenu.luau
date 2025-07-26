@@ -12,6 +12,7 @@ local Main = require(CoreGame.Main)
 local CloseButton = require(CoreGame.CloseButton)
 local Title = require(CoreGame.Title)
 local UIStroke = require(CoreGame.UIStroke)
+local Hooks = require(CoreGame.Hooks)
 
 local Trade = Gui.Trade
 local TradeContext = require(Trade.TradeContext)
@@ -33,7 +34,7 @@ export type Properties = {
 }
 
 export type PlayerFrameProps = {
-	Player: Player,
+	UserId: number,
 	Status: TradeService.TradeStatusMessage,
 }
 
@@ -50,91 +51,144 @@ local function GetMessageFromStatus(Status: TradeService.TradeStatusMessage)
 end
 
 local function CreatePlayerFrame(Properties: PlayerFrameProps)
+	local ThumbnailImage, SetThumbnail = React.useState(nil :: string?)
+	local Name, SetName = React.useState("")
+	local SentId, SetSentId = React.useState(false)
+
+	React.useEffect(function()
+		local ThumbnailId = HelperFunctions.GetThumbnailIdAsync(Properties.UserId)
+		if ThumbnailId then
+			SetThumbnail(ThumbnailId)
+		end
+	end, { Properties.UserId })
+
+	React.useEffect(function()
+		HelperFunctions.GetNameFromIdAsync(Properties.UserId):andThen(function(NameInput: string)
+			SetName(NameInput)
+		end)
+	end, { Properties.UserId })
+
+	local ButtonColor = React.useMemo(function()
+		if SentId then
+			return Color3.fromRGB(155, 155, 155)
+		end
+		if Properties.Status == "CanTrade" then
+			return Color3.fromRGB(0, 255, 0)
+		elseif Properties.Status == "Trading" then
+			return Color3.fromRGB(255, 255, 0)
+		elseif Properties.Status == "TradeDisabled" then
+			return Color3.fromRGB(255, 0, 0)
+		else
+			return Color3.fromRGB(255, 0, 0) -- Error state
+		end
+	end, { Properties.Status, SentId } :: { unknown })
+
+	local Status = React.useMemo(function()
+		if SentId then
+			return "Sent"
+		end
+		return GetMessageFromStatus(Properties.Status)
+	end, { Properties.Status, SentId } :: { unknown })
+
+	local RequestTrade = React.useCallback(function()
+		if SentId or Properties.Status ~= "CanTrade" then
+			return
+		end
+		SetSentId(true)
+
+		TradeService.SendTradeRequest(Properties.UserId)
+	end, { Properties.UserId, SentId, Properties.Status } :: { unknown })
+
+	Hooks.useEventConnection(TradeService.RequestEnded, function(Player: Player)
+		if Player.UserId == Properties.UserId then
+			SetSentId(false)
+		end
+	end, { Properties.UserId })
+
 	return e(Main.Frame, {
 		native = {
 			Size = UDim2.fromScale(1, 0.25),
 		},
-		children = {
-			Container = e(Main.Frame, {
+	}, {
+		Container = e(Main.Frame, {
+			native = {
+				BackgroundTransparency = 0,
+				BackgroundColor3 = Color3.fromRGB(50, 8, 66),
+				Size = UDim2.fromScale(1, 0.9),
+			},
+		}, {
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.2, 0),
+			}),
+			PlayerTradeButton = e(Main.Animateables.ImageButton, {
 				native = {
-					BackgroundTransparency = 0,
-					BackgroundColor3 = Color3.fromRGB(50, 8, 66),
-					Size = UDim2.fromScale(1, 0.9),
+					Position = UDim2.fromScale(0.8, 0.5),
+					Size = UDim2.fromScale(0.3, 0.6),
+					Image = "rbxassetid://80739823452825",
+					ImageColor3 = ButtonColor,
+					[React.Event.MouseButton1Click] = RequestTrade,
 				},
-				children = {
+			}, {
+				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+					AspectRatio = 3,
+				}),
+				Label = e(Main.TextLabel, {
+					native = {
+						Size = UDim2.fromScale(0.7, 0.7),
+						Text = Status,
+					},
+				}, {
+					UIStroke = e(UIStroke.UIStrokeAdvanced, {
+						Stroke = 0.04,
+					}),
+				}),
+			}),
+			PlayerImage = e(Main.ImageLabel, {
+				native = {
+					Position = UDim2.fromScale(0.1, 0.5),
+					Size = UDim2.fromScale(0.122, 0.8),
+					Image = "rbxassetid://90997125561155",
+				},
+			}, {
+				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+					AspectRatio = 1,
+				}),
+				ThumbnailImage = e(Main.ImageLabel, {
+					native = {
+						Image = ThumbnailImage or "",
+						Size = UDim2.fromScale(0.95, 0.95),
+					},
+				}, {
 					UICorner = e("UICorner", {
-						CornerRadius = UDim.new(0.2, 0),
+						CornerRadius = UDim.new(0.5, 0),
 					}),
-					PlayerTradeButton = e(Main.Animateables.ImageButton, {
-						native = {
-							Position = UDim2.fromScale(0.8, 0.5),
-							Size = UDim2.fromScale(0.3, 0.6),
-						},
-						children = {
-							UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-								AspectRatio = 4.01,
-							}),
-							Label = e(Main.TextLabel, {
-								native = {
-									Size = UDim2.fromScale(0.7, 0.7),
-									Text = GetMessageFromStatus(Properties.Status),
-								},
-								children = {
-									UIStroke = e(UIStroke.UIStrokeBasic, {
-										Stroke = 0.002,
-									}),
-								},
-							}),
-						},
-					}),
-					PlayerImage = e(Main.ImageLabel, {
-						native = {
-							Position = UDim2.fromScale(0.1, 0.5),
-							Size = UDim2.fromScale(0.122, 0.8),
-							Image = "rbxassetid://90997125561155",
-						},
-						children = {
-							UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-								AspectRatio = 1,
-							}),
-							ThumbnailImage = e(Main.ImageLabel, {
-								native = {
-									Image = HelperFunctions.GetThumbnailAsync(Properties.Player),
-									Size = UDim2.fromScale(0.95, 0.95),
-								},
-								children = {
-									UICorner = e("UICorner", {
-										CornerRadius = UDim.new(0.5, 0),
-									}),
-								},
-							}),
-							PlayerLabel = e(Main.TextLabel, {
-								Position = UDim2.fromScale(0.41, 0.5),
-								Size = UDim2.fromScale(0.45, 0.4),
-								Text = Properties.Player.Name,
-								TextXAlignment = Enum.TextXAlignment.Left,
-							}),
-						},
-					}),
+				}),
+			}),
+			PlayerLabel = e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.41, 0.5),
+					Size = UDim2.fromScale(0.45, 0.4),
+					Text = Name,
+					TextXAlignment = Enum.TextXAlignment.Left,
 				},
 			}),
-		},
+		}),
 	})
 end
 
 local function CreateTradeMenu(Properties: Properties)
 	local TradeStatuses = React.useContext(TradeContext.Context)
-	local Frames, SetFrames = React.useState({})
 
-	React.useEffect(function()
-		local NewFrames = {}
-		for Player, Status in pairs(TradeStatuses) do
-			NewFrames[Player.UserId] = e(CreatePlayerFrame, {
-				Player = Player,
-				Status = Status,
+	local TradeFrames = React.useMemo(function()
+		local Frames: { [string]: React.Node } = {}
+		for UserId, Status in pairs(TradeStatuses) do
+			Frames["PlayerFrame" .. UserId] = e(CreatePlayerFrame, {
+				UserId = UserId,
+				Status = Status :: any,
 			})
 		end
-		SetFrames(NewFrames)
+
+		return Frames
 	end, { TradeStatuses })
 
 	return e(Main.ImageLabel, {
@@ -149,8 +203,8 @@ local function CreateTradeMenu(Properties: Properties)
 		MainFrame = e(Main.ScrollingFrame, {
 			BarSize = 0.002,
 			native = {
-				Position = UDim2.fromScale(0.5, 0.525),
-				Size = UDim2.fromScale(0.86, 0.8),
+				Position = UDim2.fromScale(0.52, 0.525),
+				Size = UDim2.fromScale(0.9, 0.8),
 				AutomaticCanvasSize = Enum.AutomaticSize.Y,
 			},
 		}, {
@@ -160,7 +214,7 @@ local function CreateTradeMenu(Properties: Properties)
 			Padding = e("UIPadding", {
 				PaddingRight = UDim.new(0.04, 0),
 			}),
-		}, Frames),
+		}, TradeFrames),
 		NoPlayers = e(Main.Frame, {
 			native = {
 				Visible = HelperFunctions.Len(TradeStatuses) == 0,

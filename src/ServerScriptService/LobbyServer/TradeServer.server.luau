@@ -13,29 +13,32 @@ end
 
 local Network = require(ReplicatedStorage.Network.Server)
 
-local ChangeProduct = Network.ChangeProduct
-local ChangeUnit = Network.ChangeUnit
 local TradeStart = Network.TradeStart
 local TradeEnd = Network.TradeEnd
 local TradeRequestServer = Network.TradeRequestServer
 local TradeRequestClient = Network.TradeRequestClient
 local TradeAccept = Network.TradeAccept
 local TradeSync = Network.TradeSync
+local StatusChanged = Network.StatusChanged
+
+local ToggleStatus = Network.ToggleStatus
+local EndTrade = Network.EndTrade
+
+local ChangeProduct = Network.ChangeProduct
+local ChangeUnit = Network.ChangeUnit
+local ChangeResource = Network.ChangeResource
 
 local UnitChanged = Network.UnitChanged
 local ProductChanged = Network.ProductChanged
+local ResourceChanged = Network.ResourceChanged
 
 local Packages = ReplicatedStorage.Packages
 local Trove = require(Packages.Trove)
-
-local Modules = ReplicatedStorage.Modules
-local HelperFunctions = require(Modules.HelperFunctions)
 
 local GlobalModules = ServerScriptService.GlobalModules
 local LobbyModules = ServerScriptService.LobbyModules
 local Trade = require(LobbyModules.Trade)
 local PlayerData = require(GlobalModules.PlayerData)
-local GlobalWave = require(GlobalModules.GlobalWave)
 
 type TradeData = {
 	Trade: Trade.Trade?,
@@ -70,7 +73,7 @@ local function UpdateStatus(TradeDatas: { Player })
 		end
 	end
 
-	if HelperFunctions.Len(SentData) ~= 0 then
+	if next(SentData) then
 		TradeSync.FireAll(SentData)
 	end
 end
@@ -173,9 +176,82 @@ TradeAccept.SetCallback(function(Player: Player, OtherPlayer: Player)
 			end
 		end)
 
-		NewTrade.UnitRemoving:Connect(function(Unit: string, NewPlayer: Player)
-			UnitChanged.Fire(NewTrade.Player1, NewPlayer, Unit, "Removing")
-			UnitChanged.Fire(NewTrade.Player2, NewPlayer, Unit, "Removing")
+		NewTrade.UnitRemoving:Connect(function(UniqueId: string, NewPlayer: Player)
+			UnitChanged.Fire(NewTrade.Player1, NewPlayer, UniqueId, "Removing")
+			UnitChanged.Fire(NewTrade.Player2, NewPlayer, UniqueId, "Removing")
+		end)
+
+		local function HandleProduct(UniqueId: string, Count: number, NewPlayer: Player)
+			local PData = PlayerData.GetPlayerData(NewPlayer)
+			if PData then
+				local ProductData = PData:GetProductFromId(UniqueId)
+				if ProductData then
+					ProductChanged.Fire(NewTrade.Player1, NewPlayer, {
+						UniqueId = UniqueId,
+						Product = ProductData.ProductId,
+						Count = Count,
+					})
+					ProductChanged.Fire(NewTrade.Player2, NewPlayer, {
+						UniqueId = UniqueId,
+						Product = ProductData.ProductId,
+						Count = Count,
+					})
+				end
+			end
+		end
+
+		NewTrade.ProductAdded:Connect(HandleProduct)
+		NewTrade.ProductRemoving:Connect(HandleProduct)
+
+		local function HandleResource(UniqueId: string, Count: number, NewPlayer: Player)
+			local PData = PlayerData.GetPlayerData(NewPlayer)
+			if PData then
+				local ResourceData = PData:GetResourceFromId(UniqueId)
+				if ResourceData then
+					ResourceChanged.Fire(NewTrade.Player1, NewPlayer, {
+						UniqueId = UniqueId,
+						Resource = ResourceData.Resource,
+						Count = Count,
+					})
+					ResourceChanged.Fire(NewTrade.Player2, NewPlayer, {
+						UniqueId = UniqueId,
+						Resource = ResourceData.Resource,
+						Count = Count,
+					})
+				end
+			end
+		end
+
+		NewTrade.ResourceAdded:Connect(HandleResource)
+		NewTrade.ResourceRemoving:Connect(HandleResource)
+
+		NewTrade.StatusChanged:Connect(function()
+			local SendData = {
+				Status = NewTrade.Status,
+			}
+
+			StatusChanged.Fire(NewTrade.Player1, SendData)
+			StatusChanged.Fire(NewTrade.Player2, SendData)
+		end)
+
+		NewTrade.Player1StatusChanged:Connect(function()
+			local SendData = {
+				Player = NewTrade.Player1,
+				Status = NewTrade.Player1Status,
+			}
+
+			StatusChanged.Fire(NewTrade.Player1, SendData)
+			StatusChanged.Fire(NewTrade.Player2, SendData)
+		end)
+
+		NewTrade.Player2StatusChanged:Connect(function()
+			local SendData = {
+				Player = NewTrade.Player2,
+				Status = NewTrade.Player2Status,
+			}
+
+			StatusChanged.Fire(NewTrade.Player1, SendData)
+			StatusChanged.Fire(NewTrade.Player2, SendData)
 		end)
 	end
 end)
@@ -196,9 +272,39 @@ ChangeUnit.SetCallback(function(Player: Player, Id: string, Type: string)
 	end
 end)
 
-ChangeProduct.SetCallback(function(NewPlayer: Player) end)
+ChangeProduct.SetCallback(function(Player: Player, Id: string, Count: number)
+	local Data = PlayerTradeData[Player]
 
-local function OnDestroying(Player: Player, TradeData: TradeData)
+	if Data and Data.Trade then
+		Data.Trade:ChangeProduct(Player, Id, Count)
+	end
+end)
+
+ChangeResource.SetCallback(function(Player: Player, Id: string, Count: number)
+	local Data = PlayerTradeData[Player]
+
+	if Data and Data.Trade then
+		Data.Trade:ChangeResource(Player, Id, Count)
+	end
+end)
+
+ToggleStatus.SetCallback(function(Player: Player, Progress: boolean)
+	local Data = PlayerTradeData[Player]
+
+	if Data and Data.Trade then
+		Data.Trade:TogglePlayerStatus(Player, Progress)
+	end
+end)
+
+EndTrade.SetCallback(function(Player: Player)
+	local Data = PlayerTradeData[Player]
+
+	if Data and Data.Trade then
+		Data.Trade:Delete()
+	end
+end)
+
+local function OnDestroying(Player: Player, _: TradeData)
 	for OtherPlayer, OtherData in pairs(PlayerTradeData) do
 		if Player ~= OtherPlayer then
 			if OtherData.LastTradedPlayers[Player] then
@@ -228,11 +334,11 @@ local function OnAdded(Data: PlayerData.PlayerData)
 	end)
 
 	Data.Destroying:Once(function()
-		local TradeData = PlayerTradeData[Data.Player]
+		local OtherTradeData = PlayerTradeData[Data.Player]
 
-		if TradeData then
-			OnDestroying(Data.Player, TradeData)
-			TradeData.Trove:Destroy()
+		if OtherTradeData then
+			OnDestroying(Data.Player, OtherTradeData)
+			OtherTradeData.Trove:Destroy()
 			PlayerTradeData[Data.Player] = nil
 		end
 	end)

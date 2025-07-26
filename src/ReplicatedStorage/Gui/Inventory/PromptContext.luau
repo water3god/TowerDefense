@@ -18,16 +18,15 @@ local NewGui = require(CoreGame.NewGui)
 local Inventory = Gui.Inventory
 local InventoryPrompt = require(Inventory.InventoryPrompt)
 
-local UnitAdded = Signal.new()
+local Added = Signal.new() :: Signal.Signal<string, string>
 
 local PromptContext = React.createContext({
 	SetVisible = function(Visible: boolean) end,
 	Visible = false,
 	ClearIds = function() end,
-	AddId = function() end,
 	SetIds = function() end,
 	FilteredIds = {},
-	UnitAdded = UnitAdded,
+	Added = Added,
 })
 
 local function PromptProvider(props)
@@ -38,14 +37,14 @@ local function PromptProvider(props)
 		SetFilteredIds({})
 	end, {})
 
-	local AddId = React.useCallback(function(Id: string)
+	local AddId = React.useCallback(function(Id: string, OpenFrame: string)
 		local Index = table.find(FilteredIds, Id)
 		if Index then
 			return
 		end
 		table.insert(FilteredIds, Id)
 		SetFilteredIds(table.clone(FilteredIds))
-		UnitAdded:Fire(Id)
+		Added:Fire(Id, OpenFrame)
 	end, { FilteredIds })
 
 	local SetIds = React.useCallback(function(Ids: { string })
@@ -59,9 +58,8 @@ local function PromptProvider(props)
 				Visible = Visible,
 				ClearIds = ClearIds,
 				FilteredIds = FilteredIds,
-				AddId = AddId,
 				SetIds = SetIds,
-				UnitAdded = UnitAdded,
+				Added = Added,
 			},
 		}, props.children),
 		InventoryPromptGui = e(NewGui, {
@@ -72,8 +70,6 @@ local function PromptProvider(props)
 			InventoryPrompt = e(InventoryPrompt.Prompt, {
 				Visible = Visible,
 				FilteredIds = FilteredIds,
-				SetVisible = SetVisible,
-				ClearIds = ClearIds,
 				Add = AddId,
 				CloseClick = function()
 					SetVisible(false)

@@ -9,50 +9,6 @@ type Health = u32
 
 type Time = f64
 
--- Roll --
-
-type RollData = struct {
-	SentTime: Time,
-	Data: struct {
-		Name: string,
-		Id: string,
-	}[],
-	AutoRoll: boolean,
-}
-
-event AutoRoll = {
-	from: Client,
-	type: Reliable,
-	call: SingleAsync,
-	data: boolean,
-}
-
-event RollEventServer = {
-	from: Server,
-	type: Reliable,
-	call: SingleAsync,
-	data: RollData,
-}
-
-event RollEventClient = {
-	from: Client,
-	type: Reliable,
-	call: SingleAsync,
-	data: u8,
-}
-
-event StopAutoRollServer = {
-	from: Server,
-	type: Reliable,
-	call: SingleAsync,
-}
-
-event StopAutoRollClient = {
-	from: Client,
-	type: Reliable,
-	call: SingleAsync,
-}
-
 -- Settings --
 
 event ChangeSettingClient = {
@@ -60,7 +16,7 @@ event ChangeSettingClient = {
 	type: Reliable,
 	call: SingleAsync,
 	data: (
-		string,
+		string.binary,
 		unknown,
 	),
 }
@@ -70,7 +26,7 @@ event ChangeSettingServer = {
 	type: Reliable,
 	call: SingleAsync,
 	data: (
-		string,
+		string.binary,
 		unknown,
 	),
 }
@@ -86,7 +42,7 @@ event SettingSync = {
 	from: Client,
 	type: Reliable,
 	call: SingleAsync,
-	data: map { [string]: unknown },
+	data: map { [string.binary]: unknown },
 }
 -- Trade --
 
@@ -94,47 +50,35 @@ event SettingSync = {
 type TradeStatus = enum { InTrade, Finalized, Accepted }
 type TradeStatusMessage = enum { Trading, CanTrade, TradeDisabled }
 
-event ChangeProduct = {
-	from: Client,
-	type: Reliable,
-	call: SingleAsync,
+type UnitData = struct {
+	Unit: string.binary,
+	Level: Level,
+	Trait: string.binary?,
+	UniqueId: string.binary,
+	XP: XP,
+	NeededXP: XP,
 }
 
-event ChangeUnit = {
-	from: Client,
-	type: Reliable,
-	call: SingleAsync,
-	data: (
-		string,
-		string,
-	),
+type ProductData = struct {
+	UniqueId: string.binary,
+	Product: ProductId,
+	Count: u16,
 }
 
-event ProductChanged = {
-	from: Server,
-	type: Reliable,
-	call: SingleAsync,
+type ResourceData = struct {
+	UniqueId: string.binary,
+	Resource: string.binary,
+	Count: u16,
 }
 
-event TradeAccept = {
-	from: Client,
-	type: Reliable,
-	call: SingleAsync,
-	data: Instance(Player),
-}
-
-event TradeEnd = {
-	from: Server,
-	type: Reliable,
-	call: SingleAsync,
-}
+-- Requests --
 
 event TradeRequestServer = {
 	from: Server,
 	type: Reliable,
 	call: SingleAsync,
 	data: (
-		Instance(Player),
+		Instance.Player,
 		f64,
 	),
 }
@@ -143,17 +87,7 @@ event TradeRequestClient = {
 	from: Client,
 	type: Reliable,
 	call: SingleAsync,
-	data: Instance(Player),
-}
-
-event TradeStart = {
-	from: Server,
-	type: Reliable,
-	call: SingleAsync,
-	data: struct {
-		Player1: Instance(Player),
-		Player2: Instance(Player),
-	},
+	data: Instance.Player,
 }
 
 event TradeSync = {
@@ -165,15 +99,116 @@ event TradeSync = {
 	} },
 }
 
+-- Start Trade Event --
+
+event TradeAccept = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: Instance.Player,
+}
+
+-- In Trade Events --
+
+event TradeStart = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: struct {
+		Player1: Instance.Player,
+		Player2: Instance.Player,
+	},
+}
+
+event ChangeUnit = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: (
+		string.binary,
+		string.binary,
+	),
+}
+
+
 event UnitChanged = {
 	from: Server,
 	type: Reliable,
 	call: SingleAsync,
 	data: (
-		Instance(Player),
-		unknown,
-		string,
+		Instance.Player,
+		(UnitData | string.binary),
+		string.binary,
 	),
+}
+
+event ChangeProduct = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: (
+		string.binary,
+		u16,
+	),
+}
+
+event ProductChanged = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: (
+		Instance.Player,
+		ProductData,
+	),
+}
+
+event ChangeResource = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: (
+		string.binary,
+		u16,
+	),
+}
+
+event ResourceChanged = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: (
+		Instance.Player,
+		ResourceData,
+	),
+}
+
+event ToggleStatus = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: boolean,
+}
+
+event StatusChanged = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: struct {
+		Player: Instance.Player?,
+		Status: TradeStatus,
+	},
+}
+
+event EndTrade = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+}
+
+event TradeEnd = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
 }
 
 -- Unit --
@@ -182,31 +217,31 @@ type SortType = enum { First, Last, Strongest, Weakest }
 type AbilityIndex = u8
 
 type UnitInput = struct {
-	UniqueId: string,
-	UnitName: string,
+	UniqueId: string.binary,
+	UnitName: string.binary,
 	CFrame: CFrame,
 	OwnerId: f64?,
-	AttackPriority: string,
+	AttackPriority: string.binary,
 	Level: Level,
-	RatioData: map { [string]: map { [string]: struct {
-		Type: string,
+	RatioData: map { [string.binary]: map { [string.binary]: struct {
+		Type: string.binary,
 		Ratio: f32,
 		EndTime: Time,
 	} } },
-	Trait: string?,
+	Trait: string.binary?,
 	Abilities: f64[],
 }
 
 type UnitAttackInput = struct {
-	UniqueId: string,
+	UniqueId: string.binary,
 	Index: u16,
-	EnemyId: string,
+	EnemyId: string.binary,
 	Firetime: Time,
 	SpeedRatio: f32,
 }
 
 type PlacementData = struct {
-	Unit: string,
+	Unit: string.binary,
 	UnitPosition: Vector3,
 	RotationIndex: u8,
 }
@@ -216,7 +251,7 @@ event UnitAbilityEvent = {
 	type: Reliable,
 	call: SingleAsync,
 	data: (
-		string,
+		string.binary,
 		AbilityIndex,
 		f64,
 	),
@@ -228,8 +263,8 @@ event UnitAnimationEvent = {
 	call: SingleAsync,
 	data: (
 		struct {
-			UniqueId: string,
-			AnimationName: string,
+			UniqueId: string.binary,
+			AnimationName: string.binary,
 			SecondsAfter: f32?,
 			SpeedRatio: f32?,
 			FadeTime: f32?,
@@ -251,7 +286,7 @@ event UnitDestroyEvent = {
 	from: Server,
 	type: Reliable,
 	call: SingleAsync,
-	data: string[],
+	data: string.binary[],
 }
 
 event UnitPlacementEvent = {
@@ -259,7 +294,7 @@ event UnitPlacementEvent = {
 	type: Reliable,
 	call: SingleAsync,
 	data: (
-		map { [string]: UnitInput },
+		map { [string.binary]: UnitInput },
 		boolean,
 	),
 }
@@ -269,7 +304,7 @@ event UnitPriorityChanged = {
 	type: Reliable,
 	call: SingleAsync,
 	data: struct {
-		UniqueId: string,
+		UniqueId: string.binary,
 		Priority: SortType,
 	},
 }
@@ -279,11 +314,11 @@ event RatioEvent = {
 	type: Reliable,
 	call: SingleAsync,
 	data: (
-		string,
-		string,
-		string,
+		string.binary,
+		string.binary,
+		string.binary,
 		struct {
-			Type: string,
+			Type: string.binary,
 			Ratio: f32,
 			EndTime: Time,
 		}?,
@@ -294,7 +329,7 @@ event UnitUpgradeEvent = {
 	type: Reliable,
 	call: SingleAsync,
 	data: struct {
-		UniqueId: string,
+		UniqueId: string.binary,
 		Level: Level,
 	},
 }
@@ -304,7 +339,7 @@ event UnitCoinsEvent = {
 	type: Reliable,
 	call: SingleAsync,
 	data: struct {
-		UniqueId: string,
+		UniqueId: string.binary,
 		Coins: f64,
 	},
 }
@@ -313,7 +348,7 @@ event ChangeUnitPriority = {
 	from: Client,
 	type: Reliable,
 	call: SingleAsync,
-	data: string,
+	data: string.binary,
 }
 
 event PlaceUnit = {
@@ -327,14 +362,14 @@ event SellUnit = {
 	from: Client,
 	type: Reliable,
 	call: SingleAsync,
-	data: string,
+	data: string.binary,
 }
 
 event UpgradeUnit = {
 	from: Client,
 	type: Reliable,
 	call: SingleAsync,
-	data: string,
+	data: string.binary,
 }
 
 event UseUnitAbility = {
@@ -342,7 +377,7 @@ event UseUnitAbility = {
 	type: Reliable,
 	call: SingleAsync,
 	data: (
-		string,
+		string.binary,
 		AbilityIndex,
 	),
 }

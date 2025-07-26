@@ -42,6 +42,10 @@ type TradeData = {
 
 	Player1Units: { string },
 	Player2Units: { string },
+	Player1Products: { [string]: number },
+	Player2Products: { [string]: number },
+	Player1Resources: { [string]: number },
+	Player2Resources: { [string]: number },
 
 	Player1Status: Types.Status,
 	Player2Status: Types.Status,
@@ -52,6 +56,10 @@ type TradeData = {
 
 	UnitAdded: Signal.Signal<string, Player>,
 	UnitRemoving: Signal.Signal<string, Player>,
+	ProductAdded: Signal.Signal<string, number, Player>,
+	ProductRemoving: Signal.Signal<string, number, Player>,
+	ResourceAdded: Signal.Signal<string, number, Player>,
+	ResourceRemoving: Signal.Signal<string, number, Player>,
 
 	Player1StatusChanged: Signal.Signal<>,
 	Player2StatusChanged: Signal.Signal<>,
@@ -66,8 +74,15 @@ type TradeImpl = {
 
 	AddUnit: (self: Trade, Player: Player, UniqueId: string) -> (),
 	RemoveUnit: (self: Trade, Player: Player, UniqueId: string) -> (),
+	AddProduct: (self: Trade, Player: Player, UniqueId: string, Count: number) -> (),
+	RemoveProduct: (self: Trade, Player: Player, UniqueId: string, Count: number) -> (),
+	AddResource: (self: Trade, Player: Player, UniqueId: string, Count: number) -> (),
+	RemoveResource: (self: Trade, Player: Player, UniqueId: string, Count: number) -> (),
 
-	TogglePlayerStatus: (self: Trade, Player: Player) -> (),
+	ChangeProduct: (self: Trade, Player: Player, UniqueId: string, Count: number) -> (),
+	ChangeResource: (self: Trade, Player: Player, UniqueId: string, Count: number) -> (),
+
+	TogglePlayerStatus: (self: Trade, Player: Player, Progress: boolean) -> (),
 
 	_UpdateStatus: (self: Trade, Player1Old: Types.Status, Player2Old: Types.Status, OldStatus: Types.Status) -> (),
 	_Complete: (self: Trade) -> (),
@@ -117,20 +132,31 @@ function Trade.new(Player1: Player, Player2: Player)
 	self.UniqueId = GenerateId.GenerateId()
 	self._Trove = Trove.new()
 
-	self.UnitAdded = self._Trove:Add(Signal.new(), "DisconnectAll")
-	self.UnitRemoving = self._Trove:Add(Signal.new(), "DisconnectAll")
+	self.UnitAdded = self._Trove:Construct(Signal)
+	self.UnitRemoving = self._Trove:Construct(Signal)
 
-	self.Player1StatusChanged = self._Trove:Add(Signal.new(), "DisconnectAll")
-	self.Player2StatusChanged = self._Trove:Add(Signal.new(), "DisconnectAll")
-	self.StatusChanged = self._Trove:Add(Signal.new(), "DisconnectAll")
+	self.Player1StatusChanged = self._Trove:Construct(Signal)
+	self.Player2StatusChanged = self._Trove:Construct(Signal)
+	self.StatusChanged = self._Trove:Construct(Signal)
 
-	self.Destroying = self._Trove:Add(Signal.new(), "DisconnectAll")
+	self.ProductAdded = self._Trove:Construct(Signal)
+	self.ProductRemoving = self._Trove:Construct(Signal)
+	self.ResourceAdded = self._Trove:Construct(Signal)
+	self.ResourceRemoving = self._Trove:Construct(Signal)
+
+	self.Destroying = self._Trove:Construct(Signal)
 
 	self.Player1 = Player1
 	self.Player2 = Player2
 
 	self.Player1Units = {}
 	self.Player2Units = {}
+
+	self.Player1Products = {}
+	self.Player2Products = {}
+
+	self.Player1Resources = {}
+	self.Player2Resources = {}
 
 	self.Player1Status = "InTrade"
 	self.Player1Status = "InTrade"
@@ -171,6 +197,94 @@ function Trade.new(Player1: Player, Player2: Player)
 		end
 	end)
 
+	self._Trove:Connect(Data1.ProductChanged, function(Type: string, Data: Template.ProductData)
+		if Type == "Changed" then
+			local ProductCount = self.Player1Products[Data.UniqueId]
+
+			if ProductCount then
+				local Difference = ProductCount - Data.Count
+
+				if Difference > 0 then
+					self:RemoveProduct(self.Player1, Data.UniqueId, Difference)
+					Cancel()
+				end
+			end
+		elseif Type == "Removed" then
+			local ProductCount = self.Player1Products[Data.UniqueId]
+
+			if ProductCount then
+				self:RemoveProduct(self.Player1, Data.UniqueId, ProductCount)
+				Cancel()
+			end
+		end
+	end)
+
+	self._Trove:Connect(Data2.ProductChanged, function(Type: string, Data: Template.ProductData)
+		if Type == "Changed" then
+			local ProductCount = self.Player2Products[Data.UniqueId]
+
+			if ProductCount then
+				local Difference = ProductCount - Data.Count
+
+				if Difference > 0 then
+					self:RemoveProduct(self.Player2, Data.UniqueId, Difference)
+					Cancel()
+				end
+			end
+		elseif Type == "Removed" then
+			local ProductCount = self.Player2Products[Data.UniqueId]
+
+			if ProductCount then
+				self:RemoveProduct(self.Player2, Data.UniqueId, ProductCount)
+				Cancel()
+			end
+		end
+	end)
+
+	self._Trove:Connect(Data1.ResourceChanged, function(Type: string, Data: Template.ResourceData)
+		if Type == "Changed" then
+			local ResourceCount = self.Player1Resources[Data.UniqueId]
+
+			if ResourceCount then
+				local Difference = ResourceCount - Data.Count
+
+				if Difference > 0 then
+					self:RemoveResource(self.Player1, Data.UniqueId, Difference)
+					Cancel()
+				end
+			end
+		elseif Type == "Removed" then
+			local ResourceCount = self.Player1Resources[Data.UniqueId]
+
+			if ResourceCount then
+				self:RemoveResource(self.Player1, Data.UniqueId, ResourceCount)
+				Cancel()
+			end
+		end
+	end)
+
+	self._Trove:Connect(Data2.ResourceChanged, function(Type: string, Data: Template.ResourceData)
+		if Type == "Changed" then
+			local ResourceCount = self.Player2Resources[Data.UniqueId]
+
+			if ResourceCount then
+				local Difference = ResourceCount - Data.Count
+
+				if Difference > 0 then
+					self:RemoveResource(self.Player2, Data.UniqueId, Difference)
+					Cancel()
+				end
+			end
+		elseif Type == "Removed" then
+			local ResourceCount = self.Player2Resources[Data.UniqueId]
+
+			if ResourceCount then
+				self:RemoveResource(self.Player2, Data.UniqueId, ResourceCount)
+				Cancel()
+			end
+		end
+	end)
+
 	Trades[self.UniqueId] = self
 	Trade.Added:Fire(self)
 
@@ -189,9 +303,15 @@ function Trade:AddUnit(Player: Player, UniqueId: string)
 
 		if OwnedUnits[UniqueId] then
 			if Player == self.Player1 then
+				if table.find(self.Player1Units, UniqueId) then
+					return
+				end
 				table.insert(self.Player1Units, UniqueId)
 				self.UnitAdded:Fire(UniqueId, self.Player1)
 			elseif Player == self.Player2 then
+				if table.find(self.Player2Units, UniqueId) then
+					return
+				end
 				table.insert(self.Player2Units, UniqueId)
 				self.UnitAdded:Fire(UniqueId, self.Player2)
 			end
@@ -211,16 +331,152 @@ function Trade:RemoveUnit(Player: Player, UniqueId: string)
 			self.UnitRemoving:Fire(UniqueId, self.Player1)
 		end
 	elseif Player == self.Player2 then
-		local Index = table.find(self.Player1Units, UniqueId)
+		local Index = table.find(self.Player2Units, UniqueId)
 
 		if Index then
-			table.remove(self.Player1Units, Index)
+			table.remove(self.Player2Units, Index)
 			self.UnitRemoving:Fire(UniqueId, self.Player2)
 		end
 	end
 end
 
-function Trade:TogglePlayerStatus(Player: Player)
+function Trade:AddProduct(Player: Player, UniqueId: string, Count: number)
+	if self.Status ~= "InTrade" then
+		return
+	end
+
+	local Data = PlayerData.GetPlayerData(Player)
+
+	if Data and Data:GetProductFromId(UniqueId) then
+		if Player == self.Player1 then
+			self.Player1Products[UniqueId] = (self.Player1Products[UniqueId] or 0) + Count
+			self.ProductAdded:Fire(UniqueId, self.Player1Products[UniqueId], self.Player1)
+		elseif Player == self.Player2 then
+			self.Player2Products[UniqueId] = (self.Player2Products[UniqueId] or 0) + Count
+			self.ProductAdded:Fire(UniqueId, self.Player2Products[UniqueId], self.Player2)
+		end
+	end
+end
+
+function Trade:RemoveProduct(Player: Player, UniqueId: string, Count: number)
+	if self.Status ~= "InTrade" then
+		return
+	end
+
+	if Player == self.Player1 then
+		if self.Player1Products[UniqueId] and self.Player1Products[UniqueId] > 0 then
+			self.Player1Products[UniqueId] = self.Player1Products[UniqueId] - Count
+			if self.Player1Products[UniqueId] <= 0 then
+				self.Player1Products[UniqueId] = nil
+			end
+			self.ProductRemoving:Fire(UniqueId, self.Player1Products[UniqueId] or 0, self.Player1)
+		end
+	elseif Player == self.Player2 then
+		if self.Player2Products[UniqueId] and self.Player2Products[UniqueId] > 0 then
+			self.Player2Products[UniqueId] = self.Player2Products[UniqueId] - Count
+			if self.Player2Products[UniqueId] <= 0 then
+				self.Player2Products[UniqueId] = nil
+			end
+			self.ProductRemoving:Fire(UniqueId, self.Player2Products[UniqueId] or 0, self.Player2)
+		end
+	end
+end
+
+function Trade:AddResource(Player: Player, UniqueId: string, Count: number)
+	if self.Status ~= "InTrade" then
+		return
+	end
+
+	local Data = PlayerData.GetPlayerData(Player)
+
+	if Data and Data:GetResourceFromId(UniqueId) then
+		if Player == self.Player1 then
+			self.Player1Resources[UniqueId] = (self.Player1Resources[UniqueId] or 0) + Count
+			self.ResourceAdded:Fire(UniqueId, self.Player1Resources[UniqueId], self.Player1)
+		elseif Player == self.Player2 then
+			self.Player2Resources[UniqueId] = (self.Player2Resources[UniqueId] or 0) + Count
+			self.ResourceAdded:Fire(UniqueId, self.Player2Resources[UniqueId], self.Player2)
+		end
+	end
+end
+
+function Trade:RemoveResource(Player: Player, UniqueId: string, Count: number)
+	if self.Status ~= "InTrade" then
+		return
+	end
+
+	if Player == self.Player1 then
+		if self.Player1Resources[UniqueId] and self.Player1Resources[UniqueId] > 0 then
+			self.Player1Resources[UniqueId] = self.Player1Resources[UniqueId] - Count
+			if self.Player1Resources[UniqueId] <= 0 then
+				self.Player1Resources[UniqueId] = nil
+			end
+			self.ResourceRemoving:Fire(UniqueId, self.Player1Resources[UniqueId] or 0, self.Player1)
+		end
+	elseif Player == self.Player2 then
+		if self.Player2Resources[UniqueId] and self.Player2Resources[UniqueId] > 0 then
+			self.Player2Resources[UniqueId] = self.Player2Resources[UniqueId] - Count
+			if self.Player2Resources[UniqueId] <= 0 then
+				self.Player2Resources[UniqueId] = nil
+			end
+			self.ResourceRemoving:Fire(UniqueId, self.Player2Resources[UniqueId] or 0, self.Player2)
+		end
+	end
+end
+
+function Trade:ChangeProduct(Player: Player, UniqueId: string, Count: number)
+	if Player == self.Player1 then
+		local CurrentCount = self.Player1Products[UniqueId]
+		if CurrentCount then
+			if CurrentCount > Count then
+				self:RemoveProduct(Player, UniqueId, CurrentCount - Count)
+			elseif CurrentCount < Count then
+				self:AddProduct(Player, UniqueId, Count - CurrentCount)
+			end
+		else
+			self:AddProduct(Player, UniqueId, Count)
+		end
+	elseif Player == self.Player2 then
+		local CurrentCount = self.Player2Products[UniqueId]
+		if CurrentCount then
+			if CurrentCount > Count then
+				self:RemoveProduct(Player, UniqueId, CurrentCount - Count)
+			elseif CurrentCount < Count then
+				self:AddProduct(Player, UniqueId, Count - CurrentCount)
+			end
+		else
+			self:AddProduct(Player, UniqueId, Count)
+		end
+	end
+end
+
+function Trade:ChangeResource(Player: Player, UniqueId: string, Count: number)
+	if Player == self.Player1 then
+		local CurrentCount = self.Player1Resources[UniqueId]
+		if CurrentCount then
+			if CurrentCount > Count then
+				self:RemoveResource(Player, UniqueId, CurrentCount - Count)
+			elseif CurrentCount < Count then
+				self:AddResource(Player, UniqueId, Count - CurrentCount)
+			end
+		else
+			self:AddResource(Player, UniqueId, Count)
+		end
+	elseif Player == self.Player2 then
+		local CurrentCount = self.Player2Resources[UniqueId]
+		if CurrentCount then
+			if CurrentCount > Count then
+				self:RemoveResource(Player, UniqueId, CurrentCount - Count)
+			elseif CurrentCount < Count then
+				self:AddResource(Player, UniqueId, Count - CurrentCount)
+			end
+		else
+			self:AddResource(Player, UniqueId, Count)
+		end
+	end
+end
+
+function Trade:TogglePlayerStatus(Player: Player, Progress: boolean)
 	if Player ~= self.Player1 and Player ~= self.Player2 then
 		return
 	end
@@ -232,18 +488,28 @@ function Trade:TogglePlayerStatus(Player: Player)
 
 	if self.Status == "InTrade" then
 		if SelfStatus == "InTrade" then
-			self[Value] = "Finalized"
+			if Progress then
+				self[Value] = "Finalized"
+			end
 		else
-			self[Value] = "InTrade"
+			if not Progress then
+				self[Value] = "InTrade"
+			end
 		end
 	elseif self.Status == "Finalized" then
 		if SelfStatus == "Finalized" then
-			self[Value] = "Accepted"
+			if Progress then
+				self[Value] = "Accepted"
+			end
 		else
-			self[Value] = "InTrade"
+			if not Progress then
+				self[Value] = "InTrade"
+			end
 		end
 	elseif self.Status == "Accepted" then
-		self[Value] = "InTrade"
+		if not Progress then
+			self[Value] = "InTrade"
+		end
 	end
 
 	self:_UpdateStatus(Player1Old, Player2Old, self.Status)
@@ -321,6 +587,38 @@ function Trade:_Complete()
 		end
 	end
 
+	for UniqueId, Count in pairs(self.Player1Products) do
+		local ProductData = Data1:GetProductFromId(UniqueId)
+		if ProductData then
+			Data2:AddProduct(ProductData.ProductId, Count)
+			Data1:RemoveProduct(ProductData.ProductId, Count)
+		end
+	end
+
+	for UniqueId, Count in pairs(self.Player2Products) do
+		local ProductData = Data2:GetProductFromId(UniqueId)
+		if ProductData then
+			Data1:AddProduct(ProductData.ProductId, Count)
+			Data2:RemoveProduct(ProductData.ProductId, Count)
+		end
+	end
+
+	for UniqueId, Count in pairs(self.Player1Resources) do
+		local Resource = Data1:GetResourceFromId(UniqueId)
+		if Resource then
+			Data2:AddResource(Resource.Resource, Count)
+			Data1:RemoveResource(Resource.Resource, Count)
+		end
+	end
+
+	for UniqueId, Count in pairs(self.Player2Resources) do
+		local Resource = Data2:GetResourceFromId(UniqueId)
+		if Resource then
+			Data1:AddResource(Resource.Resource, Count)
+			Data2:RemoveResource(Resource.Resource, Count)
+		end
+	end
+
 	Data1.Profile:Save()
 	Data2.Profile:Save()
 
@@ -341,9 +639,9 @@ function Trade:Destroy()
 end
 
 function Trade.GetTradeFromPlayer(Player: Player)
-	for UniqueId, Trade in pairs(Trades) do
-		if Trade.Player1 == Player or Trade.Player2 == Player then
-			return Trade
+	for _, OtherTrade in pairs(Trades) do
+		if OtherTrade.Player1 == Player or OtherTrade.Player2 == Player then
+			return OtherTrade
 		end
 	end
 

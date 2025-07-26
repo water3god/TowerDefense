@@ -19,37 +19,36 @@ local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
 
+local Gui = ReplicatedStorage.Gui
+local CoreGame = Gui.CoreGame
+local Hooks = require(CoreGame.Hooks)
+
 local TradeService = require(ReplicatedStorage.Client.LobbyClient.TradeService)
 
-local TradeContext = React.createContext({})
+local TradeContext = React.createContext({} :: { [number]: string })
 
 export type props = {
 	children: { [any]: any }?,
 }
 
 local function TradeContextProvider(props: props)
-	local TradeStatuses, SetTradeStatuses = React.useState({} :: { [Player]: string })
+	local TradeStatuses, SetTradeStatuses = React.useState({} :: { [number]: string })
 
-	React.useEffect(function()
-		local Trove = Trove.new()
-		Trove:Connect(TradeService.SyncedStatus, function(OtherPlayer: Player, Status: string)
-			if Player ~= OtherPlayer then
-				SetTradeStatuses(Join(TradeStatuses, {
-					[OtherPlayer] = Status,
-				}))
-			end
-		end)
+	Hooks.useEventConnection(TradeService.SyncedStatus, function(OtherPlayer: Player, Status: string)
+		if Player ~= OtherPlayer then
+			SetTradeStatuses(Join(TradeStatuses, {
+				[OtherPlayer.UserId] = Status,
+			}))
+		end
+	end, { TradeStatuses })
 
-		Trove:Connect(Players.PlayerRemoving, function(OtherPlayer)
-			if Player ~= OtherPlayer then
-				local NewTable = table.clone(TradeStatuses)
-				NewTable[OtherPlayer] = nil
-				SetTradeStatuses(NewTable)
-			end
-		end)
-
-		return Trove:WrapClean()
-	end, {})
+	Hooks.useEventConnection(Players.PlayerRemoving, function(OtherPlayer)
+		if Player ~= OtherPlayer then
+			local NewTable = table.clone(TradeStatuses)
+			NewTable[OtherPlayer.UserId] = nil
+			SetTradeStatuses(NewTable)
+		end
+	end, { TradeStatuses })
 
 	return e(TradeContext.Provider, {
 		value = TradeStatuses,

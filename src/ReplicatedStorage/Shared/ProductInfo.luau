@@ -83,10 +83,21 @@ local function GetProductFromIdOnly(Id: number): (ProductData?, number?)
 	return
 end
 
+local function ProductIsGamepass(ProductId: number): boolean
+	if ProductInfo[ProductId] then
+		return true
+	elseif GamepassInfo[ProductId] then
+		return false
+	else
+		error("Product with ID " .. tostring(ProductId) .. " does not exist.")
+	end
+end
+
 return {
 	GiftIds = GiftIds,
 	ProductInfo = ProductInfo,
 	GamepassInfo = GamepassInfo,
+	ProductIsGamepass = ProductIsGamepass,
 	GetProductFromId = GetProductFromId,
 	GetProductFromName = GetProductFromName,
 	GetProductFromIdOnly = GetProductFromIdOnly,

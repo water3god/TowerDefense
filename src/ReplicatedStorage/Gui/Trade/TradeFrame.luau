@@ -4,22 +4,33 @@
 
 -- Services --
 
-local PlusFont =
-	Font.new("rbxasset://fonts/families/HighwayGothic.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
-
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 
 local Player = Players.LocalPlayer
+
+local Packages = ReplicatedStorage.Packages
+local React = require(Packages.React)
+local e = React.createElement
 
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
 local UIStroke = require(CoreGame.UIStroke)
 local Title = require(CoreGame.Title)
+local Hooks = require(CoreGame.Hooks)
+local NewGui = require(CoreGame.NewGui)
+
+local Inventory = Gui.Inventory
+local InventoryContext = require(Inventory.InventoryContext)
+local UnitFrame = require(Inventory.UnitFrame)
+local ProductFrame = require(Inventory.ProductFrame)
+local ResourceFrame = require(Inventory.ResourceFrame)
+local PromptContext = require(Inventory.PromptContext)
 
 local Components = Gui.Components
 local Plus = require(Components.Plus)
+local SelectCount = require(Components.SelectCount)
 
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
@@ -28,11 +39,9 @@ local Join = HelperFunctions.joinDicts
 local Client = ReplicatedStorage.Client
 local TradeService = require(Client.LobbyClient.TradeService)
 
-local Packages = ReplicatedStorage.Packages
-local React = require(Packages.React)
-local e = React.createElement
-
-local Trove = require(Packages.Trove)
+local Shared = ReplicatedStorage.Shared
+local Types = require(Shared.Types)
+local ProductInfo = require(Shared.ProductInfo)
 
 export type Properties = {
 	Toggle: (Visible: boolean) -> (),
@@ -66,52 +75,248 @@ local function CreateButton(Properties: any)
 		}),
 		TextLabel = e(Main.TextLabel, {
 			native = {
-				Size = UDim2.fromScale(0.8, 0.8),
+				Size = UDim2.fromScale(0.9, 0.7),
 				Text = Properties.Text,
 			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.04,
+			}),
 		}),
-	}, {
-		UIStroke = e(UIStroke.UIStrokeBasic, {
-			Stroke = 0.004,
-		}),
-	})
+	}, Properties.children)
 end
 
-local function TradeMain(Properties: Properties)
-	local TradeData: TradeService.TradeData?, SetTradeData = React.useState(nil :: TradeService.TradeData?)
-	local YourTrades, SetYourTrades = React.useState({})
-	local OtherTrades, SetOtherTrades = React.useState({})
+type Trades = { Types.VisualUnitData | Types.TradeProductData | Types.TradeResourceData }
 
-	React.useEffect(function()
+local function TradeMain(Properties: Properties)
+	local PromptData = React.useContext(PromptContext.Context)
+	local InventoryData = React.useContext(InventoryContext.Context)
+	local TradeData: TradeService.TradeData?, SetTradeData = React.useState(nil :: TradeService.TradeData?)
+
+	local YourFrames = React.useMemo(function()
+		local Frames: { [string]: React.Node } = {}
+
 		if TradeData then
+			local LayoutOrder = Hooks.LayoutOrder()
+
+			for _, Unit in ipairs(TradeData.YourUnits) do
+				Frames["Unit" .. Unit.UniqueId] = e(UnitFrame.CreateUnitFrame, {
+					UnitName = Unit.Unit,
+					Trait = Unit.Trait,
+					Level = Unit.Level,
+					native = {
+						LayoutOrder = LayoutOrder(),
+					},
+				})
+			end
+
+			for _, Product in ipairs(TradeData.YourProducts) do
+				local IsGamepass = ProductInfo.ProductIsGamepass(Product.Product)
+				Frames["Product" .. Product.Product] = e(ProductFrame, {
+					IsGamepass = IsGamepass,
+					ProductId = Product.Product,
+					Count = Product.Count,
+					native = {
+						LayoutOrder = LayoutOrder(),
+					},
+				})
+			end
+
+			for _, Resource in ipairs(TradeData.YourResources) do
+				Frames["Resource" .. Resource.Resource] = e(ResourceFrame, {
+					Name = Resource.Resource,
+					Value = Resource.Count,
+					native = {
+						LayoutOrder = LayoutOrder(),
+					},
+				})
+			end
+		end
+
+		return Frames
+	end, { TradeData })
+
+	local OtherFrames = React.useMemo(function()
+		local Frames: { [string]: React.Node } = {}
+
+		if TradeData then
+			local LayoutOrder = Hooks.LayoutOrder()
+
+			for _, Unit in ipairs(TradeData.YourUnits) do
+				Frames["Unit" .. Unit.UniqueId] = e(UnitFrame.CreateUnitFrame, {
+					UnitName = Unit.Unit,
+					Trait = Unit.Trait,
+					Level = Unit.Level,
+					native = {
+						LayoutOrder = LayoutOrder(),
+					},
+					OnClick = function()
+						TradeService.RemoveUnit(Unit.UniqueId)
+					end,
+				})
+			end
+
+			for _, Product in ipairs(TradeData.YourProducts) do
+				local IsGamepass = ProductInfo.ProductIsGamepass(Product.Product)
+				Frames["Product" .. Product.Product] = e(ProductFrame, {
+					IsGamepass = IsGamepass,
+					ProductId = Product.Product,
+					Count = Product.Count,
+					native = {
+						LayoutOrder = LayoutOrder(),
+					},
+					OnClick = function()
+						TradeService.ChangeProduct(Product.UniqueId, 0)
+					end,
+				})
+			end
+
+			for _, Resource in ipairs(TradeData.YourResources) do
+				Frames["Resource" .. Resource.Resource] = e(ResourceFrame, {
+					Name = Resource.Resource,
+					Value = Resource.Count,
+					native = {
+						LayoutOrder = LayoutOrder(),
+					},
+					OnClick = function()
+						TradeService.ChangeResource(Resource.UniqueId, 0)
+					end,
+				})
+			end
+		end
+
+		return Frames
+	end, { TradeData })
+
+	Hooks.useEventConnection(TradeService.NewTrade, function(NewTradeData)
+		SetTradeData(NewTradeData)
+		Properties.Toggle(true)
+	end, { Properties.Toggle })
+
+	Hooks.useEventConnection(TradeService.Ended, function()
+		SetTradeData(nil)
+		Properties.Toggle(false)
+	end, { Properties.Toggle })
+
+	local function UpdateTrade()
+		SetTradeData(TradeService.GetTradeData())
+	end
+
+	Hooks.useEventConnection(TradeService.UnitAdded, UpdateTrade, {})
+	Hooks.useEventConnection(TradeService.UnitRemoving, UpdateTrade, {})
+	Hooks.useEventConnection(TradeService.ProductChanged, UpdateTrade, {})
+	Hooks.useEventConnection(TradeService.ResourceChanged, UpdateTrade, {})
+	Hooks.useEventConnection(TradeService.StatusChanged, UpdateTrade, {})
+
+	local ProgressText = React.useMemo(function()
+		if not TradeData then
+			return "Finalize"
+		end
+
+		if TradeData.Status == "InTrade" then
+			return "Finalize"
+		elseif TradeData.Status == "Finalized" then
+			return "Accept"
+		end
+
+		return "Accept"
+	end, {})
+
+	local ProgressClick = React.useCallback(function()
+		if not TradeData then
+			return
+		end
+
+		TradeService.ToggleStatus(true)
+	end, {})
+
+	local CancelClick = React.useCallback(function()
+		if not TradeData then
+			return
+		end
+
+		if TradeData.Status == "InTrade" then
+			TradeService.EndTrade()
 		else
-			SetYourTrades({})
-			SetOtherTrades({})
+			TradeService.ToggleStatus(false)
 		end
 	end, { TradeData })
 
-	React.useEffect(function()
-		local TradeTrove = Trove.new()
-		TradeTrove:Connect(TradeService.NewTrade, function(TradeData)
-			SetTradeData(TradeData)
-			Properties.Toggle(true)
-		end)
+	local PromptVisible = React.useRef(false)
 
-		TradeTrove:Connect(TradeService.Ended, function()
-			SetTradeData(nil)
-			Properties.Toggle(false)
-		end)
+	local PlusClick = React.useCallback(function()
+		if not TradeData then
+			return
+		end
+		if TradeData.Status ~= "InTrade" then
+			return
+		end
+		PromptVisible.current = true
+		PromptData.SetVisible(true)
+	end, { TradeData, PromptData } :: { unknown })
 
-		TradeTrove:Connect(TradeService.UnitAdded, function(_VisualData: TradeService.VisualUnitData, _Player: Player)
-			SetTradeData(TradeService.GetTradeData())
-		end)
+	local SelectCountFrame, SetSelectCountFrame = React.useState(nil :: any)
+	local SelectedId = React.useRef(nil :: {
+		UniqueId: string,
+		Type: string,
+	}?)
 
-		TradeTrove:Connect(TradeService.UnitRemoving, function(_UniqueId: string, _Player: Player)
-			SetTradeData(TradeService.GetTradeData())
-		end)
+	Hooks.useEventConnection(PromptData.Added, function(Id: string, OpenFrame: string)
+		if not PromptVisible.current then
+			return
+		end
 
-		return TradeTrove:WrapClean()
-	end, {})
+		if OpenFrame == "Unit" then
+			TradeService.AddUnit(Id)
+		elseif OpenFrame == "Product" then
+			local ProductData = InventoryData.Products[Id]
+			local IsGamepass = ProductInfo.ProductIsGamepass(ProductData.ProductId)
+			if ProductData then
+				SelectedId.current = {
+					UniqueId = ProductData.UniqueId,
+					Type = "Product",
+				}
+				SetSelectCountFrame(e(ProductFrame, {
+					ProductId = ProductData.ProductId,
+					Count = ProductData.Count,
+					IsGamepass = IsGamepass,
+				}))
+			end
+		elseif OpenFrame == "Resource" then
+			local ResourceData = InventoryData.Resources[Id]
+			if ResourceData then
+				SelectedId.current = {
+					UniqueId = ResourceData.UniqueId,
+					Type = "Resource",
+				}
+				SetSelectCountFrame(e(ResourceFrame, {
+					Name = ResourceData.Resource,
+					Value = ResourceData.Count,
+				}))
+			end
+		end
+
+		PromptData.SetVisible(false)
+		PromptData.ClearIds()
+		PromptVisible.current = false
+	end, { PromptData })
+
+	local SelectClick = React.useCallback(function(Count: number)
+		if not SelectCountFrame then
+			return
+		end
+		if not SelectedId.current then
+			return
+		end
+		local SelectData = SelectedId.current
+		if SelectedId.current.Type == "Product" then
+			TradeService.ChangeProduct(SelectData.UniqueId, Count)
+		elseif SelectData.Type == "Resource" then
+			TradeService.ChangeResource(SelectData.UniqueId, Count)
+		end
+
+		SetSelectCountFrame(nil)
+	end, { SelectCountFrame })
 
 	return e(Main.ImageLabel, {
 		native = Join({
@@ -119,28 +324,69 @@ local function TradeMain(Properties: Properties)
 			Image = "rbxassetid://83575157481281",
 		}, Properties.native),
 	}, {
+		SelectCountGui = SelectCountFrame and e(NewGui, {
+			native = {
+				DisplayOrder = 5,
+			},
+		}, {
+			SelectCount = e(SelectCount, {
+				native = {
+					Size = UDim2.fromScale(0.7, 0.6),
+					Position = UDim2.fromScale(0.15, 0.2),
+				},
+				OnClick = SelectClick,
+				CloseClick = function()
+					SetSelectCountFrame(nil)
+				end,
+			}, SelectCountFrame),
+		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-			AspectRatio = 1.85,
+			AspectRatio = 1.9,
 		}),
 		NoButton = e(CreateButton, {
 			Image = "rbxassetid://97483072794272",
 			Text = "Cancel",
 			native = {
-				Position = UDim2.fromScale(0.62, 0.85),
+				Position = UDim2.fromScale(0.7, 1.1),
+				[React.Event.MouseButton1Click] = CancelClick,
 			},
 		}),
 		YesButton = e(CreateButton, {
 			Image = "rbxassetid://121336998793729",
-			Text = "Accept",
+			Text = ProgressText,
 			native = {
-				Position = UDim2.fromScale(0.38, 0.85),
+				Position = UDim2.fromScale(0.3, 1.1),
+				[React.Event.MouseButton1Click] = ProgressClick,
+			},
+		}),
+		YourStatus = e(Main.TextLabel, {
+			native = {
+				Position = UDim2.fromScale(0.26, 0.85),
+				Size = UDim2.fromScale(0.4, 0.08),
+				Text = string.format("Status: %s", TradeData and TradeData.YourStatus or "Unknown"),
+			},
+		}),
+		OtherStatus = e(Main.TextLabel, {
+			native = {
+				Position = UDim2.fromScale(0.74, 0.85),
+				Size = UDim2.fromScale(0.4, 0.08),
+				Text = string.format("Status: %s", TradeData and TradeData.OtherStatus or "Unknown"),
+			},
+		}),
+		Status = e(Main.TextLabel, {
+			native = {
+				Position = UDim2.fromScale(0.5, 0.35),
+				Size = UDim2.fromScale(0.4, 0.08),
+				Text = "Processing Trade...",
+				ZIndex = 2,
+				Visible = TradeData and TradeData.Status == "Accepted" or false,
 			},
 		}),
 		OtherTrades = e(CreateTradeFrame, {
 			native = {
 				Position = UDim2.fromScale(0.735, 0.5),
 			},
-		}),
+		}, OtherFrames),
 		YourTrades = e(CreateTradeFrame, {
 			native = {
 				Position = UDim2.fromScale(0.265, 0.5),
@@ -149,9 +395,10 @@ local function TradeMain(Properties: Properties)
 			AddButton = e(Plus, {
 				native = {
 					LayoutOrder = 1000,
+					[React.Event.MouseButton1Click] = PlusClick,
 				},
 			}),
-		}),
+		}, YourFrames),
 		TradeImage = e(Main.ImageLabel, {
 			native = {
 				Image = "rbxassetid://71136210616050",
@@ -166,20 +413,20 @@ local function TradeMain(Properties: Properties)
 		OtherName = e(Main.TextLabel, {
 			native = {
 				Position = UDim2.fromScale(0.74, 0.15),
-				Size = UDim2.fromScale(0.4, 0.1),
+				Size = UDim2.fromScale(0.4, 0.09),
 				Text = TradeData and TradeData.OtherPlayer.Name or "marchshark",
 			},
 		}),
 		YourName = e(Main.TextLabel, {
 			native = {
 				Position = UDim2.fromScale(0.26, 0.15),
-				Size = UDim2.fromScale(0.4, 0.1),
+				Size = UDim2.fromScale(0.4, 0.09),
 				Text = Player.Name,
 			},
 		}),
 		Title = e(Title, {
 			Title = "TRADING",
-			Position = UDim2.fromScale(0.2, -0.02),
+			Position = UDim2.fromScale(0.2, -0.05),
 			Size = UDim2.fromScale(0.6, 0.6),
 		}),
 	})

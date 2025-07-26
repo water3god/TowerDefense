@@ -867,7 +867,7 @@ SafePlayerAdded:Connect(function(Player: Player)
 		end
 	end
 
-	if HelperFunctions.Len(UnitsToReplicate) ~= 0 then
+	if next(UnitsToReplicate) then
 		SendInfo(UnitsToReplicate, { Player }, false)
 	end
 end, true)

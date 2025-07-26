@@ -90,7 +90,7 @@ local function CreateEvolution(props: Properties)
 		end
 	end, { CurrentUnit, Resources, WarningData.Warnings } :: { unknown })
 
-	Hooks.useEventConnection(PromptData.UnitAdded, function(Id: string)
+	Hooks.useEventConnection(PromptData.Added, function(Id: string, OpenFrame: string)
 		if PromptVisible.current then
 			PromptData.SetVisible(false)
 			PromptData.ClearIds()
@@ -99,7 +99,7 @@ local function CreateEvolution(props: Properties)
 			local CurrentUnitData = InventoryData.Units[Id]
 			local EvolutionData = Evolutions[CurrentUnitData.Unit]
 
-			if CurrentUnitData and EvolutionData then
+			if CurrentUnitData and EvolutionData and OpenFrame == "Unit" then
 				SetCurrentUnit({
 					Level = CurrentUnitData.Level,
 					Trait = CurrentUnitData.Trait,

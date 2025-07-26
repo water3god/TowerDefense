@@ -45,7 +45,7 @@ local Types = require(Shared.Types)
 
 export type Properties = {
 	FilteredIds: { string },
-	Add: (HoveredId: string) -> (),
+	Add: (HoveredId: string, OpenFrame: string) -> (),
 	Visible: boolean,
 	CloseClick: () -> ()?,
 	native: { [any]: any }?,
@@ -567,7 +567,7 @@ local function InventoryPrompt(Properties: Properties)
 
 				local FirstClick = function()
 					if HoveredId then
-						Properties.Add(HoveredId)
+						Properties.Add(HoveredId, OpenFrame)
 					end
 				end
 

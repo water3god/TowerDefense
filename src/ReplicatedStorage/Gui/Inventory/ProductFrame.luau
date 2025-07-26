@@ -20,7 +20,6 @@ local ProductInfo = require(Shared.ProductInfo)
 local RarityInfo = require(Shared.RarityInfo)
 
 export type ProductProps = {
-	Name: string,
 	IsGamepass: boolean,
 	ProductId: number,
 	Count: number,
@@ -34,7 +33,7 @@ local function CreateProductFrame(props: ProductProps)
 		if props.IsGamepass then
 			return ProductInfo.GamepassInfo[props.ProductId]
 		else
-			return ProductInfo.GamepassInfo[props.ProductId]
+			return ProductInfo.ProductInfo[props.ProductId]
 		end
 	end, { props.ProductId, props.IsGamepass :: any })
 
@@ -45,7 +44,7 @@ local function CreateProductFrame(props: ProductProps)
 	end, { ProductData })
 
 	return e(BaseFrame, {
-		Name = props.Name,
+		Name = ProductData.Name,
 		LeftText = "",
 		RightText = string.format("%ux", props.Count),
 		OnClick = props.OnClick,

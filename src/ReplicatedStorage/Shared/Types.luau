@@ -60,10 +60,26 @@ export type RewardData = {
 
 -- Trade Type --
 
+export type TradeProductData = {
+	UniqueId: string,
+	Product: number,
+	Count: number,
+}
+
+export type TradeResourceData = {
+	UniqueId: string,
+	Resource: string,
+	Count: number,
+}
+
 export type TradeData = {
 	OtherPlayer: Player,
-	YourUnits: {},
-	OtherUnits: {},
+	YourUnits: { VisualUnitData },
+	OtherUnits: { VisualUnitData },
+	YourProducts: { TradeProductData },
+	OtherProducts: { TradeProductData },
+	YourResources: { TradeResourceData },
+	OtherResources: { TradeResourceData },
 	Status: Status,
 	YourStatus: Status,
 	OtherStatus: Status,

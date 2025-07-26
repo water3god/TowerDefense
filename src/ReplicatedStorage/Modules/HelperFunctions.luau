@@ -624,6 +624,24 @@ function Funcs.GetThumbnailIdAsync(UserId: number)
 	end
 end
 
+local PlayerNames: { [number]: string } = {}
+
+function Funcs.GetNameFromIdAsync(UserId: number)
+	return Promise.new(function(resolve, reject)
+		if PlayerNames[UserId] then
+			resolve(PlayerNames[UserId])
+			return
+		end
+		local Name = Players:GetNameFromUserIdAsync(UserId)
+		if Name then
+			PlayerNames[UserId] = Name
+			resolve(Name)
+		else
+			reject("Player not found")
+		end
+	end)
+end
+
 function Funcs.LoadAnimation(Character: Model, Animation: Animation): AnimationTrack?
 	local Humanoid = Character:FindFirstAncestorWhichIsA("Humanoid")
 	if not Humanoid then

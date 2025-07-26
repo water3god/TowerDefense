@@ -116,6 +116,7 @@ type PlayerDataImpl = {
 	AddUnit: (self: PlayerData, UnitName: string, ExtraData: {}?) -> Template.UnitData?,
 	AddUnitFromExisting: (self: PlayerData, UnitData: Template.UnitData) -> Template.UnitData?,
 	DeleteUnit: (self: PlayerData, UniqueId: string) -> (),
+
 	GetUnitFromId: (self: PlayerData, UniqueId: string) -> Template.UnitData?,
 
 	HasProduct: (self: PlayerData, Id: number, IsGamepass: boolean) -> boolean,
@@ -127,8 +128,12 @@ type PlayerDataImpl = {
 	RemoveProduct: (self: PlayerData, ProductId: number, Count: number?) -> (),
 	RedeemProduct: (self: PlayerData, ProductId: number) -> (),
 
+	GetProductFromId: (self: PlayerData, UniqueId: string) -> Template.ProductData?,
+
 	AddResource: (self: PlayerData, Resource: string, Count: number?) -> (),
 	RemoveResource: (self: PlayerData, Resource: string, Count: number?) -> (),
+
+	GetResourceFromId: (self: PlayerData, UniqueId: string) -> Template.ResourceData?,
 
 	SetGold: (self: PlayerData, Gold: number) -> (),
 	AddGold: (self: PlayerData, Gold: number) -> (),
@@ -580,7 +585,6 @@ function PlayerData:HasRedeemedGamepass(GamepassId: number)
 end
 
 function PlayerData:RedeemProduct(ProductId: number)
-	self.ProductRedeemed:Fire(ProductId, false)
 	local Data = self.Profile.Data
 	if Data.CachedProducts[ProductId] then
 		Data.CachedProducts[ProductId] += 1
@@ -588,6 +592,7 @@ function PlayerData:RedeemProduct(ProductId: number)
 		Data.CachedProducts[ProductId] = 1
 	end
 	self:RemoveProduct(ProductId, 1)
+	self.ProductRedeemed:Fire(ProductId, false)
 	self.Profile:Save()
 end
 
@@ -661,6 +666,11 @@ function PlayerData:RemoveProduct(ProductId: number, CountInput: number?)
 	end
 end
 
+function PlayerData:GetProductFromId(UniqueId: string)
+	local Products = self.Profile.Data.Products
+	return Products[UniqueId]
+end
+
 function PlayerData:AddResource(Resource: string, CountInput: number?)
 	local Resources = self.Profile.Data.Resources
 	local FoundId = nil
@@ -708,6 +718,11 @@ function PlayerData:RemoveResource(Resource: string, CountInput: number?)
 			Resources[FoundId] = nil
 		end
 	end
+end
+
+function PlayerData:GetResourceFromId(UniqueId: string)
+	local Resources = self.Profile.Data.Resources
+	return Resources[UniqueId]
 end
 
 function PlayerData:SetGold(Gold: number)

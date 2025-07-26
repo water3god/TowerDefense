@@ -9,6 +9,50 @@ type Health = u32
 
 type Time = f64
 
+-- Roll --
+
+type RollData = struct {
+	SentTime: Time,
+	Data: struct {
+		Name: string.binary,
+		Id: string.binary,
+	}[],
+	AutoRoll: boolean,
+}
+
+event AutoRoll = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: boolean,
+}
+
+event RollEventServer = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: RollData,
+}
+
+event RollEventClient = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: u8,
+}
+
+event StopAutoRollServer = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+}
+
+event StopAutoRollClient = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+}
+
 -- Game End --
 
 type Wave = u16
@@ -56,7 +100,7 @@ event OnEnd = {
 	data: struct {
 		VotedCount: Vote,
 		Win: boolean,
-		Players: Instance(Player)[],
+		Players: Instance.Player[],
 	},
 }
 
@@ -112,13 +156,13 @@ type WaveData = struct {
 }
 
 type ResourceData = struct {
-	Units: string[],
+	Units: string.binary[],
 	Resources: struct {
-		Resource: string,
+		Resource: string.binary,
 		Count: u32,
 	}[],
 	ExistingUnits: struct {
-		Name: string,
+		Name: string.binary,
 		OldLevel: Level,
 		NewLevel: Level,
 		OldXP: XP,
@@ -186,7 +230,7 @@ event SendWarning = {
 	type: Reliable,
 	call: SingleAsync,
 	data: (
-		string,
+		string.binary,
 		Color3?,
 	),
 }
@@ -234,13 +278,13 @@ event AllEquippedSync = {
 	from: Server,
 	type: Reliable,
 	call: SingleAsync,
-	data: map { [Instance(Player)]: struct {
-		Title: string,
+	data: map { [Instance.Player]: struct {
+		Title: string.binary,
 		Level: Level,
 		EquippedUnits: struct {
-			Id: string,
+			Id: string.binary,
 			Level: Level,
-			UnitName: string,
+			UnitName: string.binary,
 		}?[],
 	} },
 }
@@ -255,7 +299,7 @@ event TeleportBack = {
 -- Quests --
 
 type QuestRemoteInfo = struct {
-	Id: string,
+	Id: string.binary,
 	CurrentValue: f64,
 	Redeemed: boolean,
 }
@@ -283,7 +327,7 @@ event RedeemQuest = {
 	from: Client,
 	type: Reliable,
 	call: SingleAsync,
-	data: string,
+	data: string.binary,
 }
 
 -- Starter --
@@ -298,7 +342,7 @@ event ChooseStarter = {
 	from: Client,
 	type: Reliable,
 	call: SingleAsync,
-	data: string,
+	data: string.binary,
 }
 
 -- Evolution --
@@ -308,7 +352,7 @@ event EvolveUnit = {
 	type: Reliable,
 	call: SingleAsync,
 	data: struct {
-		UniqueId: string,
+		UniqueId: string.binary,
 	},
 }
 
@@ -317,6 +361,6 @@ event UnitEvolved = {
 	type: Reliable,
 	call: SingleAsync,
 	data: struct {
-		UnitName: string,
+		UnitName: string.binary,
 	},
 }

@@ -14,12 +14,12 @@
         "match": "Zap/.*\\.zap$",
         "cmd": "zap Zap/${fileBasename}",
         "runIn": "terminal"
-      },
-      {
-        "match": "Zap/.*\\.zap$",
-        "cmd": "zap-language-server fmt Zap/${fileBasename}",
-        "runIn": "terminal"
       }
+      //{
+      //   "match": "Zap/.*\\.zap$",
+      //   "cmd": "zap-language-server fmt Zap/${fileBasename}",
+      //   "runIn": "terminal"
+      // }
     ]
   }
 }

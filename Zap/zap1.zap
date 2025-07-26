@@ -27,10 +27,10 @@ type TimeData = struct {
 
 type BoothData = struct {
 	OwnerId: u32,
-	MapId: string,
-	LevelId: string,
-	Difficulty: string,
-	Players: Instance(Player)[],
+	MapId: string.binary,
+	LevelId: string.binary,
+	Difficulty: string.binary,
+	Players: Instance.Player[],
 	StartTime: Time,
 	EndTime: Time,
 }
@@ -40,8 +40,8 @@ event ChooseMap = {
 	type: Reliable,
 	call: SingleAsync,
 	data: struct {
-		MapId: string,
-		LevelId: string,
+		MapId: string.binary,
+		LevelId: string.binary,
 		Difficulty: Difficulty,
 	},
 }
@@ -63,8 +63,8 @@ event TPGuiSet = {
 	type: Reliable,
 	call: SingleAsync,
 	data: struct {
-		MapName: string,
-		ImageId: string,
+		MapName: string.binary,
+		ImageId: string.binary,
 	},
 }
 
@@ -72,7 +72,7 @@ event StoryDataSync = {
 	from: Server,
 	type: Reliable,
 	call: SingleAsync,
-	data: map { [string]: map { [u8]: map { [Difficulty]: StageData } } },
+	data: map { [string.binary]: map { [u8]: map { [Difficulty]: StageData } } },
 }
 event BoothChoosing = {
 	from: Server,
@@ -120,14 +120,14 @@ type SpeedChangeData = struct {
 }
 
 type SpeedChange = struct {
-	UniqueId: string,
+	UniqueId: string.binary,
 	Speed: f32,
 	Time: f64,
 }
 
 type EnemyInput = struct {
-	UniqueId: string,
-	ModelName: string,
+	UniqueId: string.binary,
+	ModelName: string.binary,
 	Health: Health,
 	MaxHealth: Health,
 	Speed: f64,
@@ -135,10 +135,10 @@ type EnemyInput = struct {
 	Ally: boolean,
 	OriginalSpeed: f64,
 	VectorOffset: Vector3,
-	BezierId: string,
+	BezierId: string.binary,
 	TimePosition: Time,
 	Time: Time,
-	AdornmentName: string?,
+	AdornmentName: string.binary?,
 	SpeedChanges: SpeedChangeData[],
 }
 
@@ -147,7 +147,7 @@ event EnemyDestroyEvent = {
 	type: Reliable,
 	call: SingleAsync,
 	data: (
-		string[],
+		string.binary[],
 		boolean,
 	),
 }
@@ -156,7 +156,7 @@ event EnemyHealthEvent = {
 	type: Reliable,
 	call: SingleAsync,
 	data: (
-		string,
+		string.binary,
 		f64,
 		f64,
 	),
@@ -167,7 +167,7 @@ event EnemyLocationEvent = {
 	type: Reliable,
 	call: SingleAsync,
 	data: (
-		string,
+		string.binary,
 		Vector3[]?,
 	),
 }
@@ -177,7 +177,7 @@ event EnemySpawnEvent = {
 	type: Reliable,
 	call: SingleAsync,
 	data: (
-		map { [string]: EnemyInput },
+		map { [string.binary]: EnemyInput },
 		boolean,
 	),
 }
@@ -192,10 +192,10 @@ event EnemySpeedEvent = {
 -- Inventory --
 
 type VisualUnitData = struct {
-	Unit: string,
+	Unit: string.binary,
 	Level: Level,
-	Trait: string?,
-	UniqueId: string,
+	Trait: string.binary?,
+	UniqueId: string.binary,
 	XP: f64,
 	NeededXP: f64,
 }
@@ -204,20 +204,20 @@ type ProductData = struct {
 	ProductId: ProductId,
 	IsGamepass: boolean,
 	Count: u16,
-	UniqueId: string,
+	UniqueId: string.binary,
 }
 
 type ResourceData = struct {
-	Resource: string,
+	Resource: string.binary,
 	Count: u32,
-	UniqueId: string,
+	UniqueId: string.binary,
 	PartialOneLose: boolean?,
 }
 
 type Inventory = struct {
-	Units: map { [string]: VisualUnitData },
-	Products: map { [string]: ProductData },
-	Resources: map { [string]: ResourceData },
+	Units: map { [string.binary]: VisualUnitData },
+	Products: map { [string.binary]: ProductData },
+	Resources: map { [string.binary]: ResourceData },
 }
 
 type LevelData = struct {
@@ -232,7 +232,7 @@ event EquipUnit = {
 	type: Reliable,
 	call: SingleAsync,
 	data: struct {
-		UniqueId: string,
+		UniqueId: string.binary,
 		Equip: boolean,
 	},
 }
@@ -243,12 +243,12 @@ event InventorySync = {
 	call: SingleAsync,
 	data: (
 		Inventory,
-		string?[],
+		string.binary?[],
 		LevelData,
 		u16,
 		struct {
-			EquippedTitle: string,
-			Titles: string[],
+			EquippedTitle: string.binary,
+			Titles: string.binary[],
 		},
 	),
 }
@@ -259,7 +259,7 @@ event ItemChanged = {
 	call: SingleAsync,
 	data: (
 		Item,
-		string,
+		string.binary,
 		unknown,
 	),
 }
@@ -269,8 +269,8 @@ event ItemSell = {
 	type: Reliable,
 	call: SingleAsync,
 	data: (
-		string,
-		string[],
+		string.binary,
+		string.binary[],
 	),
 }
 
@@ -279,7 +279,7 @@ event UnitEquipped = {
 	type: Reliable,
 	call: SingleAsync,
 	data: struct {
-		UniqueId: string,
+		UniqueId: string.binary,
 		Index: u8,
 		Equip: boolean,
 	},
@@ -289,19 +289,19 @@ event TitleChanged = {
 	from: Server,
 	type: Reliable,
 	call: SingleAsync,
-	data: string,
+	data: string.binary,
 }
 
 event TitleAdded = {
 	from: Server,
 	type: Reliable,
 	call: SingleAsync,
-	data: string,
+	data: string.binary,
 }
 
 event EquipTitle = {
 	from: Client,
 	type: Reliable,
 	call: SingleAsync,
-	data: string,
+	data: string.binary,
 }

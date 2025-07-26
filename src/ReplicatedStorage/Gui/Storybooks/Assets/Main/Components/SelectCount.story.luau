@@ -13,9 +13,11 @@ local e = React.createElement
 
 -- Reference UI --
 local Gui = ReplicatedStorage.Gui
-local TradeFolder = Gui.Trade
-local TradeMenu = require(TradeFolder.TradeMenu)
-local TradeContext = require(TradeFolder.TradeContext)
+local Components = Gui.Components
+local SelectCount = require(Components.SelectCount)
+
+local Inventory = Gui.Inventory
+local ResourceFrame = require(Inventory.ResourceFrame)
 
 -- Controls --
 local controls = {}
@@ -24,13 +26,17 @@ local controls = {}
 local Story = {
 	react = React,
 	reactRoblox = ReactRoblox,
-	controls = controls,
-	story = function(Properties)
-		local Frame = e(TradeContext.Context.Provider, {
-			value = {
-				[1] = "CanTrade",
+	--controls = controls,
+	story = function()
+		local Frame = e(
+			SelectCount,
+			{
+				OnClick = function() end,
 			},
-		}, e(TradeMenu, {}))
+			e(ResourceFrame, {
+				Name = "Gold",
+			})
+		)
 		return Frame
 	end,
 }

@@ -40,15 +40,6 @@ local Main = require(CoreGame.Main)
 local MainButtonFrame = require(CoreGame.MainButtonFrame)
 local Hooks = require(CoreGame.Hooks)
 
-local Inventory = Gui.Inventory
-local InventoryMain = require(Inventory.InventoryMain)
-local ClickedInventory = require(Inventory.ClickedInventory)
-local TitlesFrame = require(Inventory.TitlesFrame)
-
-local Trade = Gui.Trade
-local TradeFrame = require(Trade.TradeFrame)
-local TradeMenu = require(Trade.TradeMenu)
-
 local GameFrames = Gui.GameFrames
 local Bottom = require(GameFrames.Bottom)
 local Top = require(GameFrames.Top)
@@ -58,6 +49,16 @@ local UpgradeFrame = require(GameFrames.UpgradeFrame)
 local UnitToolTip = require(GameFrames.UnitToolTip)
 local EnemyToolTip = require(GameFrames.EnemyToolTip)
 local StarterChoose = require(GameFrames.StarterChoose)
+
+local Inventory = Gui.Inventory
+local InventoryMain = require(Inventory.InventoryMain)
+local ClickedInventory = require(Inventory.ClickedInventory)
+local TitlesFrame = require(Inventory.TitlesFrame)
+
+local Trade = Gui.Trade
+local TradeFrame = require(Trade.TradeFrame)
+local TradeMenu = require(Trade.TradeMenu)
+local TradePopup = require(Trade.TradePopup)
 
 local Story = Gui.Story
 local MainStory = require(Story.MainStory)
@@ -846,26 +847,26 @@ local function Render()
 				{},
 				{
 					[Constants.INVENTORY_FRAME] = e(RenderInventory, {
-						Visible = if VisibleFrame == Constants.INVENTORY_FRAME then true else false,
+						Visible = VisibleFrame == Constants.INVENTORY_FRAME,
 						ref = InventoryRef,
 						CloseClick = function()
 							OnCloseClick(Constants.INVENTORY_FRAME)
 						end,
 					}),
 					[Constants.TRADE_FRAME] = e(RenderTradeFrame, {
-						Visible = if VisibleFrame == Constants.TRADE_FRAME then true else false,
+						Visible = VisibleFrame == Constants.TRADE_FRAME,
 						Toggle = function(Visible)
 							SetVisibleInternal(Constants.TRADE_FRAME, Visible)
 						end,
 					}),
 					[Constants.TRADE_MENU] = e(RenderTradeMenu, {
-						Visible = if VisibleFrame == Constants.TRADE_MENU then true else false,
+						Visible = VisibleFrame == Constants.TRADE_MENU,
 						CloseClick = function()
 							OnCloseClick(Constants.TRADE_MENU)
 						end,
 					}),
 					[Constants.STORY_FRAME] = e(RenderStoryFrame, {
-						Visible = if VisibleFrame == Constants.STORY_FRAME then true else false,
+						Visible = VisibleFrame == Constants.STORY_FRAME,
 						Toggle = function(Visible)
 							SetVisibleInternal(Constants.STORY_FRAME, Visible)
 						end,
@@ -874,13 +875,13 @@ local function Render()
 						end,
 					}),
 					[Constants.STORE] = e(RenderStore, {
-						Visible = if VisibleFrame == Constants.STORE then true else false,
+						Visible = VisibleFrame == Constants.STORE,
 						CloseClick = function()
 							OnCloseClick(Constants.STORE)
 						end,
 					}),
 					[Constants.ROLL_FRAME] = e(RenderRollFrame, {
-						Visible = if VisibleFrame == Constants.ROLL_FRAME then true else false,
+						Visible = VisibleFrame == Constants.ROLL_FRAME,
 						CloseClick = function()
 							OnCloseClick(Constants.ROLL_FRAME)
 						end,
@@ -897,25 +898,25 @@ local function Render()
 						end,
 					}),
 					[Constants.DAILY_FRAME] = e(RenderDailyFrame, {
-						Visible = if VisibleFrame == Constants.DAILY_FRAME then true else false,
+						Visible = VisibleFrame == Constants.DAILY_FRAME,
 						CloseClick = function()
 							OnCloseClick(Constants.DAILY_FRAME)
 						end,
 					}),
 					[Constants.TITLES_FRAME] = e(RenderTitlesFrame, {
-						Visible = if VisibleFrame == Constants.TITLES_FRAME then true else false,
+						Visible = VisibleFrame == Constants.TITLES_FRAME,
 						CloseClick = function()
 							OnCloseClick(Constants.TITLES_FRAME)
 						end,
 					}),
 					[Constants.QUESTS_FRAME] = e(RenderQuestsFrame, {
-						Visible = if VisibleFrame == Constants.QUESTS_FRAME then true else false,
+						Visible = VisibleFrame == Constants.QUESTS_FRAME,
 						CloseClick = function()
 							OnCloseClick(Constants.QUESTS_FRAME)
 						end,
 					}),
 					[Constants.STARTER_CHOOSE] = e(RenderStarterChoose, {
-						Visible = if VisibleFrame == Constants.STARTER_CHOOSE then true else false,
+						Visible = VisibleFrame == Constants.STARTER_CHOOSE,
 						CloseClick = function()
 							OnCloseClick(Constants.STARTER_CHOOSE)
 						end,
@@ -924,7 +925,7 @@ local function Render()
 						end,
 					}),
 					[Constants.EVOLUTION] = e(RenderEvolution, {
-						Visible = if VisibleFrame == Constants.EVOLUTION then true else false,
+						Visible = VisibleFrame == Constants.EVOLUTION,
 						CloseClick = function()
 							OnCloseClick(Constants.EVOLUTION)
 						end,
@@ -949,6 +950,7 @@ local function Render()
 					}),
 				}),
 				LobbyOnly = IsLobby and e("Folder", {}, {
+					TradePopup = e(TradePopup.Connected),
 					WaitingFrame = e(StoryContext.Provider, {}, {
 						WaitingFrame = e(WaitingFrame),
 					}),
