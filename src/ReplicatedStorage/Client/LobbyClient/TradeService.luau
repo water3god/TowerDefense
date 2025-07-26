@@ -80,6 +80,10 @@ function Data.AcceptTrade(PlayerId: number)
 		return
 	end
 	TradeAccept.Fire(OtherPlayer)
+	if Data.TradeRequests[OtherPlayer] then
+		Data.TradeRequests[OtherPlayer] = nil
+	end
+	Data.RequestEnded:Fire(OtherPlayer, false)
 end
 
 function Data.DeclineTrade(PlayerId: number)
@@ -88,8 +92,10 @@ function Data.DeclineTrade(PlayerId: number)
 		warn("Trade decline failed: Player not found")
 		return
 	end
-	Data.TradeRequests[OtherPlayer] = nil
-	Data.RequestEnded:Fire(OtherPlayer)
+	if Data.TradeRequests[OtherPlayer] then
+		Data.TradeRequests[OtherPlayer] = nil
+	end
+	Data.RequestEnded:Fire(OtherPlayer, false)
 end
 
 function Data.GetTradeData()
@@ -122,7 +128,7 @@ end
 
 TradeStart.SetCallback(function(PlayerData: { Player1: Player, Player2: Player })
 	Data.CurrentTradeData = {
-		OtherPlayer = if Player == PlayerData.Player1 then PlayerData.Player1 else PlayerData.Player2,
+		OtherPlayer = if Player == PlayerData.Player1 then PlayerData.Player2 else PlayerData.Player1,
 		YourUnits = {},
 		OtherUnits = {},
 		YourProducts = {},
@@ -187,6 +193,7 @@ local function UnitFindAndRemove(Table: { VisualUnitData }, UniqueId: string)
 end
 
 UnitChanged.SetCallback(function(OtherPlayer: Player, SentData: Types.VisualUnitData | string, OtherStatus: string)
+	print(OtherPlayer, SentData, OtherStatus)
 	if not OtherPlayer then
 		return
 	end
@@ -195,12 +202,16 @@ UnitChanged.SetCallback(function(OtherPlayer: Player, SentData: Types.VisualUnit
 		return
 	end
 
+	print("Processed")
+
 	if OtherStatus == "Added" then
 		local UnitData: Types.VisualUnitData = SentData :: any
 		if OtherPlayer == Player then
 			table.insert(Data.CurrentTradeData.YourUnits, UnitData)
+			print("Added")
 		elseif OtherPlayer == Data.CurrentTradeData.OtherPlayer then
 			table.insert(Data.CurrentTradeData.OtherUnits, UnitData)
+			print("Added other")
 		end
 		Data.UnitAdded:Fire(UnitData, OtherPlayer)
 	elseif OtherStatus == "Removing" then
@@ -212,6 +223,8 @@ UnitChanged.SetCallback(function(OtherPlayer: Player, SentData: Types.VisualUnit
 		end
 		Data.UnitRemoving:Fire(UniqueId, OtherPlayer)
 	end
+
+	print(Data.CurrentTradeData)
 end)
 
 ProductChanged.SetCallback(function(OtherPlayer: Player, ProductData: Types.TradeProductData)
@@ -245,20 +258,25 @@ ResourceChanged.SetCallback(function(OtherPlayer: Player, ResourceData: Types.Tr
 end)
 
 TradeRequestServer.SetCallback(function(OtherPlayer: Player, Time: number)
-	if not OtherPlayer then
-		return
+	if OtherPlayer == Player then
+		local Diff = Time - workspace:GetServerTimeNow()
+
+		task.delay(Diff + TradeRequestTime, function()
+			Data.RequestEnded:Fire(OtherPlayer, true)
+		end)
+	else
+		Data.TradeRequests[OtherPlayer] = Time
+		Data.NewTradeRequest:Fire(OtherPlayer, Time)
+
+		local Diff = Time - workspace:GetServerTimeNow()
+
+		task.delay(Diff + TradeRequestTime, function()
+			if Data.TradeRequests[OtherPlayer] then
+				Data.TradeRequests[OtherPlayer] = nil
+			end
+			Data.RequestEnded:Fire(OtherPlayer, true)
+		end)
 	end
-	Data.TradeRequests[OtherPlayer] = Time
-	Data.NewTradeRequest:Fire(OtherPlayer, Time)
-
-	local Diff = Time - workspace:GetServerTimeNow()
-
-	task.delay(Diff + TradeRequestTime, function()
-		if Data.TradeRequests[OtherPlayer] then
-			Data.TradeRequests[OtherPlayer] = nil
-			Data.RequestEnded:Fire(OtherPlayer)
-		end
-	end)
 end)
 
 Players.PlayerRemoving:Connect(function(NewPlayer: Player)
@@ -267,8 +285,8 @@ Players.PlayerRemoving:Connect(function(NewPlayer: Player)
 	end
 	if Data.TradeRequests[NewPlayer] then
 		Data.TradeRequests[NewPlayer] = nil
-		Data.RequestEnded:Fire(NewPlayer)
 	end
+	Data.RequestEnded:Fire(NewPlayer, true)
 end)
 
 return Data

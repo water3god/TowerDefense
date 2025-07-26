@@ -52,9 +52,13 @@ local function Popup(props: PopupProps)
 
 	local Username, SetUsername = React.useState("")
 
+	local Accept = React.useCallback(function()
+		TradeService.AcceptTrade(props.UserId)
+	end, { props.UserId })
+
 	local Reject = React.useCallback(function()
 		TradeService.DeclineTrade(props.UserId)
-	end, {})
+	end, { props.UserId })
 
 	React.useEffect(function()
 		HelperFunctions.GetNameFromIdAsync(props.UserId)
@@ -103,9 +107,7 @@ local function Popup(props: PopupProps)
 					Size = UDim2.fromScale(0.3, 0.2),
 					Image = "rbxassetid://80739823452825",
 					ImageColor3 = Color3.fromRGB(0, 255, 0),
-					[React.Event.MouseButton1Click] = function()
-						TradeService.AcceptTrade(props.UserId)
-					end,
+					[React.Event.MouseButton1Click] = Accept,
 				},
 			}, {
 				Label = e(Main.TextLabel, {
@@ -200,7 +202,7 @@ local function CreateTradePopup(props: Properties)
 		BarSize = 0.002,
 		native = Join({
 			Position = UDim2.fromScale(0.8, 0.7),
-			Size = UDim2.fromScale(0.3, 0.5),
+			Size = UDim2.fromScale(0.5, 0.6),
 			AutomaticCanvasSize = Enum.AutomaticSize.Y,
 		}, props.native),
 	}, {

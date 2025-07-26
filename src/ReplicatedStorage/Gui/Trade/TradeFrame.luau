@@ -142,7 +142,7 @@ local function TradeMain(Properties: Properties)
 		if TradeData then
 			local LayoutOrder = Hooks.LayoutOrder()
 
-			for _, Unit in ipairs(TradeData.YourUnits) do
+			for _, Unit in ipairs(TradeData.OtherUnits) do
 				Frames["Unit" .. Unit.UniqueId] = e(UnitFrame.CreateUnitFrame, {
 					UnitName = Unit.Unit,
 					Trait = Unit.Trait,
@@ -156,7 +156,7 @@ local function TradeMain(Properties: Properties)
 				})
 			end
 
-			for _, Product in ipairs(TradeData.YourProducts) do
+			for _, Product in ipairs(TradeData.OtherProducts) do
 				local IsGamepass = ProductInfo.ProductIsGamepass(Product.Product)
 				Frames["Product" .. Product.Product] = e(ProductFrame, {
 					IsGamepass = IsGamepass,
@@ -171,7 +171,7 @@ local function TradeMain(Properties: Properties)
 				})
 			end
 
-			for _, Resource in ipairs(TradeData.YourResources) do
+			for _, Resource in ipairs(TradeData.OtherResources) do
 				Frames["Resource" .. Resource.Resource] = e(ResourceFrame, {
 					Name = Resource.Resource,
 					Value = Resource.Count,
@@ -199,7 +199,10 @@ local function TradeMain(Properties: Properties)
 	end, { Properties.Toggle })
 
 	local function UpdateTrade()
-		SetTradeData(TradeService.GetTradeData())
+		local Data = TradeService.GetTradeData()
+		if Data then
+			SetTradeData(table.clone(Data))
+		end
 	end
 
 	Hooks.useEventConnection(TradeService.UnitAdded, UpdateTrade, {})
@@ -394,7 +397,7 @@ local function TradeMain(Properties: Properties)
 		}, {
 			AddButton = e(Plus, {
 				native = {
-					LayoutOrder = 1000,
+					LayoutOrder = 0,
 					[React.Event.MouseButton1Click] = PlusClick,
 				},
 			}),

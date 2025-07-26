@@ -96,6 +96,7 @@ TradeRequestClient.SetCallback(function(Player: Player, OtherPlayer: Player)
 	local Time = workspace:GetServerTimeNow()
 
 	TradeRequestServer.Fire(OtherPlayer, Player, Time)
+	TradeRequestServer.Fire(Player, Player, Time)
 	Data.LastTradedPlayers[Player] = Time
 
 	local thread: thread = nil
@@ -119,7 +120,12 @@ TradeAccept.SetCallback(function(Player: Player, OtherPlayer: Player)
 		return
 	end
 
-	local Data = PlayerTradeData[OtherPlayer]
+	local Data = PlayerTradeData[Player]
+	local OtherData = PlayerTradeData[OtherPlayer]
+
+	if not Data or not OtherData then
+		return
+	end
 
 	if Data.Trade or not Data.CanTrade or not Data.TradeEnabled then
 		return
@@ -141,8 +147,8 @@ TradeAccept.SetCallback(function(Player: Player, OtherPlayer: Player)
 	local NewTrade = Trade.new(Player, OtherPlayer)
 
 	if NewTrade then
-		print("Trade Started")
 		Data.Trade = NewTrade
+		OtherData.Trade = NewTrade
 
 		local SentData = {
 			Player1 = NewTrade.Player1,
@@ -155,8 +161,8 @@ TradeAccept.SetCallback(function(Player: Player, OtherPlayer: Player)
 		NewTrade.Destroying:Once(function()
 			TradeEnd.Fire(NewTrade.Player1)
 			TradeEnd.Fire(NewTrade.Player2)
-			print("Trade Completed")
 			Data.Trade = nil
+			OtherData.Trade = nil
 
 			UpdateStatus({ NewTrade.Player1, NewTrade.Player2 })
 		end)
@@ -359,7 +365,7 @@ local function OnAdded(Data: PlayerData.PlayerData)
 		},
 	}
 
-	TradeSync.FireAll(OtherSentData)
+	TradeSync.FireExcept(Data.Player, OtherSentData)
 end
 
 for _, Data in pairs(PlayerData.GetDatas()) do

@@ -34,6 +34,10 @@ export type props = {
 local function TradeContextProvider(props: props)
 	local TradeStatuses, SetTradeStatuses = React.useState({} :: { [Player]: string })
 
+	React.useEffect(function()
+		SetTradeStatuses(TradeService.TradeStatuses :: any)
+	end, {})
+
 	Hooks.useEventConnection(TradeService.SyncedStatus, function(OtherPlayer: Player, Status: string)
 		if Player ~= OtherPlayer then
 			SetTradeStatuses(Join(TradeStatuses, {

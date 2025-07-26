@@ -20,8 +20,6 @@ local Client = ReplicatedStorage.Client
 local GlobalClient = Client.GlobalClient
 local UnitClient = require(GlobalClient.UnitClient)
 
-local Player = Players.LocalPlayer
-
 local Positions = {
 	Vector3.new(-1, 0, 0),
 	Vector3.new(-0.75, 0, 0.75),
@@ -174,7 +172,7 @@ function Follower.new(Data: Input): Follower
 	local Offset = Positions[Data.Index] * 6
 
 	task.spawn(function()
-		PlayerRoot = Player.Character:WaitForChild("HumanoidRootPart")
+		PlayerRoot = self.Character:WaitForChild("HumanoidRootPart")
 	end)
 
 	local function OnStep()
