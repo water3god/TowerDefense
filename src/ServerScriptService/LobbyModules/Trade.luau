@@ -66,11 +66,14 @@ type TradeData = {
 
 	StatusChanged: Signal.Signal<>,
 
+	Completed: Signal.Signal<>,
 	Destroying: Signal.Signal<>,
 }
 
 type TradeImpl = {
 	new: (Player1: Player, Player2: Player) -> Trade?,
+
+	GetOtherPlayer: (self: Trade, Player: Player) -> Player?,
 
 	AddUnit: (self: Trade, Player: Player, UniqueId: string) -> (),
 	RemoveUnit: (self: Trade, Player: Player, UniqueId: string) -> (),
@@ -144,6 +147,7 @@ function Trade.new(Player1: Player, Player2: Player)
 	self.ResourceAdded = self._Trove:Construct(Signal)
 	self.ResourceRemoving = self._Trove:Construct(Signal)
 
+	self.Completed = self._Trove:Construct(Signal)
 	self.Destroying = self._Trove:Construct(Signal)
 
 	self.Player1 = Player1
@@ -289,6 +293,16 @@ function Trade.new(Player1: Player, Player2: Player)
 	Trade.Added:Fire(self)
 
 	return self
+end
+
+function Trade:GetOtherPlayer(Player: Player)
+	if Player == self.Player1 then
+		return self.Player2
+	elseif Player == self.Player2 then
+		return self.Player1
+	end
+
+	return nil
 end
 
 function Trade:AddUnit(Player: Player, UniqueId: string)
@@ -625,6 +639,8 @@ function Trade:_Complete()
 
 	Data1.Profile:Save()
 	Data2.Profile:Save()
+
+	self.Completed:Fire()
 
 	self:Delete()
 end

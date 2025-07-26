@@ -45,20 +45,41 @@ local ProductInfo = require(Shared.ProductInfo)
 
 export type Properties = {
 	Toggle: (Visible: boolean) -> (),
-	native: { [any]: any },
+	native: { [any]: any }?,
+	children: { [any]: any }?,
 }
 
 local function CreateTradeFrame(Properties: any)
-	return e(Main.ImageLabel, {
+	local BackgroundColor = React.useMemo(function()
+		return Properties.Confirmed and Color3.fromRGB(48, 158, 31) or Color3.fromRGB(56, 15, 88)
+	end, { Properties.Confirmed })
+
+	local StrokeColor = React.useMemo(function()
+		return Properties.Confirmed and Color3.fromRGB(89, 225, 79) or Color3.fromRGB(116, 26, 155)
+	end, { Properties.Confirmed })
+
+	return e(Main.Frame, {
 		native = Join({
 			Size = UDim2.fromScale(0.45, 0.5),
-			Image = "rbxassetid://120110890373605",
+			BackgroundTransparency = 0,
+			BackgroundColor3 = BackgroundColor,
 		}, Properties.native),
 	}, {
+		UIStroke = e(UIStroke.UIStrokeAdvanced, {
+			Stroke = 0.005,
+			Color = StrokeColor,
+			native = {
+				LineJoinMode = Enum.LineJoinMode.Round,
+			},
+		}),
+		UICorner = e("UICorner", {
+			CornerRadius = UDim.new(0.1, 0),
+		}),
 		UIGridLayout = e("UIGridLayout", {
 			CellPadding = UDim2.fromScale(0, 0),
 			CellSize = UDim2.fromScale(0.33, 0.5),
 			FillDirection = Enum.FillDirection.Horizontal,
+			SortOrder = Enum.SortOrder.LayoutOrder,
 		}),
 	}, Properties.children)
 end
@@ -329,6 +350,39 @@ local function TradeMain(Properties: Properties)
 		SetSelectCountFrame(nil)
 	end, { SelectCountFrame })
 
+	local OldYourStatus = React.useRef("In Trade")
+
+	local YourStatus = React.useMemo(function()
+		if not TradeData then
+			return OldYourStatus.current
+		end
+		local new = ConvertStatus(TradeData.YourStatus)
+		OldYourStatus.current = new
+		return new
+	end, { TradeData })
+
+	local OldOtherStatus = React.useRef("In Trade")
+
+	local OtherStatus = React.useMemo(function()
+		if not TradeData then
+			return OldOtherStatus.current
+		end
+		local new = ConvertStatus(TradeData.OtherStatus)
+		OldOtherStatus.current = new
+		return new
+	end, { TradeData })
+
+	local OldOtherName = React.useRef("")
+
+	local OtherName = React.useMemo(function()
+		if not TradeData then
+			return OldOtherName.current
+		end
+		local new = TradeData.OtherPlayer.Name
+		OldOtherName.current = new
+		return new
+	end, { TradeData })
+
 	return e(Main.ImageLabel, {
 		native = Join({
 			Size = UDim2.fromScale(0.6, 0.6),
@@ -374,14 +428,14 @@ local function TradeMain(Properties: Properties)
 			native = {
 				Position = UDim2.fromScale(0.26, 0.85),
 				Size = UDim2.fromScale(0.4, 0.08),
-				Text = string.format("Status: %s", TradeData and ConvertStatus(TradeData.YourStatus) or "Unknown"),
+				Text = string.format("Status: %s", YourStatus),
 			},
 		}),
 		OtherStatus = e(Main.TextLabel, {
 			native = {
 				Position = UDim2.fromScale(0.74, 0.85),
 				Size = UDim2.fromScale(0.4, 0.08),
-				Text = string.format("Status: %s", TradeData and ConvertStatus(TradeData.OtherStatus) or "Unknown"),
+				Text = string.format("Status: %s", OtherStatus),
 			},
 		}),
 		Status = e(Main.TextLabel, {
@@ -392,20 +446,26 @@ local function TradeMain(Properties: Properties)
 				ZIndex = 2,
 				Visible = TradeData and TradeData.Status == "Accepted" or false,
 			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.015,
+			}),
 		}),
 		OtherTrades = e(CreateTradeFrame, {
+			Confirmed = TradeData and TradeData.OtherStatus ~= "InTrade",
 			native = {
 				Position = UDim2.fromScale(0.735, 0.5),
 			},
 		}, OtherFrames),
 		YourTrades = e(CreateTradeFrame, {
+			Confirmed = TradeData and TradeData.YourStatus ~= "InTrade",
 			native = {
 				Position = UDim2.fromScale(0.265, 0.5),
 			},
 		}, {
 			AddButton = e(Plus, {
 				native = {
-					LayoutOrder = 0,
+					LayoutOrder = 1000,
 					[React.Event.MouseButton1Click] = PlusClick,
 				},
 			}),
@@ -425,7 +485,7 @@ local function TradeMain(Properties: Properties)
 			native = {
 				Position = UDim2.fromScale(0.74, 0.15),
 				Size = UDim2.fromScale(0.4, 0.09),
-				Text = TradeData and TradeData.OtherPlayer.Name or "marchshark",
+				Text = OtherName,
 			},
 		}),
 		YourName = e(Main.TextLabel, {
@@ -440,7 +500,7 @@ local function TradeMain(Properties: Properties)
 			Position = UDim2.fromScale(0.2, -0.05),
 			Size = UDim2.fromScale(0.6, 0.6),
 		}),
-	})
+	}, Properties.children)
 end
 
 return TradeMain

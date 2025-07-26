@@ -32,6 +32,8 @@ local UnitChanged = Network.UnitChanged
 local ProductChanged = Network.ProductChanged
 local ResourceChanged = Network.ResourceChanged
 
+local SendWarning = Network.SendWarning
+
 local Packages = ReplicatedStorage.Packages
 local Trove = require(Packages.Trove)
 
@@ -232,7 +234,6 @@ TradeAccept.SetCallback(function(Player: Player, OtherPlayer: Player)
 		NewTrade.ResourceRemoving:Connect(HandleResource)
 
 		NewTrade.StatusChanged:Connect(function()
-			print("Status Changed", NewTrade.Status)
 			local SendData = {
 				Status = NewTrade.Status,
 			}
@@ -242,7 +243,6 @@ TradeAccept.SetCallback(function(Player: Player, OtherPlayer: Player)
 		end)
 
 		NewTrade.Player1StatusChanged:Connect(function()
-			print("Player 1 Status Changed", NewTrade.Player1Status)
 			local SendData = {
 				Player = NewTrade.Player1,
 				Status = NewTrade.Player1Status,
@@ -253,7 +253,6 @@ TradeAccept.SetCallback(function(Player: Player, OtherPlayer: Player)
 		end)
 
 		NewTrade.Player2StatusChanged:Connect(function()
-			print("Player 2 Status Changed", NewTrade.Player2Status)
 			local SendData = {
 				Player = NewTrade.Player2,
 				Status = NewTrade.Player2Status,
@@ -261,6 +260,11 @@ TradeAccept.SetCallback(function(Player: Player, OtherPlayer: Player)
 
 			StatusChanged.Fire(NewTrade.Player1, SendData)
 			StatusChanged.Fire(NewTrade.Player2, SendData)
+		end)
+
+		NewTrade.Completed:Connect(function()
+			SendWarning.Fire(Player, "Trade completed successfully", Color3.fromRGB(0, 255, 0))
+			SendWarning.Fire(OtherPlayer, "Trade completed successfully", Color3.fromRGB(0, 255, 0))
 		end)
 	end
 end)
@@ -299,10 +303,8 @@ end)
 
 ToggleStatus.SetCallback(function(Player: Player, Progress: boolean)
 	local Data = PlayerTradeData[Player]
-	print(Player, Progress)
 
 	if Data and Data.Trade then
-		print("Ran TogglePlayerStatus")
 		Data.Trade:TogglePlayerStatus(Player, Progress)
 	end
 end)
@@ -311,6 +313,11 @@ EndTrade.SetCallback(function(Player: Player)
 	local Data = PlayerTradeData[Player]
 
 	if Data and Data.Trade then
+		local OtherPlayer = Data.Trade:GetOtherPlayer(Player)
+		SendWarning.Fire(Player, string.format("Trade Canceled by %s", Player.Name), Color3.fromRGB(255, 0, 0))
+		if OtherPlayer then
+			SendWarning.Fire(OtherPlayer, string.format("Trade Canceled by %s", Player.Name), Color3.fromRGB(255, 0, 0))
+		end
 		Data.Trade:Delete()
 	end
 end)
