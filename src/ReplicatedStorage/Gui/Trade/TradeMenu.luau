@@ -34,7 +34,7 @@ export type Properties = {
 }
 
 export type PlayerFrameProps = {
-	UserId: number,
+	Player: Player,
 	Status: TradeService.TradeStatusMessage,
 }
 
@@ -52,21 +52,14 @@ end
 
 local function CreatePlayerFrame(Properties: PlayerFrameProps)
 	local ThumbnailImage, SetThumbnail = React.useState(nil :: string?)
-	local Name, SetName = React.useState("")
 	local SentId, SetSentId = React.useState(false)
 
 	React.useEffect(function()
-		local ThumbnailId = HelperFunctions.GetThumbnailIdAsync(Properties.UserId)
+		local ThumbnailId = HelperFunctions.GetThumbnailIdAsync(Properties.Player.UserId)
 		if ThumbnailId then
 			SetThumbnail(ThumbnailId)
 		end
-	end, { Properties.UserId })
-
-	React.useEffect(function()
-		HelperFunctions.GetNameFromIdAsync(Properties.UserId):andThen(function(NameInput: string)
-			SetName(NameInput)
-		end)
-	end, { Properties.UserId })
+	end, { Properties.Player })
 
 	local ButtonColor = React.useMemo(function()
 		if SentId then
@@ -96,14 +89,14 @@ local function CreatePlayerFrame(Properties: PlayerFrameProps)
 		end
 		SetSentId(true)
 
-		TradeService.SendTradeRequest(Properties.UserId)
-	end, { Properties.UserId, SentId, Properties.Status } :: { unknown })
+		TradeService.SendTradeRequest(Properties.Player.UserId)
+	end, { Properties.Player, SentId, Properties.Status } :: { unknown })
 
 	Hooks.useEventConnection(TradeService.RequestEnded, function(Player: Player)
-		if Player.UserId == Properties.UserId then
+		if Player.UserId == Properties.Player.UserId then
 			SetSentId(false)
 		end
-	end, { Properties.UserId })
+	end, { Properties.Player })
 
 	return e(Main.Frame, {
 		native = {
@@ -168,7 +161,7 @@ local function CreatePlayerFrame(Properties: PlayerFrameProps)
 				native = {
 					Position = UDim2.fromScale(0.41, 0.5),
 					Size = UDim2.fromScale(0.45, 0.4),
-					Text = Name,
+					Text = Properties.Player.Name,
 					TextXAlignment = Enum.TextXAlignment.Left,
 				},
 			}),
@@ -181,9 +174,9 @@ local function CreateTradeMenu(Properties: Properties)
 
 	local TradeFrames = React.useMemo(function()
 		local Frames: { [string]: React.Node } = {}
-		for UserId, Status in pairs(TradeStatuses) do
-			Frames["PlayerFrame" .. UserId] = e(CreatePlayerFrame, {
-				UserId = UserId,
+		for Player, Status in pairs(TradeStatuses) do
+			Frames["PlayerFrame" .. Player.UserId] = e(CreatePlayerFrame, {
+				Player = Player,
 				Status = Status :: any,
 			})
 		end

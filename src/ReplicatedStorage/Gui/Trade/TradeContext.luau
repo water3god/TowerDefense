@@ -25,19 +25,19 @@ local Hooks = require(CoreGame.Hooks)
 
 local TradeService = require(ReplicatedStorage.Client.LobbyClient.TradeService)
 
-local TradeContext = React.createContext({} :: { [number]: string })
+local TradeContext = React.createContext({} :: { [Player]: string })
 
 export type props = {
 	children: { [any]: any }?,
 }
 
 local function TradeContextProvider(props: props)
-	local TradeStatuses, SetTradeStatuses = React.useState({} :: { [number]: string })
+	local TradeStatuses, SetTradeStatuses = React.useState({} :: { [Player]: string })
 
 	Hooks.useEventConnection(TradeService.SyncedStatus, function(OtherPlayer: Player, Status: string)
 		if Player ~= OtherPlayer then
 			SetTradeStatuses(Join(TradeStatuses, {
-				[OtherPlayer.UserId] = Status,
+				[OtherPlayer] = Status,
 			}))
 		end
 	end, { TradeStatuses })
@@ -45,7 +45,7 @@ local function TradeContextProvider(props: props)
 	Hooks.useEventConnection(Players.PlayerRemoving, function(OtherPlayer)
 		if Player ~= OtherPlayer then
 			local NewTable = table.clone(TradeStatuses)
-			NewTable[OtherPlayer.UserId] = nil
+			NewTable[OtherPlayer] = nil
 			SetTradeStatuses(NewTable)
 		end
 	end, { TradeStatuses })

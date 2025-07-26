@@ -37,14 +37,19 @@ local function InitalizePlayer(Player: Player)
 		local EquippedData = AllEquipped.Equipped[Player]
 		if EquippedData then
 			for Index, UnitData in pairs(EquippedData.EquippedUnits) do
-				FollowerCache[Player][Index] =
-					{ UniqueId = UnitData.Id, Follower = CreateFollower(Character, UnitData, Index) }
+				if UnitData then
+					FollowerCache[Player][Index] =
+						{ UniqueId = UnitData.Id, Follower = CreateFollower(Character, UnitData, Index) }
+				end
 			end
 		end
 
 		local Connection = AllEquipped.Changed:Connect(function(OtherPlayer, Data)
 			if OtherPlayer == Player then
 				for Index, UnitData in pairs(Data.EquippedUnits) do
+					if not UnitData then
+						continue
+					end
 					local CachedTable = FollowerCache[Player][Index]
 					if not CachedTable or CachedTable.UniqueId ~= UnitData.Id then
 						if FollowerCache[Player][Index] then

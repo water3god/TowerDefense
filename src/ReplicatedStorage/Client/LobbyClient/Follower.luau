@@ -82,7 +82,7 @@ function Follower.new(Data: Input): Follower
 
 	self.Destroying = self.Trove:Construct(Signal)
 
-	self.Character = Player.Character
+	self.Character = Data.Character
 	local FollowerData = UnitClient.InitCharacter(Data.UnitName)
 	self.Trove:Add(FollowerData.Trove)
 	self.Follower = FollowerData.UnitModel
