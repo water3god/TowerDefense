@@ -159,7 +159,7 @@ function Trade.new(Player1: Player, Player2: Player)
 	self.Player2Resources = {}
 
 	self.Player1Status = "InTrade"
-	self.Player1Status = "InTrade"
+	self.Player2Status = "InTrade"
 
 	self.Status = "InTrade"
 
@@ -486,6 +486,8 @@ function Trade:TogglePlayerStatus(Player: Player, Progress: boolean)
 	local Player1Old: Types.Status = self.Player1Status
 	local Player2Old: Types.Status = self.Player2Status
 
+	print(SelfStatus, self.Status, Progress)
+
 	if self.Status == "InTrade" then
 		if SelfStatus == "InTrade" then
 			if Progress then
@@ -512,6 +514,8 @@ function Trade:TogglePlayerStatus(Player: Player, Progress: boolean)
 		end
 	end
 
+	print(self[Value])
+
 	self:_UpdateStatus(Player1Old, Player2Old, self.Status)
 end
 
@@ -525,7 +529,7 @@ function Trade:_UpdateStatus(Player1Old: Types.Status, Player2Old: Types.Status,
 	elseif self.Status == "Finalized" then
 		if self.Player1Status == "Accepted" and self.Player2Status == "Accepted" then
 			self.Status = "Accepted"
-		else
+		elseif self.Player1Status == "InTrade" or self.Player2Status == "InTrade" then
 			self.Status = "InTrade"
 		end
 	elseif self.Status == "Accepted" then

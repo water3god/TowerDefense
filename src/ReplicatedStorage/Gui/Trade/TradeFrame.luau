@@ -86,6 +86,14 @@ local function CreateButton(Properties: any)
 	}, Properties.children)
 end
 
+local function ConvertStatus(Status: Types.Status): string
+	if Status == "InTrade" then
+		return "In Trade"
+	end
+
+	return Status
+end
+
 type Trades = { Types.VisualUnitData | Types.TradeProductData | Types.TradeResourceData }
 
 local function TradeMain(Properties: Properties)
@@ -107,6 +115,9 @@ local function TradeMain(Properties: Properties)
 					native = {
 						LayoutOrder = LayoutOrder(),
 					},
+					OnClick = function()
+						TradeService.RemoveUnit(Unit.UniqueId)
+					end,
 				})
 			end
 
@@ -119,6 +130,9 @@ local function TradeMain(Properties: Properties)
 					native = {
 						LayoutOrder = LayoutOrder(),
 					},
+					OnClick = function()
+						TradeService.ChangeProduct(Product.UniqueId, 0)
+					end,
 				})
 			end
 
@@ -129,6 +143,9 @@ local function TradeMain(Properties: Properties)
 					native = {
 						LayoutOrder = LayoutOrder(),
 					},
+					OnClick = function()
+						TradeService.ChangeResource(Resource.UniqueId, 0)
+					end,
 				})
 			end
 		end
@@ -150,9 +167,6 @@ local function TradeMain(Properties: Properties)
 					native = {
 						LayoutOrder = LayoutOrder(),
 					},
-					OnClick = function()
-						TradeService.RemoveUnit(Unit.UniqueId)
-					end,
 				})
 			end
 
@@ -165,9 +179,6 @@ local function TradeMain(Properties: Properties)
 					native = {
 						LayoutOrder = LayoutOrder(),
 					},
-					OnClick = function()
-						TradeService.ChangeProduct(Product.UniqueId, 0)
-					end,
 				})
 			end
 
@@ -178,9 +189,6 @@ local function TradeMain(Properties: Properties)
 					native = {
 						LayoutOrder = LayoutOrder(),
 					},
-					OnClick = function()
-						TradeService.ChangeResource(Resource.UniqueId, 0)
-					end,
 				})
 			end
 		end
@@ -223,7 +231,7 @@ local function TradeMain(Properties: Properties)
 		end
 
 		return "Accept"
-	end, {})
+	end, { TradeData })
 
 	local ProgressClick = React.useCallback(function()
 		if not TradeData then
@@ -231,14 +239,14 @@ local function TradeMain(Properties: Properties)
 		end
 
 		TradeService.ToggleStatus(true)
-	end, {})
+	end, { TradeData })
 
 	local CancelClick = React.useCallback(function()
 		if not TradeData then
 			return
 		end
 
-		if TradeData.Status == "InTrade" then
+		if TradeData.YourStatus == "InTrade" then
 			TradeService.EndTrade()
 		else
 			TradeService.ToggleStatus(false)
@@ -366,14 +374,14 @@ local function TradeMain(Properties: Properties)
 			native = {
 				Position = UDim2.fromScale(0.26, 0.85),
 				Size = UDim2.fromScale(0.4, 0.08),
-				Text = string.format("Status: %s", TradeData and TradeData.YourStatus or "Unknown"),
+				Text = string.format("Status: %s", TradeData and ConvertStatus(TradeData.YourStatus) or "Unknown"),
 			},
 		}),
 		OtherStatus = e(Main.TextLabel, {
 			native = {
 				Position = UDim2.fromScale(0.74, 0.85),
 				Size = UDim2.fromScale(0.4, 0.08),
-				Text = string.format("Status: %s", TradeData and TradeData.OtherStatus or "Unknown"),
+				Text = string.format("Status: %s", TradeData and ConvertStatus(TradeData.OtherStatus) or "Unknown"),
 			},
 		}),
 		Status = e(Main.TextLabel, {

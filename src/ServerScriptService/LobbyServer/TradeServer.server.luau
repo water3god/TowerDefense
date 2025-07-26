@@ -232,6 +232,7 @@ TradeAccept.SetCallback(function(Player: Player, OtherPlayer: Player)
 		NewTrade.ResourceRemoving:Connect(HandleResource)
 
 		NewTrade.StatusChanged:Connect(function()
+			print("Status Changed", NewTrade.Status)
 			local SendData = {
 				Status = NewTrade.Status,
 			}
@@ -241,6 +242,7 @@ TradeAccept.SetCallback(function(Player: Player, OtherPlayer: Player)
 		end)
 
 		NewTrade.Player1StatusChanged:Connect(function()
+			print("Player 1 Status Changed", NewTrade.Player1Status)
 			local SendData = {
 				Player = NewTrade.Player1,
 				Status = NewTrade.Player1Status,
@@ -251,6 +253,7 @@ TradeAccept.SetCallback(function(Player: Player, OtherPlayer: Player)
 		end)
 
 		NewTrade.Player2StatusChanged:Connect(function()
+			print("Player 2 Status Changed", NewTrade.Player2Status)
 			local SendData = {
 				Player = NewTrade.Player2,
 				Status = NewTrade.Player2Status,
@@ -296,8 +299,10 @@ end)
 
 ToggleStatus.SetCallback(function(Player: Player, Progress: boolean)
 	local Data = PlayerTradeData[Player]
+	print(Player, Progress)
 
 	if Data and Data.Trade then
+		print("Ran TogglePlayerStatus")
 		Data.Trade:TogglePlayerStatus(Player, Progress)
 	end
 end)

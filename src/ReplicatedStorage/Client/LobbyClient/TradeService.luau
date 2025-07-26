@@ -167,6 +167,7 @@ TradeSync.SetCallback(function(SentData: { [number]: { Status: Types.TradeStatus
 end)
 
 StatusChanged.SetCallback(function(Input: { Player: Player?, Status: Types.Status })
+	print(Input)
 	if not Data.CurrentTradeData then
 		return
 	end
