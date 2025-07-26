@@ -140,9 +140,6 @@ if not RunService:IsRunning() then
 		UseProduct = table.freeze({
 			Fire = noop
 		}),
-		UnitEvolved = table.freeze({
-			SetCallback = noop
-		}),
 		TimeChanged = table.freeze({
 			SetCallback = noop
 		}),
@@ -164,17 +161,8 @@ if not RunService:IsRunning() then
 		RollEventClient = table.freeze({
 			Fire = noop
 		}),
-		RedeemQuest = table.freeze({
-			Fire = noop
-		}),
 		RedeemDailyReward = table.freeze({
 			Fire = noop
-		}),
-		QuestSync = table.freeze({
-			SetCallback = noop
-		}),
-		QuestChanged = table.freeze({
-			SetCallback = noop
 		}),
 		ProductPurchased = table.freeze({
 			SetCallback = noop
@@ -194,12 +182,6 @@ if not RunService:IsRunning() then
 		LevelChanged = table.freeze({
 			SetCallback = noop
 		}),
-		FirstJoin = table.freeze({
-			SetCallback = noop
-		}),
-		EvolveUnit = table.freeze({
-			Fire = noop
-		}),
 		EndVoteAction = table.freeze({
 			Fire = noop
 		}),
@@ -211,9 +193,6 @@ if not RunService:IsRunning() then
 		}),
 		CurrencyChanged = table.freeze({
 			SetCallback = noop
-		}),
-		ChooseStarter = table.freeze({
-			Fire = noop
 		}),
 		AutoRoll = table.freeze({
 			Fire = noop
@@ -231,29 +210,8 @@ local remotes = ReplicatedStorage:WaitForChild("Zap3")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
-export type Health = (number)
-export type QuestRemoteInfo = ({
-	["Id"]: (string),
-	["CurrentValue"]: (number),
-	["Redeemed"]: (boolean),
-})
-export type WaveData = ({
-	["Wave"]: (number),
-	["BaseHealth"]: (number),
-	["MaxHealth"]: (number),
-	["Time"]: (number),
-	["StartTime"]: (number),
-})
-export type XP = (number)
-export type Vote = (number)
-export type RollData = ({
-	["SentTime"]: (number),
-	["Data"]: ({ ({
-		["Name"]: (string),
-		["Id"]: (string),
-	}) }),
-	["AutoRoll"]: (boolean),
-})
+export type Time = (number)
+export type Level = (number)
 export type ResourceData = ({
 	["Units"]: ({ (string) }),
 	["Resources"]: ({ ({
@@ -269,21 +227,37 @@ export type ResourceData = ({
 	}) }),
 })
 export type ProductId = (number)
-export type Level = (number)
 export type VoteData = ({
 	["Time"]: (number),
 	["StartTime"]: (number),
 	["CurrentCount"]: (number),
 	["NeededCount"]: (number),
 })
-export type Time = (number)
 export type Wave = (number)
+export type WaveData = ({
+	["Wave"]: (number),
+	["BaseHealth"]: (number),
+	["MaxHealth"]: (number),
+	["Time"]: (number),
+	["StartTime"]: (number),
+})
+export type XP = (number)
 export type MainXPData = ({
 	["OldXP"]: (number),
 	["NewXP"]: (number),
 	["OldLevel"]: (number),
 	["NewLevel"]: (number),
 })
+export type Vote = (number)
+export type RollData = ({
+	["SentTime"]: (number),
+	["Data"]: ({ ({
+		["Name"]: (string),
+		["Id"]: (string),
+	}) }),
+	["AutoRoll"]: (boolean),
+})
+export type Health = (number)
 
 local function SendEvents()
 	if outgoing_used ~= 0 then
@@ -301,27 +275,23 @@ end
 
 RunService.Heartbeat:Connect(SendEvents)
 
-local reliable_events = table.create(23)
-local reliable_event_queue: { [number]: { any } } = table.create(23)
+local reliable_events = table.create(19)
+local reliable_event_queue: { [number]: { any } } = table.create(19)
 reliable_event_queue[11] = {}
 reliable_event_queue[10] = {}
 reliable_event_queue[13] = {}
 reliable_event_queue[9] = {}
 reliable_event_queue[8] = {}
-reliable_event_queue[22] = {}
 reliable_event_queue[12] = {}
 reliable_event_queue[1] = 0
 reliable_event_queue[14] = {}
 reliable_event_queue[0] = {}
-reliable_event_queue[19] = {}
-reliable_event_queue[20] = {}
 reliable_event_queue[4] = 0
 reliable_event_queue[7] = {}
 reliable_event_queue[6] = {}
 reliable_event_queue[5] = {}
 reliable_event_queue[3] = {}
 reliable_event_queue[2] = {}
-reliable_event_queue[21] = 0
 reliable_event_queue[16] = {}
 reliable_event_queue[17] = {}
 reliable_event_queue[15] = {}
@@ -444,19 +414,6 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 					warn(`[ZAP] {#reliable_event_queue[8]} events in queue for VoteRequest. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 22 then
-			local value
-			value = {  }
-			local len_7 = buffer.readu16(incoming_buff, read(2))
-			value["UnitName"] = buffer.readstring(incoming_buff, read(len_7), len_7)
-			if reliable_events[22] then
-				task.spawn(reliable_events[22], value)
-			else
-				table.insert(reliable_event_queue[22], value)
-				if #reliable_event_queue[22] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[22]} events in queue for UnitEvolved. Did you forget to attach a listener?`)
-				end
-			end
 		elseif id == 12 then
 			local value
 			value = {  }
@@ -483,8 +440,8 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 		elseif id == 14 then
 			local value, value2
 			local bool_3 = buffer.readu8(incoming_buff, read(1))
-			local len_8 = buffer.readu16(incoming_buff, read(2))
-			value = buffer.readstring(incoming_buff, read(len_8), len_8)
+			local len_7 = buffer.readu16(incoming_buff, read(2))
+			value = buffer.readstring(incoming_buff, read(len_7), len_7)
 			if bit32.btest(bool_3, 0b0000000000000001) then
 				value2 = Color3.fromRGB(buffer.readu8(incoming_buff, read(1)), buffer.readu8(incoming_buff, read(1)), buffer.readu8(incoming_buff, read(1)))
 			else
@@ -503,15 +460,15 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			local bool_4 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
 			value["SentTime"] = buffer.readf64(incoming_buff, read(8))
-			local len_9 = buffer.readu16(incoming_buff, read(2))
-			value["Data"] = table.create(len_9)
-			for i_4 = 1, len_9 do
+			local len_8 = buffer.readu16(incoming_buff, read(2))
+			value["Data"] = table.create(len_8)
+			for i_4 = 1, len_8 do
 				local val_4
 				val_4 = {  }
+				local len_9 = buffer.readu16(incoming_buff, read(2))
+				val_4["Name"] = buffer.readstring(incoming_buff, read(len_9), len_9)
 				local len_10 = buffer.readu16(incoming_buff, read(2))
-				val_4["Name"] = buffer.readstring(incoming_buff, read(len_10), len_10)
-				local len_11 = buffer.readu16(incoming_buff, read(2))
-				val_4["Id"] = buffer.readstring(incoming_buff, read(len_11), len_11)
+				val_4["Id"] = buffer.readstring(incoming_buff, read(len_10), len_10)
 				value["Data"][i_4] = val_4
 			end
 			value["AutoRoll"] = bit32.btest(bool_4, 0b0000000000000001)
@@ -521,87 +478,6 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 				table.insert(reliable_event_queue[0], value)
 				if #reliable_event_queue[0] > 64 then
 					warn(`[ZAP] {#reliable_event_queue[0]} events in queue for RollEventServer. Did you forget to attach a listener?`)
-				end
-			end
-		elseif id == 19 then
-			local value
-			value = {  }
-			local len_12 = buffer.readu16(incoming_buff, read(2))
-			value["DailyQuests"] = table.create(len_12)
-			for i_5 = 1, len_12 do
-				local bool_5 = buffer.readu8(incoming_buff, read(1))
-				local val_5
-				val_5 = {  }
-				local len_13 = buffer.readu16(incoming_buff, read(2))
-				val_5["Id"] = buffer.readstring(incoming_buff, read(len_13), len_13)
-				val_5["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
-				val_5["Redeemed"] = bit32.btest(bool_5, 0b0000000000000001)
-				value["DailyQuests"][i_5] = val_5
-			end
-			local len_14 = buffer.readu16(incoming_buff, read(2))
-			value["WeeklyQuests"] = table.create(len_14)
-			for i_6 = 1, len_14 do
-				local bool_6 = buffer.readu8(incoming_buff, read(1))
-				local val_6
-				val_6 = {  }
-				local len_15 = buffer.readu16(incoming_buff, read(2))
-				val_6["Id"] = buffer.readstring(incoming_buff, read(len_15), len_15)
-				val_6["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
-				val_6["Redeemed"] = bit32.btest(bool_6, 0b0000000000000001)
-				value["WeeklyQuests"][i_6] = val_6
-			end
-			local len_16 = buffer.readu16(incoming_buff, read(2))
-			value["EventQuests"] = table.create(len_16)
-			for i_7 = 1, len_16 do
-				local bool_7 = buffer.readu8(incoming_buff, read(1))
-				local val_7
-				val_7 = {  }
-				local len_17 = buffer.readu16(incoming_buff, read(2))
-				val_7["Id"] = buffer.readstring(incoming_buff, read(len_17), len_17)
-				val_7["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
-				val_7["Redeemed"] = bit32.btest(bool_7, 0b0000000000000001)
-				value["EventQuests"][i_7] = val_7
-			end
-			local len_18 = buffer.readu16(incoming_buff, read(2))
-			value["GlobalQuests"] = table.create(len_18)
-			for i_8 = 1, len_18 do
-				local bool_8 = buffer.readu8(incoming_buff, read(1))
-				local val_8
-				val_8 = {  }
-				local len_19 = buffer.readu16(incoming_buff, read(2))
-				val_8["Id"] = buffer.readstring(incoming_buff, read(len_19), len_19)
-				val_8["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
-				val_8["Redeemed"] = bit32.btest(bool_8, 0b0000000000000001)
-				value["GlobalQuests"][i_8] = val_8
-			end
-			if reliable_events[19] then
-				task.spawn(reliable_events[19], value)
-			else
-				table.insert(reliable_event_queue[19], value)
-				if #reliable_event_queue[19] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[19]} events in queue for QuestSync. Did you forget to attach a listener?`)
-				end
-			end
-		elseif id == 20 then
-			local value
-			local len_20 = buffer.readu16(incoming_buff, read(2))
-			value = table.create(len_20)
-			for i_9 = 1, len_20 do
-				local bool_9 = buffer.readu8(incoming_buff, read(1))
-				local val_9
-				val_9 = {  }
-				local len_21 = buffer.readu16(incoming_buff, read(2))
-				val_9["Id"] = buffer.readstring(incoming_buff, read(len_21), len_21)
-				val_9["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
-				val_9["Redeemed"] = bit32.btest(bool_9, 0b0000000000000001)
-				value[i_9] = val_9
-			end
-			if reliable_events[20] then
-				task.spawn(reliable_events[20], value)
-			else
-				table.insert(reliable_event_queue[20], value)
-				if #reliable_event_queue[20] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[20]} events in queue for QuestChanged. Did you forget to attach a listener?`)
 				end
 			end
 		elseif id == 4 then
@@ -640,19 +516,19 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 5 then
 			local value
-			local bool_10 = buffer.readu8(incoming_buff, read(1))
+			local bool_5 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
 			value["VotedCount"] = buffer.readu16(incoming_buff, read(2))
-			value["Win"] = bit32.btest(bool_10, 0b0000000000000001)
-			local len_22 = buffer.readu16(incoming_buff, read(2))
-			value["Players"] = table.create(len_22)
-			for i_10 = 1, len_22 do
-				local val_10
+			value["Win"] = bit32.btest(bool_5, 0b0000000000000001)
+			local len_11 = buffer.readu16(incoming_buff, read(2))
+			value["Players"] = table.create(len_11)
+			for i_5 = 1, len_11 do
+				local val_5
 				incoming_ipos = incoming_ipos + 1
-				val_10 = incoming_inst[incoming_ipos]
-				assert(val_10 ~= nil, "received instance is nil!")
-				assert(val_10:IsA("Player"), "received instance is not of the Player class!")
-				value["Players"][i_10] = val_10
+				val_5 = incoming_inst[incoming_ipos]
+				assert(val_5 ~= nil, "received instance is nil!")
+				assert(val_5:IsA("Player"), "received instance is not of the Player class!")
+				value["Players"][i_5] = val_5
 			end
 			if reliable_events[5] then
 				task.spawn(reliable_events[5], value)
@@ -682,16 +558,6 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 				table.insert(reliable_event_queue[2], value)
 				if #reliable_event_queue[2] > 64 then
 					warn(`[ZAP] {#reliable_event_queue[2]} events in queue for LevelChanged. Did you forget to attach a listener?`)
-				end
-			end
-		elseif id == 21 then
-			local value
-			if reliable_events[21] then
-				task.spawn(reliable_events[21], value)
-			else
-				reliable_event_queue[21] += 1
-				if reliable_event_queue[21] > 16 then
-					warn(`[ZAP] {reliable_event_queue[21]} events in queue for FirstJoin. Did you forget to attach a listener?`)
 				end
 			end
 		elseif id == 16 then
@@ -733,38 +599,38 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 18 then
 			local value
-			local bool_11 = buffer.readu8(incoming_buff, read(1))
+			local bool_6 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
-			if not bit32.btest(bool_11, 0b0000000000000001) then
+			if not bit32.btest(bool_6, 0b0000000000000001) then
 				for _ = 1, buffer.readu16(incoming_buff, read(2)) + 1 do
 					local key_1
-					local val_11
+					local val_6
 					incoming_ipos = incoming_ipos + 1
 					key_1 = incoming_inst[incoming_ipos]
 					assert(key_1 ~= nil, "received instance is nil!")
 					assert(key_1:IsA("Player"), "received instance is not of the Player class!")
-					val_11 = {  }
-					local len_23 = buffer.readu16(incoming_buff, read(2))
-					val_11["Title"] = buffer.readstring(incoming_buff, read(len_23), len_23)
-					val_11["Level"] = buffer.readu16(incoming_buff, read(2))
-					local len_24 = buffer.readu16(incoming_buff, read(2))
-					val_11["EquippedUnits"] = table.create(len_24)
-					for i_11 = 1, len_24 do
-						local bool_12 = buffer.readu8(incoming_buff, read(1))
-						local val_12
-						if bit32.btest(bool_12, 0b0000000000000001) then
-							val_12 = {  }
-							local len_25 = buffer.readu16(incoming_buff, read(2))
-							val_12["Id"] = buffer.readstring(incoming_buff, read(len_25), len_25)
-							val_12["Level"] = buffer.readu16(incoming_buff, read(2))
-							local len_26 = buffer.readu16(incoming_buff, read(2))
-							val_12["UnitName"] = buffer.readstring(incoming_buff, read(len_26), len_26)
+					val_6 = {  }
+					local len_12 = buffer.readu16(incoming_buff, read(2))
+					val_6["Title"] = buffer.readstring(incoming_buff, read(len_12), len_12)
+					val_6["Level"] = buffer.readu16(incoming_buff, read(2))
+					local len_13 = buffer.readu16(incoming_buff, read(2))
+					val_6["EquippedUnits"] = table.create(len_13)
+					for i_6 = 1, len_13 do
+						local bool_7 = buffer.readu8(incoming_buff, read(1))
+						local val_7
+						if bit32.btest(bool_7, 0b0000000000000001) then
+							val_7 = {  }
+							local len_14 = buffer.readu16(incoming_buff, read(2))
+							val_7["Id"] = buffer.readstring(incoming_buff, read(len_14), len_14)
+							val_7["Level"] = buffer.readu16(incoming_buff, read(2))
+							local len_15 = buffer.readu16(incoming_buff, read(2))
+							val_7["UnitName"] = buffer.readstring(incoming_buff, read(len_15), len_15)
 						else
-							val_12 = nil
+							val_7 = nil
 						end
-						val_11["EquippedUnits"][i_11] = val_12
+						val_6["EquippedUnits"][i_6] = val_7
 					end
-					value[key_1] = val_11
+					value[key_1] = val_6
 				end
 			end
 			if reliable_events[18] then
@@ -887,28 +753,14 @@ local returns = {
 		Fire = function(Value: (number), Value2: (boolean))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
-			local bool_13 = 0
-			local bool_13_pos_1 = alloc(1)
+			local bool_8 = 0
+			local bool_8_pos_1 = alloc(1)
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value)
 			if Value2 then
-				bool_13 = bit32.bor(bool_13, 0b0000000000000001)
+				bool_8 = bit32.bor(bool_8, 0b0000000000000001)
 			end
-			buffer.writeu8(outgoing_buff, bool_13_pos_1, bool_13)
-		end,
-	},
-	UnitEvolved = {
-		SetCallback = function(Callback: (Value: ({
-			["UnitName"]: (string),
-		})) -> ()): () -> ()
-			reliable_events[22] = Callback
-			for _, value in reliable_event_queue[22] do
-				task.spawn(Callback, value)
-			end
-			reliable_event_queue[22] = {}
-			return function()
-				reliable_events[22] = nil
-			end
+			buffer.writeu8(outgoing_buff, bool_8_pos_1, bool_8)
 		end,
 	},
 	TimeChanged = {
@@ -930,12 +782,12 @@ local returns = {
 		Fire = function(Value: (boolean))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
-			local bool_14 = 0
-			local bool_14_pos_1 = alloc(1)
+			local bool_9 = 0
+			local bool_9_pos_1 = alloc(1)
 			if Value then
-				bool_14 = bit32.bor(bool_14, 0b0000000000000001)
+				bool_9 = bit32.bor(bool_9, 0b0000000000000001)
 			end
-			buffer.writeu8(outgoing_buff, bool_14_pos_1, bool_14)
+			buffer.writeu8(outgoing_buff, bool_9_pos_1, bool_9)
 		end,
 	},
 	StopAutoRollServer = {
@@ -995,70 +847,10 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value)
 		end,
 	},
-	RedeemQuest = {
-		Fire = function(Value: (string))
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
-			local len_27 = #Value
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_27)
-			alloc(len_27)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_27)
-		end,
-	},
 	RedeemDailyReward = {
 		Fire = function()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
-		end,
-	},
-	QuestSync = {
-		SetCallback = function(Callback: (Value: ({
-			["DailyQuests"]: ({ ({
-				["Id"]: (string),
-				["CurrentValue"]: (number),
-				["Redeemed"]: (boolean),
-			}) }),
-			["WeeklyQuests"]: ({ ({
-				["Id"]: (string),
-				["CurrentValue"]: (number),
-				["Redeemed"]: (boolean),
-			}) }),
-			["EventQuests"]: ({ ({
-				["Id"]: (string),
-				["CurrentValue"]: (number),
-				["Redeemed"]: (boolean),
-			}) }),
-			["GlobalQuests"]: ({ ({
-				["Id"]: (string),
-				["CurrentValue"]: (number),
-				["Redeemed"]: (boolean),
-			}) }),
-		})) -> ()): () -> ()
-			reliable_events[19] = Callback
-			for _, value in reliable_event_queue[19] do
-				task.spawn(Callback, value)
-			end
-			reliable_event_queue[19] = {}
-			return function()
-				reliable_events[19] = nil
-			end
-		end,
-	},
-	QuestChanged = {
-		SetCallback = function(Callback: (Value: ({ ({
-			["Id"]: (string),
-			["CurrentValue"]: (number),
-			["Redeemed"]: (boolean),
-		}) })) -> ()): () -> ()
-			reliable_events[20] = Callback
-			for _, value in reliable_event_queue[20] do
-				task.spawn(Callback, value)
-			end
-			reliable_event_queue[20] = {}
-			return function()
-				reliable_events[20] = nil
-			end
 		end,
 	},
 	ProductPurchased = {
@@ -1140,31 +932,6 @@ local returns = {
 			end
 		end,
 	},
-	FirstJoin = {
-		SetCallback = function(Callback: () -> ()): () -> ()
-			reliable_events[21] = Callback
-			for _ = 1, reliable_event_queue[21] do
-				task.spawn(Callback)
-			end
-			reliable_event_queue[21] = 0
-			return function()
-				reliable_events[21] = nil
-			end
-		end,
-	},
-	EvolveUnit = {
-		Fire = function(Value: ({
-			["UniqueId"]: (string),
-		}))
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
-			local len_28 = #Value["UniqueId"]
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_28)
-			alloc(len_28)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_28)
-		end,
-	},
 	EndVoteAction = {
 		Fire = function()
 			alloc(1)
@@ -1213,27 +980,16 @@ local returns = {
 			end
 		end,
 	},
-	ChooseStarter = {
-		Fire = function(Value: (string))
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
-			local len_29 = #Value
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_29)
-			alloc(len_29)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_29)
-		end,
-	},
 	AutoRoll = {
 		Fire = function(Value: (boolean))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-			local bool_15 = 0
-			local bool_15_pos_1 = alloc(1)
+			local bool_10 = 0
+			local bool_10_pos_1 = alloc(1)
 			if Value then
-				bool_15 = bit32.bor(bool_15, 0b0000000000000001)
+				bool_10 = bit32.bor(bool_10, 0b0000000000000001)
 			end
-			buffer.writeu8(outgoing_buff, bool_15_pos_1, bool_15)
+			buffer.writeu8(outgoing_buff, bool_10_pos_1, bool_10)
 		end,
 	},
 	AllEquippedSync = {
