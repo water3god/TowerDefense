@@ -251,26 +251,17 @@ ResourceChanged.SetCallback(function(OtherPlayer: Player, ResourceData: Types.Tr
 end)
 
 TradeRequestServer.SetCallback(function(OtherPlayer: Player, Time: number)
-	print(OtherPlayer)
-	if OtherPlayer == Player then
-		local Diff = Time - workspace:GetServerTimeNow()
+	Data.TradeRequests[OtherPlayer] = Time
+	Data.NewTradeRequest:Fire(OtherPlayer, Time)
 
-		task.delay(Diff + TradeRequestTime, function()
-			Data.RequestEnded:Fire(OtherPlayer, true)
-		end)
-	else
-		Data.TradeRequests[OtherPlayer] = Time
-		Data.NewTradeRequest:Fire(OtherPlayer, Time)
+	local Diff = Time - workspace:GetServerTimeNow()
 
-		local Diff = Time - workspace:GetServerTimeNow()
-
-		task.delay(Diff + TradeRequestTime, function()
-			if Data.TradeRequests[OtherPlayer] then
-				Data.TradeRequests[OtherPlayer] = nil
-			end
-			Data.RequestEnded:Fire(OtherPlayer, true)
-		end)
-	end
+	task.delay(Diff + TradeRequestTime, function()
+		if Data.TradeRequests[OtherPlayer] then
+			Data.TradeRequests[OtherPlayer] = nil
+		end
+		Data.RequestEnded:Fire(OtherPlayer, true)
+	end)
 end)
 
 Players.PlayerRemoving:Connect(function(NewPlayer: Player)
