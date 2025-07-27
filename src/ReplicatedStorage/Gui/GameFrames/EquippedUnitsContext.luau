@@ -53,7 +53,7 @@ local function Provider(props)
 
 		local function Update()
 			local Table = {
-				Units = Convert(InventoryService.EquippedUnits),
+				Units = Convert(InventoryService.EquippedUnits :: any),
 				GlobalLevel = InventoryService.Level,
 				XP = InventoryService.XP,
 				NeededXP = InventoryService.NeededXP,

@@ -91,6 +91,7 @@ local function CreateBoothFrame(Props: Properties)
 						Position = UDim2.fromScale(0.5, 0.6),
 						Size = UDim2.fromScale(0.8, 0.1),
 						Text = GameInfo.GetDifficultyString(BoothData.Difficulty),
+						RichText = true,
 					},
 				}, {
 					UIStroke = e("UIStroke", {

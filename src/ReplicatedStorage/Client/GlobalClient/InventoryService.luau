@@ -23,6 +23,7 @@ local EquipTitle = Network.EquipTitle
 
 local Shared = ReplicatedStorage.Shared
 local Types = require(Shared.Types)
+local GameInfo = require(Shared.GameInfo)
 
 export type VisualUnitData = Types.VisualUnitData
 export type ProductData = Types.ProductData
@@ -154,6 +155,7 @@ InventorySync.SetCallback(
 
 LevelChangedEvent.SetCallback(function(Level: number)
 	Data.Level = Level
+	Data.NeededXP = GameInfo.XPData.CalculateUnitXP(Level)
 	LevelChanged:Fire(Level)
 end)
 

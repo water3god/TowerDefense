@@ -43,6 +43,8 @@ local function CreateButtonFrame(Properties: Properties)
 		Position = Properties.Position,
 		Size = Properties.Size,
 
+		NameStrokeColor = ColorSequence.new(Color3.new()),
+
 		native = Properties.native,
 	}, Properties.children)
 end
