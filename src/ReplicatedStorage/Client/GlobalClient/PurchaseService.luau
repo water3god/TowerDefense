@@ -66,6 +66,7 @@ export type ProductInfo = {
 }
 
 local Module: {
+	GiftPurchased: Signal.Signal<number>,
 	ProductPurchased: Signal.Signal<number>,
 	GamepassPurchased: Signal.Signal<number>,
 	Purchased: Signal.Signal<>,
@@ -84,6 +85,7 @@ local Module: {
 	UsePurchase: (ProductId: number, IsGamepass: boolean) -> (),
 } =
 	{
+		GiftPurchased = Signal.new(),
 		ProductPurchased = Signal.new(),
 		GamepassPurchased = Signal.new(),
 		Purchased = Signal.new(),
@@ -110,8 +112,19 @@ local function GamepassDone(GamepassId: number, Purchased: boolean)
 end
 
 local function ProductDone(UserId: number, ProductId: number, Purchased: boolean)
-	if UserId == Player.UserId and Purchased then
-		Module.ProductPurchased:Fire(ProductId)
+	if Purchased then
+		task.spawn(function()
+			if not Module.IsLoaded then
+				Module.Loaded:Wait()
+			end
+			if UserId == Player.UserId then
+				if ProductInfo.GetProductFromGiftId(ProductId) then
+					Module.GiftPurchased:Fire(ProductId)
+				else
+					Module.ProductPurchased:Fire(ProductId)
+				end
+			end
+		end)
 	end
 end
 
@@ -132,7 +145,9 @@ task.spawn(function()
 			Rarity = Data.Rarity,
 		}
 	end
+
 	Module.IsLoaded = true
+	Module.Loaded:Fire()
 end)
 
 return Module

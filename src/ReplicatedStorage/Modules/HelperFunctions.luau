@@ -199,6 +199,17 @@ function Funcs.RemoveQueue.Cleanup(Table, RemovedIds: { number })
 	end
 end
 
+function Funcs.PrintTableTypes(Table: { [any]: any })
+	for Key, Value in pairs(Table) do
+		if typeof(Value) == "table" then
+			print(Key, typeof(Value))
+			Funcs.PrintTableTypes(Value)
+		else
+			print(Key, typeof(Value), Value)
+		end
+	end
+end
+
 local EMPTY = {}
 function Funcs.joinDicts<K, V>(...: { [K]: V }?): { [K]: V }
 	local final = nil

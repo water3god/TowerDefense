@@ -228,29 +228,11 @@ local remotes = ReplicatedStorage:WaitForChild("Zap2")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
-export type Health = (number)
-export type Level = (number)
-export type ProductId = (number)
-export type Time = (number)
 export type ResourceData = ({
 	["UniqueId"]: (string),
 	["Resource"]: (string),
 	["Count"]: (number),
 })
-export type UnitAttackInput = ({
-	["UniqueId"]: (string),
-	["Index"]: (number),
-	["EnemyId"]: (string),
-	["Firetime"]: (number),
-	["SpeedRatio"]: (number),
-})
-export type PlacementData = ({
-	["Unit"]: (string),
-	["UnitPosition"]: (Vector3),
-	["RotationIndex"]: (number),
-})
-export type SortType = ("First" | "Last" | "Strongest" | "Weakest")
-export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
 export type UnitInput = ({
 	["UniqueId"]: (string),
 	["UnitName"]: (string),
@@ -266,6 +248,32 @@ export type UnitInput = ({
 	["Trait"]: ((string)?),
 	["Abilities"]: ({ (number) }),
 })
+export type ProductId = (number)
+export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
+export type ProductData = ({
+	["UniqueId"]: (string),
+	["Product"]: (number),
+	["Count"]: (number),
+})
+export type PlacementData = ({
+	["Unit"]: (string),
+	["UnitPosition"]: (Vector3),
+	["RotationIndex"]: (number),
+})
+export type SortType = ("First" | "Last" | "Strongest" | "Weakest")
+export type AbilityIndex = (number)
+export type Level = (number)
+export type Health = (number)
+export type XP = (number)
+export type UnitAttackInput = ({
+	["UniqueId"]: (string),
+	["Index"]: (number),
+	["EnemyId"]: (string),
+	["Firetime"]: (number),
+	["SpeedRatio"]: (number),
+})
+export type Time = (number)
+export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
 export type UnitData = ({
 	["Unit"]: (string),
 	["Level"]: (number),
@@ -274,14 +282,6 @@ export type UnitData = ({
 	["XP"]: (number),
 	["NeededXP"]: (number),
 })
-export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
-export type ProductData = ({
-	["UniqueId"]: (string),
-	["Product"]: (number),
-	["Count"]: (number),
-})
-export type AbilityIndex = (number)
-export type XP = (number)
 
 local function SendEvents()
 	if outgoing_used ~= 0 then

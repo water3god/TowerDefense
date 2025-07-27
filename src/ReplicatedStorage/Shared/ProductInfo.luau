@@ -11,7 +11,38 @@ local RarityInfo = require(Shared.RarityInfo)
 
 type ProductData = { Name: string, Image: string, Rarity: RarityInfo.Rarity | string, Func: () -> () }
 
-local ProductInfo: { [number]: ProductData } = {}
+local ProductInfo: { [number]: ProductData } = {
+	[3348441372] = {
+		Name = "1000 Gold",
+		Image = "rbxassetid://3348441372",
+		Rarity = "Common",
+		Func = function() end,
+	},
+	[3348441586] = {
+		Name = "2000 Gold",
+		Image = "rbxassetid://3348441586",
+		Rarity = "Common",
+		Func = function() end,
+	},
+	[3348442115] = {
+		Name = "5000 Gold",
+		Image = "rbxassetid://3348442115",
+		Rarity = "Common",
+		Func = function() end,
+	},
+	[3348442394] = {
+		Name = "20000 Gold",
+		Image = "rbxassetid://3348442394",
+		Rarity = "Common",
+		Func = function() end,
+	},
+	[3348443298] = {
+		Name = "100000 Gold",
+		Image = "rbxassetid://3348443298",
+		Rarity = "Common",
+		Func = function() end,
+	},
+}
 
 local GamepassInfo: { [number]: ProductData } = {}
 
@@ -19,13 +50,13 @@ local GiftIds: { [number]: number } = {}
 
 local function GetProductFromName(Data: { Name: string, IsGamepass: boolean }): (ProductData?, number?)
 	if Data.IsGamepass then
-		for ProductId, OtherData in pairs(ProductInfo) do
+		for ProductId, OtherData in pairs(GamepassInfo) do
 			if Data.Name == OtherData.Name then
 				return OtherData, ProductId
 			end
 		end
 	else
-		for ProductId, OtherData in pairs(GamepassInfo) do
+		for ProductId, OtherData in pairs(ProductInfo) do
 			if Data.Name == OtherData.Name then
 				return OtherData, ProductId
 			end
@@ -52,13 +83,13 @@ end
 
 local function GetProductFromId(Data: { Id: number, IsGamepass: boolean }): (ProductData?, number?)
 	if Data.IsGamepass then
-		for ProductId, OtherData in pairs(ProductInfo) do
+		for ProductId, OtherData in pairs(GamepassInfo) do
 			if Data.Id == ProductId then
 				return OtherData, ProductId
 			end
 		end
 	else
-		for ProductId, OtherData in pairs(GamepassInfo) do
+		for ProductId, OtherData in pairs(ProductInfo) do
 			if Data.Id == ProductId then
 				return OtherData, ProductId
 			end
@@ -93,6 +124,17 @@ local function ProductIsGamepass(ProductId: number): boolean
 	end
 end
 
+local function GetProductFromGiftId(GiftId: number): (ProductData?, number?)
+	if GiftIds[GiftId] then
+		return GetProductFromId({
+			Id = GiftIds[GiftId],
+			IsGamepass = false,
+		})
+	else
+		return nil, nil
+	end
+end
+
 return {
 	GiftIds = GiftIds,
 	ProductInfo = ProductInfo,
@@ -102,4 +144,5 @@ return {
 	GetProductFromName = GetProductFromName,
 	GetProductFromIdOnly = GetProductFromIdOnly,
 	GetProductFromNameOnly = GetProductFromNameOnly,
+	GetProductFromGiftId = GetProductFromGiftId,
 }

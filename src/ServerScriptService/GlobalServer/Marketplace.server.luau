@@ -17,10 +17,30 @@ local ProductInfo = require(Shared.ProductInfo)
 local GiftIds = ProductInfo.GiftIds
 
 local GlobalModules = ServerScriptService.GlobalModules
-local HelperFunctions = require(ReplicatedStorage.Modules.HelperFunctions)
 local PlayerData = require(GlobalModules.PlayerData)
 
-local Products: { [number]: (Data: PlayerData.PlayerData) -> boolean } = {}
+local Products: { [number]: (Data: PlayerData.PlayerData) -> boolean } = {
+	[3348441372] = function(Data: PlayerData.PlayerData): boolean
+		Data:AddGold(1000)
+		return true
+	end,
+	[3348441586] = function(Data: PlayerData.PlayerData): boolean
+		Data:AddGold(2000)
+		return true
+	end,
+	[3348442115] = function(Data: PlayerData.PlayerData): boolean
+		Data:AddGold(5000)
+		return true
+	end,
+	[3348442394] = function(Data: PlayerData.PlayerData): boolean
+		Data:AddGold(20000)
+		return true
+	end,
+	[3348443298] = function(Data: PlayerData.PlayerData): boolean
+		Data:AddGold(100000)
+		return true
+	end,
+}
 
 local Gamepasses: { [number]: (Data: PlayerData.PlayerData) -> () } = {}
 

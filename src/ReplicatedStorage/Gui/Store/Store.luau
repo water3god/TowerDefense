@@ -95,8 +95,8 @@ local function CreateBasicTable(props: { children: { [any]: any }? })
 	return e(Main.ScrollingFrame, {
 		BarSize = 0.01,
 		native = {
-			Size = UDim2.fromScale(0.7, 0.9),
-			Position = UDim2.fromScale(0.3, 0.5),
+			Size = UDim2.fromScale(0.6, 0.7),
+			Position = UDim2.fromScale(0.375, 0.575),
 			AutomaticSize = Enum.AutomaticSize.Y,
 		},
 	}, {
@@ -160,7 +160,7 @@ local function CreateStoreFrame(Properties: Properties)
 		end
 
 		return e(CreateBasicTable, {}, Frames)
-	end, { OpenFrame, PurchaseData.Loaded :: any, HoveredProduct :: any })
+	end, { OpenFrame, PurchaseData.Loaded, HoveredProduct } :: { unknown })
 
 	local GiftId = React.useMemo(function()
 		if HoveredProduct then
@@ -181,7 +181,7 @@ local function CreateStoreFrame(Properties: Properties)
 		elseif OpenFrame == "Offers" then
 			return
 		end
-	end, { HoveredProduct, OpenFrame :: any })
+	end, { HoveredProduct, OpenFrame } :: { unknown })
 
 	local GiftFunc = React.useCallback(function()
 		if not HoveredProduct then
@@ -198,15 +198,14 @@ local function CreateStoreFrame(Properties: Properties)
 		elseif OpenFrame == "Offers" then
 			return
 		end
-	end, { HoveredProduct, OpenFrame :: any })
+	end, { HoveredProduct, OpenFrame } :: { unknown })
 
 	local InfoData = React.useMemo(function()
 		local Default = {
 			Name = "N/A",
 			Rarity = "Common",
 			RarityInfo = RarityInfo["Common" :: any],
-			BuyFunc = function() end,
-			GiftFunc = function() end,
+			Image = 0,
 		}
 
 		if not HoveredProduct then
@@ -218,8 +217,7 @@ local function CreateStoreFrame(Properties: Properties)
 				Name = ProductInfo.ProductInfo.Name,
 				Rarity = ProductInfo.Rarity,
 				RarityInfo = RarityInfo[ProductInfo.Rarity :: any],
-				BuyFunc = BuyFunc,
-				GiftFunc = GiftFunc,
+				Image = ProductInfo.ProductInfo.IconImageAssetId,
 			}
 		elseif OpenFrame == "Gamepasses" then
 			local ProductInfo = PurchaseData.GamepassData[HoveredProduct]
@@ -227,15 +225,14 @@ local function CreateStoreFrame(Properties: Properties)
 				Name = ProductInfo.ProductInfo.Name,
 				Rarity = ProductInfo.Rarity,
 				RarityInfo = RarityInfo[ProductInfo.Rarity :: any],
-				BuyFunc = BuyFunc,
-				GiftFunc = GiftFunc,
+				Image = ProductInfo.ProductInfo.IconImageAssetId,
 			}
 		elseif OpenFrame == "Offers" then
 			return Default
 		else
 			return Default
 		end
-	end, { HoveredProduct, OpenFrame :: any })
+	end, { HoveredProduct, OpenFrame } :: { unknown })
 
 	return e(Main.Frame, {
 		native = JoinDicts({
@@ -288,8 +285,8 @@ local function CreateStoreFrame(Properties: Properties)
 		}),
 		InfoFrame = e(Main.ImageLabel, {
 			native = {
-				Position = UDim2.fromScale(0.8, 0.6),
-				Size = UDim2.fromScale(0.2, 0.6),
+				Position = UDim2.fromScale(0.825, 0.575),
+				Size = UDim2.fromScale(0.225, 0.7),
 				Image = "rbxassetid://75971006528952",
 				Visible = InfoData.Name ~= "N/A",
 			},
@@ -298,7 +295,7 @@ local function CreateStoreFrame(Properties: Properties)
 				native = {
 					Position = UDim2.fromScale(0.5, 0.525),
 					Size = UDim2.fromScale(0.9, 0.45),
-					Image = "",
+					Image = "rbxassetid://" .. InfoData.Image,
 				},
 			}, {
 				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
@@ -310,8 +307,8 @@ local function CreateStoreFrame(Properties: Properties)
 					Position = UDim2.fromScale(0.5, 0.92),
 					Size = UDim2.fromScale(0.8, 0.125),
 					Image = "rbxassetid://80739823452825",
-
 					ImageColor3 = Color3.fromRGB(43, 191, 255),
+					[React.Event.MouseButton1Click] = GiftFunc,
 				},
 			}, {
 				TextLabel = e(Main.TextLabel, {
@@ -327,7 +324,6 @@ local function CreateStoreFrame(Properties: Properties)
 				native = {
 					Position = UDim2.fromScale(0.78, 0.66),
 					Size = UDim2.fromScale(0.21, 0.12),
-					Visible = true,
 					Image = "rbxassetid://77078349522524",
 				},
 			}, {
@@ -341,6 +337,7 @@ local function CreateStoreFrame(Properties: Properties)
 					Size = UDim2.fromScale(0.8, 0.125),
 					Image = "rbxassetid://72606508098140",
 					ImageColor3 = Color3.fromRGB(43, 191, 255),
+					[React.Event.MouseButton1Click] = BuyFunc,
 				},
 			}, {
 				TextLabel = e(Main.TextLabel, {
@@ -392,8 +389,8 @@ local function CreateStoreFrame(Properties: Properties)
 			end,
 			Highlighted = OpenFrame == "Offers",
 			native = {
-				Position = UDim2.fromScale(0.2, 0.175),
-				Size = UDim2.fromScale(0.2, 0.1),
+				Position = UDim2.fromScale(0.2, 0.15),
+				Size = UDim2.fromScale(0.17, 0.09),
 			},
 		}),
 		Gamepasses = e(BaseButton, {
@@ -403,8 +400,8 @@ local function CreateStoreFrame(Properties: Properties)
 			end,
 			Highlighted = OpenFrame == "Gamepasses",
 			native = {
-				Position = UDim2.fromScale(0.5, 0.175),
-				Size = UDim2.fromScale(0.2, 0.1),
+				Position = UDim2.fromScale(0.5, 0.15),
+				Size = UDim2.fromScale(0.17, 0.09),
 			},
 		}),
 		Products = e(BaseButton, {
@@ -414,8 +411,8 @@ local function CreateStoreFrame(Properties: Properties)
 			end,
 			Highlighted = OpenFrame == "Products",
 			native = {
-				Position = UDim2.fromScale(0.8, 0.175),
-				Size = UDim2.fromScale(0.2, 0.1),
+				Position = UDim2.fromScale(0.8, 0.15),
+				Size = UDim2.fromScale(0.17, 0.09),
 			},
 		}),
 	}, MainFrames, Properties.children)

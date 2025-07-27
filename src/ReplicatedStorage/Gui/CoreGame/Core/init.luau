@@ -38,6 +38,7 @@ local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
 local MainButtonFrame = require(CoreGame.MainButtonFrame)
+local NewGui = require(CoreGame.NewGui)
 local Hooks = require(CoreGame.Hooks)
 
 local GameFrames = Gui.GameFrames
@@ -1112,7 +1113,11 @@ local function Render()
 					OnCloseClick(Constants.SETTINGS)
 				end,
 			}),
-			Warnings = e(Warning),
+			WarningGui = e(NewGui, {
+				DisplayOrder = 1001,
+			}, {
+				Warnings = e(Warning),
+			}),
 		} :: { [string]: React.Node }
 	)
 end
