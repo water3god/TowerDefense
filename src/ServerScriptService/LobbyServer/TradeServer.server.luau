@@ -98,7 +98,7 @@ TradeRequestClient.SetCallback(function(Player: Player, OtherPlayer: Player)
 	local Time = workspace:GetServerTimeNow()
 
 	TradeRequestServer.Fire(OtherPlayer, Player, Time)
-	TradeRequestServer.Fire(Player, Player, Time)
+	TradeRequestServer.Fire(Player, OtherPlayer, Time)
 	Data.LastTradedPlayers[Player] = Time
 
 	local thread: thread = nil

@@ -92,8 +92,8 @@ local function CreatePlayerFrame(Properties: PlayerFrameProps)
 		TradeService.SendTradeRequest(Properties.Player.UserId)
 	end, { Properties.Player, SentId, Properties.Status } :: { unknown })
 
-	Hooks.useEventConnection(TradeService.RequestEnded, function(Player: Player, Premature: boolean)
-		if Player.UserId == Properties.Player.UserId and Premature then
+	Hooks.useEventConnection(TradeService.RequestEnded, function(Player: Player, Delayed: boolean)
+		if Player.UserId == Properties.Player.UserId and Delayed then
 			SetSentId(false)
 		end
 	end, { Properties.Player })

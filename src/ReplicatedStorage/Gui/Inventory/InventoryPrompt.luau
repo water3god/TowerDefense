@@ -264,7 +264,9 @@ local function InventoryPrompt(Properties: Properties)
 		else
 			API.start({
 				alpha = 0,
-			})
+			}):andThen(function()
+				SetHovered(nil)
+			end)
 		end
 	end, { Properties.Visible })
 

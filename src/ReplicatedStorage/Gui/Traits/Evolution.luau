@@ -152,6 +152,13 @@ local function CreateEvolution(props: Properties)
 		return Frames
 	end, { Resources })
 
+	local CloseClick = React.useCallback(function()
+		if props.CloseClick then
+			props.CloseClick()
+		end
+		PromptData.SetVisible(false)
+	end, { props.CloseClick, PromptData } :: { unknown })
+
 	return e(Main.Frame, {
 		native = Join({
 			BackgroundTransparency = 0,
@@ -308,7 +315,7 @@ local function CreateEvolution(props: Properties)
 		CloseButton = e(CloseButton, {
 			Position = UDim2.fromScale(1, 0),
 			Size = UDim2.fromScale(0.3, 0.2),
-			OnClick = props.CloseClick,
+			OnClick = CloseClick,
 		}),
 		InnerFrame = e(Main.Frame, {
 			native = {

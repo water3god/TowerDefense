@@ -228,26 +228,29 @@ local remotes = ReplicatedStorage:WaitForChild("Zap2")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
-export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
-export type ProductData = ({
+export type Health = (number)
+export type Level = (number)
+export type ProductId = (number)
+export type Time = (number)
+export type ResourceData = ({
 	["UniqueId"]: (string),
-	["Product"]: (number),
+	["Resource"]: (string),
 	["Count"]: (number),
 })
-export type AbilityIndex = (number)
-export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
-export type UnitData = ({
-	["Unit"]: (string),
-	["Level"]: (number),
-	["Trait"]: ((string)?),
+export type UnitAttackInput = ({
 	["UniqueId"]: (string),
-	["XP"]: (number),
-	["NeededXP"]: (number),
+	["Index"]: (number),
+	["EnemyId"]: (string),
+	["Firetime"]: (number),
+	["SpeedRatio"]: (number),
+})
+export type PlacementData = ({
+	["Unit"]: (string),
+	["UnitPosition"]: (Vector3),
+	["RotationIndex"]: (number),
 })
 export type SortType = ("First" | "Last" | "Strongest" | "Weakest")
-export type Time = (number)
-export type ProductId = (number)
-export type XP = (number)
+export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
 export type UnitInput = ({
 	["UniqueId"]: (string),
 	["UnitName"]: (string),
@@ -263,25 +266,22 @@ export type UnitInput = ({
 	["Trait"]: ((string)?),
 	["Abilities"]: ({ (number) }),
 })
-export type Health = (number)
-export type UnitAttackInput = ({
+export type UnitData = ({
+	["Unit"]: (string),
+	["Level"]: (number),
+	["Trait"]: ((string)?),
 	["UniqueId"]: (string),
-	["Index"]: (number),
-	["EnemyId"]: (string),
-	["Firetime"]: (number),
-	["SpeedRatio"]: (number),
+	["XP"]: (number),
+	["NeededXP"]: (number),
 })
-export type ResourceData = ({
+export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
+export type ProductData = ({
 	["UniqueId"]: (string),
-	["Resource"]: (string),
+	["Product"]: (number),
 	["Count"]: (number),
 })
-export type Level = (number)
-export type PlacementData = ({
-	["Unit"]: (string),
-	["UnitPosition"]: (Vector3),
-	["RotationIndex"]: (number),
-})
+export type AbilityIndex = (number)
+export type XP = (number)
 
 local function SendEvents()
 	if outgoing_used ~= 0 then

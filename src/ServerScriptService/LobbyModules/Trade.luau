@@ -169,9 +169,8 @@ function Trade.new(Player1: Player, Player2: Player)
 
 	local function Cancel()
 		if self.Status == "Finalized" or self.Status == "Accepted" then
-			local OldStatus: Types.Status = self.Status
-			self.Status = "InTrade"
-			self:_UpdateStatus(self.Player1Status, self.Player2Status, OldStatus)
+			self:TogglePlayerStatus(self.Player1, false)
+			self:TogglePlayerStatus(self.Player2, false)
 		end
 	end
 
@@ -527,8 +526,6 @@ function Trade:TogglePlayerStatus(Player: Player, Progress: boolean)
 			self[Value] = "InTrade"
 		end
 	end
-
-	print(self[Value])
 
 	self:_UpdateStatus(Player1Old, Player2Old, self.Status)
 end

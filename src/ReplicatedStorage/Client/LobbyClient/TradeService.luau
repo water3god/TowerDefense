@@ -167,7 +167,6 @@ TradeSync.SetCallback(function(SentData: { [number]: { Status: Types.TradeStatus
 end)
 
 StatusChanged.SetCallback(function(Input: { Player: Player?, Status: Types.Status })
-	print(Input)
 	if not Data.CurrentTradeData then
 		return
 	end
@@ -194,7 +193,6 @@ local function UnitFindAndRemove(Table: { VisualUnitData }, UniqueId: string)
 end
 
 UnitChanged.SetCallback(function(OtherPlayer: Player, SentData: Types.VisualUnitData | string, OtherStatus: string)
-	print(OtherPlayer, SentData, OtherStatus)
 	if not OtherPlayer then
 		return
 	end
@@ -203,16 +201,12 @@ UnitChanged.SetCallback(function(OtherPlayer: Player, SentData: Types.VisualUnit
 		return
 	end
 
-	print("Processed")
-
 	if OtherStatus == "Added" then
 		local UnitData: Types.VisualUnitData = SentData :: any
 		if OtherPlayer == Player then
 			table.insert(Data.CurrentTradeData.YourUnits, UnitData)
-			print("Added")
 		elseif OtherPlayer == Data.CurrentTradeData.OtherPlayer then
 			table.insert(Data.CurrentTradeData.OtherUnits, UnitData)
-			print("Added other")
 		end
 		Data.UnitAdded:Fire(UnitData, OtherPlayer)
 	elseif OtherStatus == "Removing" then
@@ -224,8 +218,6 @@ UnitChanged.SetCallback(function(OtherPlayer: Player, SentData: Types.VisualUnit
 		end
 		Data.UnitRemoving:Fire(UniqueId, OtherPlayer)
 	end
-
-	print(Data.CurrentTradeData)
 end)
 
 ProductChanged.SetCallback(function(OtherPlayer: Player, ProductData: Types.TradeProductData)
@@ -259,6 +251,7 @@ ResourceChanged.SetCallback(function(OtherPlayer: Player, ResourceData: Types.Tr
 end)
 
 TradeRequestServer.SetCallback(function(OtherPlayer: Player, Time: number)
+	print(OtherPlayer)
 	if OtherPlayer == Player then
 		local Diff = Time - workspace:GetServerTimeNow()
 

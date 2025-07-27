@@ -220,12 +220,14 @@ local function TradeMain(Properties: Properties)
 	Hooks.useEventConnection(TradeService.NewTrade, function(NewTradeData)
 		SetTradeData(NewTradeData)
 		Properties.Toggle(true)
-	end, { Properties.Toggle })
+		PromptData.ClearIds()
+	end, { Properties.Toggle, PromptData })
 
 	Hooks.useEventConnection(TradeService.Ended, function()
 		SetTradeData(nil)
 		Properties.Toggle(false)
-	end, { Properties.Toggle })
+		PromptData.ClearIds()
+	end, { Properties.Toggle, PromptData })
 
 	local function UpdateTrade()
 		local Data = TradeService.GetTradeData()
@@ -293,6 +295,12 @@ local function TradeMain(Properties: Properties)
 		Type: string,
 	}?)
 
+	Hooks.useEventConnection(TradeService.UnitRemoving, function(UniqueId: string, OtherPlayer: Player)
+		if Player == OtherPlayer then
+			PromptData.RemoveId(UniqueId)
+		end
+	end, { SelectCountFrame, PromptData } :: { unknown })
+
 	Hooks.useEventConnection(PromptData.Added, function(Id: string, OpenFrame: string)
 		if not PromptVisible.current then
 			return
@@ -329,7 +337,6 @@ local function TradeMain(Properties: Properties)
 		end
 
 		PromptData.SetVisible(false)
-		PromptData.ClearIds()
 		PromptVisible.current = false
 	end, { PromptData })
 

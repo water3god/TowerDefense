@@ -24,6 +24,7 @@ local PromptContext = React.createContext({
 	SetVisible = function(Visible: boolean) end,
 	Visible = false,
 	ClearIds = function() end,
+	RemoveId = function(Id: string) end,
 	SetIds = function() end,
 	FilteredIds = {},
 	Added = Added,
@@ -36,6 +37,15 @@ local function PromptProvider(props)
 	local ClearIds = React.useCallback(function()
 		SetFilteredIds({})
 	end, {})
+
+	local RemoveId = React.useCallback(function(Id: string)
+		local NewTable = table.clone(FilteredIds)
+		local Index = table.find(NewTable, Id)
+		if Index then
+			table.remove(NewTable, Index)
+			SetFilteredIds(NewTable)
+		end
+	end, { FilteredIds })
 
 	local AddId = React.useCallback(function(Id: string, OpenFrame: string)
 		local Index = table.find(FilteredIds, Id)
@@ -57,6 +67,7 @@ local function PromptProvider(props)
 				SetVisible = SetVisible,
 				Visible = Visible,
 				ClearIds = ClearIds,
+				RemoveId = RemoveId,
 				FilteredIds = FilteredIds,
 				SetIds = SetIds,
 				Added = Added,
