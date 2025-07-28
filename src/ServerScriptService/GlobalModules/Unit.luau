@@ -432,7 +432,7 @@ function Unit:UpdateEnemy()
 
 	local TimeDef: number = workspace:GetServerTimeNow() - self.LastFired
 
-	if TimeDef >= FireRate * self.Ratios.FireRate then
+	if TimeDef >= FireRate then
 		self:Attack()
 	end
 end
@@ -558,9 +558,9 @@ end
 
 function Unit:GetProperty(PropertyName: string): number
 	if PropertyName == "Damage" then
-		return math.floor(self.UnitData.UnitData[self.Level].Damage[1] * self.Ratios.Damage)
+		return math.ceil(self.UnitData.UnitData[self.Level].Damage[1] * self.Ratios.Damage)
 	elseif PropertyName == "FireRate" then
-		return math.floor(self.UnitData.UnitData[self.Level].FireRate * self.Ratios.FireRate)
+		return self.UnitData.UnitData[self.Level].FireRate * self.Ratios.FireRate
 	elseif PropertyName == "Range" then
 		return math.floor(self.UnitData.UnitData[self.Level].Range * self.Ratios.Range)
 	elseif PropertyName == "Coins" then

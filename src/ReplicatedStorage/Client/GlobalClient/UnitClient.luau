@@ -800,7 +800,7 @@ function UnitModule:GetProperties()
 	return {
 		Damage = math.ceil(UnitData[Level].Damage[1] * self.Ratios.Damage),
 		FireRate = UnitData[Level].FireRate * self.Ratios.FireRate,
-		Range = UnitData[Level].Range * self.Ratios.Range,
+		Range = math.floor(UnitData[Level].Range * self.Ratios.Range),
 		Coins = UnitData[Level].Coins,
 		Special = UnitData[Level].Special,
 	}
