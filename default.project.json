@@ -164,9 +164,7 @@
       "$properties": {
         "RespectFilteringEnabled": true
       },
-      "GlobalMusic": {
-        "$path": "Models/GlobalMusic.rbxm"
-      },
+      "$ignoreUnknownInstances": true,
       "SoundEffects": {
         "$path": "Models/SoundEffects.rbxm"
       },

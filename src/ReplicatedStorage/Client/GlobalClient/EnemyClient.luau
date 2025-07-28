@@ -56,10 +56,10 @@ local function WeldParts(Character: typeof(ModelStorage.Extra.Rig), Adornment: M
 			continue
 		end
 		local CharLimb: BasePart? = Character:FindFirstChild(Limb.Name) :: BasePart
-		local Middle: BasePart = Limb:FindFirstChild("Middle") :: BasePart
+		local Handle: BasePart = Limb:FindFirstChild("Handle") :: BasePart
 
-		if not Middle then
-			warn("No BasePart Called Middle For: " .. Limb.Name)
+		if not Handle then
+			warn("No BasePart Called Handle For: " .. Limb.Name)
 		end
 
 		if not CharLimb then
@@ -70,34 +70,34 @@ local function WeldParts(Character: typeof(ModelStorage.Extra.Rig), Adornment: M
 		local Bases: { [BasePart]: CFrame } = {}
 
 		for _, BasePart in ipairs(Limb:GetDescendants()) do
-			if BasePart:IsA("BasePart") and BasePart.Name ~= "Middle" then
+			if BasePart:IsA("BasePart") and BasePart.Name ~= "Handle" then
 				BasePart.CanCollide = false
 				BasePart.Anchored = false
 
 				local Motor = Instance.new("Motor6D")
 				Motor.C0 = BasePart.CFrame:Inverse()
-				Motor.C1 = Middle.CFrame:Inverse()
+				Motor.C1 = Handle.CFrame:Inverse()
 				Motor.Name = BasePart.Name
 				Motor.Part0 = BasePart
-				Motor.Part1 = Middle
-				Bases[BasePart] = Middle.CFrame:ToObjectSpace(BasePart.CFrame)
-				Motor.Parent = Middle
+				Motor.Part1 = Handle
+				Bases[BasePart] = Handle.CFrame:ToObjectSpace(BasePart.CFrame)
+				Motor.Parent = Handle
 			end
 		end
 
-		Middle.CFrame = CharLimb.CFrame
+		Handle.CFrame = CharLimb.CFrame
 		for Base, CFrame in pairs(Bases) do
-			Base.CFrame = Middle.CFrame:ToWorldSpace(CFrame)
+			Base.CFrame = Handle.CFrame:ToWorldSpace(CFrame)
 		end
 
 		local Weld = Instance.new("Motor6D")
 		Weld.C0 = CFrame.new()
 		Weld.C1 = CFrame.new()
-		Weld.Name = "MainMiddleWeld"
-		Weld.Part0 = Middle
+		Weld.Name = "__MainHandleWeld"
+		Weld.Part0 = Handle
 		Weld.Part1 = CharLimb
 
-		Weld.Parent = Middle
+		Weld.Parent = Handle
 	end
 end
 
