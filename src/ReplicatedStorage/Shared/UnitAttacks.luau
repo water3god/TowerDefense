@@ -149,7 +149,8 @@ local function EmitOnPart(
 
 	Once: boolean,
 	Attack: boolean,
-	Times: number?
+	Times: number?,
+	Func: ((Particle: ParticleEmitter) -> ())?
 )
 	local Particles = {}
 
@@ -166,6 +167,9 @@ local function EmitOnPart(
 			local ParticleClone = Particle:Clone()
 			table.insert(Particles, ParticleClone)
 			ParticleClone.Parent = Attachment
+			if Func then
+				Func(ParticleClone)
+			end
 		end
 	end
 
@@ -209,12 +213,13 @@ local function Emit(
 	CFrame: CFrame,
 	Once: boolean,
 	Attack: boolean,
-	Times: number?
+	Times: number?,
+	Func: ((Particle: ParticleEmitter) -> ())?
 ): Promise.Promise
 	local Emitter = ParticleEmitter:Clone()
 	Emitter.CFrame = CFrame
 
-	local ParticlePromise = EmitOnPart(Unit, ParticlesInput, { Emitter }, Once, Attack, Times):finally(function()
+	local ParticlePromise = EmitOnPart(Unit, ParticlesInput, { Emitter }, Once, Attack, Times, Func):finally(function()
 		local LongestTime = 0
 		for _, Particle in ipairs(ParticlesInput) do
 			if LongestTime < Particle.Lifetime.Max then
@@ -576,7 +581,8 @@ local UnitAttacks: {
 									)
 								- Vector3.new(0, 5, 0)
 
-							local Raycast = workspace:Raycast(Part.CFrame.Position + Vector3.yAxis, -Vector3.yAxis * 2)
+							local Raycast =
+								workspace:Raycast(Part.CFrame.Position + Vector3.yAxis * 6, -Vector3.yAxis * 2)
 
 							if Raycast and Raycast.Instance then
 								Part.Material = Raycast.Instance.Material
@@ -598,6 +604,26 @@ local UnitAttacks: {
 										)
 										:Play()
 									Part.Parent = ParticlesFolder
+
+									Emit(
+										Unit,
+										{ Emitters["Smoke-Debris"] },
+										Part.CFrame + Vector3.new(0, 5, 0),
+										true,
+										true,
+										10
+									)
+									Emit(
+										Unit,
+										{ Emitters["Smoke-Debris-2"] },
+										Part.CFrame + Vector3.new(0, 5, 0),
+										true,
+										true,
+										5,
+										function(Emitter: ParticleEmitter)
+											Emitter.Color = ColorSequence.new(Part.Color)
+										end
+									)
 									wait(3)
 								end)
 								:andThen(function()
@@ -630,7 +656,22 @@ local UnitAttacks: {
 				function(Unit, AttackInput, Enemy, Delay)
 					DefaultAttack(Unit, AttackInput, Enemy, Delay)
 					DelayedAttackHit(Unit, AttackInput, Enemy, 0.5, Delay)
+
+					local DelayTime = CalculateDelay(0.3, AttackInput.SpeedRatio, Delay)
+
+					local DelProm = Promise.delay(DelayTime):andThen(function()
+						Emit(
+							Unit,
+							{ Emitters["Grey-alpha"] },
+							Unit.Root.CFrame + Unit.CFrame.RightVector / 1.2 + Unit.CFrame.LookVector * 2,
+							true,
+							true,
+							2
+						)
+					end)
+
 					SFXService.PlaySoundAt(Sounds.SwordSwing, Unit.Root.CFrame)
+					Unit:AddAttackPromise(DelProm, "RobertAttackEmit")
 				end,
 			},
 		},
@@ -671,6 +712,46 @@ local UnitAttacks: {
 					DelayedAttackHit(Unit, AttackInput, Enemy, 0.65, Delay, "2")
 					DelayedSound(Unit, { Sounds.LightSwing }, AttackInput, Enemy, 0.35, Delay, "1")
 					DelayedSound(Unit, { Sounds.LightSwing }, AttackInput, Enemy, 0.6, Delay, "2")
+
+					local FirstDelay = CalculateDelay(0.3, AttackInput.SpeedRatio, Delay)
+					local SecondDelay = CalculateDelay(0.55, AttackInput.SpeedRatio, Delay)
+
+					local FirstAttackParticle = Promise.delay(FirstDelay):andThen(function()
+						Emit(
+							Unit,
+							{ Emitters.GreenAttack },
+							Unit.Root.CFrame
+								+ Unit.CFrame.RightVector
+								+ Unit.CFrame.LookVector * 2
+								+ Unit.CFrame.UpVector * 0.5,
+							true,
+							true,
+							2,
+							function(Particle: ParticleEmitter)
+								Particle.Rotation = NumberRange.new(130)
+							end
+						)
+					end)
+
+					local SecondAttackParticle = Promise.delay(SecondDelay):andThen(function()
+						Emit(
+							Unit,
+							{ Emitters.GreenAttack },
+							Unit.Root.CFrame - Unit.CFrame.RightVector * 0.7 + Unit.CFrame.LookVector * 1.5,
+							true,
+							true,
+							2,
+							function(Particle: ParticleEmitter)
+								Particle.EmissionDirection = Enum.NormalId.Top
+								Particle.RotSpeed = NumberRange.new(-20)
+								Particle.Size = NumberSequence.new(2)
+								Particle.Rotation = NumberRange.new(100)
+							end
+						)
+					end)
+
+					Unit:AddAttackPromise(FirstAttackParticle, "RamessesFirstAttackParticle")
+					Unit:AddAttackPromise(SecondAttackParticle, "RamessesSecondAttackParticle")
 				end,
 			},
 		},

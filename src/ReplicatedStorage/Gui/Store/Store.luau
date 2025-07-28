@@ -114,7 +114,7 @@ local function CreateStoreFrame(Properties: Properties)
 	local OpenFrame, SetOpenFrame = React.useState("Offers")
 	local HoveredProduct: number?, SetHovered = React.useState(nil :: number?)
 
-	React.useEffect(function()
+	React.useLayoutEffect(function()
 		SetHovered(nil)
 	end, { OpenFrame })
 
@@ -159,7 +159,9 @@ local function CreateStoreFrame(Properties: Properties)
 			end
 		end
 
-		return e(CreateBasicTable, {}, Frames)
+		return {
+			ProductTable = e(CreateBasicTable, {}, Frames),
+		}
 	end, { OpenFrame, PurchaseData.Loaded, HoveredProduct } :: { unknown })
 
 	local GiftId = React.useMemo(function()
@@ -232,7 +234,7 @@ local function CreateStoreFrame(Properties: Properties)
 		else
 			return Default
 		end
-	end, { HoveredProduct, OpenFrame } :: { unknown })
+	end, { HoveredProduct } :: { unknown })
 
 	return e(Main.Frame, {
 		native = JoinDicts({

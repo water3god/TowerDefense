@@ -38,16 +38,16 @@ ConfettiGui.Parent = PlayerGui
 
 local function CreateConfetti(props: { Color: Color3? })
 	local BackgroundColor = React.useMemo(function()
-		return props.Color or Color3.fromRGB(math.random(100, 255), math.random(100, 255), math.random(100, 255))
+		return props.Color or Color3.fromHSV(math.random(), 0.75, 1)
 	end, { props.Color })
 
 	local Rotation = React.useBinding(math.random(0, 360))
-	local Position, SetPosition = React.useBinding(UDim2.fromScale(math.random(), math.random() * 1.5 - 1.7))
+	local Position, SetPosition = React.useBinding(UDim2.fromScale(math.random(), math.random() * 2 - 2.3))
 
 	React.useEffect(function()
 		local Connection = RunService.Heartbeat:Connect(function(Delta: number)
 			local OldPosition = Position:getValue()
-			SetPosition(UDim2.fromScale(OldPosition.X.Scale, OldPosition.Y.Scale + Delta * 1.5))
+			SetPosition(UDim2.fromScale(OldPosition.X.Scale, OldPosition.Y.Scale + Delta * 2))
 		end)
 
 		return function()

@@ -517,8 +517,8 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 		AttackFuncs = {
 			[0] = {
 				function(Unit: UnitModule.Unit, Damage: number)
-					DelayAttack(Unit, Damage, 0.4)
-					DelayAttack(Unit, Damage, 0.65)
+					DelayAttack(Unit, Damage * 0.5, 0.4, "1")
+					DelayAttack(Unit, Damage * 0.5, 0.65, "2")
 				end,
 			},
 		},
