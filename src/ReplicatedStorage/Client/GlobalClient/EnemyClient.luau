@@ -70,7 +70,10 @@ local function WeldParts(Character: typeof(ModelStorage.Extra.Rig), Adornment: M
 		local Bases: { [BasePart]: CFrame } = {}
 
 		for _, BasePart in ipairs(Limb:GetDescendants()) do
-			if BasePart:IsA("BasePart") and BasePart.Name ~= "Handle" then
+			if BasePart:IsA("BasePart") then
+				if BasePart.Name == "Handle" and BasePart.Parent == Limb then
+					continue
+				end
 				BasePart.CanCollide = false
 				BasePart.Anchored = false
 

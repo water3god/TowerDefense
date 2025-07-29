@@ -202,7 +202,8 @@ type UnitData = {
 	AttackTrove: Trove.Trove,
 
 	Character: typeof(_Rig),
-	Armor: Model?,
+	AdornmentLevel: number?,
+	Adornment: Model?,
 	Root: typeof(_Rig.HumanoidRootPart),
 	CenterPart: BasePart,
 	Humanoid: typeof(_Rig.Humanoid),

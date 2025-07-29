@@ -55,6 +55,8 @@ local function CalculateXPInfinite(Wave: number, XPMultiplier: number)
 	return XP
 end
 
+local Won = false
+
 local function OnAdded(Wave: GlobalWave.GlobalWave)
 	local SerializedWave = SerializeWave(Wave)
 	Added.FireAll(SerializedWave)
@@ -81,6 +83,7 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 	end)
 
 	Wave.Ended:Connect(function(Win: boolean)
+		Won = Win
 		local TotalXP = 0
 		if Wave.IsInfinite then
 			TotalXP = CalculateXPInfinite(Wave.Wave, Wave.XPMultiplier)
@@ -161,17 +164,28 @@ end
 
 GlobalWave.Added:Connect(OnAdded)
 
-local function OnPlayerAdded(Player: Player)
+local function OnDataAdded(Data: PlayerData.PlayerData)
 	local NewWave = GlobalWave.GetWave()
 
 	if NewWave then
 		local SerializedWave = SerializeWave(NewWave)
-		Added.Fire(Player, SerializedWave)
+		Added.Fire(Data.Player, SerializedWave)
+	else
+		WaveEnded.Fire(Data.Player, Won, {
+			Units = {},
+			Resources = {},
+			ExistingUnits = {},
+		}, {
+			OldXP = Data.Profile.Data.XP,
+			NewXP = Data.Profile.Data.XP,
+			OldLevel = Data.Profile.Data.Level,
+			NewLevel = Data.Profile.Data.Level,
+		}, 0)
 	end
 end
 
-for _, Player in ipairs(Players:GetPlayers()) do
-	OnPlayerAdded(Player)
+for _, Data in pairs(PlayerData.GetDatas()) do
+	OnDataAdded(Data)
 end
 
-Players.PlayerAdded:Connect(OnPlayerAdded)
+PlayerData.DataAdded:Connect(OnDataAdded)

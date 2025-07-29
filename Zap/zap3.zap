@@ -53,6 +53,42 @@ event StopAutoRollClient = {
 	call: SingleAsync,
 }
 
+-- Settings --
+
+event ChangeSettingClient = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: (
+		string.binary,
+		unknown,
+	),
+}
+
+event ChangeSettingServer = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: (
+		string.binary,
+		unknown,
+	),
+}
+
+event SendSettings = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: unknown,
+}
+
+event SettingSync = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: map { [string.binary]: unknown },
+}
+
 -- Game End --
 
 type Wave = u16
@@ -270,28 +306,4 @@ event DailyRedeemed = {
 		Day: u8,
 		LastRedeemed: Time,
 	},
-}
-
--- Misc --
-
-event AllEquippedSync = {
-	from: Server,
-	type: Reliable,
-	call: SingleAsync,
-	data: map { [Instance.Player]: struct {
-		Title: string.binary,
-		Level: Level,
-		EquippedUnits: struct {
-			Id: string.binary,
-			Level: Level,
-			UnitName: string.binary,
-		}?[],
-	} },
-}
-
-event TeleportBack = {
-	from: Client,
-	type: Reliable,
-	call: SingleAsync,
-	data: boolean,
 }

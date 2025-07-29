@@ -6,6 +6,10 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Client = ReplicatedStorage.Client
 local GlobalClient = Client.GlobalClient
 local SettingsService = require(GlobalClient.SettingsService)
+local WaveService = require(GlobalClient.WaveService)
+
+local Shared = ReplicatedStorage.Shared
+local IsLobby = require(Shared.IsLobby)
 
 if not SettingsService.IsSynced then
 	SettingsService.Synced:Wait()
@@ -13,6 +17,11 @@ end
 
 local GlobalMusic = SoundService:WaitForChild("GlobalMusic")
 local Music = GlobalMusic:WaitForChild("Music")
+local Win = GlobalMusic:WaitForChild("Win") :: Sound
+local Lose = GlobalMusic:WaitForChild("Lose") :: Sound
+
+Win.Looped = true
+Lose.Looped = true
 
 local Sounds: { Sound } = Music:GetChildren()
 local OldVolumes: { [Sound]: number } = {}
@@ -58,7 +67,7 @@ end
 for _, Sound in ipairs(Sounds) do
 	Sound.Looped = false
 
-	Sound.Ended:Connect(function(SoundId: string)
+	Sound.Ended:Connect(function()
 		local NextIndex = CurrentIndex + 1
 		if not Sounds[NextIndex] then
 			NextIndex = 1
@@ -69,5 +78,26 @@ for _, Sound in ipairs(Sounds) do
 	end)
 end
 
-Sounds[CurrentIndex]:Play()
-RecalibrateMusic(CurrentIndex)
+local function HandleEnded(Won: boolean)
+	Sounds[CurrentIndex]:Stop()
+	if Won then
+		Win:Play()
+	else
+		Lose:Play()
+	end
+end
+
+local function HandleStarted()
+	Sounds[CurrentIndex].TimePosition = 0
+	Sounds[CurrentIndex]:Play()
+	RecalibrateMusic(CurrentIndex)
+end
+
+if WaveService.GetWaveData() or IsLobby then
+	HandleStarted()
+elseif WaveService.Win ~= nil then
+	HandleEnded(WaveService.Win)
+end
+
+WaveService.Ended:Connect(HandleEnded)
+WaveService.Added:Connect(HandleStarted)

@@ -232,16 +232,6 @@ if not RunService:IsRunning() then
 			FireList = noop,
 			FireSet = noop
 		}),
-		SettingSync = table.freeze({
-			SetCallback = noop
-		}),
-		SendSettings = table.freeze({
-			Fire = noop,
-			FireAll = noop,
-			FireExcept = noop,
-			FireList = noop,
-			FireSet = noop
-		}),
 		SellUnit = table.freeze({
 			SetCallback = noop
 		}),
@@ -276,16 +266,6 @@ if not RunService:IsRunning() then
 			SetCallback = noop
 		}),
 		ChangeUnit = table.freeze({
-			SetCallback = noop
-		}),
-		ChangeSettingServer = table.freeze({
-			Fire = noop,
-			FireAll = noop,
-			FireExcept = noop,
-			FireList = noop,
-			FireSet = noop
-		}),
-		ChangeSettingClient = table.freeze({
 			SetCallback = noop
 		}),
 		ChangeResource = table.freeze({
@@ -329,7 +309,8 @@ end
 Players.PlayerRemoving:Connect(function(player)
 	player_map[player] = nil
 end)
-export type Level = (number)
+export type XP = (number)
+export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
 export type UnitAttackInput = ({
 	["UniqueId"]: (string),
 	["Index"]: (number),
@@ -337,11 +318,19 @@ export type UnitAttackInput = ({
 	["Firetime"]: (number),
 	["SpeedRatio"]: (number),
 })
+export type Health = (number)
+export type Time = (number)
+export type ProductData = ({
+	["UniqueId"]: (string),
+	["Product"]: (number),
+	["Count"]: (number),
+})
 export type ResourceData = ({
 	["UniqueId"]: (string),
 	["Resource"]: (string),
 	["Count"]: (number),
 })
+export type ProductId = (number)
 export type UnitInput = ({
 	["UniqueId"]: (string),
 	["UnitName"]: (string),
@@ -357,20 +346,6 @@ export type UnitInput = ({
 	["Trait"]: ((string)?),
 	["Abilities"]: ({ (number) }),
 })
-export type ProductData = ({
-	["UniqueId"]: (string),
-	["Product"]: (number),
-	["Count"]: (number),
-})
-export type AbilityIndex = (number)
-export type Time = (number)
-export type PlacementData = ({
-	["Unit"]: (string),
-	["UnitPosition"]: (Vector3),
-	["RotationIndex"]: (number),
-})
-export type XP = (number)
-export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
 export type UnitData = ({
 	["Unit"]: (string),
 	["Level"]: (number),
@@ -379,9 +354,14 @@ export type UnitData = ({
 	["XP"]: (number),
 	["NeededXP"]: (number),
 })
-export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
-export type Health = (number)
-export type ProductId = (number)
+export type Level = (number)
+export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
+export type AbilityIndex = (number)
+export type PlacementData = ({
+	["Unit"]: (string),
+	["UnitPosition"]: (Vector3),
+	["RotationIndex"]: (number),
+})
 export type SortType = ("First" | "Last" | "Strongest" | "Weakest")
 
 local function SendEvents()
@@ -402,7 +382,7 @@ end
 
 RunService.Heartbeat:Connect(SendEvents)
 
-local reliable_events = table.create(14)
+local reliable_events = table.create(12)
 reliable.OnServerEvent:Connect(function(player, buff, inst)
 	incoming_buff = buff
 	incoming_inst = inst
@@ -411,136 +391,99 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 	local len = buffer.len(buff)
 	while incoming_read < len do
 		local id = buffer.readu8(buff, read(1))
-		if id == 13 then
+		if id == 11 then
 			local value, value2
 			local len_1 = buffer.readu16(incoming_buff, read(2))
 			value = buffer.readstring(incoming_buff, read(len_1), len_1)
 			value2 = buffer.readu8(incoming_buff, read(1))
-			if reliable_events[13] then
-				task.spawn(reliable_events[13], player, value, value2)
-			end
-		elseif id == 12 then
-			local value
-			local len_2 = buffer.readu16(incoming_buff, read(2))
-			value = buffer.readstring(incoming_buff, read(len_2), len_2)
-			if reliable_events[12] then
-				task.spawn(reliable_events[12], player, value)
-			end
-		elseif id == 2 then
-			local value
-			incoming_ipos = incoming_ipos + 1
-			value = incoming_inst[incoming_ipos]
-			assert(value ~= nil, "received instance is nil!")
-			assert(value:IsA("Player"), "received instance is not of the Player class!")
-			if reliable_events[2] then
-				task.spawn(reliable_events[2], player, value)
-			end
-		elseif id == 3 then
-			local value
-			incoming_ipos = incoming_ipos + 1
-			value = incoming_inst[incoming_ipos]
-			assert(value ~= nil, "received instance is nil!")
-			assert(value:IsA("Player"), "received instance is not of the Player class!")
-			if reliable_events[3] then
-				task.spawn(reliable_events[3], player, value)
-			end
-		elseif id == 7 then
-			local value
-			local bool_1 = buffer.readu8(incoming_buff, read(1))
-			value = bit32.btest(bool_1, 0b0000000000000001)
-			if reliable_events[7] then
-				task.spawn(reliable_events[7], player, value)
-			end
-		elseif id == 1 then
-			local value
-			local bool_2 = buffer.readu8(incoming_buff, read(1))
-			value = {  }
-			if not bit32.btest(bool_2, 0b0000000000000001) then
-				for _ = 1, buffer.readu16(incoming_buff, read(2)) + 1 do
-					local bool_3 = buffer.readu8(incoming_buff, read(1))
-					local key_1
-					local val_1
-					local len_3 = buffer.readu16(incoming_buff, read(2))
-					key_1 = buffer.readstring(incoming_buff, read(len_3), len_3)
-					if bit32.btest(bool_3, 0b0000000000000001) then
-						incoming_ipos = incoming_ipos + 1
-						val_1 = incoming_inst[incoming_ipos]
-					else
-						val_1 = nil
-					end
-					value[key_1] = val_1
-				end
-			end
-			if reliable_events[1] then
-				task.spawn(reliable_events[1], player, value)
-			end
-		elseif id == 11 then
-			local value
-			local len_4 = buffer.readu16(incoming_buff, read(2))
-			value = buffer.readstring(incoming_buff, read(len_4), len_4)
 			if reliable_events[11] then
-				task.spawn(reliable_events[11], player, value)
+				task.spawn(reliable_events[11], player, value, value2)
 			end
 		elseif id == 10 then
 			local value
-			value = {  }
-			local len_5 = buffer.readu16(incoming_buff, read(2))
-			value["Unit"] = buffer.readstring(incoming_buff, read(len_5), len_5)
-			value["UnitPosition"] = Vector3.new(buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)))
-			value["RotationIndex"] = buffer.readu8(incoming_buff, read(1))
+			local len_2 = buffer.readu16(incoming_buff, read(2))
+			value = buffer.readstring(incoming_buff, read(len_2), len_2)
 			if reliable_events[10] then
 				task.spawn(reliable_events[10], player, value)
 			end
-		elseif id == 8 then
+		elseif id == 0 then
 			local value
-			if reliable_events[8] then
-				task.spawn(reliable_events[8], player, value)
+			incoming_ipos = incoming_ipos + 1
+			value = incoming_inst[incoming_ipos]
+			assert(value ~= nil, "received instance is nil!")
+			assert(value:IsA("Player"), "received instance is not of the Player class!")
+			if reliable_events[0] then
+				task.spawn(reliable_events[0], player, value)
+			end
+		elseif id == 1 then
+			local value
+			incoming_ipos = incoming_ipos + 1
+			value = incoming_inst[incoming_ipos]
+			assert(value ~= nil, "received instance is nil!")
+			assert(value:IsA("Player"), "received instance is not of the Player class!")
+			if reliable_events[1] then
+				task.spawn(reliable_events[1], player, value)
+			end
+		elseif id == 5 then
+			local value
+			local bool_1 = buffer.readu8(incoming_buff, read(1))
+			value = bit32.btest(bool_1, 0b0000000000000001)
+			if reliable_events[5] then
+				task.spawn(reliable_events[5], player, value)
 			end
 		elseif id == 9 then
 			local value
-			local len_6 = buffer.readu16(incoming_buff, read(2))
-			value = buffer.readstring(incoming_buff, read(len_6), len_6)
+			local len_3 = buffer.readu16(incoming_buff, read(2))
+			value = buffer.readstring(incoming_buff, read(len_3), len_3)
 			if reliable_events[9] then
 				task.spawn(reliable_events[9], player, value)
 			end
+		elseif id == 8 then
+			local value
+			value = {  }
+			local len_4 = buffer.readu16(incoming_buff, read(2))
+			value["Unit"] = buffer.readstring(incoming_buff, read(len_4), len_4)
+			value["UnitPosition"] = Vector3.new(buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)))
+			value["RotationIndex"] = buffer.readu8(incoming_buff, read(1))
+			if reliable_events[8] then
+				task.spawn(reliable_events[8], player, value)
+			end
+		elseif id == 6 then
+			local value
+			if reliable_events[6] then
+				task.spawn(reliable_events[6], player, value)
+			end
+		elseif id == 7 then
+			local value
+			local len_5 = buffer.readu16(incoming_buff, read(2))
+			value = buffer.readstring(incoming_buff, read(len_5), len_5)
+			if reliable_events[7] then
+				task.spawn(reliable_events[7], player, value)
+			end
+		elseif id == 2 then
+			local value, value2
+			local len_6 = buffer.readu16(incoming_buff, read(2))
+			value = buffer.readstring(incoming_buff, read(len_6), len_6)
+			local len_7 = buffer.readu16(incoming_buff, read(2))
+			value2 = buffer.readstring(incoming_buff, read(len_7), len_7)
+			if reliable_events[2] then
+				task.spawn(reliable_events[2], player, value, value2)
+			end
 		elseif id == 4 then
 			local value, value2
-			local len_7 = buffer.readu16(incoming_buff, read(2))
-			value = buffer.readstring(incoming_buff, read(len_7), len_7)
 			local len_8 = buffer.readu16(incoming_buff, read(2))
-			value2 = buffer.readstring(incoming_buff, read(len_8), len_8)
+			value = buffer.readstring(incoming_buff, read(len_8), len_8)
+			value2 = buffer.readu16(incoming_buff, read(2))
 			if reliable_events[4] then
 				task.spawn(reliable_events[4], player, value, value2)
 			end
-		elseif id == 0 then
+		elseif id == 3 then
 			local value, value2
-			local bool_4 = buffer.readu8(incoming_buff, read(1))
 			local len_9 = buffer.readu16(incoming_buff, read(2))
 			value = buffer.readstring(incoming_buff, read(len_9), len_9)
-			if bit32.btest(bool_4, 0b0000000000000001) then
-				incoming_ipos = incoming_ipos + 1
-				value2 = incoming_inst[incoming_ipos]
-			else
-				value2 = nil
-			end
-			if reliable_events[0] then
-				task.spawn(reliable_events[0], player, value, value2)
-			end
-		elseif id == 6 then
-			local value, value2
-			local len_10 = buffer.readu16(incoming_buff, read(2))
-			value = buffer.readstring(incoming_buff, read(len_10), len_10)
 			value2 = buffer.readu16(incoming_buff, read(2))
-			if reliable_events[6] then
-				task.spawn(reliable_events[6], player, value, value2)
-			end
-		elseif id == 5 then
-			local value, value2
-			local len_11 = buffer.readu16(incoming_buff, read(2))
-			value = buffer.readstring(incoming_buff, read(len_11), len_11)
-			value2 = buffer.readu16(incoming_buff, read(2))
-			if reliable_events[5] then
-				task.spawn(reliable_events[5], player, value, value2)
+			if reliable_events[3] then
+				task.spawn(reliable_events[3], player, value, value2)
 			end
 		else
 			error("Unknown event id")
@@ -554,17 +497,17 @@ local returns = {
 	SendEvents = SendEvents,
 	UseUnitAbility = {
 		SetCallback = function(Callback: (Player: Player, Value: (string), Value2: (number)) -> ()): () -> ()
-			reliable_events[13] = Callback
+			reliable_events[11] = Callback
 			return function()
-				reliable_events[13] = nil
+				reliable_events[11] = nil
 			end
 		end,
 	},
 	UpgradeUnit = {
 		SetCallback = function(Callback: (Player: Player, Value: (string)) -> ()): () -> ()
-			reliable_events[12] = Callback
+			reliable_events[10] = Callback
 			return function()
-				reliable_events[12] = nil
+				reliable_events[10] = nil
 			end
 		end,
 	},
@@ -575,12 +518,12 @@ local returns = {
 		}))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 17)
-			local len_12 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
+			local len_10 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_12)
-			alloc(len_12)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_12)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_10)
+			alloc(len_10)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_10)
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value["Level"])
 			player_map[Player] = save()
@@ -591,12 +534,12 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 17)
-			local len_13 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
+			local len_11 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_13)
-			alloc(len_13)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_13)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_11)
+			alloc(len_11)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_11)
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value["Level"])
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -614,12 +557,12 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 17)
-			local len_14 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
+			local len_12 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_14)
-			alloc(len_14)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_14)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_12)
+			alloc(len_12)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_12)
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value["Level"])
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -639,12 +582,12 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 17)
-			local len_15 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
+			local len_13 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_15)
-			alloc(len_15)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_15)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_13)
+			alloc(len_13)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_13)
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value["Level"])
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -662,12 +605,12 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 17)
-			local len_16 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
+			local len_14 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_16)
-			alloc(len_16)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_16)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_14)
+			alloc(len_14)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_14)
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value["Level"])
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -687,26 +630,26 @@ local returns = {
 		}))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
-			local bool_5 = 0
-			local bool_5_pos_1 = alloc(1)
-			local len_17 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
+			local bool_2 = 0
+			local bool_2_pos_1 = alloc(1)
+			local len_15 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_17)
-			alloc(len_17)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_17)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_15)
+			alloc(len_15)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_15)
 			if Value["Priority"] == "First" then
-				bool_5 = bit32.bor(bool_5, 0b0000000000000001)
+				bool_2 = bit32.bor(bool_2, 0b0000000000000001)
 			elseif Value["Priority"] == "Last" then
-				bool_5 = bit32.bor(bool_5, 0b0000000000000010)
+				bool_2 = bit32.bor(bool_2, 0b0000000000000010)
 			elseif Value["Priority"] == "Strongest" then
-				bool_5 = bit32.bor(bool_5, 0b0000000000000100)
+				bool_2 = bit32.bor(bool_2, 0b0000000000000100)
 			elseif Value["Priority"] == "Weakest" then
-				bool_5 = bit32.bor(bool_5, 0b0000000000001000)
+				bool_2 = bit32.bor(bool_2, 0b0000000000001000)
 			else
 				error("Invalid enumerator")
 			end
-			buffer.writeu8(outgoing_buff, bool_5_pos_1, bool_5)
+			buffer.writeu8(outgoing_buff, bool_2_pos_1, bool_2)
 			player_map[Player] = save()
 		end,
 		FireAll = function(Value: ({
@@ -715,26 +658,26 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
-			local bool_6 = 0
-			local bool_6_pos_1 = alloc(1)
-			local len_18 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
+			local bool_3 = 0
+			local bool_3_pos_1 = alloc(1)
+			local len_16 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_18)
-			alloc(len_18)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_18)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_16)
+			alloc(len_16)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_16)
 			if Value["Priority"] == "First" then
-				bool_6 = bit32.bor(bool_6, 0b0000000000000001)
+				bool_3 = bit32.bor(bool_3, 0b0000000000000001)
 			elseif Value["Priority"] == "Last" then
-				bool_6 = bit32.bor(bool_6, 0b0000000000000010)
+				bool_3 = bit32.bor(bool_3, 0b0000000000000010)
 			elseif Value["Priority"] == "Strongest" then
-				bool_6 = bit32.bor(bool_6, 0b0000000000000100)
+				bool_3 = bit32.bor(bool_3, 0b0000000000000100)
 			elseif Value["Priority"] == "Weakest" then
-				bool_6 = bit32.bor(bool_6, 0b0000000000001000)
+				bool_3 = bit32.bor(bool_3, 0b0000000000001000)
 			else
 				error("Invalid enumerator")
 			end
-			buffer.writeu8(outgoing_buff, bool_6_pos_1, bool_6)
+			buffer.writeu8(outgoing_buff, bool_3_pos_1, bool_3)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				load_player(player)
@@ -750,26 +693,26 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
-			local bool_7 = 0
-			local bool_7_pos_1 = alloc(1)
-			local len_19 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
+			local bool_4 = 0
+			local bool_4_pos_1 = alloc(1)
+			local len_17 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_19)
-			alloc(len_19)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_19)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_17)
+			alloc(len_17)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_17)
 			if Value["Priority"] == "First" then
-				bool_7 = bit32.bor(bool_7, 0b0000000000000001)
+				bool_4 = bit32.bor(bool_4, 0b0000000000000001)
 			elseif Value["Priority"] == "Last" then
-				bool_7 = bit32.bor(bool_7, 0b0000000000000010)
+				bool_4 = bit32.bor(bool_4, 0b0000000000000010)
 			elseif Value["Priority"] == "Strongest" then
-				bool_7 = bit32.bor(bool_7, 0b0000000000000100)
+				bool_4 = bit32.bor(bool_4, 0b0000000000000100)
 			elseif Value["Priority"] == "Weakest" then
-				bool_7 = bit32.bor(bool_7, 0b0000000000001000)
+				bool_4 = bit32.bor(bool_4, 0b0000000000001000)
 			else
 				error("Invalid enumerator")
 			end
-			buffer.writeu8(outgoing_buff, bool_7_pos_1, bool_7)
+			buffer.writeu8(outgoing_buff, bool_4_pos_1, bool_4)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -787,26 +730,26 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
-			local bool_8 = 0
-			local bool_8_pos_1 = alloc(1)
-			local len_20 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
+			local bool_5 = 0
+			local bool_5_pos_1 = alloc(1)
+			local len_18 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_20)
-			alloc(len_20)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_20)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_18)
+			alloc(len_18)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_18)
 			if Value["Priority"] == "First" then
-				bool_8 = bit32.bor(bool_8, 0b0000000000000001)
+				bool_5 = bit32.bor(bool_5, 0b0000000000000001)
 			elseif Value["Priority"] == "Last" then
-				bool_8 = bit32.bor(bool_8, 0b0000000000000010)
+				bool_5 = bit32.bor(bool_5, 0b0000000000000010)
 			elseif Value["Priority"] == "Strongest" then
-				bool_8 = bit32.bor(bool_8, 0b0000000000000100)
+				bool_5 = bit32.bor(bool_5, 0b0000000000000100)
 			elseif Value["Priority"] == "Weakest" then
-				bool_8 = bit32.bor(bool_8, 0b0000000000001000)
+				bool_5 = bit32.bor(bool_5, 0b0000000000001000)
 			else
 				error("Invalid enumerator")
 			end
-			buffer.writeu8(outgoing_buff, bool_8_pos_1, bool_8)
+			buffer.writeu8(outgoing_buff, bool_5_pos_1, bool_5)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -822,26 +765,26 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
-			local bool_9 = 0
-			local bool_9_pos_1 = alloc(1)
-			local len_21 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
+			local bool_6 = 0
+			local bool_6_pos_1 = alloc(1)
+			local len_19 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_21)
-			alloc(len_21)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_21)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_19)
+			alloc(len_19)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_19)
 			if Value["Priority"] == "First" then
-				bool_9 = bit32.bor(bool_9, 0b0000000000000001)
+				bool_6 = bit32.bor(bool_6, 0b0000000000000001)
 			elseif Value["Priority"] == "Last" then
-				bool_9 = bit32.bor(bool_9, 0b0000000000000010)
+				bool_6 = bit32.bor(bool_6, 0b0000000000000010)
 			elseif Value["Priority"] == "Strongest" then
-				bool_9 = bit32.bor(bool_9, 0b0000000000000100)
+				bool_6 = bit32.bor(bool_6, 0b0000000000000100)
 			elseif Value["Priority"] == "Weakest" then
-				bool_9 = bit32.bor(bool_9, 0b0000000000001000)
+				bool_6 = bit32.bor(bool_6, 0b0000000000001000)
 			else
 				error("Invalid enumerator")
 			end
-			buffer.writeu8(outgoing_buff, bool_9_pos_1, bool_9)
+			buffer.writeu8(outgoing_buff, bool_6_pos_1, bool_6)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -870,33 +813,33 @@ local returns = {
 		}) }), Value2: (boolean))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
-			local bool_10 = 0
-			local bool_10_pos_1 = alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
+			local bool_7 = 0
+			local bool_7_pos_1 = alloc(1)
 			local len_pos_1
-			local len_22 = 0
+			local len_20 = 0
 			for k_1, v_1 in Value do
-				if len_22 == 0 then
+				if len_20 == 0 then
 					len_pos_1 = alloc(2)
 				end
-				local bool_11 = 0
-				local bool_11_pos_1 = alloc(1)
-				len_22 = len_22 + 1
-				local len_23 = #k_1
+				local bool_8 = 0
+				local bool_8_pos_1 = alloc(1)
+				len_20 = len_20 + 1
+				local len_21 = #k_1
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_21)
+				alloc(len_21)
+				buffer.writestring(outgoing_buff, outgoing_apos, k_1, len_21)
+				local len_22 = #v_1["UniqueId"]
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_22)
+				alloc(len_22)
+				buffer.writestring(outgoing_buff, outgoing_apos, v_1["UniqueId"], len_22)
+				local len_23 = #v_1["UnitName"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_23)
 				alloc(len_23)
-				buffer.writestring(outgoing_buff, outgoing_apos, k_1, len_23)
-				local len_24 = #v_1["UniqueId"]
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_24)
-				alloc(len_24)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_1["UniqueId"], len_24)
-				local len_25 = #v_1["UnitName"]
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_25)
-				alloc(len_25)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_1["UnitName"], len_25)
+				buffer.writestring(outgoing_buff, outgoing_apos, v_1["UnitName"], len_23)
 				local axis_1, angle_1 = v_1["CFrame"]:ToAxisAngle()
 				axis_1 = axis_1 * angle_1
 				alloc(4)
@@ -912,92 +855,92 @@ local returns = {
 				alloc(4)
 				buffer.writef32(outgoing_buff, outgoing_apos, axis_1.Z)
 				if v_1["OwnerId"] ~= nil then
-					bool_11 = bit32.bor(bool_11, 0b0000000000000001)
+					bool_8 = bit32.bor(bool_8, 0b0000000000000001)
 					alloc(8)
 					buffer.writef64(outgoing_buff, outgoing_apos, v_1["OwnerId"])
 				end
-				local len_26 = #v_1["AttackPriority"]
+				local len_24 = #v_1["AttackPriority"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_26)
-				alloc(len_26)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_1["AttackPriority"], len_26)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_24)
+				alloc(len_24)
+				buffer.writestring(outgoing_buff, outgoing_apos, v_1["AttackPriority"], len_24)
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, v_1["Level"])
 				local len_pos_2
-				local len_27 = 0
+				local len_25 = 0
 				for k_2, v_2 in v_1["RatioData"] do
-					if len_27 == 0 then
+					if len_25 == 0 then
 						len_pos_2 = alloc(2)
 					end
-					local bool_12 = 0
-					local bool_12_pos_1 = alloc(1)
-					len_27 = len_27 + 1
-					local len_28 = #k_2
+					local bool_9 = 0
+					local bool_9_pos_1 = alloc(1)
+					len_25 = len_25 + 1
+					local len_26 = #k_2
 					alloc(2)
-					buffer.writeu16(outgoing_buff, outgoing_apos, len_28)
-					alloc(len_28)
-					buffer.writestring(outgoing_buff, outgoing_apos, k_2, len_28)
+					buffer.writeu16(outgoing_buff, outgoing_apos, len_26)
+					alloc(len_26)
+					buffer.writestring(outgoing_buff, outgoing_apos, k_2, len_26)
 					local len_pos_3
-					local len_29 = 0
+					local len_27 = 0
 					for k_3, v_3 in v_2 do
-						if len_29 == 0 then
+						if len_27 == 0 then
 							len_pos_3 = alloc(2)
 						end
-						len_29 = len_29 + 1
-						local len_30 = #k_3
+						len_27 = len_27 + 1
+						local len_28 = #k_3
 						alloc(2)
-						buffer.writeu16(outgoing_buff, outgoing_apos, len_30)
-						alloc(len_30)
-						buffer.writestring(outgoing_buff, outgoing_apos, k_3, len_30)
-						local len_31 = #v_3["Type"]
+						buffer.writeu16(outgoing_buff, outgoing_apos, len_28)
+						alloc(len_28)
+						buffer.writestring(outgoing_buff, outgoing_apos, k_3, len_28)
+						local len_29 = #v_3["Type"]
 						alloc(2)
-						buffer.writeu16(outgoing_buff, outgoing_apos, len_31)
-						alloc(len_31)
-						buffer.writestring(outgoing_buff, outgoing_apos, v_3["Type"], len_31)
+						buffer.writeu16(outgoing_buff, outgoing_apos, len_29)
+						alloc(len_29)
+						buffer.writestring(outgoing_buff, outgoing_apos, v_3["Type"], len_29)
 						alloc(4)
 						buffer.writef32(outgoing_buff, outgoing_apos, v_3["Ratio"])
 						alloc(8)
 						buffer.writef64(outgoing_buff, outgoing_apos, v_3["EndTime"])
 					end
 					if len_pos_3 then
-						buffer.writeu16(outgoing_buff, len_pos_3, len_29 - 1)
+						buffer.writeu16(outgoing_buff, len_pos_3, len_27 - 1)
 					else
-						bool_12 = bit32.bor(bool_12, 0b0000000000000001)
+						bool_9 = bit32.bor(bool_9, 0b0000000000000001)
 					end
-					buffer.writeu8(outgoing_buff, bool_12_pos_1, bool_12)
+					buffer.writeu8(outgoing_buff, bool_9_pos_1, bool_9)
 				end
 				if len_pos_2 then
-					buffer.writeu16(outgoing_buff, len_pos_2, len_27 - 1)
+					buffer.writeu16(outgoing_buff, len_pos_2, len_25 - 1)
 				else
-					bool_11 = bit32.bor(bool_11, 0b0000000000000010)
+					bool_8 = bit32.bor(bool_8, 0b0000000000000010)
 				end
 				if v_1["Trait"] ~= nil then
-					bool_11 = bit32.bor(bool_11, 0b0000000000000100)
-					local len_32 = #v_1["Trait"]
+					bool_8 = bit32.bor(bool_8, 0b0000000000000100)
+					local len_30 = #v_1["Trait"]
 					alloc(2)
-					buffer.writeu16(outgoing_buff, outgoing_apos, len_32)
-					alloc(len_32)
-					buffer.writestring(outgoing_buff, outgoing_apos, v_1["Trait"], len_32)
+					buffer.writeu16(outgoing_buff, outgoing_apos, len_30)
+					alloc(len_30)
+					buffer.writestring(outgoing_buff, outgoing_apos, v_1["Trait"], len_30)
 				end
-				local len_33 = #v_1["Abilities"]
+				local len_31 = #v_1["Abilities"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_33)
-				for i_1 = 1, len_33 do
-					local val_2 = v_1["Abilities"][i_1]
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_31)
+				for i_1 = 1, len_31 do
+					local val_1 = v_1["Abilities"][i_1]
 					alloc(8)
-					buffer.writef64(outgoing_buff, outgoing_apos, val_2)
+					buffer.writef64(outgoing_buff, outgoing_apos, val_1)
 				end
-				buffer.writeu8(outgoing_buff, bool_11_pos_1, bool_11)
+				buffer.writeu8(outgoing_buff, bool_8_pos_1, bool_8)
 			end
 			if len_pos_1 then
-				buffer.writeu16(outgoing_buff, len_pos_1, len_22 - 1)
+				buffer.writeu16(outgoing_buff, len_pos_1, len_20 - 1)
 			else
-				bool_10 = bit32.bor(bool_10, 0b0000000000000001)
+				bool_7 = bit32.bor(bool_7, 0b0000000000000001)
 			end
 			if Value2 then
-				bool_10 = bit32.bor(bool_10, 0b0000000000000010)
+				bool_7 = bit32.bor(bool_7, 0b0000000000000010)
 			end
-			buffer.writeu8(outgoing_buff, bool_10_pos_1, bool_10)
+			buffer.writeu8(outgoing_buff, bool_7_pos_1, bool_7)
 			player_map[Player] = save()
 		end,
 		FireAll = function(Value: ({ [(string)]: ({
@@ -1017,33 +960,33 @@ local returns = {
 		}) }), Value2: (boolean))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
-			local bool_13 = 0
-			local bool_13_pos_1 = alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
+			local bool_10 = 0
+			local bool_10_pos_1 = alloc(1)
 			local len_pos_4
-			local len_34 = 0
+			local len_32 = 0
 			for k_4, v_4 in Value do
-				if len_34 == 0 then
+				if len_32 == 0 then
 					len_pos_4 = alloc(2)
 				end
-				local bool_14 = 0
-				local bool_14_pos_1 = alloc(1)
-				len_34 = len_34 + 1
-				local len_35 = #k_4
+				local bool_11 = 0
+				local bool_11_pos_1 = alloc(1)
+				len_32 = len_32 + 1
+				local len_33 = #k_4
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_33)
+				alloc(len_33)
+				buffer.writestring(outgoing_buff, outgoing_apos, k_4, len_33)
+				local len_34 = #v_4["UniqueId"]
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_34)
+				alloc(len_34)
+				buffer.writestring(outgoing_buff, outgoing_apos, v_4["UniqueId"], len_34)
+				local len_35 = #v_4["UnitName"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_35)
 				alloc(len_35)
-				buffer.writestring(outgoing_buff, outgoing_apos, k_4, len_35)
-				local len_36 = #v_4["UniqueId"]
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_36)
-				alloc(len_36)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_4["UniqueId"], len_36)
-				local len_37 = #v_4["UnitName"]
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_37)
-				alloc(len_37)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_4["UnitName"], len_37)
+				buffer.writestring(outgoing_buff, outgoing_apos, v_4["UnitName"], len_35)
 				local axis_2, angle_2 = v_4["CFrame"]:ToAxisAngle()
 				axis_2 = axis_2 * angle_2
 				alloc(4)
@@ -1059,92 +1002,92 @@ local returns = {
 				alloc(4)
 				buffer.writef32(outgoing_buff, outgoing_apos, axis_2.Z)
 				if v_4["OwnerId"] ~= nil then
-					bool_14 = bit32.bor(bool_14, 0b0000000000000001)
+					bool_11 = bit32.bor(bool_11, 0b0000000000000001)
 					alloc(8)
 					buffer.writef64(outgoing_buff, outgoing_apos, v_4["OwnerId"])
 				end
-				local len_38 = #v_4["AttackPriority"]
+				local len_36 = #v_4["AttackPriority"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_38)
-				alloc(len_38)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_4["AttackPriority"], len_38)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_36)
+				alloc(len_36)
+				buffer.writestring(outgoing_buff, outgoing_apos, v_4["AttackPriority"], len_36)
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, v_4["Level"])
 				local len_pos_5
-				local len_39 = 0
+				local len_37 = 0
 				for k_5, v_5 in v_4["RatioData"] do
-					if len_39 == 0 then
+					if len_37 == 0 then
 						len_pos_5 = alloc(2)
 					end
-					local bool_15 = 0
-					local bool_15_pos_1 = alloc(1)
-					len_39 = len_39 + 1
-					local len_40 = #k_5
+					local bool_12 = 0
+					local bool_12_pos_1 = alloc(1)
+					len_37 = len_37 + 1
+					local len_38 = #k_5
 					alloc(2)
-					buffer.writeu16(outgoing_buff, outgoing_apos, len_40)
-					alloc(len_40)
-					buffer.writestring(outgoing_buff, outgoing_apos, k_5, len_40)
+					buffer.writeu16(outgoing_buff, outgoing_apos, len_38)
+					alloc(len_38)
+					buffer.writestring(outgoing_buff, outgoing_apos, k_5, len_38)
 					local len_pos_6
-					local len_41 = 0
+					local len_39 = 0
 					for k_6, v_6 in v_5 do
-						if len_41 == 0 then
+						if len_39 == 0 then
 							len_pos_6 = alloc(2)
 						end
-						len_41 = len_41 + 1
-						local len_42 = #k_6
+						len_39 = len_39 + 1
+						local len_40 = #k_6
 						alloc(2)
-						buffer.writeu16(outgoing_buff, outgoing_apos, len_42)
-						alloc(len_42)
-						buffer.writestring(outgoing_buff, outgoing_apos, k_6, len_42)
-						local len_43 = #v_6["Type"]
+						buffer.writeu16(outgoing_buff, outgoing_apos, len_40)
+						alloc(len_40)
+						buffer.writestring(outgoing_buff, outgoing_apos, k_6, len_40)
+						local len_41 = #v_6["Type"]
 						alloc(2)
-						buffer.writeu16(outgoing_buff, outgoing_apos, len_43)
-						alloc(len_43)
-						buffer.writestring(outgoing_buff, outgoing_apos, v_6["Type"], len_43)
+						buffer.writeu16(outgoing_buff, outgoing_apos, len_41)
+						alloc(len_41)
+						buffer.writestring(outgoing_buff, outgoing_apos, v_6["Type"], len_41)
 						alloc(4)
 						buffer.writef32(outgoing_buff, outgoing_apos, v_6["Ratio"])
 						alloc(8)
 						buffer.writef64(outgoing_buff, outgoing_apos, v_6["EndTime"])
 					end
 					if len_pos_6 then
-						buffer.writeu16(outgoing_buff, len_pos_6, len_41 - 1)
+						buffer.writeu16(outgoing_buff, len_pos_6, len_39 - 1)
 					else
-						bool_15 = bit32.bor(bool_15, 0b0000000000000001)
+						bool_12 = bit32.bor(bool_12, 0b0000000000000001)
 					end
-					buffer.writeu8(outgoing_buff, bool_15_pos_1, bool_15)
+					buffer.writeu8(outgoing_buff, bool_12_pos_1, bool_12)
 				end
 				if len_pos_5 then
-					buffer.writeu16(outgoing_buff, len_pos_5, len_39 - 1)
+					buffer.writeu16(outgoing_buff, len_pos_5, len_37 - 1)
 				else
-					bool_14 = bit32.bor(bool_14, 0b0000000000000010)
+					bool_11 = bit32.bor(bool_11, 0b0000000000000010)
 				end
 				if v_4["Trait"] ~= nil then
-					bool_14 = bit32.bor(bool_14, 0b0000000000000100)
-					local len_44 = #v_4["Trait"]
+					bool_11 = bit32.bor(bool_11, 0b0000000000000100)
+					local len_42 = #v_4["Trait"]
 					alloc(2)
-					buffer.writeu16(outgoing_buff, outgoing_apos, len_44)
-					alloc(len_44)
-					buffer.writestring(outgoing_buff, outgoing_apos, v_4["Trait"], len_44)
+					buffer.writeu16(outgoing_buff, outgoing_apos, len_42)
+					alloc(len_42)
+					buffer.writestring(outgoing_buff, outgoing_apos, v_4["Trait"], len_42)
 				end
-				local len_45 = #v_4["Abilities"]
+				local len_43 = #v_4["Abilities"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_45)
-				for i_2 = 1, len_45 do
-					local val_3 = v_4["Abilities"][i_2]
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_43)
+				for i_2 = 1, len_43 do
+					local val_2 = v_4["Abilities"][i_2]
 					alloc(8)
-					buffer.writef64(outgoing_buff, outgoing_apos, val_3)
+					buffer.writef64(outgoing_buff, outgoing_apos, val_2)
 				end
-				buffer.writeu8(outgoing_buff, bool_14_pos_1, bool_14)
+				buffer.writeu8(outgoing_buff, bool_11_pos_1, bool_11)
 			end
 			if len_pos_4 then
-				buffer.writeu16(outgoing_buff, len_pos_4, len_34 - 1)
+				buffer.writeu16(outgoing_buff, len_pos_4, len_32 - 1)
 			else
-				bool_13 = bit32.bor(bool_13, 0b0000000000000001)
+				bool_10 = bit32.bor(bool_10, 0b0000000000000001)
 			end
 			if Value2 then
-				bool_13 = bit32.bor(bool_13, 0b0000000000000010)
+				bool_10 = bit32.bor(bool_10, 0b0000000000000010)
 			end
-			buffer.writeu8(outgoing_buff, bool_13_pos_1, bool_13)
+			buffer.writeu8(outgoing_buff, bool_10_pos_1, bool_10)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				load_player(player)
@@ -1171,33 +1114,33 @@ local returns = {
 		}) }), Value2: (boolean))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
-			local bool_16 = 0
-			local bool_16_pos_1 = alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
+			local bool_13 = 0
+			local bool_13_pos_1 = alloc(1)
 			local len_pos_7
-			local len_46 = 0
+			local len_44 = 0
 			for k_7, v_7 in Value do
-				if len_46 == 0 then
+				if len_44 == 0 then
 					len_pos_7 = alloc(2)
 				end
-				local bool_17 = 0
-				local bool_17_pos_1 = alloc(1)
-				len_46 = len_46 + 1
-				local len_47 = #k_7
+				local bool_14 = 0
+				local bool_14_pos_1 = alloc(1)
+				len_44 = len_44 + 1
+				local len_45 = #k_7
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_45)
+				alloc(len_45)
+				buffer.writestring(outgoing_buff, outgoing_apos, k_7, len_45)
+				local len_46 = #v_7["UniqueId"]
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_46)
+				alloc(len_46)
+				buffer.writestring(outgoing_buff, outgoing_apos, v_7["UniqueId"], len_46)
+				local len_47 = #v_7["UnitName"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_47)
 				alloc(len_47)
-				buffer.writestring(outgoing_buff, outgoing_apos, k_7, len_47)
-				local len_48 = #v_7["UniqueId"]
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_48)
-				alloc(len_48)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_7["UniqueId"], len_48)
-				local len_49 = #v_7["UnitName"]
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_49)
-				alloc(len_49)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_7["UnitName"], len_49)
+				buffer.writestring(outgoing_buff, outgoing_apos, v_7["UnitName"], len_47)
 				local axis_3, angle_3 = v_7["CFrame"]:ToAxisAngle()
 				axis_3 = axis_3 * angle_3
 				alloc(4)
@@ -1213,92 +1156,92 @@ local returns = {
 				alloc(4)
 				buffer.writef32(outgoing_buff, outgoing_apos, axis_3.Z)
 				if v_7["OwnerId"] ~= nil then
-					bool_17 = bit32.bor(bool_17, 0b0000000000000001)
+					bool_14 = bit32.bor(bool_14, 0b0000000000000001)
 					alloc(8)
 					buffer.writef64(outgoing_buff, outgoing_apos, v_7["OwnerId"])
 				end
-				local len_50 = #v_7["AttackPriority"]
+				local len_48 = #v_7["AttackPriority"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_50)
-				alloc(len_50)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_7["AttackPriority"], len_50)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_48)
+				alloc(len_48)
+				buffer.writestring(outgoing_buff, outgoing_apos, v_7["AttackPriority"], len_48)
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, v_7["Level"])
 				local len_pos_8
-				local len_51 = 0
+				local len_49 = 0
 				for k_8, v_8 in v_7["RatioData"] do
-					if len_51 == 0 then
+					if len_49 == 0 then
 						len_pos_8 = alloc(2)
 					end
-					local bool_18 = 0
-					local bool_18_pos_1 = alloc(1)
-					len_51 = len_51 + 1
-					local len_52 = #k_8
+					local bool_15 = 0
+					local bool_15_pos_1 = alloc(1)
+					len_49 = len_49 + 1
+					local len_50 = #k_8
 					alloc(2)
-					buffer.writeu16(outgoing_buff, outgoing_apos, len_52)
-					alloc(len_52)
-					buffer.writestring(outgoing_buff, outgoing_apos, k_8, len_52)
+					buffer.writeu16(outgoing_buff, outgoing_apos, len_50)
+					alloc(len_50)
+					buffer.writestring(outgoing_buff, outgoing_apos, k_8, len_50)
 					local len_pos_9
-					local len_53 = 0
+					local len_51 = 0
 					for k_9, v_9 in v_8 do
-						if len_53 == 0 then
+						if len_51 == 0 then
 							len_pos_9 = alloc(2)
 						end
-						len_53 = len_53 + 1
-						local len_54 = #k_9
+						len_51 = len_51 + 1
+						local len_52 = #k_9
 						alloc(2)
-						buffer.writeu16(outgoing_buff, outgoing_apos, len_54)
-						alloc(len_54)
-						buffer.writestring(outgoing_buff, outgoing_apos, k_9, len_54)
-						local len_55 = #v_9["Type"]
+						buffer.writeu16(outgoing_buff, outgoing_apos, len_52)
+						alloc(len_52)
+						buffer.writestring(outgoing_buff, outgoing_apos, k_9, len_52)
+						local len_53 = #v_9["Type"]
 						alloc(2)
-						buffer.writeu16(outgoing_buff, outgoing_apos, len_55)
-						alloc(len_55)
-						buffer.writestring(outgoing_buff, outgoing_apos, v_9["Type"], len_55)
+						buffer.writeu16(outgoing_buff, outgoing_apos, len_53)
+						alloc(len_53)
+						buffer.writestring(outgoing_buff, outgoing_apos, v_9["Type"], len_53)
 						alloc(4)
 						buffer.writef32(outgoing_buff, outgoing_apos, v_9["Ratio"])
 						alloc(8)
 						buffer.writef64(outgoing_buff, outgoing_apos, v_9["EndTime"])
 					end
 					if len_pos_9 then
-						buffer.writeu16(outgoing_buff, len_pos_9, len_53 - 1)
+						buffer.writeu16(outgoing_buff, len_pos_9, len_51 - 1)
 					else
-						bool_18 = bit32.bor(bool_18, 0b0000000000000001)
+						bool_15 = bit32.bor(bool_15, 0b0000000000000001)
 					end
-					buffer.writeu8(outgoing_buff, bool_18_pos_1, bool_18)
+					buffer.writeu8(outgoing_buff, bool_15_pos_1, bool_15)
 				end
 				if len_pos_8 then
-					buffer.writeu16(outgoing_buff, len_pos_8, len_51 - 1)
+					buffer.writeu16(outgoing_buff, len_pos_8, len_49 - 1)
 				else
-					bool_17 = bit32.bor(bool_17, 0b0000000000000010)
+					bool_14 = bit32.bor(bool_14, 0b0000000000000010)
 				end
 				if v_7["Trait"] ~= nil then
-					bool_17 = bit32.bor(bool_17, 0b0000000000000100)
-					local len_56 = #v_7["Trait"]
+					bool_14 = bit32.bor(bool_14, 0b0000000000000100)
+					local len_54 = #v_7["Trait"]
 					alloc(2)
-					buffer.writeu16(outgoing_buff, outgoing_apos, len_56)
-					alloc(len_56)
-					buffer.writestring(outgoing_buff, outgoing_apos, v_7["Trait"], len_56)
+					buffer.writeu16(outgoing_buff, outgoing_apos, len_54)
+					alloc(len_54)
+					buffer.writestring(outgoing_buff, outgoing_apos, v_7["Trait"], len_54)
 				end
-				local len_57 = #v_7["Abilities"]
+				local len_55 = #v_7["Abilities"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_57)
-				for i_3 = 1, len_57 do
-					local val_4 = v_7["Abilities"][i_3]
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_55)
+				for i_3 = 1, len_55 do
+					local val_3 = v_7["Abilities"][i_3]
 					alloc(8)
-					buffer.writef64(outgoing_buff, outgoing_apos, val_4)
+					buffer.writef64(outgoing_buff, outgoing_apos, val_3)
 				end
-				buffer.writeu8(outgoing_buff, bool_17_pos_1, bool_17)
+				buffer.writeu8(outgoing_buff, bool_14_pos_1, bool_14)
 			end
 			if len_pos_7 then
-				buffer.writeu16(outgoing_buff, len_pos_7, len_46 - 1)
+				buffer.writeu16(outgoing_buff, len_pos_7, len_44 - 1)
 			else
-				bool_16 = bit32.bor(bool_16, 0b0000000000000001)
+				bool_13 = bit32.bor(bool_13, 0b0000000000000001)
 			end
 			if Value2 then
-				bool_16 = bit32.bor(bool_16, 0b0000000000000010)
+				bool_13 = bit32.bor(bool_13, 0b0000000000000010)
 			end
-			buffer.writeu8(outgoing_buff, bool_16_pos_1, bool_16)
+			buffer.writeu8(outgoing_buff, bool_13_pos_1, bool_13)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -1327,33 +1270,33 @@ local returns = {
 		}) }), Value2: (boolean))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
-			local bool_19 = 0
-			local bool_19_pos_1 = alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
+			local bool_16 = 0
+			local bool_16_pos_1 = alloc(1)
 			local len_pos_10
-			local len_58 = 0
+			local len_56 = 0
 			for k_10, v_10 in Value do
-				if len_58 == 0 then
+				if len_56 == 0 then
 					len_pos_10 = alloc(2)
 				end
-				local bool_20 = 0
-				local bool_20_pos_1 = alloc(1)
-				len_58 = len_58 + 1
-				local len_59 = #k_10
+				local bool_17 = 0
+				local bool_17_pos_1 = alloc(1)
+				len_56 = len_56 + 1
+				local len_57 = #k_10
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_57)
+				alloc(len_57)
+				buffer.writestring(outgoing_buff, outgoing_apos, k_10, len_57)
+				local len_58 = #v_10["UniqueId"]
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_58)
+				alloc(len_58)
+				buffer.writestring(outgoing_buff, outgoing_apos, v_10["UniqueId"], len_58)
+				local len_59 = #v_10["UnitName"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_59)
 				alloc(len_59)
-				buffer.writestring(outgoing_buff, outgoing_apos, k_10, len_59)
-				local len_60 = #v_10["UniqueId"]
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_60)
-				alloc(len_60)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_10["UniqueId"], len_60)
-				local len_61 = #v_10["UnitName"]
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_61)
-				alloc(len_61)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_10["UnitName"], len_61)
+				buffer.writestring(outgoing_buff, outgoing_apos, v_10["UnitName"], len_59)
 				local axis_4, angle_4 = v_10["CFrame"]:ToAxisAngle()
 				axis_4 = axis_4 * angle_4
 				alloc(4)
@@ -1369,92 +1312,92 @@ local returns = {
 				alloc(4)
 				buffer.writef32(outgoing_buff, outgoing_apos, axis_4.Z)
 				if v_10["OwnerId"] ~= nil then
-					bool_20 = bit32.bor(bool_20, 0b0000000000000001)
+					bool_17 = bit32.bor(bool_17, 0b0000000000000001)
 					alloc(8)
 					buffer.writef64(outgoing_buff, outgoing_apos, v_10["OwnerId"])
 				end
-				local len_62 = #v_10["AttackPriority"]
+				local len_60 = #v_10["AttackPriority"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_62)
-				alloc(len_62)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_10["AttackPriority"], len_62)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_60)
+				alloc(len_60)
+				buffer.writestring(outgoing_buff, outgoing_apos, v_10["AttackPriority"], len_60)
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, v_10["Level"])
 				local len_pos_11
-				local len_63 = 0
+				local len_61 = 0
 				for k_11, v_11 in v_10["RatioData"] do
-					if len_63 == 0 then
+					if len_61 == 0 then
 						len_pos_11 = alloc(2)
 					end
-					local bool_21 = 0
-					local bool_21_pos_1 = alloc(1)
-					len_63 = len_63 + 1
-					local len_64 = #k_11
+					local bool_18 = 0
+					local bool_18_pos_1 = alloc(1)
+					len_61 = len_61 + 1
+					local len_62 = #k_11
 					alloc(2)
-					buffer.writeu16(outgoing_buff, outgoing_apos, len_64)
-					alloc(len_64)
-					buffer.writestring(outgoing_buff, outgoing_apos, k_11, len_64)
+					buffer.writeu16(outgoing_buff, outgoing_apos, len_62)
+					alloc(len_62)
+					buffer.writestring(outgoing_buff, outgoing_apos, k_11, len_62)
 					local len_pos_12
-					local len_65 = 0
+					local len_63 = 0
 					for k_12, v_12 in v_11 do
-						if len_65 == 0 then
+						if len_63 == 0 then
 							len_pos_12 = alloc(2)
 						end
-						len_65 = len_65 + 1
-						local len_66 = #k_12
+						len_63 = len_63 + 1
+						local len_64 = #k_12
 						alloc(2)
-						buffer.writeu16(outgoing_buff, outgoing_apos, len_66)
-						alloc(len_66)
-						buffer.writestring(outgoing_buff, outgoing_apos, k_12, len_66)
-						local len_67 = #v_12["Type"]
+						buffer.writeu16(outgoing_buff, outgoing_apos, len_64)
+						alloc(len_64)
+						buffer.writestring(outgoing_buff, outgoing_apos, k_12, len_64)
+						local len_65 = #v_12["Type"]
 						alloc(2)
-						buffer.writeu16(outgoing_buff, outgoing_apos, len_67)
-						alloc(len_67)
-						buffer.writestring(outgoing_buff, outgoing_apos, v_12["Type"], len_67)
+						buffer.writeu16(outgoing_buff, outgoing_apos, len_65)
+						alloc(len_65)
+						buffer.writestring(outgoing_buff, outgoing_apos, v_12["Type"], len_65)
 						alloc(4)
 						buffer.writef32(outgoing_buff, outgoing_apos, v_12["Ratio"])
 						alloc(8)
 						buffer.writef64(outgoing_buff, outgoing_apos, v_12["EndTime"])
 					end
 					if len_pos_12 then
-						buffer.writeu16(outgoing_buff, len_pos_12, len_65 - 1)
+						buffer.writeu16(outgoing_buff, len_pos_12, len_63 - 1)
 					else
-						bool_21 = bit32.bor(bool_21, 0b0000000000000001)
+						bool_18 = bit32.bor(bool_18, 0b0000000000000001)
 					end
-					buffer.writeu8(outgoing_buff, bool_21_pos_1, bool_21)
+					buffer.writeu8(outgoing_buff, bool_18_pos_1, bool_18)
 				end
 				if len_pos_11 then
-					buffer.writeu16(outgoing_buff, len_pos_11, len_63 - 1)
+					buffer.writeu16(outgoing_buff, len_pos_11, len_61 - 1)
 				else
-					bool_20 = bit32.bor(bool_20, 0b0000000000000010)
+					bool_17 = bit32.bor(bool_17, 0b0000000000000010)
 				end
 				if v_10["Trait"] ~= nil then
-					bool_20 = bit32.bor(bool_20, 0b0000000000000100)
-					local len_68 = #v_10["Trait"]
+					bool_17 = bit32.bor(bool_17, 0b0000000000000100)
+					local len_66 = #v_10["Trait"]
 					alloc(2)
-					buffer.writeu16(outgoing_buff, outgoing_apos, len_68)
-					alloc(len_68)
-					buffer.writestring(outgoing_buff, outgoing_apos, v_10["Trait"], len_68)
+					buffer.writeu16(outgoing_buff, outgoing_apos, len_66)
+					alloc(len_66)
+					buffer.writestring(outgoing_buff, outgoing_apos, v_10["Trait"], len_66)
 				end
-				local len_69 = #v_10["Abilities"]
+				local len_67 = #v_10["Abilities"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_69)
-				for i_4 = 1, len_69 do
-					local val_5 = v_10["Abilities"][i_4]
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_67)
+				for i_4 = 1, len_67 do
+					local val_4 = v_10["Abilities"][i_4]
 					alloc(8)
-					buffer.writef64(outgoing_buff, outgoing_apos, val_5)
+					buffer.writef64(outgoing_buff, outgoing_apos, val_4)
 				end
-				buffer.writeu8(outgoing_buff, bool_20_pos_1, bool_20)
+				buffer.writeu8(outgoing_buff, bool_17_pos_1, bool_17)
 			end
 			if len_pos_10 then
-				buffer.writeu16(outgoing_buff, len_pos_10, len_58 - 1)
+				buffer.writeu16(outgoing_buff, len_pos_10, len_56 - 1)
 			else
-				bool_19 = bit32.bor(bool_19, 0b0000000000000001)
+				bool_16 = bit32.bor(bool_16, 0b0000000000000001)
 			end
 			if Value2 then
-				bool_19 = bit32.bor(bool_19, 0b0000000000000010)
+				bool_16 = bit32.bor(bool_16, 0b0000000000000010)
 			end
-			buffer.writeu8(outgoing_buff, bool_19_pos_1, bool_19)
+			buffer.writeu8(outgoing_buff, bool_16_pos_1, bool_16)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -1481,33 +1424,33 @@ local returns = {
 		}) }), Value2: (boolean))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
-			local bool_22 = 0
-			local bool_22_pos_1 = alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
+			local bool_19 = 0
+			local bool_19_pos_1 = alloc(1)
 			local len_pos_13
-			local len_70 = 0
+			local len_68 = 0
 			for k_13, v_13 in Value do
-				if len_70 == 0 then
+				if len_68 == 0 then
 					len_pos_13 = alloc(2)
 				end
-				local bool_23 = 0
-				local bool_23_pos_1 = alloc(1)
-				len_70 = len_70 + 1
-				local len_71 = #k_13
+				local bool_20 = 0
+				local bool_20_pos_1 = alloc(1)
+				len_68 = len_68 + 1
+				local len_69 = #k_13
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_69)
+				alloc(len_69)
+				buffer.writestring(outgoing_buff, outgoing_apos, k_13, len_69)
+				local len_70 = #v_13["UniqueId"]
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_70)
+				alloc(len_70)
+				buffer.writestring(outgoing_buff, outgoing_apos, v_13["UniqueId"], len_70)
+				local len_71 = #v_13["UnitName"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_71)
 				alloc(len_71)
-				buffer.writestring(outgoing_buff, outgoing_apos, k_13, len_71)
-				local len_72 = #v_13["UniqueId"]
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_72)
-				alloc(len_72)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_13["UniqueId"], len_72)
-				local len_73 = #v_13["UnitName"]
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_73)
-				alloc(len_73)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_13["UnitName"], len_73)
+				buffer.writestring(outgoing_buff, outgoing_apos, v_13["UnitName"], len_71)
 				local axis_5, angle_5 = v_13["CFrame"]:ToAxisAngle()
 				axis_5 = axis_5 * angle_5
 				alloc(4)
@@ -1523,92 +1466,92 @@ local returns = {
 				alloc(4)
 				buffer.writef32(outgoing_buff, outgoing_apos, axis_5.Z)
 				if v_13["OwnerId"] ~= nil then
-					bool_23 = bit32.bor(bool_23, 0b0000000000000001)
+					bool_20 = bit32.bor(bool_20, 0b0000000000000001)
 					alloc(8)
 					buffer.writef64(outgoing_buff, outgoing_apos, v_13["OwnerId"])
 				end
-				local len_74 = #v_13["AttackPriority"]
+				local len_72 = #v_13["AttackPriority"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_74)
-				alloc(len_74)
-				buffer.writestring(outgoing_buff, outgoing_apos, v_13["AttackPriority"], len_74)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_72)
+				alloc(len_72)
+				buffer.writestring(outgoing_buff, outgoing_apos, v_13["AttackPriority"], len_72)
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, v_13["Level"])
 				local len_pos_14
-				local len_75 = 0
+				local len_73 = 0
 				for k_14, v_14 in v_13["RatioData"] do
-					if len_75 == 0 then
+					if len_73 == 0 then
 						len_pos_14 = alloc(2)
 					end
-					local bool_24 = 0
-					local bool_24_pos_1 = alloc(1)
-					len_75 = len_75 + 1
-					local len_76 = #k_14
+					local bool_21 = 0
+					local bool_21_pos_1 = alloc(1)
+					len_73 = len_73 + 1
+					local len_74 = #k_14
 					alloc(2)
-					buffer.writeu16(outgoing_buff, outgoing_apos, len_76)
-					alloc(len_76)
-					buffer.writestring(outgoing_buff, outgoing_apos, k_14, len_76)
+					buffer.writeu16(outgoing_buff, outgoing_apos, len_74)
+					alloc(len_74)
+					buffer.writestring(outgoing_buff, outgoing_apos, k_14, len_74)
 					local len_pos_15
-					local len_77 = 0
+					local len_75 = 0
 					for k_15, v_15 in v_14 do
-						if len_77 == 0 then
+						if len_75 == 0 then
 							len_pos_15 = alloc(2)
 						end
-						len_77 = len_77 + 1
-						local len_78 = #k_15
+						len_75 = len_75 + 1
+						local len_76 = #k_15
 						alloc(2)
-						buffer.writeu16(outgoing_buff, outgoing_apos, len_78)
-						alloc(len_78)
-						buffer.writestring(outgoing_buff, outgoing_apos, k_15, len_78)
-						local len_79 = #v_15["Type"]
+						buffer.writeu16(outgoing_buff, outgoing_apos, len_76)
+						alloc(len_76)
+						buffer.writestring(outgoing_buff, outgoing_apos, k_15, len_76)
+						local len_77 = #v_15["Type"]
 						alloc(2)
-						buffer.writeu16(outgoing_buff, outgoing_apos, len_79)
-						alloc(len_79)
-						buffer.writestring(outgoing_buff, outgoing_apos, v_15["Type"], len_79)
+						buffer.writeu16(outgoing_buff, outgoing_apos, len_77)
+						alloc(len_77)
+						buffer.writestring(outgoing_buff, outgoing_apos, v_15["Type"], len_77)
 						alloc(4)
 						buffer.writef32(outgoing_buff, outgoing_apos, v_15["Ratio"])
 						alloc(8)
 						buffer.writef64(outgoing_buff, outgoing_apos, v_15["EndTime"])
 					end
 					if len_pos_15 then
-						buffer.writeu16(outgoing_buff, len_pos_15, len_77 - 1)
+						buffer.writeu16(outgoing_buff, len_pos_15, len_75 - 1)
 					else
-						bool_24 = bit32.bor(bool_24, 0b0000000000000001)
+						bool_21 = bit32.bor(bool_21, 0b0000000000000001)
 					end
-					buffer.writeu8(outgoing_buff, bool_24_pos_1, bool_24)
+					buffer.writeu8(outgoing_buff, bool_21_pos_1, bool_21)
 				end
 				if len_pos_14 then
-					buffer.writeu16(outgoing_buff, len_pos_14, len_75 - 1)
+					buffer.writeu16(outgoing_buff, len_pos_14, len_73 - 1)
 				else
-					bool_23 = bit32.bor(bool_23, 0b0000000000000010)
+					bool_20 = bit32.bor(bool_20, 0b0000000000000010)
 				end
 				if v_13["Trait"] ~= nil then
-					bool_23 = bit32.bor(bool_23, 0b0000000000000100)
-					local len_80 = #v_13["Trait"]
+					bool_20 = bit32.bor(bool_20, 0b0000000000000100)
+					local len_78 = #v_13["Trait"]
 					alloc(2)
-					buffer.writeu16(outgoing_buff, outgoing_apos, len_80)
-					alloc(len_80)
-					buffer.writestring(outgoing_buff, outgoing_apos, v_13["Trait"], len_80)
+					buffer.writeu16(outgoing_buff, outgoing_apos, len_78)
+					alloc(len_78)
+					buffer.writestring(outgoing_buff, outgoing_apos, v_13["Trait"], len_78)
 				end
-				local len_81 = #v_13["Abilities"]
+				local len_79 = #v_13["Abilities"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_81)
-				for i_5 = 1, len_81 do
-					local val_6 = v_13["Abilities"][i_5]
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_79)
+				for i_5 = 1, len_79 do
+					local val_5 = v_13["Abilities"][i_5]
 					alloc(8)
-					buffer.writef64(outgoing_buff, outgoing_apos, val_6)
+					buffer.writef64(outgoing_buff, outgoing_apos, val_5)
 				end
-				buffer.writeu8(outgoing_buff, bool_23_pos_1, bool_23)
+				buffer.writeu8(outgoing_buff, bool_20_pos_1, bool_20)
 			end
 			if len_pos_13 then
-				buffer.writeu16(outgoing_buff, len_pos_13, len_70 - 1)
+				buffer.writeu16(outgoing_buff, len_pos_13, len_68 - 1)
 			else
-				bool_22 = bit32.bor(bool_22, 0b0000000000000001)
+				bool_19 = bit32.bor(bool_19, 0b0000000000000001)
 			end
 			if Value2 then
-				bool_22 = bit32.bor(bool_22, 0b0000000000000010)
+				bool_19 = bit32.bor(bool_19, 0b0000000000000010)
 			end
-			buffer.writeu8(outgoing_buff, bool_22_pos_1, bool_22)
+			buffer.writeu8(outgoing_buff, bool_19_pos_1, bool_19)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -1623,34 +1566,34 @@ local returns = {
 		Fire = function(Player: Player, Value: ({ (string) }))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
-			local len_82 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
+			local len_80 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_82)
-			for i_6 = 1, len_82 do
-				local val_7 = Value[i_6]
-				local len_83 = #val_7
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_80)
+			for i_6 = 1, len_80 do
+				local val_6 = Value[i_6]
+				local len_81 = #val_6
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_83)
-				alloc(len_83)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_7, len_83)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_81)
+				alloc(len_81)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_6, len_81)
 			end
 			player_map[Player] = save()
 		end,
 		FireAll = function(Value: ({ (string) }))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
-			local len_84 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
+			local len_82 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_84)
-			for i_7 = 1, len_84 do
-				local val_8 = Value[i_7]
-				local len_85 = #val_8
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_82)
+			for i_7 = 1, len_82 do
+				local val_7 = Value[i_7]
+				local len_83 = #val_7
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_85)
-				alloc(len_85)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_8, len_85)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_83)
+				alloc(len_83)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_7, len_83)
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
@@ -1664,17 +1607,17 @@ local returns = {
 		FireExcept = function(Except: Player, Value: ({ (string) }))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
-			local len_86 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
+			local len_84 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_86)
-			for i_8 = 1, len_86 do
-				local val_9 = Value[i_8]
-				local len_87 = #val_9
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_84)
+			for i_8 = 1, len_84 do
+				local val_8 = Value[i_8]
+				local len_85 = #val_8
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_87)
-				alloc(len_87)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_9, len_87)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_85)
+				alloc(len_85)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_8, len_85)
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
@@ -1690,17 +1633,17 @@ local returns = {
 		FireList = function(List: { [unknown]: Player }, Value: ({ (string) }))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
-			local len_88 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
+			local len_86 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_88)
-			for i_9 = 1, len_88 do
-				local val_10 = Value[i_9]
-				local len_89 = #val_10
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_86)
+			for i_9 = 1, len_86 do
+				local val_9 = Value[i_9]
+				local len_87 = #val_9
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_89)
-				alloc(len_89)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_10, len_89)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_87)
+				alloc(len_87)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_9, len_87)
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
@@ -1714,17 +1657,17 @@ local returns = {
 		FireSet = function(Set: { [Player]: any }, Value: ({ (string) }))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
-			local len_90 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
+			local len_88 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_90)
-			for i_10 = 1, len_90 do
-				local val_11 = Value[i_10]
-				local len_91 = #val_11
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_88)
+			for i_10 = 1, len_88 do
+				local val_10 = Value[i_10]
+				local len_89 = #val_10
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_91)
-				alloc(len_91)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_11, len_91)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_89)
+				alloc(len_89)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_10, len_89)
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
@@ -1743,12 +1686,12 @@ local returns = {
 		}))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 18)
-			local len_92 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 16)
+			local len_90 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_92)
-			alloc(len_92)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_92)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_90)
+			alloc(len_90)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_90)
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value["Coins"])
 			player_map[Player] = save()
@@ -1759,12 +1702,12 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 18)
-			local len_93 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 16)
+			local len_91 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_93)
-			alloc(len_93)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_93)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_91)
+			alloc(len_91)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_91)
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value["Coins"])
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -1782,12 +1725,12 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 18)
-			local len_94 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 16)
+			local len_92 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_94)
-			alloc(len_94)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_94)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_92)
+			alloc(len_92)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_92)
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value["Coins"])
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -1807,12 +1750,12 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 18)
-			local len_95 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 16)
+			local len_93 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_95)
-			alloc(len_95)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_95)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_93)
+			alloc(len_93)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_93)
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value["Coins"])
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -1830,12 +1773,12 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 18)
-			local len_96 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 16)
+			local len_94 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_96)
-			alloc(len_96)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_96)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_94)
+			alloc(len_94)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_94)
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value["Coins"])
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -1859,54 +1802,54 @@ local returns = {
 		}) | (string)), Value3: (string))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
-			local bool_25 = 0
-			local bool_25_pos_1 = alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
+			local bool_22 = 0
+			local bool_22_pos_1 = alloc(1)
 			assert(Value:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value)
 			local ty_name_1 = typeof(Value2)
 			if ty_name_1 == "table" then
-				bool_25 = bit32.bor(bool_25, 0b0000000000000001)
-				local len_97 = #Value2["Unit"]
+				bool_22 = bit32.bor(bool_22, 0b0000000000000001)
+				local len_95 = #Value2["Unit"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_97)
-				alloc(len_97)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value2["Unit"], len_97)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_95)
+				alloc(len_95)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value2["Unit"], len_95)
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, Value2["Level"])
 				if Value2["Trait"] ~= nil then
-					bool_25 = bit32.bor(bool_25, 0b0000000000000010)
-					local len_98 = #Value2["Trait"]
+					bool_22 = bit32.bor(bool_22, 0b0000000000000010)
+					local len_96 = #Value2["Trait"]
 					alloc(2)
-					buffer.writeu16(outgoing_buff, outgoing_apos, len_98)
-					alloc(len_98)
-					buffer.writestring(outgoing_buff, outgoing_apos, Value2["Trait"], len_98)
+					buffer.writeu16(outgoing_buff, outgoing_apos, len_96)
+					alloc(len_96)
+					buffer.writestring(outgoing_buff, outgoing_apos, Value2["Trait"], len_96)
 				end
-				local len_99 = #Value2["UniqueId"]
+				local len_97 = #Value2["UniqueId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_99)
-				alloc(len_99)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_99)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_97)
+				alloc(len_97)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_97)
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, Value2["XP"])
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, Value2["NeededXP"])
 			elseif ty_name_1 == "string" then
 				local _
-				local len_100 = #Value2
+				local len_98 = #Value2
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_100)
-				alloc(len_100)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_100)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_98)
+				alloc(len_98)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_98)
 			else
 				error("Invalid type")
 			end
-			local len_101 = #Value3
+			local len_99 = #Value3
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_101)
-			alloc(len_101)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value3, len_101)
-			buffer.writeu8(outgoing_buff, bool_25_pos_1, bool_25)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_99)
+			alloc(len_99)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value3, len_99)
+			buffer.writeu8(outgoing_buff, bool_22_pos_1, bool_22)
 			player_map[Player] = save()
 		end,
 		FireAll = function(Value: (Player), Value2: (({
@@ -1919,54 +1862,54 @@ local returns = {
 		}) | (string)), Value3: (string))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
-			local bool_26 = 0
-			local bool_26_pos_1 = alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
+			local bool_23 = 0
+			local bool_23_pos_1 = alloc(1)
 			assert(Value:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value)
 			local ty_name_2 = typeof(Value2)
 			if ty_name_2 == "table" then
-				bool_26 = bit32.bor(bool_26, 0b0000000000000001)
-				local len_102 = #Value2["Unit"]
+				bool_23 = bit32.bor(bool_23, 0b0000000000000001)
+				local len_100 = #Value2["Unit"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_102)
-				alloc(len_102)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value2["Unit"], len_102)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_100)
+				alloc(len_100)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value2["Unit"], len_100)
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, Value2["Level"])
 				if Value2["Trait"] ~= nil then
-					bool_26 = bit32.bor(bool_26, 0b0000000000000010)
-					local len_103 = #Value2["Trait"]
+					bool_23 = bit32.bor(bool_23, 0b0000000000000010)
+					local len_101 = #Value2["Trait"]
 					alloc(2)
-					buffer.writeu16(outgoing_buff, outgoing_apos, len_103)
-					alloc(len_103)
-					buffer.writestring(outgoing_buff, outgoing_apos, Value2["Trait"], len_103)
+					buffer.writeu16(outgoing_buff, outgoing_apos, len_101)
+					alloc(len_101)
+					buffer.writestring(outgoing_buff, outgoing_apos, Value2["Trait"], len_101)
 				end
-				local len_104 = #Value2["UniqueId"]
+				local len_102 = #Value2["UniqueId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_104)
-				alloc(len_104)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_104)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_102)
+				alloc(len_102)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_102)
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, Value2["XP"])
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, Value2["NeededXP"])
 			elseif ty_name_2 == "string" then
 				local _
-				local len_105 = #Value2
+				local len_103 = #Value2
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_105)
-				alloc(len_105)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_105)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_103)
+				alloc(len_103)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_103)
 			else
 				error("Invalid type")
 			end
-			local len_106 = #Value3
+			local len_104 = #Value3
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_106)
-			alloc(len_106)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value3, len_106)
-			buffer.writeu8(outgoing_buff, bool_26_pos_1, bool_26)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_104)
+			alloc(len_104)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value3, len_104)
+			buffer.writeu8(outgoing_buff, bool_23_pos_1, bool_23)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				load_player(player)
@@ -1986,54 +1929,54 @@ local returns = {
 		}) | (string)), Value3: (string))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
-			local bool_27 = 0
-			local bool_27_pos_1 = alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
+			local bool_24 = 0
+			local bool_24_pos_1 = alloc(1)
 			assert(Value:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value)
 			local ty_name_3 = typeof(Value2)
 			if ty_name_3 == "table" then
-				bool_27 = bit32.bor(bool_27, 0b0000000000000001)
-				local len_107 = #Value2["Unit"]
+				bool_24 = bit32.bor(bool_24, 0b0000000000000001)
+				local len_105 = #Value2["Unit"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_107)
-				alloc(len_107)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value2["Unit"], len_107)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_105)
+				alloc(len_105)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value2["Unit"], len_105)
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, Value2["Level"])
 				if Value2["Trait"] ~= nil then
-					bool_27 = bit32.bor(bool_27, 0b0000000000000010)
-					local len_108 = #Value2["Trait"]
+					bool_24 = bit32.bor(bool_24, 0b0000000000000010)
+					local len_106 = #Value2["Trait"]
 					alloc(2)
-					buffer.writeu16(outgoing_buff, outgoing_apos, len_108)
-					alloc(len_108)
-					buffer.writestring(outgoing_buff, outgoing_apos, Value2["Trait"], len_108)
+					buffer.writeu16(outgoing_buff, outgoing_apos, len_106)
+					alloc(len_106)
+					buffer.writestring(outgoing_buff, outgoing_apos, Value2["Trait"], len_106)
 				end
-				local len_109 = #Value2["UniqueId"]
+				local len_107 = #Value2["UniqueId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_109)
-				alloc(len_109)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_109)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_107)
+				alloc(len_107)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_107)
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, Value2["XP"])
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, Value2["NeededXP"])
 			elseif ty_name_3 == "string" then
 				local _
-				local len_110 = #Value2
+				local len_108 = #Value2
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_110)
-				alloc(len_110)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_110)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_108)
+				alloc(len_108)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_108)
 			else
 				error("Invalid type")
 			end
-			local len_111 = #Value3
+			local len_109 = #Value3
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_111)
-			alloc(len_111)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value3, len_111)
-			buffer.writeu8(outgoing_buff, bool_27_pos_1, bool_27)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_109)
+			alloc(len_109)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value3, len_109)
+			buffer.writeu8(outgoing_buff, bool_24_pos_1, bool_24)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -2055,54 +1998,54 @@ local returns = {
 		}) | (string)), Value3: (string))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
-			local bool_28 = 0
-			local bool_28_pos_1 = alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
+			local bool_25 = 0
+			local bool_25_pos_1 = alloc(1)
 			assert(Value:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value)
 			local ty_name_4 = typeof(Value2)
 			if ty_name_4 == "table" then
-				bool_28 = bit32.bor(bool_28, 0b0000000000000001)
-				local len_112 = #Value2["Unit"]
+				bool_25 = bit32.bor(bool_25, 0b0000000000000001)
+				local len_110 = #Value2["Unit"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_112)
-				alloc(len_112)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value2["Unit"], len_112)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_110)
+				alloc(len_110)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value2["Unit"], len_110)
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, Value2["Level"])
 				if Value2["Trait"] ~= nil then
-					bool_28 = bit32.bor(bool_28, 0b0000000000000010)
-					local len_113 = #Value2["Trait"]
+					bool_25 = bit32.bor(bool_25, 0b0000000000000010)
+					local len_111 = #Value2["Trait"]
 					alloc(2)
-					buffer.writeu16(outgoing_buff, outgoing_apos, len_113)
-					alloc(len_113)
-					buffer.writestring(outgoing_buff, outgoing_apos, Value2["Trait"], len_113)
+					buffer.writeu16(outgoing_buff, outgoing_apos, len_111)
+					alloc(len_111)
+					buffer.writestring(outgoing_buff, outgoing_apos, Value2["Trait"], len_111)
 				end
-				local len_114 = #Value2["UniqueId"]
+				local len_112 = #Value2["UniqueId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_114)
-				alloc(len_114)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_114)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_112)
+				alloc(len_112)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_112)
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, Value2["XP"])
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, Value2["NeededXP"])
 			elseif ty_name_4 == "string" then
 				local _
-				local len_115 = #Value2
+				local len_113 = #Value2
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_115)
-				alloc(len_115)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_115)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_113)
+				alloc(len_113)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_113)
 			else
 				error("Invalid type")
 			end
-			local len_116 = #Value3
+			local len_114 = #Value3
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_116)
-			alloc(len_116)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value3, len_116)
-			buffer.writeu8(outgoing_buff, bool_28_pos_1, bool_28)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_114)
+			alloc(len_114)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value3, len_114)
+			buffer.writeu8(outgoing_buff, bool_25_pos_1, bool_25)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -2122,54 +2065,54 @@ local returns = {
 		}) | (string)), Value3: (string))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
-			local bool_29 = 0
-			local bool_29_pos_1 = alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
+			local bool_26 = 0
+			local bool_26_pos_1 = alloc(1)
 			assert(Value:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value)
 			local ty_name_5 = typeof(Value2)
 			if ty_name_5 == "table" then
-				bool_29 = bit32.bor(bool_29, 0b0000000000000001)
-				local len_117 = #Value2["Unit"]
+				bool_26 = bit32.bor(bool_26, 0b0000000000000001)
+				local len_115 = #Value2["Unit"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_117)
-				alloc(len_117)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value2["Unit"], len_117)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_115)
+				alloc(len_115)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value2["Unit"], len_115)
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, Value2["Level"])
 				if Value2["Trait"] ~= nil then
-					bool_29 = bit32.bor(bool_29, 0b0000000000000010)
-					local len_118 = #Value2["Trait"]
+					bool_26 = bit32.bor(bool_26, 0b0000000000000010)
+					local len_116 = #Value2["Trait"]
 					alloc(2)
-					buffer.writeu16(outgoing_buff, outgoing_apos, len_118)
-					alloc(len_118)
-					buffer.writestring(outgoing_buff, outgoing_apos, Value2["Trait"], len_118)
+					buffer.writeu16(outgoing_buff, outgoing_apos, len_116)
+					alloc(len_116)
+					buffer.writestring(outgoing_buff, outgoing_apos, Value2["Trait"], len_116)
 				end
-				local len_119 = #Value2["UniqueId"]
+				local len_117 = #Value2["UniqueId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_119)
-				alloc(len_119)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_119)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_117)
+				alloc(len_117)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_117)
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, Value2["XP"])
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, Value2["NeededXP"])
 			elseif ty_name_5 == "string" then
 				local _
-				local len_120 = #Value2
+				local len_118 = #Value2
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_120)
-				alloc(len_120)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_120)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_118)
+				alloc(len_118)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_118)
 			else
 				error("Invalid type")
 			end
-			local len_121 = #Value3
+			local len_119 = #Value3
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_121)
-			alloc(len_121)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value3, len_121)
-			buffer.writeu8(outgoing_buff, bool_29_pos_1, bool_29)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_119)
+			alloc(len_119)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value3, len_119)
+			buffer.writeu8(outgoing_buff, bool_26_pos_1, bool_26)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -2190,19 +2133,19 @@ local returns = {
 		}))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
-			local len_122 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
+			local len_120 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_122)
-			alloc(len_122)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_122)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_120)
+			alloc(len_120)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_120)
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value["Index"])
-			local len_123 = #Value["EnemyId"]
+			local len_121 = #Value["EnemyId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_123)
-			alloc(len_123)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["EnemyId"], len_123)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_121)
+			alloc(len_121)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["EnemyId"], len_121)
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value["Firetime"])
 			alloc(4)
@@ -2218,19 +2161,19 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
-			local len_124 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
+			local len_122 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_124)
-			alloc(len_124)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_124)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_122)
+			alloc(len_122)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_122)
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value["Index"])
-			local len_125 = #Value["EnemyId"]
+			local len_123 = #Value["EnemyId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_125)
-			alloc(len_125)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["EnemyId"], len_125)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_123)
+			alloc(len_123)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["EnemyId"], len_123)
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value["Firetime"])
 			alloc(4)
@@ -2253,19 +2196,19 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
-			local len_126 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
+			local len_124 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_126)
-			alloc(len_126)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_126)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_124)
+			alloc(len_124)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_124)
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value["Index"])
-			local len_127 = #Value["EnemyId"]
+			local len_125 = #Value["EnemyId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_127)
-			alloc(len_127)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["EnemyId"], len_127)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_125)
+			alloc(len_125)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["EnemyId"], len_125)
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value["Firetime"])
 			alloc(4)
@@ -2290,19 +2233,19 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
-			local len_128 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
+			local len_126 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_128)
-			alloc(len_128)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_128)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_126)
+			alloc(len_126)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_126)
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value["Index"])
-			local len_129 = #Value["EnemyId"]
+			local len_127 = #Value["EnemyId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_129)
-			alloc(len_129)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["EnemyId"], len_129)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_127)
+			alloc(len_127)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["EnemyId"], len_127)
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value["Firetime"])
 			alloc(4)
@@ -2325,19 +2268,19 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
-			local len_130 = #Value["UniqueId"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
+			local len_128 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_130)
-			alloc(len_130)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_130)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_128)
+			alloc(len_128)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_128)
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value["Index"])
-			local len_131 = #Value["EnemyId"]
+			local len_129 = #Value["EnemyId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_131)
-			alloc(len_131)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["EnemyId"], len_131)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_129)
+			alloc(len_129)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["EnemyId"], len_129)
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value["Firetime"])
 			alloc(4)
@@ -2364,9 +2307,61 @@ local returns = {
 		}), Value2: (boolean))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
-			local bool_30 = 0
-			local bool_30_pos_1 = alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
+			local bool_27 = 0
+			local bool_27_pos_1 = alloc(1)
+			local len_130 = #Value["UniqueId"]
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_130)
+			alloc(len_130)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_130)
+			local len_131 = #Value["AnimationName"]
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_131)
+			alloc(len_131)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["AnimationName"], len_131)
+			if Value["SecondsAfter"] ~= nil then
+				bool_27 = bit32.bor(bool_27, 0b0000000000000001)
+				alloc(4)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["SecondsAfter"])
+			end
+			if Value["SpeedRatio"] ~= nil then
+				bool_27 = bit32.bor(bool_27, 0b0000000000000010)
+				alloc(4)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["SpeedRatio"])
+			end
+			if Value["FadeTime"] ~= nil then
+				bool_27 = bit32.bor(bool_27, 0b0000000000000100)
+				alloc(4)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["FadeTime"])
+			end
+			if Value["Length"] ~= nil then
+				bool_27 = bit32.bor(bool_27, 0b0000000000001000)
+				alloc(4)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["Length"])
+			end
+			alloc(4)
+			buffer.writef32(outgoing_buff, outgoing_apos, Value["SentTime"])
+			if Value2 then
+				bool_27 = bit32.bor(bool_27, 0b0000000000010000)
+			end
+			buffer.writeu8(outgoing_buff, bool_27_pos_1, bool_27)
+			player_map[Player] = save()
+		end,
+		FireAll = function(Value: ({
+			["UniqueId"]: (string),
+			["AnimationName"]: (string),
+			["SecondsAfter"]: ((number)?),
+			["SpeedRatio"]: ((number)?),
+			["FadeTime"]: ((number)?),
+			["Length"]: ((number)?),
+			["SentTime"]: (number),
+		}), Value2: (boolean))
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
+			local bool_28 = 0
+			local bool_28_pos_1 = alloc(1)
 			local len_132 = #Value["UniqueId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_132)
@@ -2377,6 +2372,126 @@ local returns = {
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_133)
 			alloc(len_133)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value["AnimationName"], len_133)
+			if Value["SecondsAfter"] ~= nil then
+				bool_28 = bit32.bor(bool_28, 0b0000000000000001)
+				alloc(4)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["SecondsAfter"])
+			end
+			if Value["SpeedRatio"] ~= nil then
+				bool_28 = bit32.bor(bool_28, 0b0000000000000010)
+				alloc(4)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["SpeedRatio"])
+			end
+			if Value["FadeTime"] ~= nil then
+				bool_28 = bit32.bor(bool_28, 0b0000000000000100)
+				alloc(4)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["FadeTime"])
+			end
+			if Value["Length"] ~= nil then
+				bool_28 = bit32.bor(bool_28, 0b0000000000001000)
+				alloc(4)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["Length"])
+			end
+			alloc(4)
+			buffer.writef32(outgoing_buff, outgoing_apos, Value["SentTime"])
+			if Value2 then
+				bool_28 = bit32.bor(bool_28, 0b0000000000010000)
+			end
+			buffer.writeu8(outgoing_buff, bool_28_pos_1, bool_28)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in Players:GetPlayers() do
+				load_player(player)
+				alloc(used)
+				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+				player_map[player] = save()
+			end
+		end,
+		FireExcept = function(Except: Player, Value: ({
+			["UniqueId"]: (string),
+			["AnimationName"]: (string),
+			["SecondsAfter"]: ((number)?),
+			["SpeedRatio"]: ((number)?),
+			["FadeTime"]: ((number)?),
+			["Length"]: ((number)?),
+			["SentTime"]: (number),
+		}), Value2: (boolean))
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
+			local bool_29 = 0
+			local bool_29_pos_1 = alloc(1)
+			local len_134 = #Value["UniqueId"]
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_134)
+			alloc(len_134)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_134)
+			local len_135 = #Value["AnimationName"]
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_135)
+			alloc(len_135)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["AnimationName"], len_135)
+			if Value["SecondsAfter"] ~= nil then
+				bool_29 = bit32.bor(bool_29, 0b0000000000000001)
+				alloc(4)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["SecondsAfter"])
+			end
+			if Value["SpeedRatio"] ~= nil then
+				bool_29 = bit32.bor(bool_29, 0b0000000000000010)
+				alloc(4)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["SpeedRatio"])
+			end
+			if Value["FadeTime"] ~= nil then
+				bool_29 = bit32.bor(bool_29, 0b0000000000000100)
+				alloc(4)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["FadeTime"])
+			end
+			if Value["Length"] ~= nil then
+				bool_29 = bit32.bor(bool_29, 0b0000000000001000)
+				alloc(4)
+				buffer.writef32(outgoing_buff, outgoing_apos, Value["Length"])
+			end
+			alloc(4)
+			buffer.writef32(outgoing_buff, outgoing_apos, Value["SentTime"])
+			if Value2 then
+				bool_29 = bit32.bor(bool_29, 0b0000000000010000)
+			end
+			buffer.writeu8(outgoing_buff, bool_29_pos_1, bool_29)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in Players:GetPlayers() do
+				if player ~= Except then
+					load_player(player)
+					alloc(used)
+					buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+					table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+					player_map[player] = save()
+				end
+			end
+		end,
+		FireList = function(List: { [unknown]: Player }, Value: ({
+			["UniqueId"]: (string),
+			["AnimationName"]: (string),
+			["SecondsAfter"]: ((number)?),
+			["SpeedRatio"]: ((number)?),
+			["FadeTime"]: ((number)?),
+			["Length"]: ((number)?),
+			["SentTime"]: (number),
+		}), Value2: (boolean))
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
+			local bool_30 = 0
+			local bool_30_pos_1 = alloc(1)
+			local len_136 = #Value["UniqueId"]
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_136)
+			alloc(len_136)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_136)
+			local len_137 = #Value["AnimationName"]
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_137)
+			alloc(len_137)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["AnimationName"], len_137)
 			if Value["SecondsAfter"] ~= nil then
 				bool_30 = bit32.bor(bool_30, 0b0000000000000001)
 				alloc(4)
@@ -2403,9 +2518,16 @@ local returns = {
 				bool_30 = bit32.bor(bool_30, 0b0000000000010000)
 			end
 			buffer.writeu8(outgoing_buff, bool_30_pos_1, bool_30)
-			player_map[Player] = save()
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in List do
+				load_player(player)
+				alloc(used)
+				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+				player_map[player] = save()
+			end
 		end,
-		FireAll = function(Value: ({
+		FireSet = function(Set: { [Player]: any }, Value: ({
 			["UniqueId"]: (string),
 			["AnimationName"]: (string),
 			["SecondsAfter"]: ((number)?),
@@ -2416,19 +2538,19 @@ local returns = {
 		}), Value2: (boolean))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
 			local bool_31 = 0
 			local bool_31_pos_1 = alloc(1)
-			local len_134 = #Value["UniqueId"]
+			local len_138 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_134)
-			alloc(len_134)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_134)
-			local len_135 = #Value["AnimationName"]
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_138)
+			alloc(len_138)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_138)
+			local len_139 = #Value["AnimationName"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_135)
-			alloc(len_135)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["AnimationName"], len_135)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_139)
+			alloc(len_139)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["AnimationName"], len_139)
 			if Value["SecondsAfter"] ~= nil then
 				bool_31 = bit32.bor(bool_31, 0b0000000000000001)
 				alloc(4)
@@ -2456,185 +2578,6 @@ local returns = {
 			end
 			buffer.writeu8(outgoing_buff, bool_31_pos_1, bool_31)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
-			for _, player in Players:GetPlayers() do
-				load_player(player)
-				alloc(used)
-				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
-				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
-				player_map[player] = save()
-			end
-		end,
-		FireExcept = function(Except: Player, Value: ({
-			["UniqueId"]: (string),
-			["AnimationName"]: (string),
-			["SecondsAfter"]: ((number)?),
-			["SpeedRatio"]: ((number)?),
-			["FadeTime"]: ((number)?),
-			["Length"]: ((number)?),
-			["SentTime"]: (number),
-		}), Value2: (boolean))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
-			local bool_32 = 0
-			local bool_32_pos_1 = alloc(1)
-			local len_136 = #Value["UniqueId"]
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_136)
-			alloc(len_136)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_136)
-			local len_137 = #Value["AnimationName"]
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_137)
-			alloc(len_137)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["AnimationName"], len_137)
-			if Value["SecondsAfter"] ~= nil then
-				bool_32 = bit32.bor(bool_32, 0b0000000000000001)
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value["SecondsAfter"])
-			end
-			if Value["SpeedRatio"] ~= nil then
-				bool_32 = bit32.bor(bool_32, 0b0000000000000010)
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value["SpeedRatio"])
-			end
-			if Value["FadeTime"] ~= nil then
-				bool_32 = bit32.bor(bool_32, 0b0000000000000100)
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value["FadeTime"])
-			end
-			if Value["Length"] ~= nil then
-				bool_32 = bit32.bor(bool_32, 0b0000000000001000)
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value["Length"])
-			end
-			alloc(4)
-			buffer.writef32(outgoing_buff, outgoing_apos, Value["SentTime"])
-			if Value2 then
-				bool_32 = bit32.bor(bool_32, 0b0000000000010000)
-			end
-			buffer.writeu8(outgoing_buff, bool_32_pos_1, bool_32)
-			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
-			for _, player in Players:GetPlayers() do
-				if player ~= Except then
-					load_player(player)
-					alloc(used)
-					buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
-					table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
-					player_map[player] = save()
-				end
-			end
-		end,
-		FireList = function(List: { [unknown]: Player }, Value: ({
-			["UniqueId"]: (string),
-			["AnimationName"]: (string),
-			["SecondsAfter"]: ((number)?),
-			["SpeedRatio"]: ((number)?),
-			["FadeTime"]: ((number)?),
-			["Length"]: ((number)?),
-			["SentTime"]: (number),
-		}), Value2: (boolean))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
-			local bool_33 = 0
-			local bool_33_pos_1 = alloc(1)
-			local len_138 = #Value["UniqueId"]
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_138)
-			alloc(len_138)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_138)
-			local len_139 = #Value["AnimationName"]
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_139)
-			alloc(len_139)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["AnimationName"], len_139)
-			if Value["SecondsAfter"] ~= nil then
-				bool_33 = bit32.bor(bool_33, 0b0000000000000001)
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value["SecondsAfter"])
-			end
-			if Value["SpeedRatio"] ~= nil then
-				bool_33 = bit32.bor(bool_33, 0b0000000000000010)
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value["SpeedRatio"])
-			end
-			if Value["FadeTime"] ~= nil then
-				bool_33 = bit32.bor(bool_33, 0b0000000000000100)
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value["FadeTime"])
-			end
-			if Value["Length"] ~= nil then
-				bool_33 = bit32.bor(bool_33, 0b0000000000001000)
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value["Length"])
-			end
-			alloc(4)
-			buffer.writef32(outgoing_buff, outgoing_apos, Value["SentTime"])
-			if Value2 then
-				bool_33 = bit32.bor(bool_33, 0b0000000000010000)
-			end
-			buffer.writeu8(outgoing_buff, bool_33_pos_1, bool_33)
-			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
-			for _, player in List do
-				load_player(player)
-				alloc(used)
-				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
-				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
-				player_map[player] = save()
-			end
-		end,
-		FireSet = function(Set: { [Player]: any }, Value: ({
-			["UniqueId"]: (string),
-			["AnimationName"]: (string),
-			["SecondsAfter"]: ((number)?),
-			["SpeedRatio"]: ((number)?),
-			["FadeTime"]: ((number)?),
-			["Length"]: ((number)?),
-			["SentTime"]: (number),
-		}), Value2: (boolean))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
-			local bool_34 = 0
-			local bool_34_pos_1 = alloc(1)
-			local len_140 = #Value["UniqueId"]
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_140)
-			alloc(len_140)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_140)
-			local len_141 = #Value["AnimationName"]
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_141)
-			alloc(len_141)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["AnimationName"], len_141)
-			if Value["SecondsAfter"] ~= nil then
-				bool_34 = bit32.bor(bool_34, 0b0000000000000001)
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value["SecondsAfter"])
-			end
-			if Value["SpeedRatio"] ~= nil then
-				bool_34 = bit32.bor(bool_34, 0b0000000000000010)
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value["SpeedRatio"])
-			end
-			if Value["FadeTime"] ~= nil then
-				bool_34 = bit32.bor(bool_34, 0b0000000000000100)
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value["FadeTime"])
-			end
-			if Value["Length"] ~= nil then
-				bool_34 = bit32.bor(bool_34, 0b0000000000001000)
-				alloc(4)
-				buffer.writef32(outgoing_buff, outgoing_apos, Value["Length"])
-			end
-			alloc(4)
-			buffer.writef32(outgoing_buff, outgoing_apos, Value["SentTime"])
-			if Value2 then
-				bool_34 = bit32.bor(bool_34, 0b0000000000010000)
-			end
-			buffer.writeu8(outgoing_buff, bool_34_pos_1, bool_34)
-			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
 				alloc(used)
@@ -2648,12 +2591,12 @@ local returns = {
 		Fire = function(Player: Player, Value: (string), Value2: (number), Value3: (number))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
-			local len_142 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
+			local len_140 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_142)
-			alloc(len_142)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_142)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_140)
+			alloc(len_140)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_140)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value2)
 			alloc(8)
@@ -2663,12 +2606,12 @@ local returns = {
 		FireAll = function(Value: (string), Value2: (number), Value3: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
-			local len_143 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
+			local len_141 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_143)
-			alloc(len_143)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_143)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_141)
+			alloc(len_141)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_141)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value2)
 			alloc(8)
@@ -2685,12 +2628,12 @@ local returns = {
 		FireExcept = function(Except: Player, Value: (string), Value2: (number), Value3: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
-			local len_144 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
+			local len_142 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_144)
-			alloc(len_144)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_144)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_142)
+			alloc(len_142)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_142)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value2)
 			alloc(8)
@@ -2709,12 +2652,12 @@ local returns = {
 		FireList = function(List: { [unknown]: Player }, Value: (string), Value2: (number), Value3: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
-			local len_145 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
+			local len_143 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_145)
-			alloc(len_145)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_145)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_143)
+			alloc(len_143)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_143)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value2)
 			alloc(8)
@@ -2731,12 +2674,12 @@ local returns = {
 		FireSet = function(Set: { [Player]: any }, Value: (string), Value2: (number), Value3: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
-			local len_146 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
+			local len_144 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_146)
-			alloc(len_146)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_146)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_144)
+			alloc(len_144)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_144)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value2)
 			alloc(8)
@@ -2757,37 +2700,37 @@ local returns = {
 		}) }))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
-			local bool_35 = 0
-			local bool_35_pos_1 = alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+			local bool_32 = 0
+			local bool_32_pos_1 = alloc(1)
 			local len_pos_16
-			local len_147 = 0
+			local len_145 = 0
 			for k_16, v_16 in Value do
-				if len_147 == 0 then
+				if len_145 == 0 then
 					len_pos_16 = alloc(2)
 				end
-				local bool_36 = 0
-				local bool_36_pos_1 = alloc(1)
-				len_147 = len_147 + 1
+				local bool_33 = 0
+				local bool_33_pos_1 = alloc(1)
+				len_145 = len_145 + 1
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, k_16)
 				if v_16["Status"] == "Trading" then
-					bool_36 = bit32.bor(bool_36, 0b0000000000000001)
+					bool_33 = bit32.bor(bool_33, 0b0000000000000001)
 				elseif v_16["Status"] == "CanTrade" then
-					bool_36 = bit32.bor(bool_36, 0b0000000000000010)
+					bool_33 = bit32.bor(bool_33, 0b0000000000000010)
 				elseif v_16["Status"] == "TradeDisabled" then
-					bool_36 = bit32.bor(bool_36, 0b0000000000000100)
+					bool_33 = bit32.bor(bool_33, 0b0000000000000100)
 				else
 					error("Invalid enumerator")
 				end
-				buffer.writeu8(outgoing_buff, bool_36_pos_1, bool_36)
+				buffer.writeu8(outgoing_buff, bool_33_pos_1, bool_33)
 			end
 			if len_pos_16 then
-				buffer.writeu16(outgoing_buff, len_pos_16, len_147 - 1)
+				buffer.writeu16(outgoing_buff, len_pos_16, len_145 - 1)
 			else
-				bool_35 = bit32.bor(bool_35, 0b0000000000000001)
+				bool_32 = bit32.bor(bool_32, 0b0000000000000001)
 			end
-			buffer.writeu8(outgoing_buff, bool_35_pos_1, bool_35)
+			buffer.writeu8(outgoing_buff, bool_32_pos_1, bool_32)
 			player_map[Player] = save()
 		end,
 		FireAll = function(Value: ({ [(number)]: ({
@@ -2795,37 +2738,37 @@ local returns = {
 		}) }))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
-			local bool_37 = 0
-			local bool_37_pos_1 = alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+			local bool_34 = 0
+			local bool_34_pos_1 = alloc(1)
 			local len_pos_17
-			local len_148 = 0
+			local len_146 = 0
 			for k_17, v_17 in Value do
-				if len_148 == 0 then
+				if len_146 == 0 then
 					len_pos_17 = alloc(2)
 				end
-				local bool_38 = 0
-				local bool_38_pos_1 = alloc(1)
-				len_148 = len_148 + 1
+				local bool_35 = 0
+				local bool_35_pos_1 = alloc(1)
+				len_146 = len_146 + 1
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, k_17)
 				if v_17["Status"] == "Trading" then
-					bool_38 = bit32.bor(bool_38, 0b0000000000000001)
+					bool_35 = bit32.bor(bool_35, 0b0000000000000001)
 				elseif v_17["Status"] == "CanTrade" then
-					bool_38 = bit32.bor(bool_38, 0b0000000000000010)
+					bool_35 = bit32.bor(bool_35, 0b0000000000000010)
 				elseif v_17["Status"] == "TradeDisabled" then
-					bool_38 = bit32.bor(bool_38, 0b0000000000000100)
+					bool_35 = bit32.bor(bool_35, 0b0000000000000100)
 				else
 					error("Invalid enumerator")
 				end
-				buffer.writeu8(outgoing_buff, bool_38_pos_1, bool_38)
+				buffer.writeu8(outgoing_buff, bool_35_pos_1, bool_35)
 			end
 			if len_pos_17 then
-				buffer.writeu16(outgoing_buff, len_pos_17, len_148 - 1)
+				buffer.writeu16(outgoing_buff, len_pos_17, len_146 - 1)
 			else
-				bool_37 = bit32.bor(bool_37, 0b0000000000000001)
+				bool_34 = bit32.bor(bool_34, 0b0000000000000001)
 			end
-			buffer.writeu8(outgoing_buff, bool_37_pos_1, bool_37)
+			buffer.writeu8(outgoing_buff, bool_34_pos_1, bool_34)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				load_player(player)
@@ -2840,37 +2783,37 @@ local returns = {
 		}) }))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
-			local bool_39 = 0
-			local bool_39_pos_1 = alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+			local bool_36 = 0
+			local bool_36_pos_1 = alloc(1)
 			local len_pos_18
-			local len_149 = 0
+			local len_147 = 0
 			for k_18, v_18 in Value do
-				if len_149 == 0 then
+				if len_147 == 0 then
 					len_pos_18 = alloc(2)
 				end
-				local bool_40 = 0
-				local bool_40_pos_1 = alloc(1)
-				len_149 = len_149 + 1
+				local bool_37 = 0
+				local bool_37_pos_1 = alloc(1)
+				len_147 = len_147 + 1
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, k_18)
 				if v_18["Status"] == "Trading" then
-					bool_40 = bit32.bor(bool_40, 0b0000000000000001)
+					bool_37 = bit32.bor(bool_37, 0b0000000000000001)
 				elseif v_18["Status"] == "CanTrade" then
-					bool_40 = bit32.bor(bool_40, 0b0000000000000010)
+					bool_37 = bit32.bor(bool_37, 0b0000000000000010)
 				elseif v_18["Status"] == "TradeDisabled" then
-					bool_40 = bit32.bor(bool_40, 0b0000000000000100)
+					bool_37 = bit32.bor(bool_37, 0b0000000000000100)
 				else
 					error("Invalid enumerator")
 				end
-				buffer.writeu8(outgoing_buff, bool_40_pos_1, bool_40)
+				buffer.writeu8(outgoing_buff, bool_37_pos_1, bool_37)
 			end
 			if len_pos_18 then
-				buffer.writeu16(outgoing_buff, len_pos_18, len_149 - 1)
+				buffer.writeu16(outgoing_buff, len_pos_18, len_147 - 1)
 			else
-				bool_39 = bit32.bor(bool_39, 0b0000000000000001)
+				bool_36 = bit32.bor(bool_36, 0b0000000000000001)
 			end
-			buffer.writeu8(outgoing_buff, bool_39_pos_1, bool_39)
+			buffer.writeu8(outgoing_buff, bool_36_pos_1, bool_36)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -2887,37 +2830,37 @@ local returns = {
 		}) }))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
-			local bool_41 = 0
-			local bool_41_pos_1 = alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+			local bool_38 = 0
+			local bool_38_pos_1 = alloc(1)
 			local len_pos_19
-			local len_150 = 0
+			local len_148 = 0
 			for k_19, v_19 in Value do
-				if len_150 == 0 then
+				if len_148 == 0 then
 					len_pos_19 = alloc(2)
 				end
-				local bool_42 = 0
-				local bool_42_pos_1 = alloc(1)
-				len_150 = len_150 + 1
+				local bool_39 = 0
+				local bool_39_pos_1 = alloc(1)
+				len_148 = len_148 + 1
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, k_19)
 				if v_19["Status"] == "Trading" then
-					bool_42 = bit32.bor(bool_42, 0b0000000000000001)
+					bool_39 = bit32.bor(bool_39, 0b0000000000000001)
 				elseif v_19["Status"] == "CanTrade" then
-					bool_42 = bit32.bor(bool_42, 0b0000000000000010)
+					bool_39 = bit32.bor(bool_39, 0b0000000000000010)
 				elseif v_19["Status"] == "TradeDisabled" then
-					bool_42 = bit32.bor(bool_42, 0b0000000000000100)
+					bool_39 = bit32.bor(bool_39, 0b0000000000000100)
 				else
 					error("Invalid enumerator")
 				end
-				buffer.writeu8(outgoing_buff, bool_42_pos_1, bool_42)
+				buffer.writeu8(outgoing_buff, bool_39_pos_1, bool_39)
 			end
 			if len_pos_19 then
-				buffer.writeu16(outgoing_buff, len_pos_19, len_150 - 1)
+				buffer.writeu16(outgoing_buff, len_pos_19, len_148 - 1)
 			else
-				bool_41 = bit32.bor(bool_41, 0b0000000000000001)
+				bool_38 = bit32.bor(bool_38, 0b0000000000000001)
 			end
-			buffer.writeu8(outgoing_buff, bool_41_pos_1, bool_41)
+			buffer.writeu8(outgoing_buff, bool_38_pos_1, bool_38)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -2932,37 +2875,37 @@ local returns = {
 		}) }))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
-			local bool_43 = 0
-			local bool_43_pos_1 = alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+			local bool_40 = 0
+			local bool_40_pos_1 = alloc(1)
 			local len_pos_20
-			local len_151 = 0
+			local len_149 = 0
 			for k_20, v_20 in Value do
-				if len_151 == 0 then
+				if len_149 == 0 then
 					len_pos_20 = alloc(2)
 				end
-				local bool_44 = 0
-				local bool_44_pos_1 = alloc(1)
-				len_151 = len_151 + 1
+				local bool_41 = 0
+				local bool_41_pos_1 = alloc(1)
+				len_149 = len_149 + 1
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, k_20)
 				if v_20["Status"] == "Trading" then
-					bool_44 = bit32.bor(bool_44, 0b0000000000000001)
+					bool_41 = bit32.bor(bool_41, 0b0000000000000001)
 				elseif v_20["Status"] == "CanTrade" then
-					bool_44 = bit32.bor(bool_44, 0b0000000000000010)
+					bool_41 = bit32.bor(bool_41, 0b0000000000000010)
 				elseif v_20["Status"] == "TradeDisabled" then
-					bool_44 = bit32.bor(bool_44, 0b0000000000000100)
+					bool_41 = bit32.bor(bool_41, 0b0000000000000100)
 				else
 					error("Invalid enumerator")
 				end
-				buffer.writeu8(outgoing_buff, bool_44_pos_1, bool_44)
+				buffer.writeu8(outgoing_buff, bool_41_pos_1, bool_41)
 			end
 			if len_pos_20 then
-				buffer.writeu16(outgoing_buff, len_pos_20, len_151 - 1)
+				buffer.writeu16(outgoing_buff, len_pos_20, len_149 - 1)
 			else
-				bool_43 = bit32.bor(bool_43, 0b0000000000000001)
+				bool_40 = bit32.bor(bool_40, 0b0000000000000001)
 			end
-			buffer.writeu8(outgoing_buff, bool_43_pos_1, bool_43)
+			buffer.writeu8(outgoing_buff, bool_40_pos_1, bool_40)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -2980,7 +2923,7 @@ local returns = {
 		}))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
 			assert(Value["Player1"]:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value["Player1"])
 			assert(Value["Player2"]:IsA("Player"), "received instance is not of the Player class!")
@@ -2993,7 +2936,7 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
 			assert(Value["Player1"]:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value["Player1"])
 			assert(Value["Player2"]:IsA("Player"), "received instance is not of the Player class!")
@@ -3013,7 +2956,7 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
 			assert(Value["Player1"]:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value["Player1"])
 			assert(Value["Player2"]:IsA("Player"), "received instance is not of the Player class!")
@@ -3035,7 +2978,7 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
 			assert(Value["Player1"]:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value["Player1"])
 			assert(Value["Player2"]:IsA("Player"), "received instance is not of the Player class!")
@@ -3055,7 +2998,7 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
 			assert(Value["Player1"]:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value["Player1"])
 			assert(Value["Player2"]:IsA("Player"), "received instance is not of the Player class!")
@@ -3074,7 +3017,7 @@ local returns = {
 		Fire = function(Player: Player, Value: (Player), Value2: (number))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			assert(Value:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value)
 			alloc(8)
@@ -3084,7 +3027,7 @@ local returns = {
 		FireAll = function(Value: (Player), Value2: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			assert(Value:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value)
 			alloc(8)
@@ -3101,7 +3044,7 @@ local returns = {
 		FireExcept = function(Except: Player, Value: (Player), Value2: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			assert(Value:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value)
 			alloc(8)
@@ -3120,7 +3063,7 @@ local returns = {
 		FireList = function(List: { [unknown]: Player }, Value: (Player), Value2: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			assert(Value:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value)
 			alloc(8)
@@ -3137,7 +3080,7 @@ local returns = {
 		FireSet = function(Set: { [Player]: any }, Value: (Player), Value2: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			assert(Value:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value)
 			alloc(8)
@@ -3154,9 +3097,9 @@ local returns = {
 	},
 	TradeRequestClient = {
 		SetCallback = function(Callback: (Player: Player, Value: (Player)) -> ()): () -> ()
-			reliable_events[2] = Callback
+			reliable_events[0] = Callback
 			return function()
-				reliable_events[2] = nil
+				reliable_events[0] = nil
 			end
 		end,
 	},
@@ -3164,13 +3107,13 @@ local returns = {
 		Fire = function(Player: Player)
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
 			player_map[Player] = save()
 		end,
 		FireAll = function()
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				load_player(player)
@@ -3183,7 +3126,7 @@ local returns = {
 		FireExcept = function(Except: Player)
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -3198,7 +3141,7 @@ local returns = {
 		FireList = function(List: { [unknown]: Player })
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -3211,7 +3154,7 @@ local returns = {
 		FireSet = function(Set: { [Player]: any })
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -3224,17 +3167,17 @@ local returns = {
 	},
 	TradeAccept = {
 		SetCallback = function(Callback: (Player: Player, Value: (Player)) -> ()): () -> ()
-			reliable_events[3] = Callback
+			reliable_events[1] = Callback
 			return function()
-				reliable_events[3] = nil
+				reliable_events[1] = nil
 			end
 		end,
 	},
 	ToggleStatus = {
 		SetCallback = function(Callback: (Player: Player, Value: (boolean)) -> ()): () -> ()
-			reliable_events[7] = Callback
+			reliable_events[5] = Callback
 			return function()
-				reliable_events[7] = nil
+				reliable_events[5] = nil
 			end
 		end,
 	},
@@ -3245,7 +3188,101 @@ local returns = {
 		}))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			local bool_42 = 0
+			local bool_42_pos_1 = alloc(1)
+			if Value["Player"] ~= nil then
+				bool_42 = bit32.bor(bool_42, 0b0000000000000001)
+				assert(Value["Player"]:IsA("Player"), "received instance is not of the Player class!")
+				table.insert(outgoing_inst, Value["Player"])
+			end
+			if Value["Status"] == "InTrade" then
+				bool_42 = bit32.bor(bool_42, 0b0000000000000010)
+			elseif Value["Status"] == "Finalized" then
+				bool_42 = bit32.bor(bool_42, 0b0000000000000100)
+			elseif Value["Status"] == "Accepted" then
+				bool_42 = bit32.bor(bool_42, 0b0000000000001000)
+			else
+				error("Invalid enumerator")
+			end
+			buffer.writeu8(outgoing_buff, bool_42_pos_1, bool_42)
+			player_map[Player] = save()
+		end,
+		FireAll = function(Value: ({
+			["Player"]: ((Player)?),
+			["Status"]: ("InTrade" | "Finalized" | "Accepted"),
+		}))
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			local bool_43 = 0
+			local bool_43_pos_1 = alloc(1)
+			if Value["Player"] ~= nil then
+				bool_43 = bit32.bor(bool_43, 0b0000000000000001)
+				assert(Value["Player"]:IsA("Player"), "received instance is not of the Player class!")
+				table.insert(outgoing_inst, Value["Player"])
+			end
+			if Value["Status"] == "InTrade" then
+				bool_43 = bit32.bor(bool_43, 0b0000000000000010)
+			elseif Value["Status"] == "Finalized" then
+				bool_43 = bit32.bor(bool_43, 0b0000000000000100)
+			elseif Value["Status"] == "Accepted" then
+				bool_43 = bit32.bor(bool_43, 0b0000000000001000)
+			else
+				error("Invalid enumerator")
+			end
+			buffer.writeu8(outgoing_buff, bool_43_pos_1, bool_43)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in Players:GetPlayers() do
+				load_player(player)
+				alloc(used)
+				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+				player_map[player] = save()
+			end
+		end,
+		FireExcept = function(Except: Player, Value: ({
+			["Player"]: ((Player)?),
+			["Status"]: ("InTrade" | "Finalized" | "Accepted"),
+		}))
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			local bool_44 = 0
+			local bool_44_pos_1 = alloc(1)
+			if Value["Player"] ~= nil then
+				bool_44 = bit32.bor(bool_44, 0b0000000000000001)
+				assert(Value["Player"]:IsA("Player"), "received instance is not of the Player class!")
+				table.insert(outgoing_inst, Value["Player"])
+			end
+			if Value["Status"] == "InTrade" then
+				bool_44 = bit32.bor(bool_44, 0b0000000000000010)
+			elseif Value["Status"] == "Finalized" then
+				bool_44 = bit32.bor(bool_44, 0b0000000000000100)
+			elseif Value["Status"] == "Accepted" then
+				bool_44 = bit32.bor(bool_44, 0b0000000000001000)
+			else
+				error("Invalid enumerator")
+			end
+			buffer.writeu8(outgoing_buff, bool_44_pos_1, bool_44)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in Players:GetPlayers() do
+				if player ~= Except then
+					load_player(player)
+					alloc(used)
+					buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+					table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+					player_map[player] = save()
+				end
+			end
+		end,
+		FireList = function(List: { [unknown]: Player }, Value: ({
+			["Player"]: ((Player)?),
+			["Status"]: ("InTrade" | "Finalized" | "Accepted"),
+		}))
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
 			local bool_45 = 0
 			local bool_45_pos_1 = alloc(1)
 			if Value["Player"] ~= nil then
@@ -3263,15 +3300,22 @@ local returns = {
 				error("Invalid enumerator")
 			end
 			buffer.writeu8(outgoing_buff, bool_45_pos_1, bool_45)
-			player_map[Player] = save()
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in List do
+				load_player(player)
+				alloc(used)
+				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+				player_map[player] = save()
+			end
 		end,
-		FireAll = function(Value: ({
+		FireSet = function(Set: { [Player]: any }, Value: ({
 			["Player"]: ((Player)?),
 			["Status"]: ("InTrade" | "Finalized" | "Accepted"),
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
 			local bool_46 = 0
 			local bool_46_pos_1 = alloc(1)
 			if Value["Player"] ~= nil then
@@ -3290,212 +3334,6 @@ local returns = {
 			end
 			buffer.writeu8(outgoing_buff, bool_46_pos_1, bool_46)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
-			for _, player in Players:GetPlayers() do
-				load_player(player)
-				alloc(used)
-				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
-				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
-				player_map[player] = save()
-			end
-		end,
-		FireExcept = function(Except: Player, Value: ({
-			["Player"]: ((Player)?),
-			["Status"]: ("InTrade" | "Finalized" | "Accepted"),
-		}))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
-			local bool_47 = 0
-			local bool_47_pos_1 = alloc(1)
-			if Value["Player"] ~= nil then
-				bool_47 = bit32.bor(bool_47, 0b0000000000000001)
-				assert(Value["Player"]:IsA("Player"), "received instance is not of the Player class!")
-				table.insert(outgoing_inst, Value["Player"])
-			end
-			if Value["Status"] == "InTrade" then
-				bool_47 = bit32.bor(bool_47, 0b0000000000000010)
-			elseif Value["Status"] == "Finalized" then
-				bool_47 = bit32.bor(bool_47, 0b0000000000000100)
-			elseif Value["Status"] == "Accepted" then
-				bool_47 = bit32.bor(bool_47, 0b0000000000001000)
-			else
-				error("Invalid enumerator")
-			end
-			buffer.writeu8(outgoing_buff, bool_47_pos_1, bool_47)
-			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
-			for _, player in Players:GetPlayers() do
-				if player ~= Except then
-					load_player(player)
-					alloc(used)
-					buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
-					table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
-					player_map[player] = save()
-				end
-			end
-		end,
-		FireList = function(List: { [unknown]: Player }, Value: ({
-			["Player"]: ((Player)?),
-			["Status"]: ("InTrade" | "Finalized" | "Accepted"),
-		}))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
-			local bool_48 = 0
-			local bool_48_pos_1 = alloc(1)
-			if Value["Player"] ~= nil then
-				bool_48 = bit32.bor(bool_48, 0b0000000000000001)
-				assert(Value["Player"]:IsA("Player"), "received instance is not of the Player class!")
-				table.insert(outgoing_inst, Value["Player"])
-			end
-			if Value["Status"] == "InTrade" then
-				bool_48 = bit32.bor(bool_48, 0b0000000000000010)
-			elseif Value["Status"] == "Finalized" then
-				bool_48 = bit32.bor(bool_48, 0b0000000000000100)
-			elseif Value["Status"] == "Accepted" then
-				bool_48 = bit32.bor(bool_48, 0b0000000000001000)
-			else
-				error("Invalid enumerator")
-			end
-			buffer.writeu8(outgoing_buff, bool_48_pos_1, bool_48)
-			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
-			for _, player in List do
-				load_player(player)
-				alloc(used)
-				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
-				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
-				player_map[player] = save()
-			end
-		end,
-		FireSet = function(Set: { [Player]: any }, Value: ({
-			["Player"]: ((Player)?),
-			["Status"]: ("InTrade" | "Finalized" | "Accepted"),
-		}))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
-			local bool_49 = 0
-			local bool_49_pos_1 = alloc(1)
-			if Value["Player"] ~= nil then
-				bool_49 = bit32.bor(bool_49, 0b0000000000000001)
-				assert(Value["Player"]:IsA("Player"), "received instance is not of the Player class!")
-				table.insert(outgoing_inst, Value["Player"])
-			end
-			if Value["Status"] == "InTrade" then
-				bool_49 = bit32.bor(bool_49, 0b0000000000000010)
-			elseif Value["Status"] == "Finalized" then
-				bool_49 = bit32.bor(bool_49, 0b0000000000000100)
-			elseif Value["Status"] == "Accepted" then
-				bool_49 = bit32.bor(bool_49, 0b0000000000001000)
-			else
-				error("Invalid enumerator")
-			end
-			buffer.writeu8(outgoing_buff, bool_49_pos_1, bool_49)
-			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
-			for player in Set do
-				load_player(player)
-				alloc(used)
-				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
-				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
-				player_map[player] = save()
-			end
-		end,
-	},
-	SettingSync = {
-		SetCallback = function(Callback: (Player: Player, Value: ({ [(string)]: ((unknown)) })) -> ()): () -> ()
-			reliable_events[1] = Callback
-			return function()
-				reliable_events[1] = nil
-			end
-		end,
-	},
-	SendSettings = {
-		Fire = function(Player: Player, Value: ((unknown)))
-			load_player(Player)
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-			local bool_50 = 0
-			local bool_50_pos_1 = alloc(1)
-			if Value ~= nil then
-				bool_50 = bit32.bor(bool_50, 0b0000000000000001)
-				table.insert(outgoing_inst, Value)
-			end
-			buffer.writeu8(outgoing_buff, bool_50_pos_1, bool_50)
-			player_map[Player] = save()
-		end,
-		FireAll = function(Value: ((unknown)))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-			local bool_51 = 0
-			local bool_51_pos_1 = alloc(1)
-			if Value ~= nil then
-				bool_51 = bit32.bor(bool_51, 0b0000000000000001)
-				table.insert(outgoing_inst, Value)
-			end
-			buffer.writeu8(outgoing_buff, bool_51_pos_1, bool_51)
-			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
-			for _, player in Players:GetPlayers() do
-				load_player(player)
-				alloc(used)
-				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
-				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
-				player_map[player] = save()
-			end
-		end,
-		FireExcept = function(Except: Player, Value: ((unknown)))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-			local bool_52 = 0
-			local bool_52_pos_1 = alloc(1)
-			if Value ~= nil then
-				bool_52 = bit32.bor(bool_52, 0b0000000000000001)
-				table.insert(outgoing_inst, Value)
-			end
-			buffer.writeu8(outgoing_buff, bool_52_pos_1, bool_52)
-			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
-			for _, player in Players:GetPlayers() do
-				if player ~= Except then
-					load_player(player)
-					alloc(used)
-					buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
-					table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
-					player_map[player] = save()
-				end
-			end
-		end,
-		FireList = function(List: { [unknown]: Player }, Value: ((unknown)))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-			local bool_53 = 0
-			local bool_53_pos_1 = alloc(1)
-			if Value ~= nil then
-				bool_53 = bit32.bor(bool_53, 0b0000000000000001)
-				table.insert(outgoing_inst, Value)
-			end
-			buffer.writeu8(outgoing_buff, bool_53_pos_1, bool_53)
-			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
-			for _, player in List do
-				load_player(player)
-				alloc(used)
-				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
-				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
-				player_map[player] = save()
-			end
-		end,
-		FireSet = function(Set: { [Player]: any }, Value: ((unknown)))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-			local bool_54 = 0
-			local bool_54_pos_1 = alloc(1)
-			if Value ~= nil then
-				bool_54 = bit32.bor(bool_54, 0b0000000000000001)
-				table.insert(outgoing_inst, Value)
-			end
-			buffer.writeu8(outgoing_buff, bool_54_pos_1, bool_54)
-			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
 				alloc(used)
@@ -3507,9 +3345,9 @@ local returns = {
 	},
 	SellUnit = {
 		SetCallback = function(Callback: (Player: Player, Value: (string)) -> ()): () -> ()
-			reliable_events[11] = Callback
+			reliable_events[9] = Callback
 			return function()
-				reliable_events[11] = nil
+				reliable_events[9] = nil
 			end
 		end,
 	},
@@ -3521,7 +3359,31 @@ local returns = {
 		}))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
+			assert(Value:IsA("Player"), "received instance is not of the Player class!")
+			table.insert(outgoing_inst, Value)
+			local len_150 = #Value2["UniqueId"]
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_150)
+			alloc(len_150)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_150)
+			local len_151 = #Value2["Resource"]
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_151)
+			alloc(len_151)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value2["Resource"], len_151)
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, Value2["Count"])
+			player_map[Player] = save()
+		end,
+		FireAll = function(Value: (Player), Value2: ({
+			["UniqueId"]: (string),
+			["Resource"]: (string),
+			["Count"]: (number),
+		}))
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
 			assert(Value:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value)
 			local len_152 = #Value2["UniqueId"]
@@ -3534,30 +3396,6 @@ local returns = {
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_153)
 			alloc(len_153)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value2["Resource"], len_153)
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, Value2["Count"])
-			player_map[Player] = save()
-		end,
-		FireAll = function(Value: (Player), Value2: ({
-			["UniqueId"]: (string),
-			["Resource"]: (string),
-			["Count"]: (number),
-		}))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
-			assert(Value:IsA("Player"), "received instance is not of the Player class!")
-			table.insert(outgoing_inst, Value)
-			local len_154 = #Value2["UniqueId"]
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_154)
-			alloc(len_154)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_154)
-			local len_155 = #Value2["Resource"]
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_155)
-			alloc(len_155)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2["Resource"], len_155)
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value2["Count"])
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -3576,19 +3414,19 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
 			assert(Value:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value)
-			local len_156 = #Value2["UniqueId"]
+			local len_154 = #Value2["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_156)
-			alloc(len_156)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_156)
-			local len_157 = #Value2["Resource"]
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_154)
+			alloc(len_154)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_154)
+			local len_155 = #Value2["Resource"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_157)
-			alloc(len_157)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2["Resource"], len_157)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_155)
+			alloc(len_155)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value2["Resource"], len_155)
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value2["Count"])
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -3609,19 +3447,19 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
 			assert(Value:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value)
-			local len_158 = #Value2["UniqueId"]
+			local len_156 = #Value2["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_158)
-			alloc(len_158)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_158)
-			local len_159 = #Value2["Resource"]
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_156)
+			alloc(len_156)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_156)
+			local len_157 = #Value2["Resource"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_159)
-			alloc(len_159)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2["Resource"], len_159)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_157)
+			alloc(len_157)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value2["Resource"], len_157)
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value2["Count"])
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -3640,19 +3478,19 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
 			assert(Value:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value)
-			local len_160 = #Value2["UniqueId"]
+			local len_158 = #Value2["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_160)
-			alloc(len_160)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_160)
-			local len_161 = #Value2["Resource"]
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_158)
+			alloc(len_158)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_158)
+			local len_159 = #Value2["Resource"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_161)
-			alloc(len_161)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2["Resource"], len_161)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_159)
+			alloc(len_159)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value2["Resource"], len_159)
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, Value2["Count"])
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -3673,37 +3511,37 @@ local returns = {
 		})?))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 16)
-			local bool_55 = 0
-			local bool_55_pos_1 = alloc(1)
-			local len_162 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
+			local bool_47 = 0
+			local bool_47_pos_1 = alloc(1)
+			local len_160 = #Value
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_160)
+			alloc(len_160)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_160)
+			local len_161 = #Value2
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_161)
+			alloc(len_161)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_161)
+			local len_162 = #Value3
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_162)
 			alloc(len_162)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_162)
-			local len_163 = #Value2
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_163)
-			alloc(len_163)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_163)
-			local len_164 = #Value3
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_164)
-			alloc(len_164)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value3, len_164)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value3, len_162)
 			if Value4 ~= nil then
-				bool_55 = bit32.bor(bool_55, 0b0000000000000001)
-				local len_165 = #Value4["Type"]
+				bool_47 = bit32.bor(bool_47, 0b0000000000000001)
+				local len_163 = #Value4["Type"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_165)
-				alloc(len_165)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value4["Type"], len_165)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_163)
+				alloc(len_163)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value4["Type"], len_163)
 				alloc(4)
 				buffer.writef32(outgoing_buff, outgoing_apos, Value4["Ratio"])
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, Value4["EndTime"])
 			end
-			buffer.writeu8(outgoing_buff, bool_55_pos_1, bool_55)
+			buffer.writeu8(outgoing_buff, bool_47_pos_1, bool_47)
 			player_map[Player] = save()
 		end,
 		FireAll = function(Value: (string), Value2: (string), Value3: (string), Value4: (({
@@ -3713,37 +3551,37 @@ local returns = {
 		})?))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 16)
-			local bool_56 = 0
-			local bool_56_pos_1 = alloc(1)
-			local len_166 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
+			local bool_48 = 0
+			local bool_48_pos_1 = alloc(1)
+			local len_164 = #Value
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_164)
+			alloc(len_164)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_164)
+			local len_165 = #Value2
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_165)
+			alloc(len_165)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_165)
+			local len_166 = #Value3
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_166)
 			alloc(len_166)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_166)
-			local len_167 = #Value2
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_167)
-			alloc(len_167)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_167)
-			local len_168 = #Value3
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_168)
-			alloc(len_168)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value3, len_168)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value3, len_166)
 			if Value4 ~= nil then
-				bool_56 = bit32.bor(bool_56, 0b0000000000000001)
-				local len_169 = #Value4["Type"]
+				bool_48 = bit32.bor(bool_48, 0b0000000000000001)
+				local len_167 = #Value4["Type"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_169)
-				alloc(len_169)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value4["Type"], len_169)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_167)
+				alloc(len_167)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value4["Type"], len_167)
 				alloc(4)
 				buffer.writef32(outgoing_buff, outgoing_apos, Value4["Ratio"])
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, Value4["EndTime"])
 			end
-			buffer.writeu8(outgoing_buff, bool_56_pos_1, bool_56)
+			buffer.writeu8(outgoing_buff, bool_48_pos_1, bool_48)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				load_player(player)
@@ -3760,37 +3598,37 @@ local returns = {
 		})?))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 16)
-			local bool_57 = 0
-			local bool_57_pos_1 = alloc(1)
-			local len_170 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
+			local bool_49 = 0
+			local bool_49_pos_1 = alloc(1)
+			local len_168 = #Value
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_168)
+			alloc(len_168)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_168)
+			local len_169 = #Value2
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_169)
+			alloc(len_169)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_169)
+			local len_170 = #Value3
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_170)
 			alloc(len_170)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_170)
-			local len_171 = #Value2
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_171)
-			alloc(len_171)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_171)
-			local len_172 = #Value3
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_172)
-			alloc(len_172)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value3, len_172)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value3, len_170)
 			if Value4 ~= nil then
-				bool_57 = bit32.bor(bool_57, 0b0000000000000001)
-				local len_173 = #Value4["Type"]
+				bool_49 = bit32.bor(bool_49, 0b0000000000000001)
+				local len_171 = #Value4["Type"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_173)
-				alloc(len_173)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value4["Type"], len_173)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_171)
+				alloc(len_171)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value4["Type"], len_171)
 				alloc(4)
 				buffer.writef32(outgoing_buff, outgoing_apos, Value4["Ratio"])
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, Value4["EndTime"])
 			end
-			buffer.writeu8(outgoing_buff, bool_57_pos_1, bool_57)
+			buffer.writeu8(outgoing_buff, bool_49_pos_1, bool_49)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -3809,37 +3647,37 @@ local returns = {
 		})?))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 16)
-			local bool_58 = 0
-			local bool_58_pos_1 = alloc(1)
-			local len_174 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
+			local bool_50 = 0
+			local bool_50_pos_1 = alloc(1)
+			local len_172 = #Value
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_172)
+			alloc(len_172)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_172)
+			local len_173 = #Value2
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_173)
+			alloc(len_173)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_173)
+			local len_174 = #Value3
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_174)
 			alloc(len_174)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_174)
-			local len_175 = #Value2
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_175)
-			alloc(len_175)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_175)
-			local len_176 = #Value3
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_176)
-			alloc(len_176)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value3, len_176)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value3, len_174)
 			if Value4 ~= nil then
-				bool_58 = bit32.bor(bool_58, 0b0000000000000001)
-				local len_177 = #Value4["Type"]
+				bool_50 = bit32.bor(bool_50, 0b0000000000000001)
+				local len_175 = #Value4["Type"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_177)
-				alloc(len_177)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value4["Type"], len_177)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_175)
+				alloc(len_175)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value4["Type"], len_175)
 				alloc(4)
 				buffer.writef32(outgoing_buff, outgoing_apos, Value4["Ratio"])
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, Value4["EndTime"])
 			end
-			buffer.writeu8(outgoing_buff, bool_58_pos_1, bool_58)
+			buffer.writeu8(outgoing_buff, bool_50_pos_1, bool_50)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -3856,37 +3694,37 @@ local returns = {
 		})?))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 16)
-			local bool_59 = 0
-			local bool_59_pos_1 = alloc(1)
-			local len_178 = #Value
+			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
+			local bool_51 = 0
+			local bool_51_pos_1 = alloc(1)
+			local len_176 = #Value
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_176)
+			alloc(len_176)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_176)
+			local len_177 = #Value2
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_177)
+			alloc(len_177)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_177)
+			local len_178 = #Value3
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_178)
 			alloc(len_178)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_178)
-			local len_179 = #Value2
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_179)
-			alloc(len_179)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2, len_179)
-			local len_180 = #Value3
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_180)
-			alloc(len_180)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value3, len_180)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value3, len_178)
 			if Value4 ~= nil then
-				bool_59 = bit32.bor(bool_59, 0b0000000000000001)
-				local len_181 = #Value4["Type"]
+				bool_51 = bit32.bor(bool_51, 0b0000000000000001)
+				local len_179 = #Value4["Type"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_181)
-				alloc(len_181)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value4["Type"], len_181)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_179)
+				alloc(len_179)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value4["Type"], len_179)
 				alloc(4)
 				buffer.writef32(outgoing_buff, outgoing_apos, Value4["Ratio"])
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, Value4["EndTime"])
 			end
-			buffer.writeu8(outgoing_buff, bool_59_pos_1, bool_59)
+			buffer.writeu8(outgoing_buff, bool_51_pos_1, bool_51)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -3905,14 +3743,14 @@ local returns = {
 		}))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
 			assert(Value:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value)
-			local len_182 = #Value2["UniqueId"]
+			local len_180 = #Value2["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_182)
-			alloc(len_182)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_182)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_180)
+			alloc(len_180)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_180)
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value2["Product"])
 			alloc(2)
@@ -3926,14 +3764,14 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
 			assert(Value:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value)
-			local len_183 = #Value2["UniqueId"]
+			local len_181 = #Value2["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_183)
-			alloc(len_183)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_183)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_181)
+			alloc(len_181)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_181)
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value2["Product"])
 			alloc(2)
@@ -3954,14 +3792,14 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
 			assert(Value:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value)
-			local len_184 = #Value2["UniqueId"]
+			local len_182 = #Value2["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_184)
-			alloc(len_184)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_184)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_182)
+			alloc(len_182)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_182)
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value2["Product"])
 			alloc(2)
@@ -3984,14 +3822,14 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
 			assert(Value:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value)
-			local len_185 = #Value2["UniqueId"]
+			local len_183 = #Value2["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_185)
-			alloc(len_185)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_185)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_183)
+			alloc(len_183)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_183)
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value2["Product"])
 			alloc(2)
@@ -4012,14 +3850,14 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
 			assert(Value:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value)
-			local len_186 = #Value2["UniqueId"]
+			local len_184 = #Value2["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_186)
-			alloc(len_186)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_186)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_184)
+			alloc(len_184)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value2["UniqueId"], len_184)
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value2["Product"])
 			alloc(2)
@@ -4040,179 +3878,49 @@ local returns = {
 			["UnitPosition"]: (Vector3),
 			["RotationIndex"]: (number),
 		})) -> ()): () -> ()
-			reliable_events[10] = Callback
-			return function()
-				reliable_events[10] = nil
-			end
-		end,
-	},
-	EndTrade = {
-		SetCallback = function(Callback: (Player: Player) -> ()): () -> ()
 			reliable_events[8] = Callback
 			return function()
 				reliable_events[8] = nil
 			end
 		end,
 	},
-	ChangeUnitPriority = {
-		SetCallback = function(Callback: (Player: Player, Value: (string)) -> ()): () -> ()
-			reliable_events[9] = Callback
-			return function()
-				reliable_events[9] = nil
-			end
-		end,
-	},
-	ChangeUnit = {
-		SetCallback = function(Callback: (Player: Player, Value: (string), Value2: (string)) -> ()): () -> ()
-			reliable_events[4] = Callback
-			return function()
-				reliable_events[4] = nil
-			end
-		end,
-	},
-	ChangeSettingServer = {
-		Fire = function(Player: Player, Value: (string), Value2: ((unknown)))
-			load_player(Player)
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-			local bool_60 = 0
-			local bool_60_pos_1 = alloc(1)
-			local len_187 = #Value
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_187)
-			alloc(len_187)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_187)
-			if Value2 ~= nil then
-				bool_60 = bit32.bor(bool_60, 0b0000000000000001)
-				table.insert(outgoing_inst, Value2)
-			end
-			buffer.writeu8(outgoing_buff, bool_60_pos_1, bool_60)
-			player_map[Player] = save()
-		end,
-		FireAll = function(Value: (string), Value2: ((unknown)))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-			local bool_61 = 0
-			local bool_61_pos_1 = alloc(1)
-			local len_188 = #Value
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_188)
-			alloc(len_188)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_188)
-			if Value2 ~= nil then
-				bool_61 = bit32.bor(bool_61, 0b0000000000000001)
-				table.insert(outgoing_inst, Value2)
-			end
-			buffer.writeu8(outgoing_buff, bool_61_pos_1, bool_61)
-			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
-			for _, player in Players:GetPlayers() do
-				load_player(player)
-				alloc(used)
-				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
-				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
-				player_map[player] = save()
-			end
-		end,
-		FireExcept = function(Except: Player, Value: (string), Value2: ((unknown)))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-			local bool_62 = 0
-			local bool_62_pos_1 = alloc(1)
-			local len_189 = #Value
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_189)
-			alloc(len_189)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_189)
-			if Value2 ~= nil then
-				bool_62 = bit32.bor(bool_62, 0b0000000000000001)
-				table.insert(outgoing_inst, Value2)
-			end
-			buffer.writeu8(outgoing_buff, bool_62_pos_1, bool_62)
-			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
-			for _, player in Players:GetPlayers() do
-				if player ~= Except then
-					load_player(player)
-					alloc(used)
-					buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
-					table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
-					player_map[player] = save()
-				end
-			end
-		end,
-		FireList = function(List: { [unknown]: Player }, Value: (string), Value2: ((unknown)))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-			local bool_63 = 0
-			local bool_63_pos_1 = alloc(1)
-			local len_190 = #Value
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_190)
-			alloc(len_190)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_190)
-			if Value2 ~= nil then
-				bool_63 = bit32.bor(bool_63, 0b0000000000000001)
-				table.insert(outgoing_inst, Value2)
-			end
-			buffer.writeu8(outgoing_buff, bool_63_pos_1, bool_63)
-			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
-			for _, player in List do
-				load_player(player)
-				alloc(used)
-				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
-				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
-				player_map[player] = save()
-			end
-		end,
-		FireSet = function(Set: { [Player]: any }, Value: (string), Value2: ((unknown)))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-			local bool_64 = 0
-			local bool_64_pos_1 = alloc(1)
-			local len_191 = #Value
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_191)
-			alloc(len_191)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_191)
-			if Value2 ~= nil then
-				bool_64 = bit32.bor(bool_64, 0b0000000000000001)
-				table.insert(outgoing_inst, Value2)
-			end
-			buffer.writeu8(outgoing_buff, bool_64_pos_1, bool_64)
-			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
-			for player in Set do
-				load_player(player)
-				alloc(used)
-				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
-				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
-				player_map[player] = save()
-			end
-		end,
-	},
-	ChangeSettingClient = {
-		SetCallback = function(Callback: (Player: Player, Value: (string), Value2: ((unknown))) -> ()): () -> ()
-			reliable_events[0] = Callback
-			return function()
-				reliable_events[0] = nil
-			end
-		end,
-	},
-	ChangeResource = {
-		SetCallback = function(Callback: (Player: Player, Value: (string), Value2: (number)) -> ()): () -> ()
+	EndTrade = {
+		SetCallback = function(Callback: (Player: Player) -> ()): () -> ()
 			reliable_events[6] = Callback
 			return function()
 				reliable_events[6] = nil
 			end
 		end,
 	},
+	ChangeUnitPriority = {
+		SetCallback = function(Callback: (Player: Player, Value: (string)) -> ()): () -> ()
+			reliable_events[7] = Callback
+			return function()
+				reliable_events[7] = nil
+			end
+		end,
+	},
+	ChangeUnit = {
+		SetCallback = function(Callback: (Player: Player, Value: (string), Value2: (string)) -> ()): () -> ()
+			reliable_events[2] = Callback
+			return function()
+				reliable_events[2] = nil
+			end
+		end,
+	},
+	ChangeResource = {
+		SetCallback = function(Callback: (Player: Player, Value: (string), Value2: (number)) -> ()): () -> ()
+			reliable_events[4] = Callback
+			return function()
+				reliable_events[4] = nil
+			end
+		end,
+	},
 	ChangeProduct = {
 		SetCallback = function(Callback: (Player: Player, Value: (string), Value2: (number)) -> ()): () -> ()
-			reliable_events[5] = Callback
+			reliable_events[3] = Callback
 			return function()
-				reliable_events[5] = nil
+				reliable_events[3] = nil
 			end
 		end,
 	},

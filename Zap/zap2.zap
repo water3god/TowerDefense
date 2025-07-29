@@ -9,41 +9,6 @@ type Health = u32
 
 type Time = f64
 
--- Settings --
-
-event ChangeSettingClient = {
-	from: Client,
-	type: Reliable,
-	call: SingleAsync,
-	data: (
-		string.binary,
-		unknown,
-	),
-}
-
-event ChangeSettingServer = {
-	from: Server,
-	type: Reliable,
-	call: SingleAsync,
-	data: (
-		string.binary,
-		unknown,
-	),
-}
-
-event SendSettings = {
-	from: Server,
-	type: Reliable,
-	call: SingleAsync,
-	data: unknown,
-}
-
-event SettingSync = {
-	from: Client,
-	type: Reliable,
-	call: SingleAsync,
-	data: map { [string.binary]: unknown },
-}
 -- Trade --
 
 -- TBD NOT DONE --

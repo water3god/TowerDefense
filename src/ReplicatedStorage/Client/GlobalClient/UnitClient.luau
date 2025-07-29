@@ -24,13 +24,14 @@ local ParticlesFolder = GlobalWorkspace.Particles
 local UnitsFolder = GlobalWorkspace.Units
 local PlacementClient = GlobalWorkspace.PlacementClient
 
-local UnitModels: { [string]: Model } = {}
-for _, Model in ipairs(ModelStorage.Units:GetChildren()) do
-	UnitModels[Model.Name] = Model
-end
-local Adornments: { [string]: Model } = {}
-for _, Model in ipairs(ModelStorage.Adornments:GetChildren()) do
-	Adornments[Model.Name] = Model
+local UnitModels: { [string]: { [number]: { Model: Model, Adornment: Model? } } } = {}
+for _, UnitFolder in ipairs(ModelStorage.Units:GetChildren()) do
+	local Table = {}
+	for _, LevelFolder in pairs(UnitFolder:GetChildren()) do
+		Table[tonumber(LevelFolder.Name) :: number] =
+			{ Model = LevelFolder:FindFirstChild(UnitFolder.Name), Adornment = LevelFolder:FindFirstChild("Adornment") }
+	end
+	UnitModels[UnitFolder.Name] = Table
 end
 
 local Camera = workspace.CurrentCamera
@@ -138,7 +139,10 @@ local function WeldParts(Character: typeof(ModelStorage.Extra.Rig), Adornment: M
 		local Bases: { [BasePart]: CFrame } = {}
 
 		for _, BasePart in ipairs(Limb:GetDescendants()) do
-			if BasePart:IsA("BasePart") and BasePart.Name ~= "Handle" then
+			if BasePart:IsA("BasePart") then
+				if BasePart.Name == "Handle" and BasePart.Parent == Limb then
+					continue
+				end
 				BasePart.CanCollide = false
 				BasePart.Anchored = false
 
@@ -222,6 +226,32 @@ local function GetRotatingRange()
 	return RangePart, Animate, NewTrove
 end
 
+local function GetUnitModelFromLevel(UnitName: string, Level: number): Model
+	local HighestLevel = 0
+	for i = 0, Level, 1 do
+		local UnitData = UnitModels[UnitName][i]
+		if UnitData and UnitData.Model then
+			HighestLevel = i
+		end
+	end
+
+	return UnitModels[UnitName][HighestLevel].Model
+end
+
+local function GetAdornmentFromLevel(UnitName: string, Level: number): (Model?, number?)
+	local HighestLevel = nil
+	for i = 0, Level, 1 do
+		local UnitData = UnitModels[UnitName][i]
+		if UnitData and UnitData.Adornment then
+			HighestLevel = i
+		end
+	end
+	if HighestLevel then
+		return UnitModels[UnitName][HighestLevel].Adornment, HighestLevel
+	end
+	return
+end
+
 --[[Part0 is the part being attached, Part1 is the Root (Usually Middle or PrimaryPart) part. ]]
 local function Weld(Part0: BasePart, Part1: BasePart)
 	local Motor = Instance.new("Motor6D")
@@ -235,11 +265,16 @@ local function Weld(Part0: BasePart, Part1: BasePart)
 	return Motor
 end
 
-local function SetAdornment(Character: typeof(_Rig), AdornmentName: string)
-	local Adornment = Adornments[AdornmentName]:Clone()
-	WeldParts(Character, Adornment)
-	Adornment.Parent = Character
-	return Adornment
+local function SetAdornment(Character: typeof(_Rig), UnitName: string, Level: number): Model?
+	local Adornment = GetAdornmentFromLevel(UnitName, Level)
+	if Adornment then
+		local AdornmentClone = Adornment:Clone()
+		WeldParts(Character, AdornmentClone)
+		AdornmentClone.Parent = Character
+		return AdornmentClone
+	end
+
+	return
 end
 
 local function CastCylinder(Position: Vector3, Params: OverlapParams?, RatioRadius: number)
@@ -354,7 +389,11 @@ local function NewUnit(Input: Types.UnitInput, New: boolean)
 	self.DefaultRuns = Runs and SyncFuncs(Runs, HighestLevel) or {}
 	self.UnitAttacks = Attacks and SyncFuncs(Attacks, HighestLevel) or {}
 
-	self.Character = self.Trove:Clone(UnitModels[self.UnitName])
+	local NewCharacter = GetUnitModelFromLevel(self.UnitName, self.Level)
+
+	self.Character = self.Trove:Clone(NewCharacter)
+	self.Character.Name = self.UnitName
+
 	self.Root = self.Character.HumanoidRootPart
 	self.Humanoid = self.Character.Humanoid
 	self.Animator = self.Humanoid.Animator
@@ -406,7 +445,7 @@ local function NewUnit(Input: Types.UnitInput, New: boolean)
 		BillboardGui.Parent = self.Character.Head
 
 		local Root = ReactRoblox.createRoot(BillboardGui)
-		Root:render(React.createElement(CoinsAdded, {
+		Root:render(e(CoinsAdded, {
 			Coins = Coins,
 		}))
 		task.delay(5, function()
@@ -663,18 +702,14 @@ function UnitModule:ClickCharacter(Enabled: boolean)
 end
 
 function UnitModule:ApplyDetail()
-	local AdornmentName = self.UnitData.UnitData[self.Level].Armor
+	local _, AdornmentLevel = GetAdornmentFromLevel(self.UnitName, self.Level)
 
-	if self.Armor then
-		if self.Armor.Name == AdornmentName then
-			return
+	if AdornmentLevel ~= self.AdornmentLevel then
+		if self.Adornment then
+			self.Adornment:Destroy()
 		end
-		self.Armor:Destroy()
-		self.Armor = nil
-	end
-
-	if typeof(AdornmentName) == "string" then
-		self.Armor = SetAdornment(self.Character, AdornmentName)
+		self.AdornmentLevel = AdornmentLevel
+		self.Adornment = SetAdornment(self.Character, self.UnitName, self.Level)
 	end
 end
 
@@ -876,7 +911,7 @@ local DefaultCFrame = CFrame.new(0, -0.4, -2) * CFrame.Angles(0, math.rad(-180),
 
 function UnitModule.InitCharacter(Unit: string, Position: CFrame?)
 	local InitTrove = Trove.new()
-	local UnitModel: typeof(_Rig) = InitTrove:Clone(UnitModels[Unit])
+	local UnitModel: typeof(_Rig) = InitTrove:Clone(UnitModels[Unit][0].Model)
 	local Humanoid: Humanoid & { [any]: any } = UnitModel.Humanoid
 	local Animator: Animator & { [any]: any } = Humanoid.Animator
 	local Root: BasePart = UnitModel.HumanoidRootPart
@@ -884,12 +919,8 @@ function UnitModule.InitCharacter(Unit: string, Position: CFrame?)
 
 	local CenterPart: BasePart = nil
 	local UnitData = UnitInfo.UnitInfo[Unit]
-	local BaseUpgradeData = UnitData.UnitData[0]
-	local AdornmentName = BaseUpgradeData.Armor
 
-	if typeof(AdornmentName) == "string" then
-		SetAdornment(UnitModel, AdornmentName)
-	end
+	SetAdornment(UnitModel, Unit, 0)
 
 	if UnitData.Vector3Offset and UnitData.Vector3Offset ~= Vector3.zero then
 		CenterPart = CenterPartRef:Clone()
@@ -1242,7 +1273,7 @@ function UnitModule.InitPlacement(Unit: string)
 		end
 
 		local ReactRoot = ReactRoblox.createRoot(RootGui)
-		ReactRoot:render(React.createElement(MobilePlacementFrame, {
+		ReactRoot:render(e(MobilePlacementFrame, {
 			Place = Place,
 			Cancel = InitTrove:WrapClean(),
 			Rotate = function()
