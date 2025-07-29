@@ -216,28 +216,19 @@ local remotes = ReplicatedStorage:WaitForChild("Zap2")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
-export type XP = (number)
-export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
-export type UnitAttackInput = ({
-	["UniqueId"]: (string),
-	["Index"]: (number),
-	["EnemyId"]: (string),
-	["Firetime"]: (number),
-	["SpeedRatio"]: (number),
-})
 export type Health = (number)
-export type Time = (number)
 export type ProductData = ({
 	["UniqueId"]: (string),
 	["Product"]: (number),
 	["Count"]: (number),
 })
-export type ResourceData = ({
-	["UniqueId"]: (string),
-	["Resource"]: (string),
-	["Count"]: (number),
+export type PlacementData = ({
+	["Unit"]: (string),
+	["UnitPosition"]: (Vector3),
+	["RotationIndex"]: (number),
 })
-export type ProductId = (number)
+export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
+export type Time = (number)
 export type UnitInput = ({
 	["UniqueId"]: (string),
 	["UnitName"]: (string),
@@ -253,6 +244,17 @@ export type UnitInput = ({
 	["Trait"]: ((string)?),
 	["Abilities"]: ({ (number) }),
 })
+export type ProductId = (number)
+export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
+export type UnitAttackInput = ({
+	["UniqueId"]: (string),
+	["Index"]: (number),
+	["EnemyId"]: (string),
+	["Firetime"]: (number),
+	["SpeedRatio"]: (number),
+})
+export type Level = (number)
+export type AbilityIndex = (number)
 export type UnitData = ({
 	["Unit"]: (string),
 	["Level"]: (number),
@@ -261,15 +263,13 @@ export type UnitData = ({
 	["XP"]: (number),
 	["NeededXP"]: (number),
 })
-export type Level = (number)
-export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
-export type AbilityIndex = (number)
-export type PlacementData = ({
-	["Unit"]: (string),
-	["UnitPosition"]: (Vector3),
-	["RotationIndex"]: (number),
+export type ResourceData = ({
+	["UniqueId"]: (string),
+	["Resource"]: (string),
+	["Count"]: (number),
 })
 export type SortType = ("First" | "Last" | "Strongest" | "Weakest")
+export type XP = (number)
 
 local function SendEvents()
 	if outgoing_used ~= 0 then

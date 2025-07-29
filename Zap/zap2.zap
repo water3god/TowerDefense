@@ -1,3 +1,4 @@
+-- By Wa1er_God --
 opt server_output = "../src/ReplicatedStorage/Network/Server/Server2.luau"
 opt client_output = "../src/ReplicatedStorage/Network/Client/Client2.luau"
 opt remote_folder = "Zap2"

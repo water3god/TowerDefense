@@ -321,15 +321,11 @@ end
 Players.PlayerRemoving:Connect(function(player)
 	player_map[player] = nil
 end)
-export type Level = (number)
 export type Vote = (number)
-export type VoteData = ({
-	["Time"]: (number),
-	["StartTime"]: (number),
-	["CurrentCount"]: (number),
-	["NeededCount"]: (number),
-})
-export type Wave = (number)
+export type ProductId = (number)
+export type XP = (number)
+export type Time = (number)
+export type Level = (number)
 export type WaveData = ({
 	["Wave"]: (number),
 	["BaseHealth"]: (number),
@@ -337,13 +333,6 @@ export type WaveData = ({
 	["Time"]: (number),
 	["StartTime"]: (number),
 })
-export type MainXPData = ({
-	["OldXP"]: (number),
-	["NewXP"]: (number),
-	["OldLevel"]: (number),
-	["NewLevel"]: (number),
-})
-export type XP = (number)
 export type ResourceData = ({
 	["Units"]: ({ (string) }),
 	["Resources"]: ({ ({
@@ -358,9 +347,12 @@ export type ResourceData = ({
 		["NewXP"]: (number),
 	}) }),
 })
-export type ProductId = (number)
-export type Health = (number)
-export type Time = (number)
+export type MainXPData = ({
+	["OldXP"]: (number),
+	["NewXP"]: (number),
+	["OldLevel"]: (number),
+	["NewLevel"]: (number),
+})
 export type RollData = ({
 	["SentTime"]: (number),
 	["Data"]: ({ ({
@@ -368,6 +360,14 @@ export type RollData = ({
 		["Id"]: (string),
 	}) }),
 	["AutoRoll"]: (boolean),
+})
+export type Wave = (number)
+export type Health = (number)
+export type VoteData = ({
+	["Time"]: (number),
+	["StartTime"]: (number),
+	["CurrentCount"]: (number),
+	["NeededCount"]: (number),
 })
 
 local function SendEvents()

@@ -88,6 +88,8 @@ local function HandleEnded(Won: boolean)
 end
 
 local function HandleStarted()
+	Win:Stop()
+	Lose:Stop()
 	Sounds[CurrentIndex].TimePosition = 0
 	Sounds[CurrentIndex]:Play()
 	RecalibrateMusic(CurrentIndex)

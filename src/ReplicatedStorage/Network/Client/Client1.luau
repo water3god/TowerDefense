@@ -198,83 +198,6 @@ local remotes = ReplicatedStorage:WaitForChild("Zap1")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
-export type TimeData = ({
-	["StartTime"]: (number),
-	["EndTime"]: (number),
-})
-export type SpeedChange = ({
-	["UniqueId"]: (string),
-	["Speed"]: (number),
-	["Time"]: (number),
-})
-export type VisualUnitData = ({
-	["Unit"]: (string),
-	["Level"]: (number),
-	["Trait"]: ((string)?),
-	["UniqueId"]: (string),
-	["XP"]: (number),
-	["NeededXP"]: (number),
-})
-export type LevelData = ({
-	["Level"]: (number),
-	["XP"]: (number),
-	["NeededXP"]: (number),
-})
-export type XP = (number)
-export type BoothData = ({
-	["OwnerId"]: (number),
-	["MapId"]: (string),
-	["LevelId"]: (string),
-	["Difficulty"]: (string),
-	["Players"]: ({ (Player) }),
-	["StartTime"]: (number),
-	["EndTime"]: (number),
-})
-export type ProductData = ({
-	["ProductId"]: (number),
-	["IsGamepass"]: (boolean),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-})
-export type Item = ("Units" | "Products" | "Resources")
-export type Level = (number)
-export type ProductId = (number)
-export type Health = (number)
-export type Time = (number)
-export type Difficulty = ("Normal" | "Hard" | "Insane")
-export type Inventory = ({
-	["Units"]: ({ [(string)]: ({
-		["Unit"]: (string),
-		["Level"]: (number),
-		["Trait"]: ((string)?),
-		["UniqueId"]: (string),
-		["XP"]: (number),
-		["NeededXP"]: (number),
-	}) }),
-	["Products"]: ({ [(string)]: ({
-		["ProductId"]: (number),
-		["IsGamepass"]: (boolean),
-		["Count"]: (number),
-		["UniqueId"]: (string),
-	}) }),
-	["Resources"]: ({ [(string)]: ({
-		["Resource"]: (string),
-		["Count"]: (number),
-		["UniqueId"]: (string),
-		["PartialOneLose"]: ((boolean)?),
-	}) }),
-})
-export type ResourceData = ({
-	["Resource"]: (string),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-	["PartialOneLose"]: ((boolean)?),
-})
-export type SpeedChangeData = ({
-	["TimeStart"]: (number),
-	["Speed"]: (number),
-	["TimeEnd"]: ((number)?),
-})
 export type EnemyInput = ({
 	["UniqueId"]: (string),
 	["ModelName"]: (string),
@@ -299,6 +222,83 @@ export type StageData = ({
 	["FastestTime"]: (number),
 	["FinishedCount"]: (number),
 })
+export type VisualUnitData = ({
+	["Unit"]: (string),
+	["Level"]: (number),
+	["Trait"]: ((string)?),
+	["UniqueId"]: (string),
+	["XP"]: (number),
+	["NeededXP"]: (number),
+})
+export type ResourceData = ({
+	["Resource"]: (string),
+	["Count"]: (number),
+	["UniqueId"]: (string),
+	["PartialOneLose"]: ((boolean)?),
+})
+export type Inventory = ({
+	["Units"]: ({ [(string)]: ({
+		["Unit"]: (string),
+		["Level"]: (number),
+		["Trait"]: ((string)?),
+		["UniqueId"]: (string),
+		["XP"]: (number),
+		["NeededXP"]: (number),
+	}) }),
+	["Products"]: ({ [(string)]: ({
+		["ProductId"]: (number),
+		["IsGamepass"]: (boolean),
+		["Count"]: (number),
+		["UniqueId"]: (string),
+	}) }),
+	["Resources"]: ({ [(string)]: ({
+		["Resource"]: (string),
+		["Count"]: (number),
+		["UniqueId"]: (string),
+		["PartialOneLose"]: ((boolean)?),
+	}) }),
+})
+export type TimeData = ({
+	["StartTime"]: (number),
+	["EndTime"]: (number),
+})
+export type SpeedChangeData = ({
+	["TimeStart"]: (number),
+	["Speed"]: (number),
+	["TimeEnd"]: ((number)?),
+})
+export type XP = (number)
+export type Health = (number)
+export type ProductData = ({
+	["ProductId"]: (number),
+	["IsGamepass"]: (boolean),
+	["Count"]: (number),
+	["UniqueId"]: (string),
+})
+export type SpeedChange = ({
+	["UniqueId"]: (string),
+	["Speed"]: (number),
+	["Time"]: (number),
+})
+export type LevelData = ({
+	["Level"]: (number),
+	["XP"]: (number),
+	["NeededXP"]: (number),
+})
+export type Difficulty = ("Normal" | "Hard" | "Insane")
+export type Time = (number)
+export type BoothData = ({
+	["OwnerId"]: (number),
+	["MapId"]: (string),
+	["LevelId"]: (string),
+	["Difficulty"]: (string),
+	["Players"]: ({ (Player) }),
+	["StartTime"]: (number),
+	["EndTime"]: (number),
+})
+export type Item = ("Units" | "Products" | "Resources")
+export type ProductId = (number)
+export type Level = (number)
 
 local function SendEvents()
 	if outgoing_used ~= 0 then
