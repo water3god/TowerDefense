@@ -198,10 +198,11 @@ export type AbilityData = {
 type UnitData = {
 	UniqueId: string,
 	Trove: Trove.Trove,
-
+	CharacterTrove: Trove.Trove,
 	AttackTrove: Trove.Trove,
 
 	Character: typeof(_Rig),
+	CharacterLevel: number?,
 	AdornmentLevel: number?,
 	Adornment: Model?,
 	Root: typeof(_Rig.HumanoidRootPart),
@@ -258,6 +259,7 @@ type UnitData = {
 }
 
 export type UnitModule = {
+	LoadCharacter: (self: Unit, Character: typeof(_Rig)) -> (),
 	TPToRootPosition: (self: Unit) -> (),
 	PlayAnimation: (
 		self: Unit,

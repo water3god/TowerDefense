@@ -226,7 +226,7 @@ local function GetRotatingRange()
 	return RangePart, Animate, NewTrove
 end
 
-local function GetUnitModelFromLevel(UnitName: string, Level: number): Model
+local function GetUnitModelFromLevel(UnitName: string, Level: number): (Model, number)
 	local HighestLevel = 0
 	for i = 0, Level, 1 do
 		local UnitData = UnitModels[UnitName][i]
@@ -235,7 +235,7 @@ local function GetUnitModelFromLevel(UnitName: string, Level: number): Model
 		end
 	end
 
-	return UnitModels[UnitName][HighestLevel].Model
+	return UnitModels[UnitName][HighestLevel].Model, HighestLevel
 end
 
 local function GetAdornmentFromLevel(UnitName: string, Level: number): (Model?, number?)
@@ -321,6 +321,7 @@ local function NewUnit(Input: Types.UnitInput, New: boolean)
 	GenerateId.AddId(self.UniqueId)
 	self.Trove = Trove.new()
 
+	self.CharacterTrove = self.Trove:Extend()
 	self.AttackTrove = self.Trove:Extend()
 
 	self.Attacked = self.Trove:Construct(Signal)
@@ -389,52 +390,15 @@ local function NewUnit(Input: Types.UnitInput, New: boolean)
 	self.DefaultRuns = Runs and SyncFuncs(Runs, HighestLevel) or {}
 	self.UnitAttacks = Attacks and SyncFuncs(Attacks, HighestLevel) or {}
 
-	local NewCharacter = GetUnitModelFromLevel(self.UnitName, self.Level)
+	local UnitModel, UnitLevel = GetUnitModelFromLevel(self.UnitName, self.Level)
 
-	self.Character = self.Trove:Clone(NewCharacter)
-	self.Character.Name = self.UnitName
-
-	self.Root = self.Character.HumanoidRootPart
-	self.Humanoid = self.Character.Humanoid
-	self.Animator = self.Humanoid.Animator
-	self.SizeRatio = self.Humanoid.BodyHeightScale.Value
-
-	HelperFunctions.DisableHumanoid(self.Humanoid)
-	self.Root.Anchored = true
-
-	local CenterVector3 = self.UnitData.Vector3Offset
-
-	if CenterVector3 and CenterVector3 ~= Vector3.zero then
-		self.CenterPart = CenterPartRef:Clone()
-		self.CenterPart.CFrame = self.Root.CFrame + CenterVector3
-		Weld(self.CenterPart, self.Root)
-	else
-		self.CenterPart = self.Root
+	if UnitLevel ~= self.CharacterLevel then
+		self.CharacterTrove:Destroy()
+		self:LoadCharacter(UnitModel)
+		self.CharacterLevel = UnitLevel
+		self.AdornmentLevel = nil
+		self.Adornment = nil
 	end
-
-	self:ApplyDetail()
-
-	self.VectorOffset = Vector3.new(0, 3 * self.Humanoid.BodyHeightScale.Value, 0)
-	self.VisualCFrame = self.CFrame + self.VectorOffset
-	self:TPToRootPosition()
-
-	self.Character.Parent = UnitsFolder
-
-	self.RadiusPart = self.Trove:Clone(RadiusReference)
-	self.RadiusPart.Transparency = 1
-	self.RadiusPart.Anchored = true
-	self.RadiusPart.Size = Vector3.new(self.CollisionRadius, self.RadiusPart.Size.Y, self.CollisionRadius)
-	self.RadiusPart.CFrame = self.CFrame
-	self.RadiusPart.Parent = self.Character
-
-	self.IsClicked = false
-
-	local RangePart, Animate, RangeTrove = GetRotatingRange()
-
-	self.RangePart = RangePart
-	self.RangePart.Anchored = true
-	self.RangePart.CFrame = self.CFrame
-	self.Trove:Add(RangeTrove)
 
 	self.CoinsAdded:Connect(function(Coins: number)
 		local BillboardGui = Instance.new("BillboardGui")
@@ -454,10 +418,6 @@ local function NewUnit(Input: Types.UnitInput, New: boolean)
 		end)
 	end)
 
-	local function GetRange()
-		return self.UnitData.UnitData[self.Level].Range
-	end
-
 	self.Upgraded:Connect(function()
 		SFXService.PlaySoundGlobal(UpgradeSound)
 		local Arrow = HelperFunctions.EmitParticle({ UpgradeArrowParticle }, self.CFrame, 10)
@@ -465,59 +425,6 @@ local function NewUnit(Input: Types.UnitInput, New: boolean)
 		Arrow.Parent = ParticlesFolder
 		Circle.Parent = ParticlesFolder
 	end)
-
-	local function OnClick()
-		Animate(GetRange(), true)
-
-		self:AddPromise(
-			Promise.delay(0.01):andThen(function()
-				RangePart.Parent = self.Character
-			end),
-			"RangeAnimatePromise"
-		)
-		self:AddPromise(
-			Promise.defer(function()
-				TweenTransparency(self.RadiusPart, 0.2)
-			end),
-			"ClickOpenPromise"
-		)
-	end
-
-	local function OnClose()
-		self:AddPromise(
-			Promise.defer(function()
-				TweenTransparency(self.RadiusPart, 1)
-			end),
-			"ClickClosePromise"
-		)
-		RangePart.Parent = nil
-	end
-
-	if self.IsClicked then
-		OnClick()
-	else
-		OnClose()
-	end
-
-	self.CharacterClicked:Connect(function(Enabled: boolean)
-		if Enabled then
-			OnClick()
-		else
-			OnClose()
-		end
-	end)
-
-	self.Upgraded:Connect(function()
-		if self.IsClicked then
-			OnClick()
-		end
-	end)
-
-	for _, BasePart in ipairs(self.Character:GetDescendants()) do
-		if BasePart:IsA("BasePart") then
-			BasePart.CollisionGroup = "PlacedCharacters"
-		end
-	end
 
 	do
 		local Table = {}
@@ -540,28 +447,7 @@ local function NewUnit(Input: Types.UnitInput, New: boolean)
 		end
 	end
 
-	self.Animations = {}
-	local AnimFolder = UnitsAnimations:FindFirstChild(self.UnitName)
-	if AnimFolder then
-		for _, Animation in ipairs(AnimFolder:GetChildren()) do
-			self.Animations[Animation.Name] = self.Animator:LoadAnimation(Animation)
-		end
-	end
-	--[[for _, Animation in ipairs(Global:GetChildren()) do
-		self.Animations[Animation.Name] = self.Animator:LoadAnimation(Animation)
-	end]]
-	if not self.Animations["Idle"] then
-		self.Animations["Idle"] = self.Animator:LoadAnimation(Default)
-	end
-
-	self.Animations.Idle.Looped = true
-	if self.Animations.Attack then
-		self.Animations.Attack.Looped = false
-	end
-
 	Units[self.UniqueId] = self
-
-	self:PlayAnimation("Idle", nil, nil, 0)
 
 	local function OnLevel(Level: number)
 		local Func = self.DefaultRuns[Level]
@@ -611,6 +497,127 @@ local function UnitDestroy(self: Types.Unit)
 	GenerateId.RemoveId(self.UniqueId)
 	table.clear(self :: any)
 	setmetatable(self :: any, nil)
+end
+
+function UnitModule:LoadCharacter(Character)
+	self.Character = self.CharacterTrove:Clone(Character)
+
+	self.Root = self.Character.HumanoidRootPart
+	self.Humanoid = self.Character.Humanoid
+	self.Animator = self.Humanoid.Animator
+	self.SizeRatio = self.Humanoid.BodyHeightScale.Value
+
+	HelperFunctions.DisableHumanoid(self.Humanoid)
+	self.Root.Anchored = true
+
+	local CenterVector3 = self.UnitData.Vector3Offset
+
+	if CenterVector3 and CenterVector3 ~= Vector3.zero then
+		self.CenterPart = CenterPartRef:Clone()
+		self.CenterPart.CFrame = self.Root.CFrame + CenterVector3
+		Weld(self.CenterPart, self.Root)
+	else
+		self.CenterPart = self.Root
+	end
+
+	self:ApplyDetail()
+
+	self.VectorOffset = Vector3.new(0, 3 * self.Humanoid.BodyHeightScale.Value, 0)
+	self.VisualCFrame = self.CFrame + self.VectorOffset
+	self:TPToRootPosition()
+
+	self.Character.Parent = UnitsFolder
+
+	self.RadiusPart = self.Trove:Clone(RadiusReference)
+	self.RadiusPart.Transparency = 1
+	self.RadiusPart.Anchored = true
+	self.RadiusPart.Size = Vector3.new(self.CollisionRadius, self.RadiusPart.Size.Y, self.CollisionRadius)
+	self.RadiusPart.CFrame = self.CFrame
+	self.RadiusPart.Parent = self.Character
+
+	self.IsClicked = false
+
+	local RangePart, Animate, RangeTrove = GetRotatingRange()
+
+	self.RangePart = RangePart
+	self.RangePart.Anchored = true
+	self.RangePart.CFrame = self.CFrame
+	self.Trove:Add(RangeTrove)
+
+	local function OnClick()
+		local Range = self:GetProperties()["Range" :: "Range"]
+		Animate(Range, true)
+
+		self:AddPromise(
+			Promise.delay(0.01):andThen(function()
+				RangePart.Parent = self.Character
+			end),
+			"RangeAnimatePromise"
+		)
+		self:AddPromise(
+			Promise.defer(function()
+				TweenTransparency(self.RadiusPart, 0.2)
+			end),
+			"ClickOpenPromise"
+		)
+	end
+
+	local function OnClose()
+		self:AddPromise(
+			Promise.defer(function()
+				TweenTransparency(self.RadiusPart, 1)
+			end),
+			"ClickClosePromise"
+		)
+		RangePart.Parent = nil
+	end
+
+	if self.IsClicked then
+		OnClick()
+	else
+		OnClose()
+	end
+
+	self.CharacterTrove:Connect(self.CharacterClicked, function(Enabled: boolean)
+		if Enabled then
+			OnClick()
+		else
+			OnClose()
+		end
+	end)
+
+	self.CharacterTrove:Connect(self.Upgraded, function()
+		if self.IsClicked then
+			OnClick()
+		end
+	end)
+
+	for _, BasePart in ipairs(self.Character:GetDescendants()) do
+		if BasePart:IsA("BasePart") then
+			BasePart.CollisionGroup = "PlacedCharacters"
+		end
+	end
+
+	self.Animations = {}
+	local AnimFolder = UnitsAnimations:FindFirstChild(self.UnitName)
+	if AnimFolder then
+		for _, Animation in ipairs(AnimFolder:GetChildren()) do
+			self.Animations[Animation.Name] = self.Animator:LoadAnimation(Animation)
+		end
+	end
+	--[[for _, Animation in ipairs(Global:GetChildren()) do
+		self.Animations[Animation.Name] = self.Animator:LoadAnimation(Animation)
+	end]]
+	if not self.Animations["Idle"] then
+		self.Animations["Idle"] = self.Animator:LoadAnimation(Default)
+	end
+
+	self.Animations.Idle.Looped = true
+	if self.Animations.Attack then
+		self.Animations.Attack.Looped = false
+	end
+
+	self:PlayAnimation("Idle", nil, nil, 0)
 end
 
 function UnitModule:TPToRootPosition()
@@ -807,9 +814,6 @@ function UnitModule:OnUpgrade(Level: number)
 	self.TotalCost = UnitInfo.CalculateTotalCost(self.UnitData.UnitData, self.Level)
 	self.Upgraded:Fire(Level)
 	self:ApplyDetail()
-	self.VectorOffset = Vector3.new(0, 3 * self.Humanoid.BodyHeightScale.Value, 0)
-	self.VisualCFrame = self.CFrame + self.VectorOffset
-	self:TPToRootPosition()
 end
 
 function UnitModule:OnAttack(Input: Types.UnitAttackInput)
