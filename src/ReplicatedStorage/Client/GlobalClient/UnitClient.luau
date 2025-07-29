@@ -162,14 +162,14 @@ local function WeldParts(Character: typeof(ModelStorage.Extra.Rig), Adornment: M
 			Base.CFrame = Handle.CFrame:ToWorldSpace(CFrame)
 		end
 
-		local Weld = Instance.new("Motor6D")
-		Weld.C0 = CFrame.new()
-		Weld.C1 = CFrame.new()
-		Weld.Name = "__MainHandleWeld"
-		Weld.Part0 = Handle
-		Weld.Part1 = CharLimb
+		local MainMotor = Instance.new("Motor6D")
+		MainMotor.C0 = CFrame.new()
+		MainMotor.C1 = CFrame.new()
+		MainMotor.Name = "__MainHandleWeld"
+		MainMotor.Part0 = Handle
+		MainMotor.Part1 = CharLimb
 
-		Weld.Parent = Handle
+		MainMotor.Parent = Handle
 	end
 end
 
@@ -757,7 +757,7 @@ function UnitModule:_CalculateRatio()
 end
 --[[Clones adornment automatically]]
 function UnitModule:WeldAdornment(AdornmentInput: Model)
-	local Adornment = self.Trove:Clone(AdornmentInput)
+	local Adornment = self.Trove:Add(AdornmentInput)
 	WeldParts(self.Character, Adornment)
 
 	return Adornment

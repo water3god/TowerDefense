@@ -14,31 +14,31 @@ type ProductData = { Name: string, Image: string, Rarity: RarityInfo.Rarity | st
 local ProductInfo: { [number]: ProductData } = {
 	[3348441372] = {
 		Name = "1000 Gold",
-		Image = "rbxassetid://3348441372",
+		Image = "rbxassetid://18349426643",
 		Rarity = "Common",
 		Func = function() end,
 	},
 	[3348441586] = {
 		Name = "2000 Gold",
-		Image = "rbxassetid://3348441586",
+		Image = "rbxassetid://12448142732",
 		Rarity = "Common",
 		Func = function() end,
 	},
 	[3348442115] = {
 		Name = "5000 Gold",
-		Image = "rbxassetid://3348442115",
+		Image = "rbxassetid://12448181490",
 		Rarity = "Common",
 		Func = function() end,
 	},
 	[3348442394] = {
 		Name = "20000 Gold",
-		Image = "rbxassetid://3348442394",
+		Image = "rbxassetid://6438570209",
 		Rarity = "Common",
 		Func = function() end,
 	},
 	[3348443298] = {
 		Name = "100000 Gold",
-		Image = "rbxassetid://3348443298",
+		Image = "rbxassetid://100308684981950",
 		Rarity = "Common",
 		Func = function() end,
 	},

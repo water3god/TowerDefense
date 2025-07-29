@@ -70,8 +70,8 @@ local function CreateTitle(props: TitleProps)
 		}, {
 			Label = e(Main.TextLabel, {
 				native = {
-					Position = UDim2.fromScale(0.375, 0.35),
-					Size = UDim2.fromScale(0.6, 0.4),
+					Position = UDim2.fromScale(0.325, 0.35),
+					Size = UDim2.fromScale(0.5, 0.4),
 					Text = props.TitleName,
 					TextXAlignment = Enum.TextXAlignment.Left,
 				},
@@ -237,7 +237,7 @@ local function Connected(props: { CloseClick: (() -> ())?, native: { [any]: any 
 	end, {})
 
 	Hooks.useEventConnection(InventoryService.TitleAdded, function()
-		SetTitles(InventoryService.TitleData.Titles)
+		SetTitles(table.clone(InventoryService.TitleData.Titles))
 	end, {})
 
 	Hooks.useEventConnection(InventoryService.TitleChanged, function(EquippedTitleValue: string)

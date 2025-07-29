@@ -41,10 +41,14 @@ local function RandomVector(): Vector3
 	return Vector3.new(Random:NextNumber(-1, 1), Random:NextNumber(-1, 1), Random:NextNumber(-1, 1))
 end
 
-local function FindFirstMiddle(Adornment: Model): BasePart?
-	for _, Descendant in ipairs(Adornment:GetDescendants()) do
-		if Descendant:IsA("BasePart") and Descendant.Name == "Middle" then
-			return Descendant
+local function FindFirstHandle(Adornment: Model): BasePart?
+	for _, Limb in pairs(Adornment:GetChildren()) do
+		if Limb:IsA("Model") then
+			for _, Part in ipairs(Limb:GetChildren()) do
+				if Part:IsA("BasePart") and Part.Name == "Handle" then
+					return Part
+				end
+			end
 		end
 	end
 
@@ -52,18 +56,18 @@ local function FindFirstMiddle(Adornment: Model): BasePart?
 end
 
 local function Realign(Adornment: Model, NewOrientation: CFrame)
-	local Middle = FindFirstMiddle(Adornment)
+	local Handle = FindFirstHandle(Adornment)
 
-	if Middle then
-		for _, Weld in ipairs(Middle:GetChildren()) do
+	if Handle then
+		for _, Weld in ipairs(Handle:GetChildren()) do
 			if Weld:IsA("Motor6D") then
 				local OtherPart = Weld.Part0
 				if OtherPart then
 					Weld.Enabled = false
-					Middle.CFrame *= NewOrientation
+					Handle.CFrame *= NewOrientation
 
 					Weld.C0 = OtherPart.CFrame:Inverse()
-					Weld.C1 = Middle.CFrame:Inverse()
+					Weld.C1 = Handle.CFrame:Inverse()
 
 					Weld.Enabled = true
 				end
@@ -74,10 +78,10 @@ end
 
 local function ClearWelds(Adornment: Model)
 	for _, Limb in ipairs(Adornment:GetChildren()) do
-		local Middle = Limb:FindFirstChild("Middle") :: BasePart?
+		local Handle = Limb:FindFirstChild("Handle") :: BasePart?
 
-		if Middle then
-			local Weld = Middle:FindFirstChild("MainMiddleWeld")
+		if Handle then
+			local Weld = Handle:FindFirstChild("__MainHandleWeld")
 			if Weld then
 				Weld:Destroy()
 			end
@@ -327,7 +331,15 @@ local function FireArrow(
 	PlayAnimation(Unit, AttackInput, Delay)
 	SFXService.PlaySoundAt(Sounds.bow_pull, Unit.Root.CFrame)
 
-	local Arrow = Unit:WeldAdornment(PompeyArrow)
+	local Arrow = PompeyArrow:Clone()
+
+	local NewHandle = FindFirstHandle(Arrow)
+	if NewHandle then
+		NewHandle.CFrame *= CFrame.Angles(0, math.rad(-20), math.rad(30))
+	end
+
+	Unit:WeldAdornment(Arrow)
+
 	Arrow.Parent = ParticlesFolder
 
 	local DelayTime = CalculateDelay(Data.DelayTime, SpeedRatio, Delay)
@@ -350,26 +362,32 @@ local function FireArrow(
 				end
 				SFXService.PlaySoundAt(Sounds.bow_release, Unit.Root.CFrame)
 				ClearWelds(Arrow)
-				local Middle = FindFirstMiddle(Arrow)
-				if Middle then
-					Middle.Anchored = true
+				local Handle = FindFirstHandle(Arrow)
+				for _, Descendant in ipairs(Arrow:GetDescendants()) do
+					if Descendant:IsA("Motor6D") then
+						Descendant.C0 *= CFrame.Angles(0, math.rad(20), math.rad(-30))
+					end
+				end
+				if Handle then
+					Handle.Anchored = true
 					if Enemy then
 						LastPosition = Enemy.CFrame.Position + Vector3.new(0, Enemy.YOffset, 0)
 					end
 					Realign(Arrow, Data.Realigned)
 					if Enemy and LastPosition then
 						TweenBetweenPositions(
-							Middle,
-							Middle.CFrame.Position,
+							Handle,
+							Handle.CFrame.Position,
 							LastPosition + RandomVector() / 2,
 							Data.Speed,
 							Unit.CFrame.Position
 						):await()
+
 						if Enemy then
 							PlayAttackHit(Enemy)
-							SFXService.PlaySoundAt(Sounds.arrow_hit, Middle.CFrame)
+							SFXService.PlaySoundAt(Sounds.arrow_hit, Handle.CFrame)
 						else
-							SFXService.PlaySoundAt(Sounds.arrow_miss, Middle.CFrame)
+							SFXService.PlaySoundAt(Sounds.arrow_miss, Handle.CFrame)
 						end
 					end
 				end
