@@ -166,7 +166,7 @@ local function CreateMainXPFrame(props: MainXPProps)
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.02,
+				Stroke = 0.015,
 			}),
 		}),
 		Bar = e(Main.Frame, {
@@ -288,7 +288,7 @@ local function CreateUnitXPFrame(props: UnitXPProps)
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.02,
+				Stroke = 0.015,
 			}),
 		}),
 		XPBar = e(Main.CanvasGroup, {

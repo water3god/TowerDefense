@@ -146,11 +146,6 @@ local function WeldParts(Character: typeof(ModelStorage.Extra.Rig), Adornment: M
 				BasePart.CanCollide = false
 				BasePart.Anchored = false
 
-				local Weld = Handle:FindFirstChild(BasePart.Name)
-				if Weld and Weld:IsA("Motor6D") then
-					continue
-				end
-
 				local Motor = Instance.new("Motor6D")
 				Motor.C0 = BasePart.CFrame:Inverse()
 				Motor.C1 = Handle.CFrame:Inverse()

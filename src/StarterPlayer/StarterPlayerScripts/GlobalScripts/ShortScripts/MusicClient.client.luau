@@ -20,9 +20,6 @@ local Music = GlobalMusic:WaitForChild("Music")
 local Win = GlobalMusic:WaitForChild("Win") :: Sound
 local Lose = GlobalMusic:WaitForChild("Lose") :: Sound
 
-Win.Looped = true
-Lose.Looped = true
-
 local Sounds: { Sound } = Music:GetChildren()
 local OldVolumes: { [Sound]: number } = {}
 
