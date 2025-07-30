@@ -198,12 +198,10 @@ local function CreateTradePopup(props: Properties)
 		return Frames
 	end, { props.Ids })
 
-	return e(Main.ScrollingFrame, {
-		BarSize = 0.002,
+	return e(Main.Frame, {
 		native = Join({
 			Position = UDim2.fromScale(0.8, 0.7),
 			Size = UDim2.fromScale(0.5, 0.6),
-			AutomaticCanvasSize = Enum.AutomaticSize.Y,
 		}, props.native),
 	}, {
 		UIListLayout = e("UIListLayout", {

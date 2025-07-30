@@ -9,7 +9,6 @@ local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local GuiService = game:GetService("GuiService")
-local ContextActionService = game:GetService("ContextActionService")
 
 -- Packages --
 
@@ -29,6 +28,7 @@ local Network = ReplicatedStorage.Network
 local ClientOnly = require(Network.ClientOnly)
 
 local Modules = ReplicatedStorage.Modules
+local ContextActionUtility = require(Modules.ContextActionUtility)
 local HelperFunctions = require(Modules.HelperFunctions)
 
 -- Gui --
@@ -775,7 +775,7 @@ local function Render()
 						end
 					end)
 				elseif PreferredInput == "Touch" then
-					ContextActionService:BindAction("Sprint", function(_, input)
+					ContextActionUtility:BindAction("Sprint", function(_, input)
 						if input == Enum.UserInputState.Begin then
 							if InSprint then
 								Stop()
@@ -784,14 +784,14 @@ local function Render()
 							end
 						end
 					end, true)
-					ContextActionService:SetTitle("Sprint", "Sprint")
+					ContextActionUtility:SetTitle("Sprint", "Sprint")
 				end
 			end)
 
 			return function()
 				SprintTrove:Destroy()
 				CleanUp()
-				ContextActionService:UnbindAction("Sprint")
+				ContextActionUtility:UnbindAction("Sprint")
 			end
 		else
 			API.start({
