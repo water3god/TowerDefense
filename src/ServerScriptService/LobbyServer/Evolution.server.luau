@@ -11,10 +11,15 @@ local UnitEvolved = Network.UnitEvolved
 local EvolveUnit = Network.EvolveUnit
 
 local Shared = ReplicatedStorage.Shared
+local IsLobby = require(Shared.IsLobby)
 local Evolutions = require(Shared.Evolutions)
 
 local GlobalModules = ServerScriptService.GlobalModules
 local PlayerData = require(GlobalModules.PlayerData)
+
+if not IsLobby then
+	return
+end
 
 EvolveUnit.SetCallback(function(Player: Player, Data: { UniqueId: string })
 	local PlayerDataModule = PlayerData.GetPlayerData(Player)

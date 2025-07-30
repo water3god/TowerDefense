@@ -6,6 +6,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
 local TweenService = game:GetService("TweenService")
 local SoundService = game:GetService("SoundService")
+local RunService = game:GetService("RunService")
 
 local Packages = ReplicatedStorage.Packages
 local HelperFunctions = require(ReplicatedStorage.Modules.HelperFunctions)
@@ -71,6 +72,23 @@ local function Realign(Adornment: Model, NewOrientation: CFrame)
 
 					Weld.Enabled = true
 				end
+			end
+		end
+	end
+end
+
+local function RealignHandle(Handle: BasePart)
+	for _, Weld in ipairs(Handle:GetChildren()) do
+		if Weld:IsA("Motor6D") then
+			local OtherPart = Weld.Part0
+			if OtherPart then
+				Weld.Enabled = false
+				Handle.CFrame *= CFrame.Angles(0, math.rad(-20), math.rad(30))
+
+				Weld.C0 = OtherPart.CFrame:Inverse()
+				Weld.C1 = Handle.CFrame:Inverse()
+
+				Weld.Enabled = true
 			end
 		end
 	end
@@ -334,6 +352,7 @@ local function FireArrow(
 	local Arrow = PompeyArrow:Clone()
 
 	local NewHandle = FindFirstHandle(Arrow)
+
 	if NewHandle then
 		NewHandle.CFrame *= CFrame.Angles(0, math.rad(-20), math.rad(30))
 	end
@@ -348,31 +367,32 @@ local function FireArrow(
 	local LastPosition: Vector3? = nil
 
 	if Enemy then
+		Unit:RotateToEnemy(Enemy)
 		Enemy.Destroying:Once(function()
 			LastPosition = Enemy.CFrame.Position + Vector3.new(0, Enemy.YOffset, 0)
 			Enemy = nil
 		end)
 	end
 
+	local Connection = RunService.PostSimulation:Connect(function()
+		if Enemy then
+			Unit:RotateToEnemy(Enemy)
+		end
+	end)
+
 	Unit:AddAttackPromise(
 		Promise.delay(DelayTime)
 			:andThen(function()
-				if Enemy then
-					Unit:RotateToEnemy(Enemy)
-				end
 				SFXService.PlaySoundAt(Sounds.bow_release, Unit.Root.CFrame)
 				ClearWelds(Arrow)
 				local Handle = FindFirstHandle(Arrow)
-				for _, Descendant in ipairs(Arrow:GetDescendants()) do
-					if Descendant:IsA("Motor6D") then
-						Descendant.C0 *= CFrame.Angles(0, math.rad(20), math.rad(-30))
-					end
-				end
+
 				if Handle then
 					Handle.Anchored = true
 					if Enemy then
 						LastPosition = Enemy.CFrame.Position + Vector3.new(0, Enemy.YOffset, 0)
 					end
+					Realign(Arrow, CFrame.Angles(0, math.rad(-20), math.rad(30)):Inverse())
 					Realign(Arrow, Data.Realigned)
 					if Enemy and LastPosition then
 						TweenBetweenPositions(
@@ -393,6 +413,7 @@ local function FireArrow(
 				end
 			end)
 			:finally(function()
+				Connection:Disconnect()
 				Arrow:Destroy()
 			end),
 		"AttackArrow"
