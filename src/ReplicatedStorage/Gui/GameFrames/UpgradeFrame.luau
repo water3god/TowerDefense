@@ -487,6 +487,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 		}),
 		UnitFrame = e(UnitView, {
 			UnitName = UpgradeData.UnitName,
+			Level = UpgradeData.Level,
 			native = {
 				Size = UDim2.fromScale(0.5, 0.525),
 				Position = UDim2.fromScale(0.25, 0.525),

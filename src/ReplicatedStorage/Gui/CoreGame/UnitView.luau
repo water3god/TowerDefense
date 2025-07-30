@@ -28,6 +28,7 @@ local UnitInfo = require(Shared.UnitInfo)
 
 export type Properties = {
 	UnitName: string?,
+	Level: number?,
 	RotationCFrame: React.Binding<CFrame>?,
 	Offset: Vector3?,
 	Distance: number?,
@@ -45,13 +46,13 @@ local CreateUnitView = React.forwardRef(function(Props: Properties, ref)
 
 	React.useEffect(function()
 		if Props.UnitName then
-			local Data = UnitClient.InitCharacter(Props.UnitName, CFrame.new())
+			local Data = UnitClient.InitCharacter(Props.UnitName, CFrame.new(), Props.Level)
 			Data.UnitModel.Parent = Container.current
 
 			return Data.Trove:WrapClean()
 		end
 		return function() end
-	end, { Props.UnitName })
+	end, { Props.UnitName, Props.Level } :: { unknown })
 
 	local FixedViewportCFrame = React.useMemo(function()
 		if Props.UnitName then

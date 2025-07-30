@@ -308,7 +308,8 @@ export type UnitModule = {
 
 	InitCharacter: (
 		Unit: string,
-		CFrame: CFrame?
+		CFrame: CFrame?,
+		Level: number?
 	) -> {
 		UnitModel: Model & any,
 		Trove: Trove.Trove,

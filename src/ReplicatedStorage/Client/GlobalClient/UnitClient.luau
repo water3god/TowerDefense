@@ -377,6 +377,8 @@ local function NewUnit(Input: Types.UnitInput, New: boolean)
 	self.CollisionRadius = self.UnitData.CollisionRadius
 	self.TotalCost = UnitInfo.CalculateTotalCost(self.UnitData.UnitData, self.Level)
 
+	self:ApplyDetail()
+
 	local HighestLevel = #self.UnitData.UnitData
 
 	local Runs = UnitAttacks.DefaultRuns[self.UnitName]
@@ -384,16 +386,6 @@ local function NewUnit(Input: Types.UnitInput, New: boolean)
 
 	self.DefaultRuns = Runs and SyncFuncs(Runs, HighestLevel) or {}
 	self.UnitAttacks = Attacks and SyncFuncs(Attacks, HighestLevel) or {}
-
-	local UnitModel, UnitLevel = GetUnitModelFromLevel(self.UnitName, self.Level)
-
-	if UnitLevel ~= self.CharacterLevel then
-		self.CharacterTrove:Destroy()
-		self:LoadCharacter(UnitModel)
-		self.CharacterLevel = UnitLevel
-		self.AdornmentLevel = nil
-		self.Adornment = nil
-	end
 
 	self.CoinsAdded:Connect(function(Coins: number)
 		local BillboardGui = Instance.new("BillboardGui")
@@ -515,8 +507,6 @@ function UnitModule:LoadCharacter(Character)
 		self.CenterPart = self.Root
 	end
 
-	self:ApplyDetail()
-
 	self.VectorOffset = Vector3.new(0, 3 * self.Humanoid.BodyHeightScale.Value, 0)
 	self.VisualCFrame = self.CFrame + self.VectorOffset
 	self:TPToRootPosition()
@@ -529,8 +519,6 @@ function UnitModule:LoadCharacter(Character)
 	self.RadiusPart.Size = Vector3.new(self.CollisionRadius, self.RadiusPart.Size.Y, self.CollisionRadius)
 	self.RadiusPart.CFrame = self.CFrame
 	self.RadiusPart.Parent = self.Character
-
-	self.IsClicked = false
 
 	local RangePart, Animate, RangeTrove = GetRotatingRange()
 
@@ -545,7 +533,7 @@ function UnitModule:LoadCharacter(Character)
 
 		self:AddPromise(
 			Promise.delay(0.01):andThen(function()
-				RangePart.Parent = self.Character
+				self.RangePart.Parent = self.Character
 			end),
 			"RangeAnimatePromise"
 		)
@@ -705,6 +693,16 @@ end
 
 function UnitModule:ApplyDetail()
 	local _, AdornmentLevel = GetAdornmentFromLevel(self.UnitName, self.Level)
+
+	local UnitModel, UnitLevel = GetUnitModelFromLevel(self.UnitName, self.Level)
+
+	if UnitLevel ~= self.CharacterLevel then
+		self.CharacterTrove:Destroy()
+		self:LoadCharacter(UnitModel)
+		self.CharacterLevel = UnitLevel
+		self.AdornmentLevel = nil
+		self.Adornment = nil
+	end
 
 	if AdornmentLevel ~= self.AdornmentLevel then
 		if self.Adornment then
@@ -908,9 +906,12 @@ end
 
 local DefaultCFrame = CFrame.new(0, -0.4, -2) * CFrame.Angles(0, math.rad(-180), 0)
 
-function UnitModule.InitCharacter(Unit: string, Position: CFrame?)
+function UnitModule.InitCharacter(Unit: string, Position: CFrame?, Level: number?)
 	local InitTrove = Trove.new()
-	local UnitModel: typeof(_Rig) = InitTrove:Clone(UnitModels[Unit][0].Model)
+
+	local Model = GetUnitModelFromLevel(Unit, Level or 0)
+
+	local UnitModel: typeof(_Rig) = InitTrove:Clone(Model)
 	local Humanoid: Humanoid & { [any]: any } = UnitModel.Humanoid
 	local Animator: Animator & { [any]: any } = Humanoid.Animator
 	local Root: BasePart = UnitModel.HumanoidRootPart
@@ -919,7 +920,7 @@ function UnitModule.InitCharacter(Unit: string, Position: CFrame?)
 	local CenterPart: BasePart = nil
 	local UnitData = UnitInfo.UnitInfo[Unit]
 
-	SetAdornment(UnitModel, Unit, 0)
+	SetAdornment(UnitModel, Unit, Level or 0)
 
 	if UnitData.Vector3Offset and UnitData.Vector3Offset ~= Vector3.zero then
 		CenterPart = CenterPartRef:Clone()

@@ -709,7 +709,7 @@ local UnitAttacks: {
 						)
 					end)
 
-					SFXService.PlaySoundAt(Sounds.SwordSwing, Unit.Root.CFrame)
+					DelayedSound(Unit, { Sounds.SwordSwing }, AttackInput, Enemy, 0.2, Delay)
 					Unit:AddAttackPromise(DelProm, "RobertAttackEmit")
 				end,
 			},
