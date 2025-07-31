@@ -6,7 +6,12 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 
-local Touched = require(ReplicatedStorage.Network.ClientOnly).EvolutionTouched
+local Packages = ReplicatedStorage.Packages
+local Signal = require(Packages.Signal)
+
+local ClientOnly = require(ReplicatedStorage.Network.ClientOnly)
+local EvolutionTouched = ClientOnly.EvolutionTouched
+local TraitsTouched = ClientOnly.TraitsTouched
 
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
@@ -14,20 +19,25 @@ local ObserveTag = require(Modules.ObserveTag)
 
 local Player = Players.LocalPlayer
 
-ObserveTag.ObserveTag("EvolutionTouch", function(BasePart: Instance)
-	if BasePart:IsA("BasePart") then
-		local Connection = BasePart.Touched:Connect(function(OtherPart)
-			local OtherPlayer = HelperFunctions.GetPlayerFromPart(OtherPart)
+local function HandleTouched(Tag: string, TouchedEvent: Signal.Signal<>)
+	ObserveTag.ObserveTag(Tag, function(BasePart: Instance)
+		if BasePart:IsA("BasePart") then
+			local Connection = BasePart.Touched:Connect(function(OtherPart)
+				local OtherPlayer = HelperFunctions.GetPlayerFromPart(OtherPart)
 
-			if Player == OtherPlayer then
-				Touched:Fire()
+				if Player == OtherPlayer then
+					TouchedEvent:Fire()
+				end
+			end)
+
+			return function()
+				Connection:Disconnect()
 			end
-		end)
-
-		return function()
-			Connection:Disconnect()
 		end
-	end
 
-	return function() end
-end)
+		return function() end
+	end)
+end
+
+HandleTouched("EvolutionTouch", EvolutionTouched)
+HandleTouched("TraitsTouch", TraitsTouched)

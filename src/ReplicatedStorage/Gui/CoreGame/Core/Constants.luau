@@ -16,6 +16,7 @@ local Constants = {
 	QUESTS_FRAME = "QuestsFrame",
 	STARTER_CHOOSE = "StarterChoose",
 	EVOLUTION = "Evolution",
+	TRAITS_FRAME = "TraitsFrame",
 }
 
 return Constants

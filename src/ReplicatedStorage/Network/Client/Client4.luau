@@ -122,7 +122,13 @@ if not RunService:IsRunning() then
 		UnitEvolved = table.freeze({
 			SetCallback = noop
 		}),
+		TraitRolled = table.freeze({
+			SetCallback = noop
+		}),
 		TeleportBack = table.freeze({
+			Fire = noop
+		}),
+		RollTrait = table.freeze({
 			Fire = noop
 		}),
 		RedeemQuest = table.freeze({
@@ -156,12 +162,12 @@ local remotes = ReplicatedStorage:WaitForChild("Zap4")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
-export type Level = (number)
 export type QuestRemoteInfo = ({
 	["Id"]: (string),
 	["CurrentValue"]: (number),
 	["Redeemed"]: (boolean),
 })
+export type Level = (number)
 
 local function SendEvents()
 	if outgoing_used ~= 0 then
@@ -179,9 +185,10 @@ end
 
 RunService.Heartbeat:Connect(SendEvents)
 
-local reliable_events = table.create(5)
-local reliable_event_queue: { [number]: { any } } = table.create(5)
+local reliable_events = table.create(6)
+local reliable_event_queue: { [number]: { any } } = table.create(6)
 reliable_event_queue[4] = {}
+reliable_event_queue[5] = {}
 reliable_event_queue[1] = {}
 reliable_event_queue[2] = {}
 reliable_event_queue[3] = 0
@@ -207,53 +214,68 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 					warn(`[ZAP] {#reliable_event_queue[4]} events in queue for UnitEvolved. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 1 then
+		elseif id == 5 then
 			local value
 			value = {  }
 			local len_2 = buffer.readu16(incoming_buff, read(2))
-			value["DailyQuests"] = table.create(len_2)
-			for i_1 = 1, len_2 do
+			value["UniqueId"] = buffer.readstring(incoming_buff, read(len_2), len_2)
+			local len_3 = buffer.readu16(incoming_buff, read(2))
+			value["NewTrait"] = buffer.readstring(incoming_buff, read(len_3), len_3)
+			if reliable_events[5] then
+				task.spawn(reliable_events[5], value)
+			else
+				table.insert(reliable_event_queue[5], value)
+				if #reliable_event_queue[5] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[5]} events in queue for TraitRolled. Did you forget to attach a listener?`)
+				end
+			end
+		elseif id == 1 then
+			local value
+			value = {  }
+			local len_4 = buffer.readu16(incoming_buff, read(2))
+			value["DailyQuests"] = table.create(len_4)
+			for i_1 = 1, len_4 do
 				local bool_1 = buffer.readu8(incoming_buff, read(1))
 				local val_1
 				val_1 = {  }
-				local len_3 = buffer.readu16(incoming_buff, read(2))
-				val_1["Id"] = buffer.readstring(incoming_buff, read(len_3), len_3)
+				local len_5 = buffer.readu16(incoming_buff, read(2))
+				val_1["Id"] = buffer.readstring(incoming_buff, read(len_5), len_5)
 				val_1["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
 				val_1["Redeemed"] = bit32.btest(bool_1, 0b0000000000000001)
 				value["DailyQuests"][i_1] = val_1
 			end
-			local len_4 = buffer.readu16(incoming_buff, read(2))
-			value["WeeklyQuests"] = table.create(len_4)
-			for i_2 = 1, len_4 do
+			local len_6 = buffer.readu16(incoming_buff, read(2))
+			value["WeeklyQuests"] = table.create(len_6)
+			for i_2 = 1, len_6 do
 				local bool_2 = buffer.readu8(incoming_buff, read(1))
 				local val_2
 				val_2 = {  }
-				local len_5 = buffer.readu16(incoming_buff, read(2))
-				val_2["Id"] = buffer.readstring(incoming_buff, read(len_5), len_5)
+				local len_7 = buffer.readu16(incoming_buff, read(2))
+				val_2["Id"] = buffer.readstring(incoming_buff, read(len_7), len_7)
 				val_2["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
 				val_2["Redeemed"] = bit32.btest(bool_2, 0b0000000000000001)
 				value["WeeklyQuests"][i_2] = val_2
 			end
-			local len_6 = buffer.readu16(incoming_buff, read(2))
-			value["EventQuests"] = table.create(len_6)
-			for i_3 = 1, len_6 do
+			local len_8 = buffer.readu16(incoming_buff, read(2))
+			value["EventQuests"] = table.create(len_8)
+			for i_3 = 1, len_8 do
 				local bool_3 = buffer.readu8(incoming_buff, read(1))
 				local val_3
 				val_3 = {  }
-				local len_7 = buffer.readu16(incoming_buff, read(2))
-				val_3["Id"] = buffer.readstring(incoming_buff, read(len_7), len_7)
+				local len_9 = buffer.readu16(incoming_buff, read(2))
+				val_3["Id"] = buffer.readstring(incoming_buff, read(len_9), len_9)
 				val_3["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
 				val_3["Redeemed"] = bit32.btest(bool_3, 0b0000000000000001)
 				value["EventQuests"][i_3] = val_3
 			end
-			local len_8 = buffer.readu16(incoming_buff, read(2))
-			value["GlobalQuests"] = table.create(len_8)
-			for i_4 = 1, len_8 do
+			local len_10 = buffer.readu16(incoming_buff, read(2))
+			value["GlobalQuests"] = table.create(len_10)
+			for i_4 = 1, len_10 do
 				local bool_4 = buffer.readu8(incoming_buff, read(1))
 				local val_4
 				val_4 = {  }
-				local len_9 = buffer.readu16(incoming_buff, read(2))
-				val_4["Id"] = buffer.readstring(incoming_buff, read(len_9), len_9)
+				local len_11 = buffer.readu16(incoming_buff, read(2))
+				val_4["Id"] = buffer.readstring(incoming_buff, read(len_11), len_11)
 				val_4["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
 				val_4["Redeemed"] = bit32.btest(bool_4, 0b0000000000000001)
 				value["GlobalQuests"][i_4] = val_4
@@ -268,14 +290,14 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 2 then
 			local value
-			local len_10 = buffer.readu16(incoming_buff, read(2))
-			value = table.create(len_10)
-			for i_5 = 1, len_10 do
+			local len_12 = buffer.readu16(incoming_buff, read(2))
+			value = table.create(len_12)
+			for i_5 = 1, len_12 do
 				local bool_5 = buffer.readu8(incoming_buff, read(1))
 				local val_5
 				val_5 = {  }
-				local len_11 = buffer.readu16(incoming_buff, read(2))
-				val_5["Id"] = buffer.readstring(incoming_buff, read(len_11), len_11)
+				local len_13 = buffer.readu16(incoming_buff, read(2))
+				val_5["Id"] = buffer.readstring(incoming_buff, read(len_13), len_13)
 				val_5["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
 				val_5["Redeemed"] = bit32.btest(bool_5, 0b0000000000000001)
 				value[i_5] = val_5
@@ -311,21 +333,21 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 					assert(key_1 ~= nil, "received instance is nil!")
 					assert(key_1:IsA("Player"), "received instance is not of the Player class!")
 					val_6 = {  }
-					local len_12 = buffer.readu16(incoming_buff, read(2))
-					val_6["Title"] = buffer.readstring(incoming_buff, read(len_12), len_12)
+					local len_14 = buffer.readu16(incoming_buff, read(2))
+					val_6["Title"] = buffer.readstring(incoming_buff, read(len_14), len_14)
 					val_6["Level"] = buffer.readu16(incoming_buff, read(2))
-					local len_13 = buffer.readu16(incoming_buff, read(2))
-					val_6["EquippedUnits"] = table.create(len_13)
-					for i_6 = 1, len_13 do
+					local len_15 = buffer.readu16(incoming_buff, read(2))
+					val_6["EquippedUnits"] = table.create(len_15)
+					for i_6 = 1, len_15 do
 						local bool_7 = buffer.readu8(incoming_buff, read(1))
 						local val_7
 						if bit32.btest(bool_7, 0b0000000000000001) then
 							val_7 = {  }
-							local len_14 = buffer.readu16(incoming_buff, read(2))
-							val_7["Id"] = buffer.readstring(incoming_buff, read(len_14), len_14)
+							local len_16 = buffer.readu16(incoming_buff, read(2))
+							val_7["Id"] = buffer.readstring(incoming_buff, read(len_16), len_16)
 							val_7["Level"] = buffer.readu16(incoming_buff, read(2))
-							local len_15 = buffer.readu16(incoming_buff, read(2))
-							val_7["UnitName"] = buffer.readstring(incoming_buff, read(len_15), len_15)
+							local len_17 = buffer.readu16(incoming_buff, read(2))
+							val_7["UnitName"] = buffer.readstring(incoming_buff, read(len_17), len_17)
 						else
 							val_7 = nil
 						end
@@ -366,6 +388,21 @@ local returns = {
 			end
 		end,
 	},
+	TraitRolled = {
+		SetCallback = function(Callback: (Value: ({
+			["UniqueId"]: (string),
+			["NewTrait"]: (string),
+		})) -> ()): () -> ()
+			reliable_events[5] = Callback
+			for _, value in reliable_event_queue[5] do
+				task.spawn(Callback, value)
+			end
+			reliable_event_queue[5] = {}
+			return function()
+				reliable_events[5] = nil
+			end
+		end,
+	},
 	TeleportBack = {
 		Fire = function(Value: (boolean))
 			alloc(1)
@@ -378,15 +415,28 @@ local returns = {
 			buffer.writeu8(outgoing_buff, bool_8_pos_1, bool_8)
 		end,
 	},
+	RollTrait = {
+		Fire = function(Value: ({
+			["UniqueId"]: (string),
+		}))
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
+			local len_18 = #Value["UniqueId"]
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_18)
+			alloc(len_18)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_18)
+		end,
+	},
 	RedeemQuest = {
 		Fire = function(Value: (string))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-			local len_16 = #Value
+			local len_19 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_16)
-			alloc(len_16)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_16)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_19)
+			alloc(len_19)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_19)
 		end,
 	},
 	QuestSync = {
@@ -456,22 +506,22 @@ local returns = {
 		}))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
-			local len_17 = #Value["UniqueId"]
+			local len_20 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_17)
-			alloc(len_17)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_17)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_20)
+			alloc(len_20)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_20)
 		end,
 	},
 	ChooseStarter = {
 		Fire = function(Value: (string))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
-			local len_18 = #Value
+			local len_21 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_18)
-			alloc(len_18)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_18)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_21)
+			alloc(len_21)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_21)
 		end,
 	},
 	AllEquippedSync = {

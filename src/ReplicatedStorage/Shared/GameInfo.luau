@@ -870,10 +870,14 @@ local GameInfo: { MapInfo } = {
 
 export type RewardData = {
 	Image: string,
-	Rarity: RarityInfo.Rarity | string,
+	Rarity: RarityInfo.Rarity,
 }
 
 local RewardInfo: { [string]: RewardData } = {
+	["Omen Coins"] = {
+		Image = "rbxassetid://123591871678972",
+		Rarity = "Mythic",
+	},
 	["Gold"] = {
 		Image = "rbxassetid://123591871678972",
 		Rarity = "Common",

@@ -1,5 +1,5 @@
 --!nocheck
---# selene: allow(unused_variable, global_usage, mixed_table, unbalanced_assignments, incorrect_standard_library_use, empty_if, suspicious_reverse_loop, divide_by_zero, multiple_statements, parenthese_conditions, if_same_then_else, manual_table_clone, deprecated, roblox_incorrect_roact_usage, unscoped_variables, shadowing, undefined_variable)
+--# selene: allow(unused_variable, global_usage, mixed_table, unbalanced_assignments, incorrect_standard_library_use, empty_if, suspicious_reverse_loop, divide_by_zero, multiple_statements, parenthese_conditions, if_same_then_else, manual_table_clone, deprecated, roblox_incorrect_roact_usage, unscoped_variables, shadowing, undefined_variable, roblox_manual_fromscale_or_fromoffset, mismatched_arg_count, roblox_incorrect_color3_new_bounds)
 --[[
 
 ████████████████████████████████████████████████████████████╗
@@ -492,7 +492,7 @@ function ContextActionUtility:MakeButtonRound(actionName, amount)
 
 	local corner = button:FindFirstChildOfClass("UICorner")
 	if not corner then
-		local corner = Instance.new("UICorner", button)
+		local _corner = Instance.new("UICorner", button)
 	end
 	if not amount then
 		amount = 0.5

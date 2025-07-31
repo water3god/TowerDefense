@@ -97,3 +97,24 @@ event UnitEvolved = {
 		UnitName: string.binary,
 	},
 }
+
+-- Traits --
+
+event RollTrait = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: struct {
+		UniqueId: string.binary,
+	},
+}
+
+event TraitRolled = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: struct {
+		UniqueId: string.binary,
+		NewTrait: string.binary,
+	},
+}

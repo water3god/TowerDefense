@@ -264,7 +264,7 @@ local function CreateEvolution(props: Properties)
 				Hidden = if CurrentUnit then true else false,
 				native = {
 					Position = UDim2.fromScale(0.5, 0.5),
-					Size = UDim2.fromScale(0.8, 0.8),
+					Size = UDim2.fromScale(0.4, 0.4),
 				},
 			}),
 			UICorner = e("UICorner", {
@@ -296,8 +296,8 @@ local function CreateEvolution(props: Properties)
 					Text = "EVOLVE!",
 				},
 			}, {
-				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.002,
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.03,
 				}),
 			}),
 		}),

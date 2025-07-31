@@ -89,6 +89,7 @@ local QuestsFrame = require(QuestsFolder.QuestsFrame)
 
 local TraitsFolder = Gui.Traits
 local Evolution = require(TraitsFolder.Evolution)
+local TraitsFrame = require(TraitsFolder.TraitsFrame)
 
 -- Contexts --
 local InventoryContext = require(Inventory.InventoryContext)
@@ -376,6 +377,22 @@ local function RenderEvolution(Props: any)
 	})
 end
 
+local function RenderTraitsFrame(Props: any)
+	local Position, Visiblity = AnimateWrapper({
+		Visible = Props.Visible,
+		Name = Constants.TRAITS_FRAME,
+	})
+
+	return e(TraitsFrame, {
+		CloseClick = Props.CloseClick,
+		SetVisible = Props.SetVisible,
+		native = {
+			Position = Position,
+			Visible = Visiblity,
+		},
+	})
+end
+
 local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (string: string?) -> () })
 	local HoveredDataRef = React.useRef(nil :: {
 		Type: "Unit" | "Enemy",
@@ -600,6 +617,7 @@ local VisibleFrames = {
 	[Constants.QUESTS_FRAME] = {},
 	[Constants.STARTER_CHOOSE] = {},
 	[Constants.EVOLUTION] = {},
+	[Constants.TRAITS_FRAME] = {},
 }
 
 local NoBlur = {
@@ -932,6 +950,15 @@ local function Render()
 						end,
 						SetVisible = function()
 							SetVisibleRetricted(Constants.EVOLUTION, true)
+						end,
+					}),
+					[Constants.TRAITS_FRAME] = e(RenderTraitsFrame, {
+						Visible = VisibleFrame == Constants.TRAITS_FRAME,
+						CloseClick = function()
+							OnCloseClick(Constants.TRAITS_FRAME)
+						end,
+						SetVisible = function()
+							SetVisibleRetricted(Constants.TRAITS_FRAME, true)
 						end,
 					}),
 				} :: { [string]: React.Node }

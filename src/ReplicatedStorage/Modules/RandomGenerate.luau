@@ -8,7 +8,7 @@ return function(RandomList: { [string]: number }): string?
 	local TotalPercent: number = 0
 	local CurrentValue: number = 0
 
-	for Name, Percent in pairs(RandomList) do
+	for _, Percent in pairs(RandomList) do
 		TotalPercent += Percent
 	end
 

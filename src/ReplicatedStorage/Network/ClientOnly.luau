@@ -17,6 +17,7 @@ local ClientOnly = {
 	TPGuiSet = Signal.new() :: Signal.Signal<{ MapName: string, ImageId: string }>,
 	ChangeWalk = Signal.new() :: Signal.Signal<boolean>,
 	EvolutionTouched = Signal.new(),
+	TraitsTouched = Signal.new(),
 }
 
 return ClientOnly

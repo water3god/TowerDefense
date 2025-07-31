@@ -20,8 +20,8 @@ local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
 local UIStroke = require(CoreGame.UIStroke)
 local CloseButton = require(CoreGame.CloseButton)
-local Hooks = require(CoreGame.Hooks)
 local Title = require(CoreGame.Title)
+local NewGui = require(CoreGame.NewGui)
 
 local Shared = ReplicatedStorage.Shared
 local Traits = require(Shared.Traits)
@@ -141,72 +141,76 @@ local function CreateTraitsInfo(props: Properties)
 		return Frames
 	end)
 
-	return e(Main.Frame, {
-		native = Join({
-			BackgroundTransparency = 0,
-			BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
-			Size = UDim2.fromScale(0.8, 0.8),
-		}, props.native),
+	return e(NewGui, {
+		DisplayOrder = 2,
 	}, {
-		Title = e(Title, {
-			Position = UDim2.fromScale(0.3, 0),
-			Size = UDim2.fromScale(1, 0.14),
-			Title = "TRAITS",
-		}),
-		MainFrame = e(Main.ScrollingFrame, {
-			BarSize = 0.01,
-			native = {
-				Position = UDim2.fromScale(0.5, 0.51),
-				Size = UDim2.fromScale(0.95, 0.8),
-				ZIndex = 2,
-				AutomaticCanvasSize = Enum.AutomaticSize.Y,
-			},
+		Main = e(Main.Frame, {
+			native = Join({
+				BackgroundTransparency = 0,
+				BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
+				Size = UDim2.fromScale(0.5, 0.6),
+			}, props.native),
 		}, {
-			UIListLayout = e("UIListLayout", {
-				SortOrder = Enum.SortOrder.LayoutOrder,
-				VerticalAlignment = Enum.VerticalAlignment.Top,
-				HorizontalAlignment = Enum.HorizontalAlignment.Center,
-				Padding = UDim.new(0, 0),
-				FillDirection = Enum.FillDirection.Vertical,
+			Title = e(Title, {
+				Position = UDim2.fromScale(0.3, 0),
+				Size = UDim2.fromScale(1, 0.14),
+				Title = "TRAITS",
 			}),
-		}, TraitFrames),
-		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-			AspectRatio = 0.8,
-		}),
-		UICorner = e("UICorner", {
-			CornerRadius = UDim.new(0.02, 0),
-		}),
-		CloseButton = e(CloseButton, {
-			Position = UDim2.fromScale(1, 0),
-			Size = UDim2.fromScale(0.2, 0.3),
-			OnClick = props.CloseClick,
-		}),
-		InnerFrame = e(Main.Frame, {
-			native = {
-				Position = UDim2.fromScale(0.5, 0.52),
-				Size = UDim2.fromScale(0.94, 0.9),
-			},
-		}, {
+			MainFrame = e(Main.ScrollingFrame, {
+				BarSize = 0.01,
+				native = {
+					Position = UDim2.fromScale(0.5, 0.51),
+					Size = UDim2.fromScale(0.95, 0.8),
+					ZIndex = 2,
+					AutomaticCanvasSize = Enum.AutomaticSize.Y,
+				},
+			}, {
+				UIListLayout = e("UIListLayout", {
+					SortOrder = Enum.SortOrder.LayoutOrder,
+					VerticalAlignment = Enum.VerticalAlignment.Top,
+					HorizontalAlignment = Enum.HorizontalAlignment.Center,
+					Padding = UDim.new(0, 0),
+					FillDirection = Enum.FillDirection.Vertical,
+				}),
+			}, TraitFrames),
+			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+				AspectRatio = 0.8,
+			}),
 			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.015, 0),
+				CornerRadius = UDim.new(0.02, 0),
+			}),
+			CloseButton = e(CloseButton, {
+				Position = UDim2.fromScale(1, 0),
+				Size = UDim2.fromScale(0.2, 0.3),
+				OnClick = props.CloseClick,
+			}),
+			InnerFrame = e(Main.Frame, {
+				native = {
+					Position = UDim2.fromScale(0.5, 0.52),
+					Size = UDim2.fromScale(0.94, 0.9),
+				},
+			}, {
+				UICorner = e("UICorner", {
+					CornerRadius = UDim.new(0.015, 0),
+				}),
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Color = Color3.new(0.388235, 0.101961, 0.486275),
+					Stroke = 0.002,
+					native = {
+						Transparency = 0.1,
+						LineJoinMode = Enum.LineJoinMode.Round,
+					},
+				}),
 			}),
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Color = Color3.new(0.388235, 0.101961, 0.486275),
+				Color = Color3.new(0.866667, 0.866667, 0.866667),
 				Stroke = 0.002,
 				native = {
-					Transparency = 0.1,
 					LineJoinMode = Enum.LineJoinMode.Round,
 				},
 			}),
-		}),
-		UIStroke = e(UIStroke.UIStrokeAdvanced, {
-			Color = Color3.new(0.866667, 0.866667, 0.866667),
-			Stroke = 0.002,
-			native = {
-				LineJoinMode = Enum.LineJoinMode.Round,
-			},
-		}),
-	}, props.children)
+		}, props.children),
+	})
 end
 
 return CreateTraitsInfo

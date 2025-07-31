@@ -732,8 +732,14 @@ function Funcs.DisableHumanoid(Humanoid: Humanoid)
 	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Flying, false)
 	Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
 
+	local Animate: LocalScript? = nil
+
 	if Humanoid.Parent and Humanoid.Parent:FindFirstChild("Animate") then
-		(Humanoid.Parent :: any).Animate.Enabled = false
+		Animate = (Humanoid.Parent :: any).Animate
+
+		if Animate then
+			Animate:Destroy()
+		end
 	end
 end
 

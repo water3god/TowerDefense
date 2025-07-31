@@ -115,6 +115,7 @@ type PlayerDataImpl = {
 	UnequipUnit: (self: PlayerData, UnitId: string) -> (),
 	AddUnit: (self: PlayerData, UnitName: string, ExtraData: {}?) -> Template.UnitData?,
 	AddUnitFromExisting: (self: PlayerData, UnitData: Template.UnitData) -> Template.UnitData?,
+	ChangeUnitTrait: (self: PlayerData, UniqueId: string, TraitName: string?) -> Template.UnitData?,
 	DeleteUnit: (self: PlayerData, UniqueId: string) -> (),
 
 	GetUnitFromId: (self: PlayerData, UniqueId: string) -> Template.UnitData?,
@@ -134,6 +135,7 @@ type PlayerDataImpl = {
 	RemoveResource: (self: PlayerData, Resource: string, Count: number?) -> (),
 
 	GetResourceFromId: (self: PlayerData, UniqueId: string) -> Template.ResourceData?,
+	HasEnoughResource: (self: PlayerData, Resource: string, Count: number) -> boolean,
 
 	SetGold: (self: PlayerData, Gold: number) -> (),
 	AddGold: (self: PlayerData, Gold: number) -> (),
@@ -534,6 +536,23 @@ function PlayerData:AddUnitFromExisting(UnitData: Template.UnitData)
 	return UnitData
 end
 
+function PlayerData:ChangeUnitTrait(UniqueId: string, TraitName: string?)
+	local Data = self.Profile.Data
+
+	local Unit = Data.Units[UniqueId]
+
+	if Unit then
+		local OldTrait = Unit.Trait
+		Unit.Trait = TraitName
+		if OldTrait ~= TraitName then
+			self.UnitChanged:Fire(Unit)
+		end
+		return Unit
+	end
+
+	return nil
+end
+
 function PlayerData:DeleteUnit(UniqueId: string)
 	local Data = self.Profile.Data
 
@@ -723,6 +742,18 @@ end
 function PlayerData:GetResourceFromId(UniqueId: string)
 	local Resources = self.Profile.Data.Resources
 	return Resources[UniqueId]
+end
+
+function PlayerData:HasEnoughResource(Resource: string, Count: number)
+	local Resources = self.Profile.Data.Resources
+
+	for _, ResourceData in pairs(Resources) do
+		if ResourceData.Resource == Resource then
+			return ResourceData.Count >= Count
+		end
+	end
+
+	return false
 end
 
 function PlayerData:SetGold(Gold: number)

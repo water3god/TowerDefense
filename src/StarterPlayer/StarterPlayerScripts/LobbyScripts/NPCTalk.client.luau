@@ -20,6 +20,7 @@ local Main = require(CoreGame.Main)
 local UIStroke = require(CoreGame.UIStroke)
 
 local Modules = ReplicatedStorage.Modules
+local HelperFunctions = require(Modules.HelperFunctions)
 local ObserveTag = require(Modules.ObserveTag)
 
 local Client = ReplicatedStorage.Client
@@ -40,6 +41,8 @@ ObserveTag.ObserveTag("NPCTalk", function(NPC)
 		local HumanoidRoot = NPC:WaitForChild("HumanoidRootPart") :: BasePart
 		local Humanoid = NPC:WaitForChild("Humanoid") :: Humanoid
 		local Animator = Humanoid:WaitForChild("Animator") :: Animator
+
+		HelperFunctions.DisableHumanoid(Humanoid)
 
 		local OverrideAnim = NPC:GetAttribute("OverrideAnimation") :: string
 		local PlayedOverride = false
