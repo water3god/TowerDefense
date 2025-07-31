@@ -18,20 +18,22 @@ local BoothContext = require(StoryFolder.BoothContext)
 local BoothFrame = require(StoryFolder.BoothFrame)
 
 -- Controls --
-local controls = {}
+local controls = {
+	MaxPlayerCount = 1,
+}
 
 -- Story --
 local Story = {
 	react = React,
 	reactRoblox = ReactRoblox,
-	--controls = controls,
+	controls = controls,
 	story = function(Properties)
-		local BoothFrame = e(BoothContext.Context.Provider, {
+		local Frame = e(BoothContext.Context.Provider, {
 			value = {
 				MapId = "Rome",
-				LevelId = "Hastingsv1",
+				LevelId = "Rome_LegionsMarch",
 				Difficulty = "Normal",
-				PlayerCount = 1,
+				PlayerCount = Properties.controls.MaxPlayerCount,
 				MaxPlayerCount = 4,
 				StartTime = workspace:GetServerTimeNow(),
 				EndTime = workspace:GetServerTimeNow() + 10,
@@ -39,13 +41,14 @@ local Story = {
 			},
 		}, {
 			BoothFrame = e(BoothFrame, {
+				UniqueId = "BoothFrameStory",
 				native = {
 					Size = UDim2.fromScale(0.6, 0.8),
 					Position = UDim2.fromScale(0.5, 0.4),
 				},
 			}),
 		})
-		return BoothFrame
+		return Frame
 	end,
 }
 

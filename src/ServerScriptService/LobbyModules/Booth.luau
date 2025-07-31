@@ -41,6 +41,8 @@ type BoothData = {
 	StartTime: number,
 	TimeLeft: number,
 
+	TouchPart: BasePart,
+
 	FirstTouchReject: Signal.Signal<Player>,
 	LaterTouchesReject: Signal.Signal<Player>,
 
@@ -120,6 +122,8 @@ function Booth.new(Input: BoothInput)
 	self.Status = "Idle"
 	self.StartTime = 0
 	self.TimeLeft = 0
+
+	self.TouchPart = Input.TouchPart
 
 	self.Players = {}
 

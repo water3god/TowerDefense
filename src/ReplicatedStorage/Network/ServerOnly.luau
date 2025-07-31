@@ -14,6 +14,7 @@ local Signal = require(Packages.Signal)
 
 local ServerOnly = {
 	StartGame = Signal.new() :: Signal.Signal<>,
+	BoothLoaded = Signal.new() :: Signal.Signal<string>,
 }
 
 return ServerOnly

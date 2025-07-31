@@ -34,6 +34,7 @@ local function Provider(props)
 	local Value, SetValue = React.useState({
 		Enabled = false,
 		Data = nil,
+		BoothTimeData = nil,
 		CompletedMaps = StoryService.MapData,
 	} :: Context)
 
@@ -49,6 +50,7 @@ local function Provider(props)
 		NewTable.Enabled = false
 		NewTable.Data = nil
 		NewTable.BoothTimeData = nil
+
 		SetValue(NewTable)
 	end, { Value })
 
@@ -63,7 +65,7 @@ local function Provider(props)
 	Hooks.useEventConnection(StoryService.PlayerChanged, function(_, _, Changed: boolean)
 		if Changed and Value.Data and StoryService.Data then
 			local NewTable = table.clone(Value)
-			NewTable.Data = table.clone(StoryService.Data) :: any
+			NewTable.Data = StoryService.Data
 			SetValue(NewTable)
 		end
 	end, { Value })

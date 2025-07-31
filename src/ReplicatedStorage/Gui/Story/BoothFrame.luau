@@ -14,6 +14,10 @@ local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
 
+local NetworkFolder = ReplicatedStorage.Network
+local ServerOnly = require(NetworkFolder.ServerOnly)
+local BoothLoaded = ServerOnly.BoothLoaded
+
 -- Reference UI --
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
@@ -27,12 +31,25 @@ local Shared = ReplicatedStorage.Shared
 local GameInfo = require(Shared.GameInfo)
 
 export type Properties = {
+	UniqueId: string,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
 
 local function CreateBoothFrame(Props: Properties)
 	local BoothData = React.useContext(BoothContext.Context)
+	local Loading, SetLoading = React.useState(true)
+
+	local Ran = React.useRef(0)
+
+	React.useEffect(function()
+		Ran.current += 1
+		if Ran.current > 1 then
+			SetLoading(false)
+			BoothLoaded:Fire(Props.UniqueId)
+		end
+	end, { BoothData })
+
 	local GameData: { MapData: GameInfo.MapInfo, StageData: GameInfo.LevelInfo }?, SetGameData =
 		React.useState(nil :: { MapData: GameInfo.MapInfo, StageData: GameInfo.LevelInfo }?)
 
@@ -43,13 +60,13 @@ local function CreateBoothFrame(Props: Properties)
 			MapData = MapData :: any,
 			StageData = StageData :: any,
 		})
-	end, { BoothData })
+	end, { BoothData.MapId, BoothData.LevelId })
 
 	local Time, TotalTime, SetTime = Hooks.UseTime()
 
 	React.useEffect(function()
 		SetTime(BoothData.EndTime - BoothData.StartTime, BoothData.StartTime)
-	end, { BoothData })
+	end, { BoothData.EndTime, BoothData.StartTime })
 
 	local FullMapName = React.useMemo(function()
 		return GameData
@@ -68,125 +85,119 @@ local function CreateBoothFrame(Props: Properties)
 			native = {
 				Visible = BoothData.Status == "LoadingPlayers",
 			},
-			children = {
-				MapImage = e(Main.ImageLabel, {
+		}, {
+			MapImage = e(Main.ImageLabel, {
+				native = {
+					Size = UDim2.fromScale(0.8, 0.8),
+					Image = GameData and GameData.MapData.Image or "",
+					ScaleType = Enum.ScaleType.Crop,
+				},
+			}, {
+				UIGradient = e("UIGradient", {
+					Transparency = NumberSequence.new({
+						NumberSequenceKeypoint.new(0, 1),
+						NumberSequenceKeypoint.new(0.275, 0.25),
+						NumberSequenceKeypoint.new(0.675, 0.25),
+						NumberSequenceKeypoint.new(1, 1),
+					}),
+				}),
+			}),
+			DifficultyLabel = e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.5, 0.6),
+					Size = UDim2.fromScale(0.8, 0.1),
+					Text = GameInfo.GetDifficultyString(BoothData.Difficulty),
+					RichText = true,
+				},
+			}, {
+				UIStroke = e("UIStroke", {
+					Thickness = 2,
+				}),
+			}),
+			TitleLabel = e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.5, 0.2),
+					Size = UDim2.fromScale(0.8, 0.12),
+					Text = FullMapName,
+				},
+			}, {
+				UIStroke = e("UIStroke", {
+					Thickness = 2,
+				}),
+			}),
+			Group = e(Main.CanvasGroup, {
+				native = {
+					BackgroundTransparency = 0,
+					BackgroundColor3 = Color3.fromRGB(93, 11, 141),
+					Position = UDim2.fromScale(0.5, 0.8),
+					Size = UDim2.fromScale(0.7, 0.15),
+				},
+			}, {
+				UICorner = e("UICorner", {
+					CornerRadius = UDim.new(0.3, 0),
+				}),
+				UIStroke = e("UIStroke", {
+					Thickness = 3,
+				}),
+				Bar = e(Main.Frame, {
 					native = {
-						Size = UDim2.fromScale(0.8, 0.8),
-						Image = GameData and GameData.MapData.Image or "",
-						ScaleType = Enum.ScaleType.Crop,
-					},
-					children = {
-						UIGradient = e("UIGradient", {
-							Transparency = NumberSequence.new({
-								NumberSequenceKeypoint.new(0, 1),
-								NumberSequenceKeypoint.new(0.275, 0.25),
-								NumberSequenceKeypoint.new(0.675, 0.25),
-								NumberSequenceKeypoint.new(1, 1),
-							}),
-						}),
+						AnchorPoint = Vector2.new(0, 0.5),
+						BackgroundTransparency = 0,
+						BackgroundColor3 = Color3.fromRGB(127, 32, 165),
+						Position = UDim2.fromScale(0, 0.5),
+						Size = UDim2.fromScale(math.clamp(BoothData.PlayerCount / BoothData.MaxPlayerCount, 0, 1), 1),
 					},
 				}),
-				DifficultyLabel = e(Main.TextLabel, {
+				PlayersLabel = e(Main.TextLabel, {
 					native = {
-						Position = UDim2.fromScale(0.5, 0.6),
-						Size = UDim2.fromScale(0.8, 0.1),
-						Text = GameInfo.GetDifficultyString(BoothData.Difficulty),
-						RichText = true,
+						Size = UDim2.fromScale(0.9, 0.6),
+						Text = string.format("Players: %u/%u", BoothData.PlayerCount, BoothData.MaxPlayerCount),
+						ZIndex = 2,
 					},
 				}, {
 					UIStroke = e("UIStroke", {
 						Thickness = 2,
 					}),
 				}),
-				TitleLabel = e(Main.TextLabel, {
-					native = {
-						Position = UDim2.fromScale(0.5, 0.2),
-						Size = UDim2.fromScale(0.8, 0.12),
-						Text = FullMapName,
-					},
-				}, {
-					UIStroke = e("UIStroke", {
-						Thickness = 2,
-					}),
+			}),
+			TimeBar = e(Main.CanvasGroup, {
+				native = {
+					Position = UDim2.fromScale(0.5, 1.2),
+					Size = UDim2.fromScale(0.8, 0.15),
+				},
+			}, {
+				UICorner = e("UICorner", {
+					CornerRadius = UDim.new(0.3, 0),
 				}),
-				Group = e(Main.CanvasGroup, {
+				UIStroke = e("UIStroke", {
+					Thickness = 3,
+					Color = Color3.new(1, 1, 1),
+				}),
+				Bar = e(Main.Frame, {
 					native = {
 						BackgroundTransparency = 0,
-						BackgroundColor3 = Color3.fromRGB(93, 11, 141),
-						Position = UDim2.fromScale(0.5, 0.8),
-						Size = UDim2.fromScale(0.7, 0.15),
+						AnchorPoint = Vector2.new(0, 0.5),
+						BackgroundColor3 = Color3.fromRGB(109, 255, 56),
+						Position = UDim2.fromScale(0, 0.5),
+						Size = React.joinBindings({ Time, TotalTime }):map(function(Times)
+							return UDim2.fromScale(math.clamp(math.floor(Times[1]) / Times[2], 0, 1), 1)
+						end),
 					},
-				}, {
-					UICorner = e("UICorner", {
-						CornerRadius = UDim.new(0.3, 0),
-					}),
-					UIStroke = e("UIStroke", {
-						Thickness = 3,
-					}),
-					Bar = e(Main.Frame, {
-						native = {
-							AnchorPoint = Vector2.new(0, 0.5),
-							BackgroundTransparency = 0,
-							BackgroundColor3 = Color3.fromRGB(127, 32, 165),
-							Position = UDim2.fromScale(0, 0.5),
-							Size = UDim2.fromScale(
-								math.clamp(BoothData.PlayerCount / BoothData.MaxPlayerCount, 0, 1),
-								1
-							),
-						},
-					}),
-					PlayersLabel = e(Main.TextLabel, {
-						native = {
-							Size = UDim2.fromScale(0.9, 0.6),
-							Text = string.format("Players: %u/%u", BoothData.PlayerCount, BoothData.MaxPlayerCount),
-							ZIndex = 2,
-						},
-					}, {
-						UIStroke = e("UIStroke", {
-							Thickness = 2,
-						}),
-					}),
 				}),
-				TimeBar = e(Main.CanvasGroup, {
+				TimeLabel = e(Main.TextLabel, {
 					native = {
-						Position = UDim2.fromScale(0.5, 1.2),
-						Size = UDim2.fromScale(0.8, 0.15),
+						Size = UDim2.fromScale(1, 0.7),
+						Text = Time:map(function(TimeInput: number)
+							return string.format("Time Left: %u", TimeInput)
+						end),
+						ZIndex = 2,
 					},
 				}, {
-					UICorner = e("UICorner", {
-						CornerRadius = UDim.new(0.3, 0),
-					}),
 					UIStroke = e("UIStroke", {
-						Thickness = 3,
-						Color = Color3.new(1, 1, 1),
-					}),
-					Bar = e(Main.Frame, {
-						native = {
-							BackgroundTransparency = 0,
-							AnchorPoint = Vector2.new(0, 0.5),
-							BackgroundColor3 = Color3.fromRGB(109, 255, 56),
-							Position = UDim2.fromScale(0, 0.5),
-							Size = React.joinBindings({ Time, TotalTime }):map(function(Times)
-								return UDim2.fromScale(math.clamp(math.floor(Times[1]) / Times[2], 0, 1), 1)
-							end),
-						},
-					}),
-					TimeLabel = e(Main.TextLabel, {
-						native = {
-							Size = UDim2.fromScale(1, 0.7),
-							Text = Time:map(function(TimeInput: number)
-								return string.format("Time Left: %u", TimeInput)
-							end),
-							ZIndex = 2,
-						},
-						children = {
-							UIStroke = e("UIStroke", {
-								Thickness = 2,
-							}),
-						},
+						Thickness = 2,
 					}),
 				}),
-			},
+			}),
 		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 1.5,
@@ -195,7 +206,10 @@ local function CreateBoothFrame(Props: Properties)
 			native = {
 				Visible = BoothData.Status == "ChoosingMap" or BoothData.Status == "Idle",
 				Size = UDim2.fromScale(0.7, 0.3),
-				Text = if BoothData.Status == "ChoosingMap" then "Choosing Map..." else "Empty",
+				Text = if Loading
+					then "Loading..."
+					elseif BoothData.Status == "ChoosingMap" then "Choosing Map..."
+					else "Empty",
 			},
 		}),
 	}, Props.children)

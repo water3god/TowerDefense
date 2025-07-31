@@ -5,6 +5,7 @@
 -- Services --
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
+local RunService = game:GetService("RunService")
 
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
@@ -17,7 +18,8 @@ local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
 
-local Booth = require(ServerScriptService.LobbyModules.Booth)
+local Booth = not RunService:IsClient() and require(ServerScriptService.LobbyModules.Booth)
+	or {} :: typeof(require(ServerScriptService.LobbyModules.Booth))
 
 export type Properties = {
 	BoothId: string,
@@ -73,24 +75,27 @@ local function Provider(props: Properties)
 			end
 
 			local function HandleChoosing()
-				local Table = Join(Value, {
-					Status = "ChoosingMap",
-				})
-				SetValue(Table :: any)
+				SetValue(function(currentValue)
+					return Join(currentValue, {
+						Status = "ChoosingMap",
+					}) :: any
+				end)
 			end
 
 			local function HandleOther()
-				local Table = Join(Value, {
-					Status = "Idle",
-				})
-				SetValue(Table :: any)
+				SetValue(function(currentValue)
+					return Join(currentValue, {
+						Status = "Idle",
+					}) :: any
+				end)
 			end
 
 			local function OnPlayerChanged()
-				local Table = Join(Value, {
-					Players = #NewBooth.Players,
-				})
-				SetValue(Table :: any)
+				SetValue(function(currentValue)
+					return Join(currentValue, {
+						PlayerCount = #NewBooth.Players,
+					}) :: any
+				end)
 			end
 
 			if NewBooth.Status == "LoadingPlayers" or NewBooth.Status == "LoadingIn" then
@@ -107,7 +112,7 @@ local function Provider(props: Properties)
 		end
 
 		return BoothTrove:WrapClean()
-	end, {})
+	end, { props.BoothId })
 
 	return e(Context.Provider, {
 		value = Value,

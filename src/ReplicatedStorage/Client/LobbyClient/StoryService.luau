@@ -7,6 +7,8 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 
+local LocalPlayer = Players.LocalPlayer
+
 local Packages = ReplicatedStorage.Packages
 local Signal = require(Packages.Signal)
 
@@ -113,6 +115,7 @@ end)
 PlayerChanged.SetCallback(function(PlayerId: number, Added: boolean)
 	local Changed = false
 	local Player = Players:GetPlayerByUserId(PlayerId)
+
 	if Module.Data then
 		local Data = Module.Data
 		if Player then
@@ -122,6 +125,11 @@ PlayerChanged.SetCallback(function(PlayerId: number, Added: boolean)
 					Changed = true
 				end
 			else
+				if Player == LocalPlayer then
+					Module.BoothRestarted:Fire()
+					Module.Data = nil
+					return
+				end
 				local Index = table.find(Data.Players, Player)
 				if Index then
 					table.remove(Data.Players, Index)

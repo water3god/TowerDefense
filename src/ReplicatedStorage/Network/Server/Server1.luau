@@ -291,6 +291,53 @@ end
 Players.PlayerRemoving:Connect(function(player)
 	player_map[player] = nil
 end)
+export type Level = (number)
+export type SpeedChange = ({
+	["UniqueId"]: (string),
+	["Speed"]: (number),
+	["Time"]: (number),
+})
+export type ResourceData = ({
+	["Resource"]: (string),
+	["Count"]: (number),
+	["UniqueId"]: (string),
+	["PartialOneLose"]: ((boolean)?),
+})
+export type Item = ("Units" | "Products" | "Resources")
+export type SpeedChangeData = ({
+	["TimeStart"]: (number),
+	["Speed"]: (number),
+	["TimeEnd"]: ((number)?),
+})
+export type ProductData = ({
+	["ProductId"]: (number),
+	["IsGamepass"]: (boolean),
+	["Count"]: (number),
+	["UniqueId"]: (string),
+})
+export type TimeData = ({
+	["StartTime"]: (number),
+	["EndTime"]: (number),
+})
+export type StageData = ({
+	["FastestTime"]: (number),
+	["FinishedCount"]: (number),
+})
+export type BoothData = ({
+	["OwnerId"]: (number),
+	["MapId"]: (string),
+	["LevelId"]: (string),
+	["Difficulty"]: (string),
+	["Players"]: ({ (Player) }),
+	["StartTime"]: (number),
+	["EndTime"]: (number),
+})
+export type LevelData = ({
+	["Level"]: (number),
+	["XP"]: (number),
+	["NeededXP"]: (number),
+})
+export type XP = (number)
 export type EnemyInput = ({
 	["UniqueId"]: (string),
 	["ModelName"]: (string),
@@ -311,24 +358,7 @@ export type EnemyInput = ({
 		["TimeEnd"]: ((number)?),
 	}) }),
 })
-export type StageData = ({
-	["FastestTime"]: (number),
-	["FinishedCount"]: (number),
-})
-export type VisualUnitData = ({
-	["Unit"]: (string),
-	["Level"]: (number),
-	["Trait"]: ((string)?),
-	["UniqueId"]: (string),
-	["XP"]: (number),
-	["NeededXP"]: (number),
-})
-export type ResourceData = ({
-	["Resource"]: (string),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-	["PartialOneLose"]: ((boolean)?),
-})
+export type Time = (number)
 export type Inventory = ({
 	["Units"]: ({ [(string)]: ({
 		["Unit"]: (string),
@@ -351,47 +381,17 @@ export type Inventory = ({
 		["PartialOneLose"]: ((boolean)?),
 	}) }),
 })
-export type TimeData = ({
-	["StartTime"]: (number),
-	["EndTime"]: (number),
-})
-export type SpeedChangeData = ({
-	["TimeStart"]: (number),
-	["Speed"]: (number),
-	["TimeEnd"]: ((number)?),
-})
-export type XP = (number)
-export type Health = (number)
-export type ProductData = ({
-	["ProductId"]: (number),
-	["IsGamepass"]: (boolean),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-})
-export type SpeedChange = ({
-	["UniqueId"]: (string),
-	["Speed"]: (number),
-	["Time"]: (number),
-})
-export type LevelData = ({
+export type Difficulty = ("Normal" | "Hard" | "Insane")
+export type VisualUnitData = ({
+	["Unit"]: (string),
 	["Level"]: (number),
+	["Trait"]: ((string)?),
+	["UniqueId"]: (string),
 	["XP"]: (number),
 	["NeededXP"]: (number),
 })
-export type Difficulty = ("Normal" | "Hard" | "Insane")
-export type Time = (number)
-export type BoothData = ({
-	["OwnerId"]: (number),
-	["MapId"]: (string),
-	["LevelId"]: (string),
-	["Difficulty"]: (string),
-	["Players"]: ({ (Player) }),
-	["StartTime"]: (number),
-	["EndTime"]: (number),
-})
-export type Item = ("Units" | "Products" | "Resources")
 export type ProductId = (number)
-export type Level = (number)
+export type Health = (number)
 
 local function SendEvents()
 	for player, outgoing in player_map do
@@ -4090,8 +4090,8 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
 			local bool_83 = 0
 			local bool_83_pos_1 = alloc(1)
-			alloc(4)
-			buffer.writeu32(outgoing_buff, outgoing_apos, Value)
+			alloc(8)
+			buffer.writef64(outgoing_buff, outgoing_apos, Value)
 			if Value2 then
 				bool_83 = bit32.bor(bool_83, 0b0000000000000001)
 			end
@@ -4104,8 +4104,8 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
 			local bool_84 = 0
 			local bool_84_pos_1 = alloc(1)
-			alloc(4)
-			buffer.writeu32(outgoing_buff, outgoing_apos, Value)
+			alloc(8)
+			buffer.writef64(outgoing_buff, outgoing_apos, Value)
 			if Value2 then
 				bool_84 = bit32.bor(bool_84, 0b0000000000000001)
 			end
@@ -4125,8 +4125,8 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
 			local bool_85 = 0
 			local bool_85_pos_1 = alloc(1)
-			alloc(4)
-			buffer.writeu32(outgoing_buff, outgoing_apos, Value)
+			alloc(8)
+			buffer.writef64(outgoing_buff, outgoing_apos, Value)
 			if Value2 then
 				bool_85 = bit32.bor(bool_85, 0b0000000000000001)
 			end
@@ -4148,8 +4148,8 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
 			local bool_86 = 0
 			local bool_86_pos_1 = alloc(1)
-			alloc(4)
-			buffer.writeu32(outgoing_buff, outgoing_apos, Value)
+			alloc(8)
+			buffer.writef64(outgoing_buff, outgoing_apos, Value)
 			if Value2 then
 				bool_86 = bit32.bor(bool_86, 0b0000000000000001)
 			end
@@ -4169,8 +4169,8 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
 			local bool_87 = 0
 			local bool_87_pos_1 = alloc(1)
-			alloc(4)
-			buffer.writeu32(outgoing_buff, outgoing_apos, Value)
+			alloc(8)
+			buffer.writef64(outgoing_buff, outgoing_apos, Value)
 			if Value2 then
 				bool_87 = bit32.bor(bool_87, 0b0000000000000001)
 			end

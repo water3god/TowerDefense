@@ -30,6 +30,8 @@ local ObserveTag = require(Modules.ObserveTag)
 
 local NetworkFolder = ReplicatedStorage.Network
 local Network = require(NetworkFolder.Server)
+local ServerOnly = require(NetworkFolder.ServerOnly)
+local BoothLoaded = ServerOnly.BoothLoaded
 
 local Shared = ReplicatedStorage.Shared
 local GameInfo = require(Shared.GameInfo)
@@ -69,6 +71,7 @@ local function SendWaitingData(Players: { Player }, BoothInfo: Booth.Booth)
 			Players = Players,
 		}
 		AddTimeData(BoothData, BoothInfo)
+
 		Network.BoothWaiting.FireList(Players, BoothData :: typeof(BoothData) & TimeData)
 	end
 end
@@ -117,6 +120,14 @@ local function TpToMap(Data: Types.SentData)
 	end)
 end
 
+BoothLoaded:Connect(function(BoothId: string)
+	local NewBooth = Booth.GetBooth(BoothId)
+
+	if NewBooth then
+		NewBooth.TouchPart.CanTouch = true
+	end
+end)
+
 local function InitLoadingBooth(Model: typeof(_BoothsInstance.Booth1))
 	local NewBooth = Booth.new({
 		Folder = Model,
@@ -127,17 +138,23 @@ local function InitLoadingBooth(Model: typeof(_BoothsInstance.Booth1))
 
 	local GUI = Model.TouchPart.BoothGui
 
-	local Root = ReactRoblox.createRoot(GUI)
-	Root:render(e(BoothContext.Provider, {
-		BoothId = NewBooth.UniqueId,
-	}, {
-		BoothFrame = e(BoothFrame, {}),
-	}))
+	-- Render React component immediately - the polling in BoothContext will handle booth availability
+	local Root = ReactRoblox.createRoot(Instance.new("Folder"))
+	Root:render(ReactRoblox.createPortal(
+		e(BoothContext.Provider, {
+			BoothId = NewBooth.UniqueId,
+		}, {
+			BoothFrame = e(BoothFrame, {
+				UniqueId = NewBooth.UniqueId,
+			}),
+		}),
+		GUI
+	))
 
 	NewBooth.PlayerAdded:Connect(function(Player: Player)
 		Network.BoothPlayerChanged.FireList(NewBooth.Players, Player.UserId, true)
 		if NewBooth.Status == "LoadingPlayers" then
-			SendWaitingData({ Player }, NewBooth)
+			SendWaitingData(NewBooth.Players, NewBooth)
 		end
 	end)
 

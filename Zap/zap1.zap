@@ -107,7 +107,7 @@ event BoothPlayerChanged = {
 	type: Reliable,
 	call: SingleAsync,
 	data: (
-		u32,
+		f64,
 		boolean,
 	),
 }
