@@ -88,7 +88,7 @@ local function CreateEvolution(props: Properties)
 				UniqueId = CurrentUnit.UniqueId,
 			})
 		end
-	end, { CurrentUnit, Resources, WarningData.Warnings } :: { unknown })
+	end, { CurrentUnit, Resources } :: { unknown })
 
 	Hooks.useEventConnection(PromptData.Added, function(Id: string, OpenFrame: string)
 		if PromptVisible.current then
@@ -115,7 +115,7 @@ local function CreateEvolution(props: Properties)
 				WarningData.Add("This unit cannot be evolved!")
 			end
 		end
-	end, { InventoryData, WarningData.Warnings })
+	end, { InventoryData })
 
 	Hooks.useEventConnection(Touched, function()
 		if props.SetVisible then

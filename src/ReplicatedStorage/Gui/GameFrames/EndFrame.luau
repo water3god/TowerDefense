@@ -474,11 +474,10 @@ local function CreateVoteFrame(Props: Props)
 					Size = UDim2.fromScale(0.9, 0.8),
 					Text = "Restart",
 				},
-				children = {
-					UIStroke = e(UIStroke.UIStrokeAdvanced, {
-						Stroke = 0.04,
-					}),
-				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.04,
+				}),
 			}),
 		}),
 		ReturnButton = e(Main.Animateables.TextButton, {

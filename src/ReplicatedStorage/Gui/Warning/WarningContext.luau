@@ -49,8 +49,13 @@ local function WarningProvider(props)
 
 	local Add = React.useCallback(function(Text: string, ColorInput: Color3?)
 		local Color = ColorInput or Color3.new(1, 0.043137, 0.043137)
-		SetValue(Join(Value, { [GenerateId.GenerateId()] = { Text = Text, Color = Color, StartTime = tick() } }))
-	end, { Value })
+		SetValue(function(CurrentValue)
+			return Join(
+				CurrentValue,
+				{ [GenerateId.GenerateId()] = { Text = Text, Color = Color, StartTime = tick() } }
+			)
+		end)
+	end, {})
 
 	Hooks.useEventConnection(RunService.PostSimulation, function()
 		local NewTable = table.clone(Value)
@@ -69,11 +74,11 @@ local function WarningProvider(props)
 
 	Hooks.useEventConnection(OnWarning, function(Text: string, Color: Color3?)
 		Add(Text, Color)
-	end, { Value })
+	end, {})
 
 	Hooks.useEventConnection(Warning, function(Text: string, Color: Color3?)
 		Add(Text, Color)
-	end, { Value })
+	end, {})
 
 	return e(WarningContext.Provider, {
 		value = {

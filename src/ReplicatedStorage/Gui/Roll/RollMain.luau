@@ -211,7 +211,7 @@ local function CreateRollMain(props: Properties)
 		end
 
 		RollService.Roll(RollMultiplier)
-	end, { RollMultiplier, WarningData.Warnings :: any, CurrencyData.Value, InventoryData :: any })
+	end, { RollMultiplier, CurrencyData.Value, InventoryData } :: { unknown })
 
 	local OnAutoClick = React.useCallback(function()
 		local Value = not InAutoSell

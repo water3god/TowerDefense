@@ -133,7 +133,7 @@ local function CreateTraitsFrame(props: Properties)
 		else
 			WarningData.Add("You can only add Traits to Units.")
 		end
-	end, { InventoryData, WarningData.Warnings })
+	end, { InventoryData })
 
 	local Trait = React.useMemo(function(): string?
 		if Unit then

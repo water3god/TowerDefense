@@ -156,41 +156,40 @@ local function CreateWaitingFrame(Props: Properties)
 				Position = UDim2.fromScale(0.5, 1.2),
 				Size = UDim2.fromScale(0.8, 0.15),
 			},
-			children = {
-				UICorner = e("UICorner", {
-					CornerRadius = UDim.new(0.3, 0),
-				}),
+		}, {
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.3, 0),
+			}),
+			UIStroke = e(UIStroke.UIStrokeBasic, {
+				Stroke = 0.002,
+				native = {
+					LineJoinMode = Enum.LineJoinMode.Round,
+				},
+			}),
+			Bar = e(Main.Frame, {
+				native = {
+					BackgroundTransparency = 0,
+					AnchorPoint = Vector2.new(0, 0.5),
+					BackgroundColor3 = Color3.fromRGB(109, 255, 56),
+					Position = UDim2.fromScale(0, 0.5),
+					Size = React.joinBindings({ Time, TotalTime }):map(function(Times: { number })
+						return UDim2.fromScale(Times[1] / Times[2], 1)
+					end),
+				},
+			}),
+			TimeLabel = e(Main.TextLabel, {
+				native = {
+					Size = UDim2.fromScale(1, 0.7),
+					Text = Time:map(function(TimeInput: number)
+						return string.format("Time Left: %u", math.floor(TimeInput))
+					end),
+					ZIndex = 2,
+				},
+			}, {
 				UIStroke = e(UIStroke.UIStrokeBasic, {
 					Stroke = 0.002,
-					native = {
-						LineJoinMode = Enum.LineJoinMode.Round,
-					},
 				}),
-				Bar = e(Main.Frame, {
-					native = {
-						BackgroundTransparency = 0,
-						AnchorPoint = Vector2.new(0, 0.5),
-						BackgroundColor3 = Color3.fromRGB(109, 255, 56),
-						Position = UDim2.fromScale(0, 0.5),
-						Size = React.joinBindings({ Time, TotalTime }):map(function(Times: { number })
-							return UDim2.fromScale(Times[1] / Times[2], 1)
-						end),
-					},
-				}),
-				TimeLabel = e(Main.TextLabel, {
-					native = {
-						Size = UDim2.fromScale(1, 0.7),
-						Text = Time:map(function(TimeInput: number)
-							return string.format("Time Left: %u", math.floor(TimeInput))
-						end),
-						ZIndex = 2,
-					},
-				}, {
-					UIStroke = e(UIStroke.UIStrokeBasic, {
-						Stroke = 0.002,
-					}),
-				}),
-			},
+			}),
 		}),
 	}, Props.children)
 end

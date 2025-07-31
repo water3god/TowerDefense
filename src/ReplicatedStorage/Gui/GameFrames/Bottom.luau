@@ -80,7 +80,6 @@ local function CreateBaseFrame(Properties: OtherProps)
 		Disabled = IsDisabled,
 		Level = Properties.Level or 1,
 		native = Properties.native,
-		children = Properties.children,
 		OnClick = OnClick,
 		containerChildren = {
 			Lock = e(Main.ImageLabel, {
@@ -105,7 +104,7 @@ local function CreateBaseFrame(Properties: OtherProps)
 				},
 			}),
 		},
-	})
+	}, Properties.children)
 end
 
 local UnitFrameSize = UDim2.fromScale(0.25, 0.65)

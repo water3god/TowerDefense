@@ -164,12 +164,12 @@ local function CreateTopFrame(Props: Properties)
 						end),
 						AnchorPoint = Vector2.new(0, 0.5),
 					},
-					children = {
-						UICorner = e("UICorner", {
-							CornerRadius = UDim.new(1, 0),
-						}),
-					},
+				}, {
+					UICorner = e("UICorner", {
+						CornerRadius = UDim.new(1, 0),
+					}),
 				}),
+
 				HealthLabel = e(Main.TextLabel, {
 					native = {
 						Size = UDim2.fromScale(0.8, 0.9),
@@ -178,15 +178,14 @@ local function CreateTopFrame(Props: Properties)
 						end),
 						ZIndex = 2,
 					},
-					children = {
-						UIGradient = e("UIGradient", {
-							Color = ColorSequence.new(Color3.fromRGB(255, 155, 0)),
-							Rotation = 90,
-						}),
-						UIStroke = e(UIStroke.UIStrokeBasic, {
-							Stroke = 0.002,
-						}),
-					},
+				}, {
+					UIGradient = e("UIGradient", {
+						Color = ColorSequence.new(Color3.fromRGB(255, 155, 0)),
+						Rotation = 90,
+					}),
+					UIStroke = e(UIStroke.UIStrokeBasic, {
+						Stroke = 0.002,
+					}),
 				}),
 			}),
 		}, Props.children)

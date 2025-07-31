@@ -31,28 +31,27 @@ return function(Properties: Properties)
 			Image = "rbxassetid://82588529589997",
 			ZIndex = 2,
 		},
-		children = {
-			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 5.23,
-			}),
-			TitleLabel = e(Main.TextLabel, {
-				native = {
-					Position = UDim2.fromScale(0.5, 0.55),
-					Size = UDim2.fromScale(0.7, 0.5),
-					Text = Properties.Title,
-					TextXAlignment = Enum.TextXAlignment.Left,
-					ZIndex = 2,
-				},
-			}, {
-				UIGradient = e("UIGradient", {
-					Color = ColorSequence.new({
-						ColorSequenceKeypoint.new(0, Color3.new(0.768627, 0.380392, 1)),
-						ColorSequenceKeypoint.new(0.623, Color3.new(1, 1, 1)),
-						ColorSequenceKeypoint.new(1, Color3.new(1, 1, 1)),
-					}),
-					Rotation = -90,
+	}, {
+		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+			AspectRatio = 5.23,
+		}),
+		TitleLabel = e(Main.TextLabel, {
+			native = {
+				Position = UDim2.fromScale(0.5, 0.55),
+				Size = UDim2.fromScale(0.7, 0.5),
+				Text = Properties.Title,
+				TextXAlignment = Enum.TextXAlignment.Left,
+				ZIndex = 2,
+			},
+		}, {
+			UIGradient = e("UIGradient", {
+				Color = ColorSequence.new({
+					ColorSequenceKeypoint.new(0, Color3.new(0.768627, 0.380392, 1)),
+					ColorSequenceKeypoint.new(0.623, Color3.new(1, 1, 1)),
+					ColorSequenceKeypoint.new(1, Color3.new(1, 1, 1)),
 				}),
+				Rotation = -90,
 			}),
-		},
+		}),
 	})
 end

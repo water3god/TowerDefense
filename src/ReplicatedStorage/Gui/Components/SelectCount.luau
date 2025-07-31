@@ -39,6 +39,15 @@ local function CreateSelectCount(props: Properties)
 
 	local TextBoxText = React.useRef("")
 
+	local EnterClick = React.useCallback(function()
+		local Count = tonumber(TextBoxText.current)
+		if Count then
+			props.OnClick(Count)
+		else
+			WarningData.Add("Please enter a valid number.")
+		end
+	end, {})
+
 	return e(Main.Frame, {
 		native = Join({
 			BackgroundTransparency = 0,
@@ -129,14 +138,7 @@ local function CreateSelectCount(props: Properties)
 				Size = UDim2.fromScale(0.5, 0.2),
 				Image = "rbxassetid://80739823452825",
 				ImageColor3 = Color3.fromRGB(135, 1, 203),
-				[React.Event.Activated] = function()
-					local Count = tonumber(TextBoxText.current)
-					if Count then
-						props.OnClick(Count)
-					else
-						WarningData.Add("Please enter a valid number.")
-					end
-				end,
+				[React.Event.Activated] = EnterClick,
 			},
 		}, {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {

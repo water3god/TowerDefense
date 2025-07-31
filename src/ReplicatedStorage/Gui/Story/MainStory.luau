@@ -52,7 +52,7 @@ local function CreateStage(Props: { Hovered: boolean, Number: number, OnClick: (
 
 	local NoLevel = React.useCallback(function()
 		WarningData.Add(string.format("You do not have Level %u Unlocked!", Props.Number))
-	end, { WarningData, Props.Number :: any })
+	end, { Props.Number })
 
 	return e(Main.Animateables.TextButton, {
 		native = {
@@ -63,28 +63,27 @@ local function CreateStage(Props: { Hovered: boolean, Number: number, OnClick: (
 			Text = "",
 			[React.Event.MouseButton1Click] = Props.Enabled and Props.OnClick or NoLevel,
 		},
-		children = {
-			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 1,
-			}),
-			UIStroke = Props.Hovered and e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.02,
-				Color = Color3.new(1, 1, 1),
-				native = {
-					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-					LineJoinMode = Enum.LineJoinMode.Round,
-				},
-			}),
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.2, 0),
-			}),
-			Label = e(Main.TextLabel, {
-				native = {
-					Size = UDim2.fromScale(0.6, 0.6),
-					Text = tostring(Props.Number),
-				},
-			}),
-		},
+	}, {
+		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+			AspectRatio = 1,
+		}),
+		UIStroke = Props.Hovered and e(UIStroke.UIStrokeAdvanced, {
+			Stroke = 0.02,
+			Color = Color3.new(1, 1, 1),
+			native = {
+				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+				LineJoinMode = Enum.LineJoinMode.Round,
+			},
+		}),
+		UICorner = e("UICorner", {
+			CornerRadius = UDim.new(0.2, 0),
+		}),
+		Label = e(Main.TextLabel, {
+			native = {
+				Size = UDim2.fromScale(0.6, 0.6),
+				Text = tostring(Props.Number),
+			},
+		}),
 	})
 end
 
@@ -100,7 +99,7 @@ local function CreateMap(Props: {
 
 	local InvalidMap = React.useCallback(function()
 		WarningData.Add(string.format("You do not have %s Unlocked!", Props.MapInfo.Name))
-	end, { WarningData, Props.MapInfo :: any })
+	end, { Props.MapInfo })
 
 	return e(Main.Animateables.TextButton, {
 		native = {
@@ -111,93 +110,89 @@ local function CreateMap(Props: {
 				Props.MapClicked(Props.MapInfo.MapId)
 			end or InvalidMap,
 		},
-		children = {
-			Main = e(Main.Frame, {
+	}, {
+		Main = e(Main.Frame, {
+			native = {
+				Size = UDim2.fromScale(1, 0.7),
+			},
+		}, {
+			MapImage = e(Main.ImageLabel, {
 				native = {
-					Size = UDim2.fromScale(1, 0.7),
+					Image = Props.MapInfo.Image,
+					ScaleType = Enum.ScaleType.Crop,
+					ImageTransparency = Props.Enabled and 0 or 0.7,
 				},
-				children = {
-					MapImage = e(Main.ImageLabel, {
-						native = {
-							Image = Props.MapInfo.Image,
-							ScaleType = Enum.ScaleType.Crop,
-							ImageTransparency = Props.Enabled and 0 or 0.7,
-						},
-						children = {
-							UICorner = e("UICorner", {
-								CornerRadius = UDim.new(0.2, 0),
-							}),
-							UIStroke = Props.CurrentMap == Props.MapInfo.MapId and e(UIStroke.UIStrokeAdvanced, {
-								Stroke = 0.01,
-								Color = Color3.new(1, 1, 1),
-								native = {
-									LineJoinMode = Enum.LineJoinMode.Round,
-								},
-							}),
-							Locked = not Props.Enabled and e(Main.TextLabel, {
-								native = {
-									Text = "Locked!",
-									Rotation = 10,
-									Size = UDim2.fromScale(0.9, 0.5),
-									ZIndex = 10,
-								},
-							}, {
-								UIStroke = e(UIStroke.UIStrokeAdvanced, {
-									Stroke = 0.02,
-									Color = Color3.new(0, 0, 0),
-								}),
-							}),
-							FrameGrad = e(Main.Frame, {
-								native = {
-									BackgroundTransparency = 0,
-								},
-								children = {
-									UICorner = e("UICorner", {
-										CornerRadius = UDim.new(0.2, 0),
-									}),
-									UIGradient = e("UIGradient", {
-										Color = ColorSequence.new(Color3.new()),
-										Rotation = 90,
-										Transparency = NumberSequence.new({
-											NumberSequenceKeypoint.new(0, 1),
-											NumberSequenceKeypoint.new(1, 0.4),
-										}),
-									}),
-								},
-							}),
-						},
+			}, {
+				UICorner = e("UICorner", {
+					CornerRadius = UDim.new(0.2, 0),
+				}),
+				UIStroke = Props.CurrentMap == Props.MapInfo.MapId and e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.01,
+					Color = Color3.new(1, 1, 1),
+					native = {
+						LineJoinMode = Enum.LineJoinMode.Round,
+					},
+				}),
+				Locked = not Props.Enabled and e(Main.TextLabel, {
+					native = {
+						Text = "Locked!",
+						Rotation = 10,
+						Size = UDim2.fromScale(0.9, 0.5),
+						ZIndex = 10,
+					},
+				}, {
+					UIStroke = e(UIStroke.UIStrokeAdvanced, {
+						Stroke = 0.02,
+						Color = Color3.new(0, 0, 0),
 					}),
-					MapName = e(Main.TextLabel, {
-						native = {
-							Position = UDim2.fromScale(0.5, 0),
-							Size = UDim2.fromScale(0.9, 0.4),
-							Text = Props.MapInfo.Name,
-						},
-					}, {
-						UIStroke = e(UIStroke.UIStrokeAdvanced, {
-							Stroke = 0.02,
-							Color = Color3.new(0, 0, 0),
+				}),
+				FrameGrad = e(Main.Frame, {
+					native = {
+						BackgroundTransparency = 0,
+					},
+				}, {
+					UICorner = e("UICorner", {
+						CornerRadius = UDim.new(0.2, 0),
+					}),
+					UIGradient = e("UIGradient", {
+						Color = ColorSequence.new(Color3.new()),
+						Rotation = 90,
+						Transparency = NumberSequence.new({
+							NumberSequenceKeypoint.new(0, 1),
+							NumberSequenceKeypoint.new(1, 0.4),
 						}),
 					}),
-					MapsCleared = e(Main.TextLabel, {
-						native = {
-							Position = UDim2.fromScale(0.5, 1),
-							Size = UDim2.fromScale(0.9, 0.4),
-							Text = StoryData.CompletedMaps[Props.MapInfo.MapId] and string.format(
-								"%u/%u",
-								Len(StoryData.CompletedMaps[Props.MapInfo.MapId]),
-								#Props.MapInfo.LevelInfo
-							) or string.format("0/%u", #Props.MapInfo.LevelInfo),
-						},
-					}, {
-						UIStroke = e(UIStroke.UIStrokeAdvanced, {
-							Stroke = 0.02,
-							Color = Color3.new(0, 0, 0),
-						}),
-					}),
-				},
+				}),
 			}),
-		},
+			MapName = e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.5, 0),
+					Size = UDim2.fromScale(0.9, 0.4),
+					Text = Props.MapInfo.Name,
+				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.02,
+					Color = Color3.new(0, 0, 0),
+				}),
+			}),
+			MapsCleared = e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.5, 1),
+					Size = UDim2.fromScale(0.9, 0.4),
+					Text = StoryData.CompletedMaps[Props.MapInfo.MapId] and string.format(
+						"%u/%u",
+						Len(StoryData.CompletedMaps[Props.MapInfo.MapId]),
+						#Props.MapInfo.LevelInfo
+					) or string.format("0/%u", #Props.MapInfo.LevelInfo),
+				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.02,
+					Color = Color3.new(0, 0, 0),
+				}),
+			}),
+		}),
 	})
 end
 
@@ -256,7 +251,7 @@ local function CreateMainStory(Properties: Properties)
 	end, { Difficulty })
 
 	local MapData = React.useMemo(function()
-		local Data = {}
+		local Data: { [string]: React.Node } = {}
 		for Index, MapInfo in ipairs(GameInfo.GameInfo) do
 			local Enabled: boolean = nil
 
@@ -279,7 +274,7 @@ local function CreateMainStory(Properties: Properties)
 			})
 		end
 		return Data
-	end, { StoryData, MapClicked :: any })
+	end, { StoryData, MapClicked } :: { unknown })
 
 	React.useEffect(function()
 		SetStage(1)
@@ -301,7 +296,7 @@ local function CreateMainStory(Properties: Properties)
 			LevelId = (GameInfo.GetMapFromId(CurrentMap) :: GameInfo.MapInfo).LevelInfo[Stage].GameId,
 			Difficulty = Difficulty :: any,
 		})
-	end, { CurrentMap :: any, Stage :: any, Difficulty :: any })
+	end, { CurrentMap, Stage, Difficulty } :: { unknown })
 
 	React.useEffect(function()
 		if Properties.Toggle then
@@ -344,7 +339,7 @@ local function CreateMainStory(Properties: Properties)
 		else
 			return "N/A"
 		end
-	end, { CurrentMap :: any, Stage :: any, Difficulty :: any, StoryData :: any })
+	end, { CurrentMap, Stage, Difficulty, StoryData } :: { unknown })
 
 	local SecondValue = React.useMemo(function()
 		local MapInfo = StoryData.CompletedMaps[CurrentMap]
@@ -359,11 +354,11 @@ local function CreateMainStory(Properties: Properties)
 		else
 			return "N/A"
 		end
-	end, { CurrentMap :: any, Stage :: any, Difficulty :: any, StoryData :: any })
+	end, { CurrentMap, Stage, Difficulty, StoryData } :: { unknown })
 
 	local MapImage = React.useMemo(function()
 		return (GameInfo.GetMapFromId(CurrentMap) :: any).Image :: string
-	end, { CurrentMap :: any })
+	end, { CurrentMap })
 
 	local EnabledIndex = React.useMemo(function()
 		local Data = StoryData.CompletedMaps[CurrentMap]
@@ -373,7 +368,7 @@ local function CreateMainStory(Properties: Properties)
 		end
 
 		return 1
-	end, { StoryData, CurrentMap :: any })
+	end, { StoryData, CurrentMap } :: { unknown })
 
 	return e(Main.ImageLabel, {
 		native = Join({
@@ -413,11 +408,10 @@ local function CreateMainStory(Properties: Properties)
 						return UDim2.fromScale(math.clamp(Times[1] / Times[2], 0, 1), 1)
 					end),
 				},
-				children = {
-					UICorner = e("UICorner", {
-						CornerRadius = UDim.new(0.4, 0),
-					}),
-				},
+			}, {
+				UICorner = e("UICorner", {
+					CornerRadius = UDim.new(0.4, 0),
+				}),
 			}),
 			TimeLabel = e(Main.TextLabel, {
 				native = {
@@ -455,19 +449,18 @@ local function CreateMainStory(Properties: Properties)
 						SetDifficulty("Normal")
 					end,
 				},
-				children = {
-					UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-						AspectRatio = 1,
-					}),
-					TextLabel = e(Main.TextLabel, {
-						native = {
-							Text = "Normal",
-							TextColor3 = Color3.fromRGB(88, 226, 65),
-							Position = UDim2.fromScale(0.5, 0.75),
-							Size = UDim2.fromScale(0.7, 0.3),
-						},
-					}),
-				},
+			}, {
+				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+					AspectRatio = 1,
+				}),
+				TextLabel = e(Main.TextLabel, {
+					native = {
+						Text = "Normal",
+						TextColor3 = Color3.fromRGB(88, 226, 65),
+						Position = UDim2.fromScale(0.5, 0.75),
+						Size = UDim2.fromScale(0.7, 0.3),
+					},
+				}),
 			}),
 			Hard = e(Main.Animateables.ImageButton, {
 				native = {
@@ -479,19 +472,18 @@ local function CreateMainStory(Properties: Properties)
 						SetDifficulty("Hard")
 					end,
 				},
-				children = {
-					UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-						AspectRatio = 1,
-					}),
-					TextLabel = e(Main.TextLabel, {
-						native = {
-							Text = "Hard",
-							TextColor3 = Color3.fromRGB(224, 47, 57),
-							Position = UDim2.fromScale(0.5, 0.75),
-							Size = UDim2.fromScale(0.7, 0.3),
-						},
-					}),
-				},
+			}, {
+				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+					AspectRatio = 1,
+				}),
+				TextLabel = e(Main.TextLabel, {
+					native = {
+						Text = "Hard",
+						TextColor3 = Color3.fromRGB(224, 47, 57),
+						Position = UDim2.fromScale(0.5, 0.75),
+						Size = UDim2.fromScale(0.7, 0.3),
+					},
+				}),
 			}),
 			Insane = e(Main.Animateables.ImageButton, {
 				native = {
@@ -503,19 +495,18 @@ local function CreateMainStory(Properties: Properties)
 						SetDifficulty("Insane")
 					end,
 				},
-				children = {
-					UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-						AspectRatio = 1,
-					}),
-					TextLabel = e(Main.TextLabel, {
-						native = {
-							Text = "Insane",
-							TextColor3 = Color3.fromRGB(187, 85, 211),
-							Position = UDim2.fromScale(0.5, 0.75),
-							Size = UDim2.fromScale(0.7, 0.3),
-						},
-					}),
-				},
+			}, {
+				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+					AspectRatio = 1,
+				}),
+				TextLabel = e(Main.TextLabel, {
+					native = {
+						Text = "Insane",
+						TextColor3 = Color3.fromRGB(187, 85, 211),
+						Position = UDim2.fromScale(0.5, 0.75),
+						Size = UDim2.fromScale(0.7, 0.3),
+					},
+				}),
 			}),
 		}),
 		LevelFrame = e(Main.Frame, {
@@ -540,61 +531,60 @@ local function CreateMainStory(Properties: Properties)
 				native = {
 					AutomaticCanvasSize = Enum.AutomaticSize.Y,
 				},
-				children = {
-					UIListLayout = e("UIListLayout", {
-						SortOrder = Enum.SortOrder.LayoutOrder,
-						HorizontalAlignment = Enum.HorizontalAlignment.Center,
-						Padding = UDim.new(0.02, 0),
-					}),
-					UIPadding = e("UIPadding", {
-						PaddingTop = UDim.new(0.02, 0),
-					}),
-					Stage1 = e(CreateStage, {
-						Number = 1,
-						Hovered = Stage == 1,
-						Visible = LevelCount >= 1,
-						Enabled = EnabledIndex >= 1,
-						OnClick = function()
-							SetStage(1)
-						end,
-					}),
-					Stage2 = e(CreateStage, {
-						Number = 2,
-						Hovered = Stage == 2,
-						Visible = LevelCount >= 2,
-						Enabled = EnabledIndex >= 2,
-						OnClick = function()
-							SetStage(2)
-						end,
-					}),
-					Stage3 = e(CreateStage, {
-						Number = 3,
-						Hovered = Stage == 3,
-						Visible = LevelCount >= 3,
-						Enabled = EnabledIndex >= 3,
-						OnClick = function()
-							SetStage(3)
-						end,
-					}),
-					Stage4 = e(CreateStage, {
-						Number = 4,
-						Hovered = Stage == 4,
-						Visible = LevelCount >= 4,
-						Enabled = EnabledIndex >= 4,
-						OnClick = function()
-							SetStage(4)
-						end,
-					}),
-					Stage5 = e(CreateStage, {
-						Number = 5,
-						Hovered = Stage == 5,
-						Visible = LevelCount >= 5,
-						Enabled = EnabledIndex >= 5,
-						OnClick = function()
-							SetStage(5)
-						end,
-					}),
-				},
+			}, {
+				UIListLayout = e("UIListLayout", {
+					SortOrder = Enum.SortOrder.LayoutOrder,
+					HorizontalAlignment = Enum.HorizontalAlignment.Center,
+					Padding = UDim.new(0.02, 0),
+				}),
+				UIPadding = e("UIPadding", {
+					PaddingTop = UDim.new(0.02, 0),
+				}),
+				Stage1 = e(CreateStage, {
+					Number = 1,
+					Hovered = Stage == 1,
+					Visible = LevelCount >= 1,
+					Enabled = EnabledIndex >= 1,
+					OnClick = function()
+						SetStage(1)
+					end,
+				}),
+				Stage2 = e(CreateStage, {
+					Number = 2,
+					Hovered = Stage == 2,
+					Visible = LevelCount >= 2,
+					Enabled = EnabledIndex >= 2,
+					OnClick = function()
+						SetStage(2)
+					end,
+				}),
+				Stage3 = e(CreateStage, {
+					Number = 3,
+					Hovered = Stage == 3,
+					Visible = LevelCount >= 3,
+					Enabled = EnabledIndex >= 3,
+					OnClick = function()
+						SetStage(3)
+					end,
+				}),
+				Stage4 = e(CreateStage, {
+					Number = 4,
+					Hovered = Stage == 4,
+					Visible = LevelCount >= 4,
+					Enabled = EnabledIndex >= 4,
+					OnClick = function()
+						SetStage(4)
+					end,
+				}),
+				Stage5 = e(CreateStage, {
+					Number = 5,
+					Hovered = Stage == 5,
+					Visible = LevelCount >= 5,
+					Enabled = EnabledIndex >= 5,
+					OnClick = function()
+						SetStage(5)
+					end,
+				}),
 			}),
 		}),
 		ResourcesFrame = e(Main.Frame, {
@@ -622,14 +612,13 @@ local function CreateMainStory(Properties: Properties)
 					Position = UDim2.fromScale(0.5, 0.65),
 					Size = UDim2.fromScale(0.95, 0.65),
 				},
-				children = Join({
-					UIListLayout = e("UIListLayout", {
-						HorizontalAlignment = Enum.HorizontalAlignment.Left,
-						FillDirection = Enum.FillDirection.Horizontal,
-						SortOrder = Enum.SortOrder.LayoutOrder,
-					}),
-				}, ResourceFrames),
-			}),
+			}, {
+				UIListLayout = e("UIListLayout", {
+					HorizontalAlignment = Enum.HorizontalAlignment.Left,
+					FillDirection = Enum.FillDirection.Horizontal,
+					SortOrder = Enum.SortOrder.LayoutOrder,
+				}),
+			}, ResourceFrames),
 		}),
 		StatsFrame = e(Main.Frame, {
 			native = {
@@ -698,11 +687,10 @@ local function CreateMainStory(Properties: Properties)
 					Size = UDim2.fromScale(0.7, 0.7),
 					Text = "Cancel",
 				},
-				children = {
-					UIStroke = e(UIStroke.UIStrokeBasic, {
-						Stroke = 0.002,
-					}),
-				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeBasic, {
+					Stroke = 0.002,
+				}),
 			}),
 		}),
 		ConfirmButton = e(Main.Animateables.ImageButton, {
@@ -721,11 +709,10 @@ local function CreateMainStory(Properties: Properties)
 					Size = UDim2.fromScale(0.7, 0.7),
 					Text = "Confirm",
 				},
-				children = {
-					UIStroke = e(UIStroke.UIStrokeBasic, {
-						Stroke = 0.002,
-					}),
-				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeBasic, {
+					Stroke = 0.002,
+				}),
 			}),
 		}),
 		MapImage = e(Main.ImageLabel, {
@@ -758,14 +745,13 @@ local function CreateMainStory(Properties: Properties)
 				native = {
 					AutomaticCanvasSize = Enum.AutomaticSize.Y,
 				},
-				children = Join({
-					UIListLayout = e("UIListLayout", {
-						SortOrder = Enum.SortOrder.LayoutOrder,
-						HorizontalAlignment = Enum.HorizontalAlignment.Center,
-						Padding = UDim.new(0, 0),
-					}),
-				}, MapData),
-			}),
+			}, {
+				UIListLayout = e("UIListLayout", {
+					SortOrder = Enum.SortOrder.LayoutOrder,
+					HorizontalAlignment = Enum.HorizontalAlignment.Center,
+					Padding = UDim.new(0, 0),
+				}),
+			}, MapData),
 		}),
 		Title = e(Title, {
 			Title = "STORY",
