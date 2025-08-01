@@ -799,12 +799,16 @@ function PlayerData:OwnsMap(Map: string)
 		return true
 	else
 		local MapData = GameInfo.GetMapFromId(Map)
-		if MapData and not MapData.Prerequisite then
-			return true
-		else
-			return false
+		if MapData then
+			if not MapData.Prerequisite then
+				return true
+			elseif CompletedMaps[MapData.Prerequisite] then
+				return true
+			end
 		end
 	end
+
+	return false
 end
 
 function PlayerData:OwnsStage(ParamData: GetStageData)
@@ -816,8 +820,10 @@ function PlayerData:OwnsStage(ParamData: GetStageData)
 		end
 	else
 		local MapData = GameInfo.GetMapFromId(ParamData.Map)
-		if MapData then
-			if MapData.Prerequisite == nil and ParamData.Stage == 1 then
+		if MapData and ParamData.Stage == 1 then
+			if not MapData.Prerequisite then
+				return true
+			elseif CompletedMaps[MapData.Prerequisite] then
 				return true
 			end
 		end

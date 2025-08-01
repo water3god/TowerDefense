@@ -261,7 +261,7 @@ local function CreateMainStory(Properties: Properties)
 			local Enabled: boolean = nil
 
 			if MapInfo.Prerequisite then
-				if StoryData.CompletedMaps[MapInfo.MapId] then
+				if StoryData.CompletedMaps[MapInfo.Prerequisite] then
 					Enabled = true
 				else
 					Enabled = false

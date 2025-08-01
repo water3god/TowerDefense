@@ -760,7 +760,7 @@ local WaveData: { [string]: WaveData } = {
 					["Egyptian Commander"] = { 1, 2, 3 },
 					["Ramesses II"] = { 1 },
 				},
-				Length = 480,
+				Length = 1000,
 				CoinBonus = 1000,
 			},
 		},

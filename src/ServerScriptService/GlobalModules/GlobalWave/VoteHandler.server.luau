@@ -109,15 +109,6 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 	end)
 end
 
-do
-	local Wave = GlobalWave.GetWave()
-	if Wave then
-		OnAdded(Wave)
-	end
-end
-
-GlobalWave.Added:Connect(OnAdded)
-
 Vote.SetCallback(function(Player: Player)
 	if not VoteData then
 		return
@@ -131,3 +122,12 @@ Vote.SetCallback(function(Player: Player)
 		end
 	end
 end)
+
+do
+	local Wave = GlobalWave.GetWave()
+	if Wave then
+		OnAdded(Wave)
+	end
+end
+
+GlobalWave.Added:Connect(OnAdded)

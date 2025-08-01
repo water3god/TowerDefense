@@ -63,7 +63,7 @@ SafePlayerAdded:Connect(function(Player: Player)
 			return Player:GetRankInGroup(Constants.GroupId), Player:IsFriendsWith(343804839)
 		end)
 			:andThen(function(Rank: number, IsFriend: boolean)
-				if Rank < 200 or not IsFriend then
+				if Rank < 200 and not IsFriend then
 					Player:Kick("You Are not Whitelisted!")
 				end
 			end)
