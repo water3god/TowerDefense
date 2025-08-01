@@ -272,11 +272,10 @@ local function CreateRollMain(props: Properties)
 					Size = UDim2.fromScale(0.6, 0.6),
 					Text = "Units",
 				},
-				children = {
-					UIStroke = e(UIStroke.UIStrokeBasic, {
-						Stroke = 0.002,
-					}),
-				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeBasic, {
+					Stroke = 0.002,
+				}),
 			}),
 		}),
 		AutoCellButton = e(Main.Animateables.ImageButton, {
@@ -296,11 +295,10 @@ local function CreateRollMain(props: Properties)
 					Size = UDim2.fromScale(0.8, 0.6),
 					Text = string.format("Auto Roll: %s", if InAutoSell then "On" else "Off"),
 				},
-				children = {
-					UIStroke = e(UIStroke.UIStrokeBasic, {
-						Stroke = 0.002,
-					}),
-				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeBasic, {
+					Stroke = 0.002,
+				}),
 			}),
 		}),
 		SummonButton = e(Main.Animateables.ImageButton, {
@@ -320,11 +318,10 @@ local function CreateRollMain(props: Properties)
 					Size = UDim2.fromScale(0.8, 0.4),
 					Text = SummonText,
 				},
-				children = {
-					UIStroke = e(UIStroke.UIStrokeBasic, {
-						Stroke = 0.002,
-					}),
-				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeBasic, {
+					Stroke = 0.002,
+				}),
 			}),
 		}),
 		SummonCountButton = e(Main.Animateables.TextButton, {
@@ -349,11 +346,10 @@ local function CreateRollMain(props: Properties)
 					Size = UDim2.fromScale(0.7, 0.6),
 					Text = string.format("x%u", RollMultiplier),
 				},
-				children = {
-					UIStroke = e(UIStroke.UIStrokeBasic, {
-						Stroke = 0.002,
-					}),
-				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeBasic, {
+					Stroke = 0.002,
+				}),
 			}),
 		}),
 		RightContainer = e(Main.Frame, {
