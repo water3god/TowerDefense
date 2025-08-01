@@ -21,14 +21,18 @@ local UIStroke = require(CoreGame.UIStroke)
 ObserveTag.ObserveTag("AreaLabel", function(Part: Instance)
 	if Part:IsA("BasePart") then
 		local Root = ReactRoblox.createRoot(Part)
+
+		local Size = Part:GetAttribute("Size") :: number? or 40
+		local AlwaysOnTop = Part:GetAttribute("AlwaysOnTop") ~= false
+
 		Root:render(e("BillboardGui", {
 			ResetOnSpawn = false,
-			AlwaysOnTop = true,
-			Size = UDim2.fromScale(40, 40),
+			AlwaysOnTop = AlwaysOnTop,
+			Size = UDim2.fromScale(Size, Size),
 		}, {
 			Label = e(Main.TextLabel, {
 				native = {
-					Size = UDim2.fromScale(0.8, 0.3),
+					Size = UDim2.fromScale(0.9, 0.2),
 					Text = Part.Name,
 					TextColor3 = Part.Color,
 				},

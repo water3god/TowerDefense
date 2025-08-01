@@ -35,12 +35,12 @@ local NPCTalks = {
 			"Prepare well, and may your courage lead you to victory!",
 		},
 	},
-	-- In the Traits Temple --
+	-- In the Ascension Temple --
 	["Qin Shi Huang"] = {
 		Messages = {
-			"Welcome to the Traits Temple, wise one!",
-			"Here, you can enhance your allies with powerful traits.",
-			"Choose traits that complement your strategy and playstyle.",
+			"Welcome to the Ascension Temple, wise one!",
+			"Here, you can enhance your units with powerful traits and evolutions.",
+			"Choose traits and evolution paths that complement your strategy and playstyle.",
 			"May your choices lead to unparalleled strength in battle!",
 		},
 	},

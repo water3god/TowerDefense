@@ -602,6 +602,7 @@ end
 
 local PlayCFrame = CFrame.new(145.5, 7.834, 143.5) * CFrame.Angles(0, math.rad(25), 0)
 local SummonCFrame = CFrame.new(-155, 10, -215)
+local AscensionCFrame = CFrame.new(-229.3, 29.061, 163) * CFrame.Angles(0, math.rad(140), 0)
 
 local VisibleFrames = {
 	[Constants.INVENTORY_FRAME] = { "Bottom" },
@@ -721,6 +722,12 @@ local function Render()
 	local OnSummon = React.useCallback(function()
 		if Character and not VisibleFrame then
 			Character:PivotTo(SummonCFrame)
+		end
+	end, { VisibleFrame, Character :: any })
+
+	local OnAscension = React.useCallback(function()
+		if Character and not VisibleFrame then
+			Character:PivotTo(AscensionCFrame)
 		end
 	end, { VisibleFrame, Character :: any })
 
@@ -845,6 +852,8 @@ local function Render()
 			config = CharacterConfig,
 		})
 	end, { VisibleFrame })
+
+	local LayoutOrder = Hooks.LayoutOrder()
 
 	return e(
 		Hooks.ContextStack,
@@ -1036,11 +1045,10 @@ local function Render()
 				UIGridLayout = e("UIGridLayout", {
 					CellPadding = UDim2.fromScale(0, 0),
 					CellSize = UDim2.fromScale(0.5, 0.3),
+					SortOrder = Enum.SortOrder.LayoutOrder,
 					FillDirection = Enum.FillDirection.Horizontal,
 				}),
 				InventoryButton = e(MainButtonFrame, {
-					Position = UDim2.fromScale(0.1, 0.5),
-					Size = UDim2.fromScale(0.1, 0.15),
 					Name = "Inventory",
 					Icon = "rbxassetid://126162489334707",
 					IconColor = ColorSequence.new(Color3.fromRGB(255, 200, 50), Color3.fromRGB(180, 120, 0)), -- Bright Yellow to Dark Orange
@@ -1048,19 +1056,21 @@ local function Render()
 					OnClick = function()
 						OnMainButtonClick(Constants.INVENTORY_FRAME)
 					end,
+					native = {
+						LayoutOrder = LayoutOrder(),
+					},
 				}),
 				PlayButton = e(MainButtonFrame, {
-					Position = UDim2.fromScale(0.1, 0.5),
-					Size = UDim2.fromScale(0.1, 0.15),
 					Name = "Play",
 					Icon = "rbxassetid://123087872755553",
 					IconColor = ColorSequence.new(Color3.fromRGB(50, 255, 50), Color3.fromRGB(0, 150, 0)), -- Bright Green to Dark Green
 					BackgroundColor = ColorSequence.new(Color3.fromRGB(30, 110, 70), Color3.fromRGB(20, 70, 50)), -- Light Green to Medium Green
 					OnClick = OnPlay,
+					native = {
+						LayoutOrder = LayoutOrder(),
+					},
 				}),
 				StoreButton = e(MainButtonFrame, {
-					Position = UDim2.fromScale(0.1, 0.5),
-					Size = UDim2.fromScale(0.1, 0.15),
 					Name = "Store",
 					Icon = "rbxassetid://101802087294765",
 					IconColor = ColorSequence.new(Color3.fromRGB(255, 100, 255), Color3.fromRGB(150, 0, 150)), -- Bright Magenta to Dark Magenta
@@ -1068,19 +1078,21 @@ local function Render()
 					OnClick = function()
 						OnMainButtonClick(Constants.STORE)
 					end,
+					native = {
+						LayoutOrder = LayoutOrder(),
+					},
 				}),
 				SummonButton = e(MainButtonFrame, {
-					Position = UDim2.fromScale(0.1, 0.5),
-					Size = UDim2.fromScale(0.1, 0.15),
 					Name = "Summon",
 					Icon = "rbxassetid://103961311594276",
 					IconColor = ColorSequence.new(Color3.fromRGB(100, 200, 255), Color3.fromRGB(0, 100, 200)), -- Bright Blue to Dark Blue
 					BackgroundColor = ColorSequence.new(Color3.fromRGB(50, 90, 110), Color3.fromRGB(30, 60, 80)), -- Light Blue to Medium Blue
 					OnClick = OnSummon,
+					native = {
+						LayoutOrder = LayoutOrder(),
+					},
 				}),
 				TradeButton = e(MainButtonFrame, {
-					Position = UDim2.fromScale(0.1, 0.5),
-					Size = UDim2.fromScale(0.1, 0.15),
 					Name = "Trade",
 					Icon = "rbxassetid://71136210616050",
 					IconColor = ColorSequence.new(Color3.fromRGB(255, 150, 50), Color3.fromRGB(200, 80, 0)), -- Bright Orange to Dark Orange
@@ -1088,6 +1100,19 @@ local function Render()
 					OnClick = function()
 						OnMainButtonClick(Constants.TRADE_MENU)
 					end,
+					native = {
+						LayoutOrder = LayoutOrder(),
+					},
+				}),
+				AscensionButton = e(MainButtonFrame, {
+					Name = "Ascension",
+					Icon = "rbxassetid://133330282088551",
+					IconColor = ColorSequence.new(Color3.fromRGB(255, 50, 50), Color3.fromRGB(180, 0, 0)), -- Bright Red to Dark Red
+					BackgroundColor = ColorSequence.new(Color3.fromRGB(110, 50, 50), Color3.fromRGB(80, 30, 30)), -- Light Red to Medium Red
+					OnClick = OnAscension,
+					native = {
+						LayoutOrder = LayoutOrder(),
+					},
 				}),
 			}),
 			RightButtons = IsLobby and e(Main.Frame, {
@@ -1105,10 +1130,9 @@ local function Render()
 					CellPadding = UDim2.fromScale(0, 0),
 					CellSize = UDim2.fromScale(0.5, 0.3),
 					FillDirection = Enum.FillDirection.Horizontal,
+					SortOrder = Enum.SortOrder.LayoutOrder,
 				}),
 				DailyButton = e(MainButtonFrame, {
-					Position = UDim2.fromScale(0.9, 0.5),
-					Size = UDim2.fromScale(0.1, 0.15),
 					Name = "Daily",
 					Icon = "rbxassetid://118717037434015",
 					IconColor = ColorSequence.new(Color3.fromRGB(255, 50, 50), Color3.fromRGB(180, 0, 0)), -- Bright Red to Dark Red
@@ -1116,21 +1140,11 @@ local function Render()
 					OnClick = function()
 						OnMainButtonClick(Constants.DAILY_FRAME)
 					end,
-				}),
-				TitlesButton = e(MainButtonFrame, {
-					Position = UDim2.fromScale(0.9, 0.5),
-					Size = UDim2.fromScale(0.1, 0.15),
-					Name = "Titles",
-					Icon = "rbxassetid://95049959452468",
-					IconColor = ColorSequence.new(Color3.fromRGB(100, 255, 200), Color3.fromRGB(0, 180, 120)), -- Bright Cyan to Dark Teal
-					BackgroundColor = ColorSequence.new(Color3.fromRGB(50, 110, 90), Color3.fromRGB(30, 70, 60)), -- Light Teal to Medium Teal
-					OnClick = function()
-						OnMainButtonClick(Constants.TITLES_FRAME)
-					end,
+					native = {
+						LayoutOrder = LayoutOrder(),
+					},
 				}),
 				QuestsButton = e(MainButtonFrame, {
-					Position = UDim2.fromScale(0.9, 0.5),
-					Size = UDim2.fromScale(0.1, 0.15),
 					Name = "Quests",
 					Icon = "rbxassetid://126483259351802",
 					IconColor = ColorSequence.new(Color3.fromRGB(200, 100, 255), Color3.fromRGB(120, 0, 200)), -- Bright Purple to Dark Purple
@@ -1138,6 +1152,21 @@ local function Render()
 					OnClick = function()
 						OnMainButtonClick(Constants.QUESTS_FRAME)
 					end,
+					native = {
+						LayoutOrder = LayoutOrder(),
+					},
+				}),
+				TitlesButton = e(MainButtonFrame, {
+					Name = "Titles",
+					Icon = "rbxassetid://95049959452468",
+					IconColor = ColorSequence.new(Color3.fromRGB(100, 255, 200), Color3.fromRGB(0, 180, 120)), -- Bright Cyan to Dark Teal
+					BackgroundColor = ColorSequence.new(Color3.fromRGB(50, 110, 90), Color3.fromRGB(30, 70, 60)), -- Light Teal to Medium Teal
+					OnClick = function()
+						OnMainButtonClick(Constants.TITLES_FRAME)
+					end,
+					native = {
+						LayoutOrder = LayoutOrder(),
+					},
 				}),
 			}),
 			SettingButton = e(MainButtonFrame, {
