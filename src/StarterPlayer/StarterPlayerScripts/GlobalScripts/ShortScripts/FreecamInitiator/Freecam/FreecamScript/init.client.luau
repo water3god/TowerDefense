@@ -1087,6 +1087,7 @@ local function StopFreecam()
 	end
 
 	Variables.InFreecam = false
+
 	FreecamToggled:Fire(false)
 
 	Input.StopCapture()

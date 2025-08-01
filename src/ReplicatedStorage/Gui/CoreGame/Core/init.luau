@@ -732,16 +732,15 @@ local function Render()
 
 	local SprintAnim = React.useRef(nil :: AnimationTrack?)
 
-	local InFreecam, SetFreecam = React.useState(false)
+	local InFreecam = React.useRef(false)
 
 	React.useEffect(function()
-		if Variables.InFreecam then
-			SetFreecam(true)
-		end
+		InFreecam.current = Variables.InFreecam
 
 		local Connection = ClientOnly.FreecamToggled:Connect(function(Freecam)
-			SetFreecam(Freecam)
+			InFreecam.current = Freecam
 		end)
+
 		return function()
 			Connection:Disconnect()
 		end
@@ -828,13 +827,13 @@ local function Render()
 			end
 		else
 			API.start({
-				FieldOfView = if VisibleFrame and not table.find(NoBlur, VisibleFrame) or InFreecam then 65 else 70,
+				FieldOfView = if VisibleFrame and not table.find(NoBlur, VisibleFrame) then 65 else 70,
 				config = CharacterConfig,
 			})
 
 			return function() end
 		end
-	end, { Character, VisibleFrame, InFreecam })
+	end, { Character, VisibleFrame })
 
 	React.useEffect(function()
 		API.start({
@@ -842,7 +841,7 @@ local function Render()
 			Inverted = if VisibleFrame then 1 else 0,
 		})
 		API.start({
-			FieldOfView = if VisibleFrame and not table.find(NoBlur, VisibleFrame) or InFreecam then 65 else 70,
+			FieldOfView = if VisibleFrame and not table.find(NoBlur, VisibleFrame) then 65 else 70,
 			config = CharacterConfig,
 		})
 	end, { VisibleFrame })
@@ -866,7 +865,10 @@ local function Render()
 		{
 			FieldOfView = e("Folder", {
 				Archivable = IsRunning and Styles.FieldOfView:map(function(FieldOfView: number)
-					Camera.FieldOfView = FieldOfView
+					if not InFreecam.current then
+						Camera.FieldOfView = FieldOfView
+					end
+
 					return true
 				end) or true,
 			}),
