@@ -99,12 +99,12 @@ local function CreateWaitingFrame(Props: Properties)
 		}, {
 			Label = e(Main.TextLabel, {
 				native = {
-					Size = UDim2.fromScale(0.7, 0.7),
+					Size = UDim2.fromScale(0.9, 0.7),
 					Text = "Start",
 				},
 			}, {
-				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.002,
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.02,
 				}),
 			}),
 		}),
@@ -186,8 +186,8 @@ local function CreateWaitingFrame(Props: Properties)
 					ZIndex = 2,
 				},
 			}, {
-				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.002,
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.006,
 				}),
 			}),
 		}),

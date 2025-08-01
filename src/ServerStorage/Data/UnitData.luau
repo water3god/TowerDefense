@@ -102,8 +102,8 @@ local function ApplyBuff(Unit: UnitModule.Unit, BuffType: string, Ratio: number,
 	local HandlingUnits = {}
 
 	local function Handle(OtherUnit: UnitModule.Unit)
-		local Name = string.format("Buff_%s_%s", OtherUnit.UniqueId, BuffType)
-		OtherUnit:ChangeRatio(Name, "Damage", Unit.UniqueId, Ratio, Duration)
+		local Name = string.format("Buff_%s_%s", Unit.UnitName, BuffType)
+		OtherUnit:ChangeRatio(Name, Unit.UniqueId, BuffType, Ratio, Duration)
 		table.insert(HandlingUnits, OtherUnit)
 
 		BuffTrove:Connect(OtherUnit.Destroying, function()
@@ -116,7 +116,7 @@ local function ApplyBuff(Unit: UnitModule.Unit, BuffType: string, Ratio: number,
 
 	BuffTrove:Add(function()
 		for _, OtherUnit in pairs(HandlingUnits) do
-			local Name = string.format("Buff_%s_%s", OtherUnit.UniqueId, BuffType)
+			local Name = string.format("Buff_%s_%s", Unit.UnitName, BuffType)
 			OtherUnit:CancelRatio(Name, Unit.UniqueId)
 		end
 		HandlingUnits = {}

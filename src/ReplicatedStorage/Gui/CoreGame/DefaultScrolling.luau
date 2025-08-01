@@ -21,16 +21,16 @@ export type Properties = {
 
 local function GetScrollingSize(Size: number, selfRef: any)
 	if selfRef.current then
-		return Size * selfRef.current.AbsoluteSize.X
+		return math.ceil(Size * selfRef.current.AbsoluteSize.X)
 	else
-		return 0.1
+		return 1
 	end
 end
 
 local function CreateDefaultScrolling(Properties: Properties)
 	local BarSize = Properties.BarSize or 0.1
 	local selfRef = React.useRef(nil)
-	local Bar, SetBar = React.useState(0.1)
+	local Bar, SetBar = React.useState(1)
 
 	React.useEffect(function()
 		if selfRef.current then

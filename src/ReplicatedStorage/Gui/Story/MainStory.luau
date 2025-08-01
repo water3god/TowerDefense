@@ -54,35 +54,40 @@ local function CreateStage(Props: { Hovered: boolean, Number: number, OnClick: (
 		WarningData.Add(string.format("You do not have Level %u Unlocked!", Props.Number))
 	end, { Props.Number })
 
-	return e(Main.Animateables.TextButton, {
+	return e(Main.Frame, {
 		native = {
-			BackgroundTransparency = 0,
-			BackgroundColor3 = if Props.Enabled then Color3.fromRGB(127, 32, 165) else Color3.fromRGB(93, 11, 141),
-			Size = UDim2.fromScale(0.78, 0.78),
 			LayoutOrder = Props.Number,
-			Text = "",
-			[React.Event.MouseButton1Click] = Props.Enabled and Props.OnClick or NoLevel,
+			Size = UDim2.fromScale(0.85, 0.225),
 		},
 	}, {
-		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-			AspectRatio = 1,
-		}),
-		UIStroke = Props.Hovered and e(UIStroke.UIStrokeAdvanced, {
-			Stroke = 0.02,
-			Color = Color3.new(1, 1, 1),
+
+		Button = e(Main.Animateables.TextButton, {
 			native = {
-				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-				LineJoinMode = Enum.LineJoinMode.Round,
+				BackgroundTransparency = 0,
+				BackgroundColor3 = if Props.Enabled then Color3.fromRGB(127, 32, 165) else Color3.fromRGB(93, 11, 141),
+				Size = UDim2.fromScale(0.9, 0.9),
+				Text = "",
+				[React.Event.MouseButton1Click] = Props.Enabled and Props.OnClick or NoLevel,
 			},
-		}),
-		UICorner = e("UICorner", {
-			CornerRadius = UDim.new(0.2, 0),
-		}),
-		Label = e(Main.TextLabel, {
-			native = {
-				Size = UDim2.fromScale(0.6, 0.6),
-				Text = tostring(Props.Number),
-			},
+		}, {
+
+			UIStroke = Props.Hovered and e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.02,
+				Color = Color3.new(1, 1, 1),
+				native = {
+					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+					LineJoinMode = Enum.LineJoinMode.Round,
+				},
+			}),
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.2, 0),
+			}),
+			Label = e(Main.TextLabel, {
+				native = {
+					Size = UDim2.fromScale(0.9, 0.55),
+					Text = tostring(Props.Number),
+				},
+			}),
 		}),
 	})
 end
@@ -127,7 +132,7 @@ local function CreateMap(Props: {
 					CornerRadius = UDim.new(0.2, 0),
 				}),
 				UIStroke = Props.CurrentMap == Props.MapInfo.MapId and e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.01,
+					Stroke = 0.015,
 					Color = Color3.new(1, 1, 1),
 					native = {
 						LineJoinMode = Enum.LineJoinMode.Round,
@@ -370,6 +375,24 @@ local function CreateMainStory(Properties: Properties)
 		return 1
 	end, { StoryData, CurrentMap } :: { unknown })
 
+	local StageData = React.useMemo(function()
+		local Data: { [string]: React.Node } = {}
+
+		for i = 1, LevelCount do
+			Data["Stage" .. i] = e(CreateStage, {
+				Number = i,
+				Hovered = Stage == i,
+				Visible = LevelCount >= i,
+				Enabled = EnabledIndex >= i,
+				OnClick = function()
+					SetStage(i)
+				end,
+			})
+		end
+
+		return Data
+	end, { CurrentMap, Stage, LevelCount, EnabledIndex } :: { unknown })
+
 	return e(Main.ImageLabel, {
 		native = Join({
 			Position = UDim2.fromScale(0.4, 0.45),
@@ -513,8 +536,8 @@ local function CreateMainStory(Properties: Properties)
 			native = {
 				BackgroundTransparency = 0,
 				BackgroundColor3 = Color3.new(1, 1, 1),
-				Position = UDim2.fromScale(0.9, 0.5),
-				Size = UDim2.fromScale(0.1, 0.8),
+				Position = UDim2.fromScale(0.89, 0.525),
+				Size = UDim2.fromScale(0.12, 0.85),
 			},
 		}, {
 			UICorner = e("UICorner", {
@@ -527,65 +550,18 @@ local function CreateMainStory(Properties: Properties)
 				}),
 			}),
 			MainFrame = e(Main.ScrollingFrame, {
-				BarSize = 0.002,
+				BarSize = 0.05,
 				native = {
+					Size = UDim2.fromScale(1, 0.95),
+					Position = UDim2.fromScale(0.5, 0.505),
 					AutomaticCanvasSize = Enum.AutomaticSize.Y,
 				},
 			}, {
 				UIListLayout = e("UIListLayout", {
 					SortOrder = Enum.SortOrder.LayoutOrder,
 					HorizontalAlignment = Enum.HorizontalAlignment.Center,
-					Padding = UDim.new(0.02, 0),
 				}),
-				UIPadding = e("UIPadding", {
-					PaddingTop = UDim.new(0.02, 0),
-				}),
-				Stage1 = e(CreateStage, {
-					Number = 1,
-					Hovered = Stage == 1,
-					Visible = LevelCount >= 1,
-					Enabled = EnabledIndex >= 1,
-					OnClick = function()
-						SetStage(1)
-					end,
-				}),
-				Stage2 = e(CreateStage, {
-					Number = 2,
-					Hovered = Stage == 2,
-					Visible = LevelCount >= 2,
-					Enabled = EnabledIndex >= 2,
-					OnClick = function()
-						SetStage(2)
-					end,
-				}),
-				Stage3 = e(CreateStage, {
-					Number = 3,
-					Hovered = Stage == 3,
-					Visible = LevelCount >= 3,
-					Enabled = EnabledIndex >= 3,
-					OnClick = function()
-						SetStage(3)
-					end,
-				}),
-				Stage4 = e(CreateStage, {
-					Number = 4,
-					Hovered = Stage == 4,
-					Visible = LevelCount >= 4,
-					Enabled = EnabledIndex >= 4,
-					OnClick = function()
-						SetStage(4)
-					end,
-				}),
-				Stage5 = e(CreateStage, {
-					Number = 5,
-					Hovered = Stage == 5,
-					Visible = LevelCount >= 5,
-					Enabled = EnabledIndex >= 5,
-					OnClick = function()
-						SetStage(5)
-					end,
-				}),
-			}),
+			}, StageData),
 		}),
 		ResourcesFrame = e(Main.Frame, {
 			native = {
@@ -684,12 +660,12 @@ local function CreateMainStory(Properties: Properties)
 			}),
 			Label = e(Main.TextLabel, {
 				native = {
-					Size = UDim2.fromScale(0.7, 0.7),
+					Size = UDim2.fromScale(0.9, 0.7),
 					Text = "Cancel",
 				},
 			}, {
-				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.002,
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.03,
 				}),
 			}),
 		}),
@@ -706,12 +682,12 @@ local function CreateMainStory(Properties: Properties)
 			}),
 			Label = e(Main.TextLabel, {
 				native = {
-					Size = UDim2.fromScale(0.7, 0.7),
+					Size = UDim2.fromScale(0.9, 0.7),
 					Text = "Confirm",
 				},
 			}, {
-				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.002,
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.03,
 				}),
 			}),
 		}),

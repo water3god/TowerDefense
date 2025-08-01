@@ -17,7 +17,7 @@ type Difficulty = enum { Normal, Hard, Insane }
 
 type StageData = struct {
 	FastestTime: Time,
-	FinishedCount: u16,
+	FinishedCount: u32,
 }
 
 type TimeData = struct {
@@ -26,7 +26,7 @@ type TimeData = struct {
 }
 
 type BoothData = struct {
-	OwnerId: u32,
+	OwnerId: f64,
 	MapId: string.binary,
 	LevelId: string.binary,
 	Difficulty: string.binary,

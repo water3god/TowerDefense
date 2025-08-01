@@ -198,53 +198,6 @@ local remotes = ReplicatedStorage:WaitForChild("Zap1")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
-export type Level = (number)
-export type SpeedChange = ({
-	["UniqueId"]: (string),
-	["Speed"]: (number),
-	["Time"]: (number),
-})
-export type ResourceData = ({
-	["Resource"]: (string),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-	["PartialOneLose"]: ((boolean)?),
-})
-export type Item = ("Units" | "Products" | "Resources")
-export type SpeedChangeData = ({
-	["TimeStart"]: (number),
-	["Speed"]: (number),
-	["TimeEnd"]: ((number)?),
-})
-export type ProductData = ({
-	["ProductId"]: (number),
-	["IsGamepass"]: (boolean),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-})
-export type TimeData = ({
-	["StartTime"]: (number),
-	["EndTime"]: (number),
-})
-export type StageData = ({
-	["FastestTime"]: (number),
-	["FinishedCount"]: (number),
-})
-export type BoothData = ({
-	["OwnerId"]: (number),
-	["MapId"]: (string),
-	["LevelId"]: (string),
-	["Difficulty"]: (string),
-	["Players"]: ({ (Player) }),
-	["StartTime"]: (number),
-	["EndTime"]: (number),
-})
-export type LevelData = ({
-	["Level"]: (number),
-	["XP"]: (number),
-	["NeededXP"]: (number),
-})
-export type XP = (number)
 export type EnemyInput = ({
 	["UniqueId"]: (string),
 	["ModelName"]: (string),
@@ -265,7 +218,53 @@ export type EnemyInput = ({
 		["TimeEnd"]: ((number)?),
 	}) }),
 })
+export type XP = (number)
+export type StageData = ({
+	["FastestTime"]: (number),
+	["FinishedCount"]: (number),
+})
+export type Level = (number)
+export type TimeData = ({
+	["StartTime"]: (number),
+	["EndTime"]: (number),
+})
+export type Difficulty = ("Normal" | "Hard" | "Insane")
+export type BoothData = ({
+	["OwnerId"]: (number),
+	["MapId"]: (string),
+	["LevelId"]: (string),
+	["Difficulty"]: (string),
+	["Players"]: ({ (Player) }),
+	["StartTime"]: (number),
+	["EndTime"]: (number),
+})
+export type LevelData = ({
+	["Level"]: (number),
+	["XP"]: (number),
+	["NeededXP"]: (number),
+})
+export type Item = ("Units" | "Products" | "Resources")
+export type Health = (number)
+export type SpeedChange = ({
+	["UniqueId"]: (string),
+	["Speed"]: (number),
+	["Time"]: (number),
+})
+export type VisualUnitData = ({
+	["Unit"]: (string),
+	["Level"]: (number),
+	["Trait"]: ((string)?),
+	["UniqueId"]: (string),
+	["XP"]: (number),
+	["NeededXP"]: (number),
+})
 export type Time = (number)
+export type ProductData = ({
+	["ProductId"]: (number),
+	["IsGamepass"]: (boolean),
+	["Count"]: (number),
+	["UniqueId"]: (string),
+})
 export type Inventory = ({
 	["Units"]: ({ [(string)]: ({
 		["Unit"]: (string),
@@ -288,17 +287,18 @@ export type Inventory = ({
 		["PartialOneLose"]: ((boolean)?),
 	}) }),
 })
-export type Difficulty = ("Normal" | "Hard" | "Insane")
-export type VisualUnitData = ({
-	["Unit"]: (string),
-	["Level"]: (number),
-	["Trait"]: ((string)?),
-	["UniqueId"]: (string),
-	["XP"]: (number),
-	["NeededXP"]: (number),
-})
 export type ProductId = (number)
-export type Health = (number)
+export type SpeedChangeData = ({
+	["TimeStart"]: (number),
+	["Speed"]: (number),
+	["TimeEnd"]: ((number)?),
+})
+export type ResourceData = ({
+	["Resource"]: (string),
+	["Count"]: (number),
+	["UniqueId"]: (string),
+	["PartialOneLose"]: ((boolean)?),
+})
 
 local function SendEvents()
 	if outgoing_used ~= 0 then
@@ -431,7 +431,7 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 									end
 									val_3 = {  }
 									val_3["FastestTime"] = buffer.readf64(incoming_buff, read(8))
-									val_3["FinishedCount"] = buffer.readu16(incoming_buff, read(2))
+									val_3["FinishedCount"] = buffer.readu32(incoming_buff, read(4))
 									val_2[key_3] = val_3
 								end
 							end
@@ -716,7 +716,7 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 		elseif id == 5 then
 			local value
 			value = {  }
-			value["OwnerId"] = buffer.readu32(incoming_buff, read(4))
+			value["OwnerId"] = buffer.readf64(incoming_buff, read(8))
 			local len_34 = buffer.readu16(incoming_buff, read(2))
 			value["MapId"] = buffer.readstring(incoming_buff, read(len_34), len_34)
 			local len_35 = buffer.readu16(incoming_buff, read(2))

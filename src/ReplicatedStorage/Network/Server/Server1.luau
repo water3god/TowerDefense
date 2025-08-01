@@ -291,53 +291,6 @@ end
 Players.PlayerRemoving:Connect(function(player)
 	player_map[player] = nil
 end)
-export type Level = (number)
-export type SpeedChange = ({
-	["UniqueId"]: (string),
-	["Speed"]: (number),
-	["Time"]: (number),
-})
-export type ResourceData = ({
-	["Resource"]: (string),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-	["PartialOneLose"]: ((boolean)?),
-})
-export type Item = ("Units" | "Products" | "Resources")
-export type SpeedChangeData = ({
-	["TimeStart"]: (number),
-	["Speed"]: (number),
-	["TimeEnd"]: ((number)?),
-})
-export type ProductData = ({
-	["ProductId"]: (number),
-	["IsGamepass"]: (boolean),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-})
-export type TimeData = ({
-	["StartTime"]: (number),
-	["EndTime"]: (number),
-})
-export type StageData = ({
-	["FastestTime"]: (number),
-	["FinishedCount"]: (number),
-})
-export type BoothData = ({
-	["OwnerId"]: (number),
-	["MapId"]: (string),
-	["LevelId"]: (string),
-	["Difficulty"]: (string),
-	["Players"]: ({ (Player) }),
-	["StartTime"]: (number),
-	["EndTime"]: (number),
-})
-export type LevelData = ({
-	["Level"]: (number),
-	["XP"]: (number),
-	["NeededXP"]: (number),
-})
-export type XP = (number)
 export type EnemyInput = ({
 	["UniqueId"]: (string),
 	["ModelName"]: (string),
@@ -358,7 +311,53 @@ export type EnemyInput = ({
 		["TimeEnd"]: ((number)?),
 	}) }),
 })
+export type XP = (number)
+export type StageData = ({
+	["FastestTime"]: (number),
+	["FinishedCount"]: (number),
+})
+export type Level = (number)
+export type TimeData = ({
+	["StartTime"]: (number),
+	["EndTime"]: (number),
+})
+export type Difficulty = ("Normal" | "Hard" | "Insane")
+export type BoothData = ({
+	["OwnerId"]: (number),
+	["MapId"]: (string),
+	["LevelId"]: (string),
+	["Difficulty"]: (string),
+	["Players"]: ({ (Player) }),
+	["StartTime"]: (number),
+	["EndTime"]: (number),
+})
+export type LevelData = ({
+	["Level"]: (number),
+	["XP"]: (number),
+	["NeededXP"]: (number),
+})
+export type Item = ("Units" | "Products" | "Resources")
+export type Health = (number)
+export type SpeedChange = ({
+	["UniqueId"]: (string),
+	["Speed"]: (number),
+	["Time"]: (number),
+})
+export type VisualUnitData = ({
+	["Unit"]: (string),
+	["Level"]: (number),
+	["Trait"]: ((string)?),
+	["UniqueId"]: (string),
+	["XP"]: (number),
+	["NeededXP"]: (number),
+})
 export type Time = (number)
+export type ProductData = ({
+	["ProductId"]: (number),
+	["IsGamepass"]: (boolean),
+	["Count"]: (number),
+	["UniqueId"]: (string),
+})
 export type Inventory = ({
 	["Units"]: ({ [(string)]: ({
 		["Unit"]: (string),
@@ -381,17 +380,18 @@ export type Inventory = ({
 		["PartialOneLose"]: ((boolean)?),
 	}) }),
 })
-export type Difficulty = ("Normal" | "Hard" | "Insane")
-export type VisualUnitData = ({
-	["Unit"]: (string),
-	["Level"]: (number),
-	["Trait"]: ((string)?),
-	["UniqueId"]: (string),
-	["XP"]: (number),
-	["NeededXP"]: (number),
-})
 export type ProductId = (number)
-export type Health = (number)
+export type SpeedChangeData = ({
+	["TimeStart"]: (number),
+	["Speed"]: (number),
+	["TimeEnd"]: ((number)?),
+})
+export type ResourceData = ({
+	["Resource"]: (string),
+	["Count"]: (number),
+	["UniqueId"]: (string),
+	["PartialOneLose"]: ((boolean)?),
+})
 
 local function SendEvents()
 	for player, outgoing in player_map do
@@ -993,8 +993,8 @@ local returns = {
 						end
 						alloc(8)
 						buffer.writef64(outgoing_buff, outgoing_apos, v_3["FastestTime"])
-						alloc(2)
-						buffer.writeu16(outgoing_buff, outgoing_apos, v_3["FinishedCount"])
+						alloc(4)
+						buffer.writeu32(outgoing_buff, outgoing_apos, v_3["FinishedCount"])
 						buffer.writeu8(outgoing_buff, bool_11_pos_1, bool_11)
 					end
 					if len_pos_3 then
@@ -1073,8 +1073,8 @@ local returns = {
 						end
 						alloc(8)
 						buffer.writef64(outgoing_buff, outgoing_apos, v_6["FastestTime"])
-						alloc(2)
-						buffer.writeu16(outgoing_buff, outgoing_apos, v_6["FinishedCount"])
+						alloc(4)
+						buffer.writeu32(outgoing_buff, outgoing_apos, v_6["FinishedCount"])
 						buffer.writeu8(outgoing_buff, bool_15_pos_1, bool_15)
 					end
 					if len_pos_6 then
@@ -1160,8 +1160,8 @@ local returns = {
 						end
 						alloc(8)
 						buffer.writef64(outgoing_buff, outgoing_apos, v_9["FastestTime"])
-						alloc(2)
-						buffer.writeu16(outgoing_buff, outgoing_apos, v_9["FinishedCount"])
+						alloc(4)
+						buffer.writeu32(outgoing_buff, outgoing_apos, v_9["FinishedCount"])
 						buffer.writeu8(outgoing_buff, bool_19_pos_1, bool_19)
 					end
 					if len_pos_9 then
@@ -1249,8 +1249,8 @@ local returns = {
 						end
 						alloc(8)
 						buffer.writef64(outgoing_buff, outgoing_apos, v_12["FastestTime"])
-						alloc(2)
-						buffer.writeu16(outgoing_buff, outgoing_apos, v_12["FinishedCount"])
+						alloc(4)
+						buffer.writeu32(outgoing_buff, outgoing_apos, v_12["FinishedCount"])
 						buffer.writeu8(outgoing_buff, bool_23_pos_1, bool_23)
 					end
 					if len_pos_12 then
@@ -1336,8 +1336,8 @@ local returns = {
 						end
 						alloc(8)
 						buffer.writef64(outgoing_buff, outgoing_apos, v_15["FastestTime"])
-						alloc(2)
-						buffer.writeu16(outgoing_buff, outgoing_apos, v_15["FinishedCount"])
+						alloc(4)
+						buffer.writeu32(outgoing_buff, outgoing_apos, v_15["FinishedCount"])
 						buffer.writeu8(outgoing_buff, bool_27_pos_1, bool_27)
 					end
 					if len_pos_15 then
@@ -3787,8 +3787,8 @@ local returns = {
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
-			alloc(4)
-			buffer.writeu32(outgoing_buff, outgoing_apos, BoothData["OwnerId"])
+			alloc(8)
+			buffer.writef64(outgoing_buff, outgoing_apos, BoothData["OwnerId"])
 			local len_208 = #BoothData["MapId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_208)
@@ -3830,8 +3830,8 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
-			alloc(4)
-			buffer.writeu32(outgoing_buff, outgoing_apos, BoothData["OwnerId"])
+			alloc(8)
+			buffer.writef64(outgoing_buff, outgoing_apos, BoothData["OwnerId"])
 			local len_212 = #BoothData["MapId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_212)
@@ -3880,8 +3880,8 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
-			alloc(4)
-			buffer.writeu32(outgoing_buff, outgoing_apos, BoothData["OwnerId"])
+			alloc(8)
+			buffer.writef64(outgoing_buff, outgoing_apos, BoothData["OwnerId"])
 			local len_216 = #BoothData["MapId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_216)
@@ -3932,8 +3932,8 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
-			alloc(4)
-			buffer.writeu32(outgoing_buff, outgoing_apos, BoothData["OwnerId"])
+			alloc(8)
+			buffer.writef64(outgoing_buff, outgoing_apos, BoothData["OwnerId"])
 			local len_220 = #BoothData["MapId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_220)
@@ -3982,8 +3982,8 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
-			alloc(4)
-			buffer.writeu32(outgoing_buff, outgoing_apos, BoothData["OwnerId"])
+			alloc(8)
+			buffer.writef64(outgoing_buff, outgoing_apos, BoothData["OwnerId"])
 			local len_224 = #BoothData["MapId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_224)

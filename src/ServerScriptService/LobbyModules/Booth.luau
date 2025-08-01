@@ -270,7 +270,7 @@ function Booth:Start()
 	self.Status = "LoadingIn"
 	self.MapLoading:Fire()
 	self.StartTime = workspace:GetServerTimeNow()
-	self.TimeLeft = Constants.BOOTHMAPCHOSETIME
+	self.TimeLeft = Constants.BOOTHRELOADWAITTIME
 	self.StatusTrove:Add(task.delay(self.TimeLeft, function()
 		self:Reset()
 	end))
@@ -323,6 +323,7 @@ function Booth:RemovePlayer(Player: Player)
 		self:Reset()
 	else
 		local Index = table.find(self.Players, Player)
+
 		if Index then
 			self.PlayerRemoving:Fire(Player)
 			table.remove(self.Players, Index)

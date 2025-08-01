@@ -90,10 +90,18 @@ local function Provider(props: Properties)
 				end)
 			end
 
-			local function OnPlayerChanged()
+			local function OnPlayerAdded()
 				SetValue(function(currentValue)
 					return Join(currentValue, {
 						PlayerCount = #NewBooth.Players,
+					}) :: any
+				end)
+			end
+
+			local function OnPlayerRemoving()
+				SetValue(function(currentValue)
+					return Join(currentValue, {
+						PlayerCount = #NewBooth.Players - 1,
 					}) :: any
 				end)
 			end
@@ -106,8 +114,8 @@ local function Provider(props: Properties)
 
 			BoothTrove:Connect(NewBooth.StartedWaiting, HandleWaiting)
 			BoothTrove:Connect(NewBooth.BoothEnded, HandleOther)
-			BoothTrove:Connect(NewBooth.PlayerAdded, OnPlayerChanged)
-			BoothTrove:Connect(NewBooth.PlayerRemoving, OnPlayerChanged)
+			BoothTrove:Connect(NewBooth.PlayerAdded, OnPlayerAdded)
+			BoothTrove:Connect(NewBooth.PlayerRemoving, OnPlayerRemoving)
 			BoothTrove:Connect(NewBooth.StartedChoosing, HandleChoosing)
 		end
 
