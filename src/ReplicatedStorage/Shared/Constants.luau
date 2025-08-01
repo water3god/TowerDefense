@@ -20,7 +20,7 @@ local Constants = {
 	DamageStore = "DamageStorev0.01",
 
 	WarningTime = 3,
-	CostDivider = 3,
+	CostDivider = 2,
 
 	CurrentEvent = "None",
 	EndTime = 1, -- Unix Timestamp of event end time

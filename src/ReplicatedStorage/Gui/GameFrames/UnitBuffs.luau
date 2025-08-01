@@ -21,6 +21,7 @@ local UnitClient = require(GlobalClient.UnitClient)
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
+local UIStroke = require(CoreGame.UIStroke)
 
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
@@ -45,24 +46,35 @@ export type BuffProps = {
 }
 
 local function CreateBuff(props: BuffProps)
-	local BuffPercent = React.useMemo(function()
-		return HelperFunctions.FormatNumberConditional(1 - props.Value)
+	local BuffNumber = React.useMemo(function()
+		local Floored = math.floor(props.Value * 100) / 100
+		return HelperFunctions.FormatNumberConditional(Floored - 1)
 	end, { props.Value })
 
-	return tonumber(BuffPercent) > 1
+	local BuffPercent = React.useMemo(function()
+		if props.Value == 1 then
+			return "0%"
+		end
+
+		return string.format("%d%%", (props.Value - 1) * 100)
+	end, { props.Value })
+
+	return tonumber(BuffNumber) > 0
 		and e(Main.Frame, {
 			native = {
-				Size = UDim2.fromScale(1, 0.3),
+				Size = UDim2.fromScale(1, 0.15),
 				LayoutOrder = UnitInfo.Stats.Layout[props.Buff :: any],
 			},
 		}, {
 			UIListLayout = e("UIListLayout", {
 				SortOrder = Enum.SortOrder.LayoutOrder,
 				FillDirection = Enum.FillDirection.Horizontal,
+				HorizontalAlignment = Enum.HorizontalAlignment.Center,
+				VerticalAlignment = Enum.VerticalAlignment.Center,
 			}),
 			Icon = e(Main.ImageLabel, {
 				native = {
-					Size = UDim2.fromScale(0.2, 1),
+					Size = UDim2.fromScale(0.3, 0.8),
 					BackgroundColor3 = Color3.fromRGB(255, 255, 255),
 					Image = UnitInfo.Stats.Icons[props.Buff :: any],
 					LayoutOrder = 1,
@@ -74,12 +86,16 @@ local function CreateBuff(props: BuffProps)
 			}),
 			Label = e(Main.TextLabel, {
 				native = {
-					AutomaticSize = Enum.AutomaticSize.X,
 					Text = BuffPercent,
-					Size = UDim2.fromScale(0.1, 0.5),
+					Size = UDim2.fromScale(0.15, 0.8),
 					TextColor3 = UnitInfo.Stats.Colors[props.Buff :: any],
+					TextXAlignment = Enum.TextXAlignment.Left,
 					LayoutOrder = 2,
 				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.03,
+				}),
 			}),
 		})
 end
@@ -94,7 +110,9 @@ local function CreateUnitBuffs(props: Properties)
 				Value = BuffValue,
 			})
 		end
-	end)
+
+		return Frames
+	end, { props.Buffs })
 
 	return e(Main.Frame, {
 		native = Join({}, props.native),
@@ -102,6 +120,8 @@ local function CreateUnitBuffs(props: Properties)
 		UIListLayout = e("UIListLayout", {
 			SortOrder = Enum.SortOrder.LayoutOrder,
 			FillDirection = Enum.FillDirection.Vertical,
+			HorizontalAlignment = Enum.HorizontalAlignment.Center,
+			VerticalAlignment = Enum.VerticalAlignment.Center,
 		}),
 	}, BuffFrames, props.children)
 end
@@ -121,7 +141,11 @@ local function Connected(props: ConnectedProps)
 					Coins = 1,
 				}
 
-				for _, Data in pairs(Unit.RatioData) do
+				for Name, Data in pairs(Unit.RatioData) do
+					if string.sub(Name, 1, 2) == "__" then
+						continue
+					end
+
 					local _, OtherData = next(Data)
 
 					if not OtherData then
