@@ -10,7 +10,9 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 local Network = require(ReplicatedStorage.Network.Server)
+local OwnedGamepasses = Network.OwnedGamepasses
 local UseProduct = Network.UseProduct
+local SendWarning = Network.SendWarning
 
 local Shared = ReplicatedStorage.Shared
 local ProductInfo = require(Shared.ProductInfo)
@@ -124,6 +126,8 @@ end)
 local function OnPlayerData(Data: PlayerData.PlayerData)
 	local ProfData = Data.Profile.Data
 
+	OwnedGamepasses.Fire(Data.Player, ProfData.Gamepasses)
+
 	local function Redeem(ProductId: number)
 		local Success = Products[ProductId](Data)
 		if Success then
@@ -147,6 +151,18 @@ local function OnPlayerData(Data: PlayerData.PlayerData)
 	Data.ProductRedeemed:Connect(function(ProductId: number, IsGamepass: boolean)
 		if not IsGamepass then
 			Redeem(ProductId)
+		end
+		local ProductData = ProductInfo.GetProductFromId({
+			Id = ProductId,
+			IsGamepass = IsGamepass,
+		})
+		if ProductData then
+			local Message = if IsGamepass then "Gamepass" else "Product"
+			SendWarning.Fire(
+				Data.Player,
+				string.format("%s %s has been successfully redeemed.", Message, ProductData.Name),
+				Color3.fromRGB(0, 255, 0)
+			)
 		end
 	end)
 end

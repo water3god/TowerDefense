@@ -732,6 +732,21 @@ local function Render()
 
 	local SprintAnim = React.useRef(nil :: AnimationTrack?)
 
+	local InFreecam, SetFreecam = React.useState(false)
+
+	React.useEffect(function()
+		if Variables.InFreecam then
+			SetFreecam(true)
+		end
+
+		local Connection = ClientOnly.FreecamToggled:Connect(function(Freecam)
+			SetFreecam(Freecam)
+		end)
+		return function()
+			Connection:Disconnect()
+		end
+	end, {})
+
 	React.useEffect(function()
 		local StopFrame = VisibleFrame and not table.find(NoBlur, VisibleFrame)
 		if Character then
@@ -813,13 +828,13 @@ local function Render()
 			end
 		else
 			API.start({
-				FieldOfView = if VisibleFrame and not table.find(NoBlur, VisibleFrame) then 65 else 70,
+				FieldOfView = if VisibleFrame and not table.find(NoBlur, VisibleFrame) or InFreecam then 65 else 70,
 				config = CharacterConfig,
 			})
 
 			return function() end
 		end
-	end, { Character, VisibleFrame })
+	end, { Character, VisibleFrame, InFreecam })
 
 	React.useEffect(function()
 		API.start({
@@ -827,7 +842,7 @@ local function Render()
 			Inverted = if VisibleFrame then 1 else 0,
 		})
 		API.start({
-			FieldOfView = if VisibleFrame and not table.find(NoBlur, VisibleFrame) then 65 else 70,
+			FieldOfView = if VisibleFrame and not table.find(NoBlur, VisibleFrame) or InFreecam then 65 else 70,
 			config = CharacterConfig,
 		})
 	end, { VisibleFrame })

@@ -172,25 +172,28 @@ local function EmitOnPart(
 	Once: boolean,
 	Attack: boolean,
 	Times: number?,
-	Func: ((Particle: ParticleEmitter) -> ())?
+	Func: ((Particle: ParticleEmitter, Attachment: Attachment) -> ())?
 )
 	local Particles = {}
 
 	for _, Emitter in ipairs(Emitters) do
-		local Attachment = Emitter:FindFirstChild("___EmitAttachment")
+		local Attachment: Attachment? = Emitter:FindFirstChild("___EmitAttachment") :: Attachment?
 		if not Attachment then
-			Attachment = Instance.new("Attachment")
+			Attachment = Instance.new("Attachment") :: Attachment
 			if Attachment then
 				Attachment.Name = "___EmitAttachment"
 				Attachment.Parent = Emitter
 			end
+		end
+		if Attachment then
+			Attachment.CFrame = CFrame.new()
 		end
 		for _, Particle in ipairs(ParticlesInput) do
 			local ParticleClone = Particle:Clone()
 			table.insert(Particles, ParticleClone)
 			ParticleClone.Parent = Attachment
 			if Func then
-				Func(ParticleClone)
+				Func(ParticleClone, Attachment :: Attachment)
 			end
 		end
 	end
@@ -236,7 +239,7 @@ local function Emit(
 	Once: boolean,
 	Attack: boolean,
 	Times: number?,
-	Func: ((Particle: ParticleEmitter) -> ())?
+	Func: ((Particle: ParticleEmitter, Attachment: Attachment) -> ())?
 ): Promise.Promise
 	local Emitter = ParticleEmitter:Clone()
 	Emitter.CFrame = CFrame
@@ -592,6 +595,29 @@ local UnitAttacks: {
 				function(Unit, AttackInput, Enemy, Delay)
 					DefaultAttack(Unit, AttackInput, Enemy, Delay)
 					DelayedAttackHit(Unit, AttackInput, Enemy, 0.6, Delay)
+
+					local DelayTime = CalculateDelay(0.4, AttackInput.SpeedRatio, Delay)
+
+					local DelProm = Promise.delay(DelayTime):andThen(function()
+						Emit(
+							Unit,
+							{ Emitters["Grey-alpha"] },
+							Unit.Root.CFrame + Unit.CFrame.RightVector * 0.6 + Unit.CFrame.LookVector,
+							true,
+							true,
+							2,
+							function(Emitter: ParticleEmitter, Attachment: Attachment)
+								Attachment.CFrame *= CFrame.Angles(0, math.rad(15), 0)
+								Emitter.EmissionDirection = Enum.NormalId.Right
+								Emitter.Size = NumberSequence.new(5)
+								Emitter.Color = ColorSequence.new(Color3.fromRGB(120, 81, 74))
+								Emitter.Rotation = NumberRange.new(270, 270)
+							end
+						)
+					end)
+
+					Unit:AddAttackPromise(DelProm, "CharlemagneAttackEmit")
+
 					DelayedSound(Unit, { Sounds.HeavySwordSwing, Sounds.HeavySwing2 }, AttackInput, Enemy, 0.3, Delay)
 				end,
 			},

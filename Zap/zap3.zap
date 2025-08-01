@@ -114,11 +114,6 @@ event LevelXPChanged = {
 -- Marketplace --
 
 -- Maybe don't use --
-event ProductPurchased = {
-	from: Server,
-	type: Reliable,
-	call: SingleAsync,
-}
 
 event UseProduct = {
 	from: Client,
@@ -129,6 +124,15 @@ event UseProduct = {
 		boolean,
 	),
 }
+
+event OwnedGamepasses = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: ProductId[],
+}
+
+-- End --
 
 event OnEnd = {
 	from: Server,

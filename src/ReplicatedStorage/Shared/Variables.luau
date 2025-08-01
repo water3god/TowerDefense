@@ -1,4 +1,5 @@
 local Variables = {
+	InFreecam = false,
 	InPlacement = false,
 }
 

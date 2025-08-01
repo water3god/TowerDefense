@@ -16,6 +16,7 @@ local Signal = require(Packages.Signal)
 local Network = require(ReplicatedStorage.Network.Client)
 
 local UseProduct = Network.UseProduct
+local OwnedGamepasses = Network.OwnedGamepasses
 
 local Shared = ReplicatedStorage.Shared
 local ProductInfo = require(Shared.ProductInfo)
@@ -83,6 +84,7 @@ local Module: {
 	Loaded: Signal.Signal<>,
 	IsLoaded: boolean,
 	UsePurchase: (ProductId: number, IsGamepass: boolean) -> (),
+	OwnsGamepass: (GamepassId: number) -> boolean,
 } =
 	{
 		GiftPurchased = Signal.new(),
@@ -97,7 +99,14 @@ local Module: {
 		UsePurchase = function(ProductId, IsGamepass)
 			UseProduct.Fire(ProductId, IsGamepass)
 		end,
+		OwnsGamepass = function()
+			return false
+		end,
 	}
+
+function Module.OwnsGamepass(GamepassId: number): boolean
+	return Module.GamepassData[GamepassId] and Module.GamepassData[GamepassId].Owned or false
+end
 
 local function GamepassDone(GamepassId: number, Purchased: boolean)
 	if Purchased then
@@ -131,17 +140,27 @@ end
 MarketplaceService.PromptGamePassPurchaseFinished:Connect(GamepassDone)
 MarketplaceService.PromptProductPurchaseFinished:Connect(ProductDone)
 
+local GamepassIds = nil
+local GamepassSynced = Signal.new()
+
+OwnedGamepasses.SetCallback(function(Ids: { number })
+	GamepassIds = Ids
+	GamepassSynced:Fire(Ids)
+end)
+
 task.spawn(function()
-	for GamepassId, Data in pairs(ProductInfo.GamepassInfo) do
-		Module.GamepassData[GamepassId] = {
-			ProductInfo = MarketplaceService:GetProductInfo(GamepassId, Enum.InfoType.GamePass),
-			Owned = MarketplaceService:UserOwnsGamePassAsync(Player.UserId, GamepassId),
-			Rarity = Data.Rarity,
-		}
-	end
 	for ProductId, Data in pairs(ProductInfo.ProductInfo) do
 		Module.ProductData[ProductId] = {
 			ProductInfo = MarketplaceService:GetProductInfo(ProductId, Enum.InfoType.Product),
+			Rarity = Data.Rarity,
+		}
+	end
+
+	local Ids = GamepassIds or GamepassSynced:Wait()
+	for GamepassId, Data in pairs(ProductInfo.GamepassInfo) do
+		Module.GamepassData[GamepassId] = {
+			ProductInfo = MarketplaceService:GetProductInfo(GamepassId, Enum.InfoType.GamePass),
+			Owned = table.find(Ids, GamepassId) ~= nil,
 			Rarity = Data.Rarity,
 		}
 	end

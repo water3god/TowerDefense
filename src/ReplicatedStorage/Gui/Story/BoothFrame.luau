@@ -46,9 +46,14 @@ local function CreateBoothFrame(Props: Properties)
 		Ran.current += 1
 		if Ran.current > 1 then
 			SetLoading(false)
-			BoothLoaded:Fire(Props.UniqueId)
 		end
 	end, { BoothData })
+
+	React.useEffect(function()
+		if not Loading then
+			BoothLoaded:Fire(Props.UniqueId)
+		end
+	end, { Loading })
 
 	local GameData: { MapData: GameInfo.MapInfo, StageData: GameInfo.LevelInfo }?, SetGameData =
 		React.useState(nil :: { MapData: GameInfo.MapInfo, StageData: GameInfo.LevelInfo }?)
