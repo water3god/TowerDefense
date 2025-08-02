@@ -1089,8 +1089,8 @@ local function Render()
 				TradeButton = e(MainButtonFrame, {
 					Name = "Trade",
 					Icon = "rbxassetid://71136210616050",
-					IconColor = ColorSequence.new(Color3.fromRGB(255, 150, 50), Color3.fromRGB(200, 80, 0)), -- Bright Orange to Dark Orange
-					BackgroundColor = ColorSequence.new(Color3.fromRGB(110, 70, 50), Color3.fromRGB(80, 50, 30)), -- Light Brown to Medium Brown
+					IconColor = ColorSequence.new(Color3.fromRGB(150, 100, 255), Color3.fromRGB(80, 40, 180)), -- Bright Purple to Dark Purple
+					BackgroundColor = ColorSequence.new(Color3.fromRGB(70, 50, 120), Color3.fromRGB(40, 25, 80)), -- Light Dark Purple to Deep Purple
 					OnClick = function()
 						OnMainButtonClick(Constants.TRADE_MENU)
 					end,

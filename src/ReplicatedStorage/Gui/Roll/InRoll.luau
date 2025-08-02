@@ -117,13 +117,13 @@ local function CreateUnitFrame(props: UnitProperties)
 		else
 			return false
 		end
-	end, { SettingsData, Data :: any })
+	end, { SettingsData, Data } :: { unknown })
 
 	React.useEffect(function()
 		if IsSold then
 			InventoryService.SellUnits({ props.UniqueId })
 		end
-	end, { IsSold, props.UniqueId :: any })
+	end, { IsSold, props.UniqueId } :: { unknown })
 
 	React.useEffect(function()
 		if props.Visible and RunService:IsRunning() then
@@ -162,7 +162,7 @@ local function CreateUnitFrame(props: UnitProperties)
 		else
 			return function() end
 		end
-	end, { Data, props.Visible :: any })
+	end, { Data, props.Visible } :: { unknown })
 
 	return e(Main.Frame, {
 		native = Join({}, props.native),
@@ -275,10 +275,6 @@ local function CreateInRoll(props: Properties)
 				end
 			end
 
-			SFXService.PlaySoundGlobal(SummonSound, function(Sound: Sound)
-				Sound.Volume = 0.04 + (0.05 * (MaxPerRow - 1) / 3)
-			end)
-
 			Frames["CoverFrame" .. i] = e(Main.Frame, {
 				native = {
 					Size = UDim2.fromScale(1, math.min(1 / RowCount, MaxSize)),
@@ -293,7 +289,7 @@ local function CreateInRoll(props: Properties)
 			}, UnitFrames)
 		end
 		return Frames
-	end, { props.UnitNames, Visible :: any })
+	end, { props.UnitNames, Visible } :: { unknown })
 
 	React.useEffect(function()
 		if HelperFunctions.Len(props.UnitNames) > 0 then
@@ -309,7 +305,7 @@ local function CreateInRoll(props: Properties)
 		end
 
 		return function() end
-	end, { props.UnitNames :: any, props.LastFiredTime :: any, props.AutoRoll :: any })
+	end, { props.UnitNames, props.LastFiredTime, props.AutoRoll } :: { unknown })
 
 	React.useEffect(function()
 		local InputTrove = Trove.new()
@@ -356,7 +352,7 @@ local function CreateInRoll(props: Properties)
 			InputTrove:Destroy()
 			Disconnect()
 		end
-	end, { props.AutoRoll, props.CloseClick :: any, Visible, props.LastFiredTime :: any })
+	end, { props.AutoRoll, props.CloseClick, Visible, props.LastFiredTime } :: { unknown })
 
 	local CancelAutoRoll = React.useCallback(function()
 		if props.AutoRoll then
@@ -404,6 +400,9 @@ local function CreateRollConnected(props: ConnectedProperties)
 	local InAutoRoll, SetAutoRoll = React.useState(false)
 
 	Hooks.useEventConnection(RollService.Rolled, function(RollData: RollService.RollData)
+		SFXService.PlaySoundGlobal(SummonSound, function(Sound: Sound)
+			Sound.Volume = 0.05 + (0.15 * math.log(#RollData.Data + 1) / math.log(11))
+		end)
 		SetLastFiredTime(RollData.SentTime)
 		SetUnitNames(RollData.Data)
 		SetAutoRoll(RollData.AutoRoll)

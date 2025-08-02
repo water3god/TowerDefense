@@ -314,7 +314,7 @@ local function CreateUnitXPFrame(props: UnitXPProps)
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.02,
+					Stroke = 0.015,
 				}),
 			}),
 			Bar = e(Main.Frame, {
@@ -476,7 +476,7 @@ local function CreateVoteFrame(Props: Props)
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.04,
+					Stroke = 0.03,
 				}),
 			}),
 		}),
@@ -500,7 +500,7 @@ local function CreateVoteFrame(Props: Props)
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.04,
+					Stroke = 0.03,
 				}),
 			}),
 		}),

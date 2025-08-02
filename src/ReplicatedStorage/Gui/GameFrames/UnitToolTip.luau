@@ -48,6 +48,7 @@ export type Props = {
 	UnitName: string,
 	Level: number,
 	Trait: string?,
+	OwnerId: number?,
 	Data: { [UnitInfo.StatProperty]: number },
 
 	Position: React.Binding<Vector2>?,
@@ -122,6 +123,18 @@ local function CreateUnitToolTip(Props: Props)
 		return RarityInfo[UnitData.Rarity]
 	end, { UnitData.Rarity })
 
+	local OwnerText: string?, SetOwnerText = React.useState(nil :: string?)
+
+	React.useEffect(function()
+		if Props.OwnerId then
+			HelperFunctions.GetNameFromIdAsync(Props.OwnerId):andThen(SetOwnerText):catch(function()
+				SetOwnerText(nil)
+			end)
+		else
+			SetOwnerText(nil)
+		end
+	end, { Props.OwnerId })
+
 	return e(Main.ImageLabel, {
 		native = Join({
 			Size = UDim2.fromScale(0.15, 0.1),
@@ -140,14 +153,14 @@ local function CreateUnitToolTip(Props: Props)
 		TraitFrame = e(TraitFrame, {
 			Trait = Props.Trait,
 			native = {
-				Position = UDim2.fromScale(0.85, 0.33),
-				Size = UDim2.fromScale(0.165, 0.525),
+				Position = UDim2.fromScale(0.9, 0.23),
+				Size = UDim2.fromScale(0.12, 0.3),
 			},
 		}),
 		NameLabel = e(Main.TextLabel, {
 			native = {
 				Position = UDim2.fromScale(0.5, 0.225),
-				Size = UDim2.fromScale(0.9, 0.2),
+				Size = UDim2.fromScale(0.9, 0.18),
 				Text = Props.UnitName,
 			},
 		}, {
@@ -162,9 +175,26 @@ local function CreateUnitToolTip(Props: Props)
 		}),
 		LevelLabel = e(Main.TextLabel, {
 			native = {
-				Position = UDim2.fromScale(0.5, 0.45),
-				Size = UDim2.fromScale(0.9, 0.15),
-				Text = string.format("Level: %u", 1),
+				Position = UDim2.fromScale(0.25, 0.45),
+				Size = UDim2.fromScale(0.45, 0.12),
+				Text = string.format("Level: %u", Props.Level),
+			},
+		}, {
+			UIGradient = e(AnimatedGradient, {
+				GradColor = RarityData.Color,
+				Animate = true,
+			}),
+			UIStroke = e(UIStroke.UIStrokeGradient, {
+				GradColor = RarityData.StrokeColor,
+				Stroke = 0.01,
+			}),
+		}),
+		OwnerLabel = e(Main.TextLabel, {
+			native = {
+				Position = UDim2.fromScale(0.75, 0.45),
+				Size = UDim2.fromScale(0.45, 0.12),
+				Text = OwnerText or "No Owner",
+				TextXAlignment = Enum.TextXAlignment.Center,
 			},
 		}, {
 			UIGradient = e(AnimatedGradient, {
@@ -196,6 +226,8 @@ end
 local function UnitConnected(Props: ConnectedProps)
 	local Data, SetData = React.useState({
 		Level = 1,
+		OwnerId = nil :: number?,
+		Trait = nil :: string?,
 		UnitName = "",
 		Data = {},
 	})
@@ -207,7 +239,9 @@ local function UnitConnected(Props: ConnectedProps)
 			if Unit then
 				SetData({
 					Level = Unit.Level,
+					OwnerId = Unit.OwnerId,
 					UnitName = Unit.UnitName,
+					Trait = Unit.Trait,
 					Data = Unit:GetProperties(),
 				})
 
@@ -237,6 +271,8 @@ local function UnitConnected(Props: ConnectedProps)
 	return e(CreateUnitToolTip, {
 		Level = Data.Level,
 		UnitName = Data.UnitName,
+		OwnerId = Data.OwnerId,
+		Trait = Data.Trait,
 		Data = Data.Data,
 		Position = Props.Position,
 		native = Props.native,
