@@ -115,13 +115,17 @@ local function CreateUnitToolTip(Props: Props)
 		SetFrames(Table)
 	end, { Props.Data })
 
-	local UnitData = React.useMemo(function()
+	local UnitData = React.useMemo(function(): UnitInfo.UnitInfo?
 		return UnitInfo.UnitInfo[Props.UnitName]
 	end, { Props.UnitName })
 
-	local RarityData = React.useMemo(function()
-		return RarityInfo[UnitData.Rarity]
-	end, { UnitData.Rarity })
+	local RarityData = React.useMemo(function(): RarityInfo.RarityInfo
+		if UnitData then
+			return RarityInfo[UnitData.Rarity]
+		else
+			return RarityInfo["Common" :: "Common"]
+		end
+	end, { UnitData })
 
 	local OwnerText: string?, SetOwnerText = React.useState(nil :: string?)
 
