@@ -35,7 +35,7 @@ local Story = {
 			MaxHealth = Properties.controls.MaxHealth,
 			native = {
 				AnchorPoint = Vector2.new(0.5, 0.5),
-				Size = UDim2.fromScale(0.8, 0.8),
+				--Size = UDim2.fromScale(0.8, 0.8),
 			},
 		})
 		return Frame

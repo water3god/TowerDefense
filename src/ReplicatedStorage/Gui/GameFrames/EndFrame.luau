@@ -609,24 +609,39 @@ local function CreateVoteFrame(Props: Props)
 end
 
 local function CreateEndFrameButton(props)
-	return e(Main.Animateables.ImageButton, {
+	return e(Main.Frame, {
 		native = {
-			Image = "rbxassetid://105684513155812",
+			AnchorPoint = Vector2.new(0.5, 1),
+			Position = UDim2.fromScale(0.5, 1),
+			Size = UDim2.fromScale(0.4, 0.15),
 			Visible = props.Visible,
-			Position = UDim2.fromScale(0.5, 0.7),
-			Size = UDim2.fromScale(0.2, 0.1),
-			[React.Event.MouseButton1Click] = function()
-				props.SetVisible(true)
-			end,
+			ZIndex = 3,
 		},
 	}, {
-		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-			AspectRatio = 3,
+		UISizeConstraint = e("UISizeConstraint", {
+			MinSize = Vector2.new(230, 60),
+			MaxSize = Vector2.new(600, 150),
 		}),
-		Label = e(Main.TextLabel, {
+		Button = e(Main.Animateables.ImageButton, {
 			native = {
-				Text = "Open End",
+				Image = "rbxassetid://105684513155812",
+				AnchorPoint = Vector2.new(0.5, 1),
+				Position = UDim2.fromScale(0.5, -0.3),
+				Size = UDim2.fromScale(0.9, 0.4),
+				[React.Event.MouseButton1Click] = function()
+					props.SetVisible(true)
+				end,
 			},
+		}, {
+			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+				AspectRatio = 3,
+			}),
+			Label = e(Main.TextLabel, {
+				native = {
+					Size = UDim2.fromScale(0.9, 0.6),
+					Text = "Open End",
+				},
+			}),
 		}),
 	})
 end

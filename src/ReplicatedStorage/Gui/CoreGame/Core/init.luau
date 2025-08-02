@@ -530,9 +530,10 @@ local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (strin
 					end)
 				elseif Preferred == "Gamepad" then
 					local NewGamepad = InputTrove:Construct(Gamepad)
-					NewGamepad.ButtonA:Connect(function()
+					--[[NewGamepad.ButtonDown:Connect(function(button)
+						
 						OnPress(NewGamepad:GetPosition())
-					end)
+					end)]]
 				elseif Preferred == "Touch" then
 					local NewTouch = InputTrove:Construct(Touch)
 
@@ -1014,12 +1015,13 @@ local function Render()
 						SetVisibleInternal(Constants.INVENTORY_FRAME, Visible)
 					end,
 					native = {
+						AnchorPoint = Vector2.new(0.5, 1),
 						Position = React.joinBindings({ Styles.Inverted :: any, VisibleFrameBinding })
 							:map(function(NewData: { any })
 								if NewData[2] and table.find(VisibleFrames[NewData[2]], "Bottom") then
-									return UDim2.fromScale(0.5, 0.9)
+									return UDim2.fromScale(0.5, 1)
 								else
-									return UDim2.fromScale(0.5, 0.9):Lerp(UDim2.fromScale(0.5, 1.2), NewData[1])
+									return UDim2.fromScale(0.5, 1):Lerp(UDim2.fromScale(0.5, 1.2), NewData[1])
 								end
 							end),
 					},
@@ -1027,12 +1029,17 @@ local function Render()
 			}),
 			LeftButtons = IsLobby and e(Main.Frame, {
 				native = {
+					AnchorPoint = Vector2.new(0, 0.5),
 					Position = Styles.Inverted:map(function(Size: number)
-						return UDim2.fromScale(0.1, 0.5):Lerp(UDim2.fromScale(-0.1, 0.5), Size)
+						return UDim2.fromScale(0.01, 0.5):Lerp(UDim2.fromScale(-0.19, 0.5), Size)
 					end),
-					Size = UDim2.fromScale(0.15, 0.4),
+					Size = UDim2.fromScale(0.2, 0.4),
 				},
 			}, {
+				UISizeConstraint = e("UISizeConstraint", {
+					MinSize = Vector2.new(60, 130),
+					MaxSize = Vector2.new(200, 400),
+				}),
 				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 					AspectRatio = 0.62,
 				}),
@@ -1111,12 +1118,17 @@ local function Render()
 			}),
 			RightButtons = IsLobby and e(Main.Frame, {
 				native = {
+					AnchorPoint = Vector2.new(1, 0.5),
 					Position = Styles.Inverted:map(function(Size: number)
-						return UDim2.fromScale(0.9, 0.5):Lerp(UDim2.fromScale(1.1, 0.5), Size)
+						return UDim2.fromScale(0.99, 0.5):Lerp(UDim2.fromScale(1.19, 0.5), Size)
 					end),
-					Size = UDim2.fromScale(0.15, 0.4),
+					Size = UDim2.fromScale(0.2, 0.4),
 				},
 			}, {
+				UISizeConstraint = e("UISizeConstraint", {
+					MinSize = Vector2.new(60, 130),
+					MaxSize = Vector2.new(200, 400),
+				}),
 				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 					AspectRatio = 0.62,
 				}),
@@ -1164,8 +1176,8 @@ local function Render()
 				}),
 			}),
 			SettingButton = e(MainButtonFrame, {
-				Position = UDim2.fromScale(0.9, 0.05),
-				Size = UDim2.fromScale(0.1, 0.08),
+				Position = UDim2.fromScale(0.95, 0.02),
+				Size = UDim2.fromScale(0.1, 0.1),
 				Name = "Settings",
 				Icon = "rbxassetid://133964081103849",
 				IconColor = ColorSequence.new(Color3.fromRGB(255, 255, 100), Color3.fromRGB(200, 200, 0)), -- Bright Yellow to Dark Yellow
@@ -1173,6 +1185,14 @@ local function Render()
 				OnClick = function()
 					OnMainButtonClick(Constants.SETTINGS)
 				end,
+				native = {
+					AnchorPoint = Vector2.new(0.5, 0),
+				},
+			}, {
+				UISizeConstraint = e("UISizeConstraint", {
+					MinSize = Vector2.new(35, 35),
+					MaxSize = Vector2.new(90, 90),
+				}),
 			}),
 			[Constants.SETTINGS] = e(RenderSettings, {
 				Visible = if VisibleFrame == Constants.SETTINGS then true else false,

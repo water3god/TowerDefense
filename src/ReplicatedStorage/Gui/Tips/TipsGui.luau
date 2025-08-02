@@ -51,13 +51,18 @@ local function CreateTipsGui(props: Properties)
 
 	return e(Main.Frame, {
 		native = Join({
+			AnchorPoint = Vector2.new(0.5, 0),
 			BackgroundTransparency = 0,
 			BackgroundColor3 = Color3.fromRGB(60, 21, 78),
-			Position = UDim2.fromScale(0.5, 0.05),
-			Size = UDim2.fromScale(0.6, 0.07),
+			Position = UDim2.fromScale(0.5, 0.02),
+			Size = UDim2.fromScale(0.48, 0.08),
 			ZIndex = 0,
 		}, props.native),
 	}, {
+		UISizeConstraint = e("UISizeConstraint", {
+			MinSize = Vector2.new(150, 25),
+			MaxSize = Vector2.new(400, 70),
+		}),
 		UIAspectRatio = e("UIAspectRatioConstraint", {
 			AspectRatio = 6,
 		}),

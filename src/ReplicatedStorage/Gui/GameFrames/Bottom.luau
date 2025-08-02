@@ -235,9 +235,13 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 
 	return e(Main.Frame, {
 		native = Join({
-			Size = UDim2.fromScale(0.4, 0.2),
+			Size = UDim2.fromScale(0.7, 0.2),
 		}, Properties.native),
 	}, {
+		UISizeConstraint = e("UISizeConstraint", {
+			MinSize = Vector2.new(230, 60),
+			MaxSize = Vector2.new(600, 170),
+		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 3.555,
 		}),

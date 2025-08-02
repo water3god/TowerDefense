@@ -66,10 +66,15 @@ local function CreateTopFrame(Props: Properties)
 	return WaveData.BaseHealth
 		and e(Main.Frame, {
 			native = Join({
-				Position = UDim2.fromScale(0.5, 0.075),
-				Size = UDim2.fromScale(0.4, 0.1),
+				AnchorPoint = Vector2.new(0.5, 0),
+				Position = UDim2.fromScale(0.5, 0.05),
+				Size = UDim2.fromScale(0.5, 0.1),
 			}, Props.native),
 		}, {
+			UISizeConstraint = e("UISizeConstraint", {
+				MinSize = Vector2.new(250, 45),
+				MaxSize = Vector2.new(600, 100),
+			}),
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 				AspectRatio = 7,
 			}),
@@ -88,8 +93,8 @@ local function CreateTopFrame(Props: Properties)
 						end),
 					},
 				}, {
-					UIStroke = e(UIStroke.UIStrokeBasic, {
-						Stroke = 0.002,
+					UIStroke = e(UIStroke.UIStrokeAdvanced, {
+						Stroke = 0.03,
 					}),
 				}),
 				Title = e(Main.TextLabel, {
@@ -99,8 +104,8 @@ local function CreateTopFrame(Props: Properties)
 						Text = "Time Left:",
 					},
 				}, {
-					UIStroke = e(UIStroke.UIStrokeBasic, {
-						Stroke = 0.002,
+					UIStroke = e(UIStroke.UIStrokeAdvanced, {
+						Stroke = 0.03,
 					}),
 				}),
 			}),
@@ -119,8 +124,8 @@ local function CreateTopFrame(Props: Properties)
 						end),
 					},
 				}, {
-					UIStroke = e(UIStroke.UIStrokeBasic, {
-						Stroke = 0.002,
+					UIStroke = e(UIStroke.UIStrokeAdvanced, {
+						Stroke = 0.03,
 					}),
 				}),
 				Title = e(Main.TextLabel, {
@@ -130,8 +135,8 @@ local function CreateTopFrame(Props: Properties)
 						Text = "Wave:",
 					},
 				}, {
-					UIStroke = e(UIStroke.UIStrokeBasic, {
-						Stroke = 0.002,
+					UIStroke = e(UIStroke.UIStrokeAdvanced, {
+						Stroke = 0.03,
 					}),
 				}),
 			}),
@@ -145,8 +150,8 @@ local function CreateTopFrame(Props: Properties)
 				UICorner = e("UICorner", {
 					CornerRadius = UDim.new(1, 0),
 				}),
-				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.002,
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.015,
 					Color = Color3.fromRGB(33, 199, 47),
 					native = {
 						LineJoinMode = Enum.LineJoinMode.Round,
@@ -183,8 +188,8 @@ local function CreateTopFrame(Props: Properties)
 						Color = ColorSequence.new(Color3.fromRGB(255, 155, 0)),
 						Rotation = 90,
 					}),
-					UIStroke = e(UIStroke.UIStrokeBasic, {
-						Stroke = 0.002,
+					UIStroke = e(UIStroke.UIStrokeAdvanced, {
+						Stroke = 0.015,
 					}),
 				}),
 			}),

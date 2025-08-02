@@ -58,6 +58,10 @@ local function CreateEnemyToolTip(Props: Props)
 			Image = "rbxassetid://103903141717286",
 		}, Props.native),
 	}, {
+		UISizeConstraint = e("UISizeConstraint", {
+			MinSize = Vector2.new(100, 50),
+			MaxSize = Vector2.new(225, 115),
+		}),
 		UIAspectRatio = e("UIAspectRatioConstraint", {
 			AspectRatio = 2,
 		}),

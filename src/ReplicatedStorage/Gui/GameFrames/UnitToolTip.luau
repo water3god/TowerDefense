@@ -141,8 +141,8 @@ local function CreateUnitToolTip(Props: Props)
 
 	return e(Main.ImageLabel, {
 		native = Join({
-			Size = UDim2.fromScale(0.15, 0.1),
-			AnchorPoint = Vector2.new(0, 0),
+			Size = UDim2.fromScale(0.2, 0.15),
+			AnchorPoint = Vector2.new(0.5, 0),
 			Position = Props.Position and Props.Position:map(function(PositionInput: Vector2)
 				local Position = PositionInput - GuiService:GetGuiInset()
 
@@ -151,6 +151,10 @@ local function CreateUnitToolTip(Props: Props)
 			Image = "rbxassetid://103903141717286",
 		}, Props.native),
 	}, {
+		UISizeConstraint = e("UISizeConstraint", {
+			MinSize = Vector2.new(160, 80),
+			MaxSize = Vector2.new(300, 150),
+		}),
 		UIAspectRatio = e("UIAspectRatioConstraint", {
 			AspectRatio = 2,
 		}),
