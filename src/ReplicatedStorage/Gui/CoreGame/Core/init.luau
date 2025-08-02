@@ -300,7 +300,7 @@ local function RenderStore(Props)
 	})
 end
 
-local function RenderDailyFrame(Props: any)
+local function RenderDailyFrame(Props)
 	local Position, Visiblity = AnimateWrapper({
 		Visible = Props.Visible,
 		Name = Constants.DAILY_FRAME,
@@ -315,7 +315,7 @@ local function RenderDailyFrame(Props: any)
 	})
 end
 
-local function RenderTitlesFrame(Props: any)
+local function RenderTitlesFrame(Props)
 	local Position, Visiblity = AnimateWrapper({
 		Visible = Props.Visible,
 		Name = Constants.TITLES_FRAME,
@@ -330,7 +330,7 @@ local function RenderTitlesFrame(Props: any)
 	})
 end
 
-local function RenderQuestsFrame(Props: any)
+local function RenderQuestsFrame(Props)
 	local Position, Visiblity = AnimateWrapper({
 		Visible = Props.Visible,
 		Name = Constants.QUESTS_FRAME,
@@ -345,7 +345,7 @@ local function RenderQuestsFrame(Props: any)
 	})
 end
 
-local function RenderStarterChoose(Props: any)
+local function RenderStarterChoose(Props)
 	local Position, Visiblity = AnimateWrapper({
 		Visible = Props.Visible,
 		Name = Constants.STARTER_CHOOSE,
@@ -361,7 +361,7 @@ local function RenderStarterChoose(Props: any)
 	})
 end
 
-local function RenderEvolution(Props: any)
+local function RenderEvolution(Props)
 	local Position, Visiblity = AnimateWrapper({
 		Visible = Props.Visible,
 		Name = Constants.EVOLUTION,
@@ -377,7 +377,7 @@ local function RenderEvolution(Props: any)
 	})
 end
 
-local function RenderTraitsFrame(Props: any)
+local function RenderTraitsFrame(Props)
 	local Position, Visiblity = AnimateWrapper({
 		Visible = Props.Visible,
 		Name = Constants.TRAITS_FRAME,
@@ -394,10 +394,6 @@ local function RenderTraitsFrame(Props: any)
 end
 
 local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (string: string?) -> () })
-	local HoveredDataRef = React.useRef(nil :: {
-		Type: "Unit" | "Enemy",
-		Id: string,
-	}?)
 	local HoveredData: {
 		Type: "Unit" | "Enemy",
 		Id: string,
@@ -474,7 +470,6 @@ local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (strin
 			end
 
 			local function OnFrame(Position: Vector2)
-				local NewHoveredData = HoveredDataRef.current
 				local Result = HelperFunctions.Raycast(Position, Params)
 				if Result and Result.Instance then
 					if Result.Instance:IsDescendantOf(GlobalWorkspace) then
@@ -483,32 +478,32 @@ local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (strin
 								continue
 							end
 							if Unit:PartIsDescendantOf(Result.Instance) then
-								if not NewHoveredData or NewHoveredData.Id ~= Unit.UniqueId then
-									SetHoveredData({
-										Type = "Unit",
-										Id = Unit.UniqueId,
-									})
-									HoveredDataRef.current = {
-										Type = "Unit",
-										Id = Unit.UniqueId,
-									}
-								end
+								SetHoveredData(function(Data)
+									if not Data or Data.Id ~= Unit.UniqueId then
+										return {
+											Type = "Unit",
+											Id = Unit.UniqueId,
+										}
+									end
+									return Data
+								end)
+
 								SetHoveredPos(Position)
 								return
 							end
 						end
 						for _, Enemy in pairs(EnemyClient.GetEnemies()) do
 							if Enemy:PartIsDescendantOf(Result.Instance) then
-								if not NewHoveredData or NewHoveredData.Id ~= Enemy.UniqueId then
-									SetHoveredData({
-										Type = "Enemy",
-										Id = Enemy.UniqueId,
-									})
-									HoveredDataRef.current = {
-										Type = "Enemy",
-										Id = Enemy.UniqueId,
-									}
-								end
+								SetHoveredData(function(Data)
+									if not Data or Data.Id ~= Enemy.UniqueId then
+										return {
+											Type = "Enemy",
+											Id = Enemy.UniqueId,
+										}
+									end
+									return Data
+								end)
+
 								SetHoveredPos(Position)
 								return
 							end
@@ -517,7 +512,6 @@ local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (strin
 				end
 
 				SetHoveredData(nil)
-				HoveredDataRef.current = nil
 			end
 
 			local InputTrove = Trove.new()
@@ -584,14 +578,14 @@ local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (strin
 			}),
 		}),
 		UnitToolTip = e(UnitToolTip.Connected, {
-			UnitId = HoveredData and HoveredData.Type == "Unit" and HoveredData.Id :: any,
+			UnitId = if HoveredData and HoveredData.Type == "Unit" then HoveredData.Id else nil,
 			Position = HoveredPos,
 			native = {
 				Visible = HoveredData ~= nil and HoveredData.Type == "Unit",
 			},
 		}),
 		EnemyToolTip = e(EnemyToolTip.Connected, {
-			EnemyId = HoveredData and HoveredData.Type == "Enemy" and HoveredData.Id :: any,
+			EnemyId = if HoveredData and HoveredData.Type == "Enemy" then HoveredData.Id else nil,
 			Position = HoveredPos,
 			native = {
 				Visible = HoveredData ~= nil and HoveredData.Type == "Enemy",
@@ -717,19 +711,19 @@ local function Render()
 		if Character and not VisibleFrame then
 			Character:PivotTo(PlayCFrame)
 		end
-	end, { VisibleFrame, Character :: any })
+	end, { VisibleFrame, Character })
 
 	local OnSummon = React.useCallback(function()
 		if Character and not VisibleFrame then
 			Character:PivotTo(SummonCFrame)
 		end
-	end, { VisibleFrame, Character :: any })
+	end, { VisibleFrame, Character })
 
 	local OnAscension = React.useCallback(function()
 		if Character and not VisibleFrame then
 			Character:PivotTo(AscensionCFrame)
 		end
-	end, { VisibleFrame, Character :: any })
+	end, { VisibleFrame, Character })
 
 	local PlacingUnitId: string?, SetUnitId = React.useState(nil :: string?)
 

@@ -47,9 +47,11 @@ export type BuffProps = {
 
 local function CreateBuff(props: BuffProps)
 	local BuffNumber = React.useMemo(function()
-		local Floored = math.floor(props.Value * 100) / 100
+		local Value = if props.Buff == "FireRate" then 1 / props.Value else props.Value
+
+		local Floored = math.floor(Value * 100) / 100
 		return HelperFunctions.FormatNumberConditional(Floored - 1)
-	end, { props.Value })
+	end, { props.Buff, props.Value } :: { unknown })
 
 	local BuffPercent = React.useMemo(function()
 		if props.Value == 1 then

@@ -135,7 +135,7 @@ function Funcs.UIStrokeAdvanced(Properties: PropertiesBasic)
 		end
 
 		return NewTrove:WrapClean()
-	end, { Stroke.current, Properties.Stroke :: any })
+	end, { Stroke.current, Properties.Stroke } :: { unknown })
 
 	return e(
 		"UIStroke",

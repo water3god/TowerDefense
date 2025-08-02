@@ -3,8 +3,10 @@
 -- By Wa1er_God --
 
 -- Services --
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local SoundService = game:GetService("SoundService")
+
+local Player = Players.LocalPlayer
 
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
@@ -33,11 +35,12 @@ local UpgradeContext = require(GameFrames.UpgradeContext)
 local CurrencyContext = require(GameFrames.Currency)
 local WarningContext = require(Gui.Warning.WarningContext)
 
+local TraitFrame = require(Gui.Components.TraitFrame)
+
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
 local RarityInfo = require(Shared.RarityInfo)
 local Constants = require(Shared.Constants)
-local Traits = require(Shared.Traits)
 local Stats = UnitInfo.Stats
 
 local Client = ReplicatedStorage.Client
@@ -61,6 +64,7 @@ export type PropertyProperties = {
 }
 
 export type AbilityProps = {
+	OwnerName: string?,
 	UniqueId: string,
 	Index: number,
 	Name: string,
@@ -77,7 +81,21 @@ local function CreatePropertyFrame(Props: PropertyProperties)
 	local Color = Stats.Colors[Props.PropertyName]
 	local Order = Hooks.LayoutOrder()
 
-	local IsSpecial = Props.PropertyName == "Special"
+	local IsSpecial = React.useMemo(function()
+		return Props.PropertyName == "Special"
+	end, { Props.PropertyName })
+
+	local BeforeLabel = React.useMemo(function()
+		if Props.PropertyName == "Special" then
+			return Props.Other
+		else
+			return HelperFunctions.NumberScaler.ShortenNumber(Props.Inital)
+		end
+	end, { Props.Inital, Props.Other } :: { unknown })
+
+	local AfterLabel = React.useMemo(function()
+		return HelperFunctions.NumberScaler.ShortenNumber(Props.Final)
+	end, { Props.Final } :: { unknown })
 
 	return e(Main.Frame, {
 		native = Join({
@@ -103,7 +121,7 @@ local function CreatePropertyFrame(Props: PropertyProperties)
 		BeforeLabel = e(Main.TextLabel, {
 			native = {
 				Size = UDim2.fromScale(0.3, 1),
-				Text = if IsSpecial then Props.Other else HelperFunctions.NumberScaler.ShortenNumber(Props.Inital),
+				Text = BeforeLabel,
 				AutoLocalize = false,
 				TextColor3 = Color,
 				LayoutOrder = Order(),
@@ -131,7 +149,7 @@ local function CreatePropertyFrame(Props: PropertyProperties)
 		AfterLabel = e(Main.TextLabel, {
 			native = {
 				Size = UDim2.fromScale(0.3, 1),
-				Text = HelperFunctions.NumberScaler.ShortenNumber(Props.Final),
+				Text = AfterLabel,
 				AutoLocalize = false,
 				TextColor3 = Color,
 				LayoutOrder = Order(),
@@ -154,12 +172,16 @@ local function CreateAbilityFrame(props: AbilityProps)
 	end, { props.LastUsed, props.Cooldown })
 
 	local Click = React.useCallback(function()
+		if props.OwnerName ~= Player.Name then
+			return
+		end
+
 		local Unit = UnitClient.GetUnit(props.UniqueId)
 
 		if Unit then
 			Unit:UseAbility(props.Index)
 		end
-	end, { props.UniqueId, props.Index :: any })
+	end, { props.UniqueId, props.Index, props.OwnerName } :: { unknown })
 
 	return e(BaseFrame, {
 		LeftText = "",
@@ -226,6 +248,18 @@ local function CreateUpgradeFrame(Properties: Properties)
 
 	local TrueVisible, SetTrueVisible = React.useState(false)
 
+	local OwnerName: string?, SetOwnerName = React.useState(nil :: string?)
+
+	React.useEffect(function()
+		if UpgradeData.OwnerId then
+			HelperFunctions.GetNameFromIdAsync(UpgradeData.OwnerId):andThen(function(Name: string)
+				SetOwnerName(Name)
+			end)
+		else
+			SetOwnerName(nil)
+		end
+	end, { UpgradeData.OwnerId })
+
 	React.useEffect(function()
 		if Visible then
 			SetTrueVisible(true)
@@ -275,7 +309,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 				end
 
 				if table.find(Stats.StatProperties, Property) then
-					Frames[Property] = CreatePropertyFrame({
+					Frames[Property] = e(CreatePropertyFrame, {
 						PropertyName = Property :: any,
 						Inital = if Property ~= "Special" then LevelData[Property] else 1,
 						Final = if Property ~= "Special" then Value else 1,
@@ -316,6 +350,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 
 		for Index, AbilityData in ipairs(UpgradeData.Abilities) do
 			Frames["Ability" .. Index] = e(CreateAbilityFrame, {
+				OwnerName = OwnerName,
 				UniqueId = UpgradeData.UniqueId,
 				Index = Index,
 				BackgroundColor = AbilityData.BackgroundColor,
@@ -328,17 +363,23 @@ local function CreateUpgradeFrame(Properties: Properties)
 		end
 
 		return Frames
-	end, { UpgradeData })
+	end, { UpgradeData, OwnerName } :: { unknown })
 
 	local PriorityClick = React.useCallback(function()
-		local Unit = UnitClient.GetUnit(UpgradeData.UniqueId)
+		if OwnerName == Player.Name then
+			local Unit = UnitClient.GetUnit(UpgradeData.UniqueId)
 
-		if Unit then
-			Unit:ChangePriority()
+			if Unit then
+				Unit:ChangePriority()
+			end
 		end
-	end, { UpgradeData.Priority, UpgradeData.UniqueId })
+	end, { UpgradeData.Priority, UpgradeData.UniqueId, OwnerName } :: { unknown })
 
 	local SellClick = React.useCallback(function()
+		if OwnerName ~= Player.Name then
+			return
+		end
+
 		if InSell then
 			local Unit = UnitClient.GetUnit(UpgradeData.UniqueId)
 
@@ -348,9 +389,13 @@ local function CreateUpgradeFrame(Properties: Properties)
 		else
 			SetSell(true)
 		end
-	end, { UpgradeData.UniqueId, InSell } :: { unknown })
+	end, { UpgradeData.UniqueId, InSell, OwnerName } :: { unknown })
 
 	local UpgradeClick = React.useCallback(function()
+		if OwnerName ~= Player.Name then
+			return
+		end
+
 		local Unit = UnitClient.GetUnit(UpgradeData.UniqueId)
 		local Data = UpgradeData.UpgradeData[UpgradeData.Level + 1]
 
@@ -367,7 +412,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 				return
 			end
 		end
-	end, { UpgradeData, CurrencyData.Value } :: { unknown })
+	end, { UpgradeData, CurrencyData.Value, OwnerName } :: { unknown })
 
 	local CloseClick = React.useCallback(function()
 		SetVisible(false)
@@ -417,13 +462,53 @@ local function CreateUpgradeFrame(Properties: Properties)
 		return RarityInfo[Rarity :: any]
 	end, { UpgradeData.UniqueId })
 
-	local TraitData = React.useMemo(function(): Traits.TraitData?
-		if UpgradeData.Trait then
-			return Traits.Traits[UpgradeData.Trait]
-		else
-			return nil
+	local LockedFrame = React.useMemo(function(): React.Node?
+		if OwnerName ~= Player.Name then
+			local Message: string = nil
+
+			if OwnerName then
+				Message = string.format("Owned by %s.", OwnerName)
+			else
+				Message = "You do not own this unit."
+			end
+
+			return e(Main.Frame, {
+				native = {
+					BackgroundTransparency = 0.5,
+					BackgroundColor3 = Color3.new(0, 0, 0),
+					ZIndex = 10,
+				},
+			}, {
+				UICorner = e("UICorner", {
+					CornerRadius = UDim.new(0.02, 0),
+				}),
+				Lock = e(Main.ImageLabel, {
+					native = {
+						Size = UDim2.fromScale(0.4, 0.25),
+						Position = UDim2.fromScale(0.5, 0.45),
+						Image = "rbxassetid://106849723034867",
+					},
+				}, {
+					UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+						AspectRatio = 0.83,
+					}),
+				}),
+				LockText = e(Main.TextLabel, {
+					native = {
+						Size = UDim2.fromScale(0.9, 0.1),
+						Position = UDim2.fromScale(0.5, 0.7),
+						Text = Message,
+					},
+				}, {
+					UIStroke = e(UIStroke.UIStrokeAdvanced, {
+						Stroke = 0.01,
+					}),
+				}),
+			})
 		end
-	end, { UpgradeData.Trait })
+
+		return nil
+	end, { OwnerName })
 
 	return e(Main.ImageLabel, {
 		native = Join({
@@ -442,6 +527,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 				LineJoinMode = Enum.LineJoinMode.Round,
 			},
 		}),
+
 		UICorner = e("UICorner", {
 			CornerRadius = UDim.new(0.02, 0),
 		}),
@@ -452,6 +538,9 @@ local function CreateUpgradeFrame(Properties: Properties)
 			Position = UDim2.fromScale(1, 0),
 			Size = UDim2.fromScale(0.2, 0.25),
 			OnClick = CloseClick,
+			native = {
+				ZIndex = 5,
+			},
 		}),
 		UnitName = e(Main.TextLabel, {
 			native = {
@@ -473,17 +562,13 @@ local function CreateUpgradeFrame(Properties: Properties)
 				},
 			}),
 		}),
-		Trait = e(Main.ImageLabel, {
+		LockedFrame = LockedFrame,
+		TraitFrame = e(TraitFrame, {
+			Trait = UpgradeData.Trait,
 			native = {
-				Size = UDim2.fromScale(0.1, 0.1),
-				Position = UDim2.fromScale(0.37, 0.34),
-				Image = if TraitData then TraitData.Icon else "rbxassetid://127454767718648",
-				Visible = TraitData ~= nil,
+				Position = UDim2.fromScale(0.88, 0.17),
+				Size = UDim2.fromScale(0.8, 0.12),
 			},
-		}, {
-			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 1,
-			}),
 		}),
 		UnitFrame = e(UnitView, {
 			UnitName = UpgradeData.UnitName,

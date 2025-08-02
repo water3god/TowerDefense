@@ -248,6 +248,10 @@ local function CreateStarterChoose(props: Properties)
 					Text = "Select",
 					TextColor3 = Color3.new(1, 1, 1),
 				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.02,
+				}),
 			}),
 			UIAspectRatio = e("UIAspectRatioConstraint", {
 				AspectRatio = 3,

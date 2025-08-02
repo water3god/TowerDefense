@@ -30,10 +30,13 @@ local Story = {
 	controls = controls,
 	story = function(Properties)
 		local Frame = e(UnitToolTip.Create, {
-			UnitName = "Minigunner",
+			UnitName = "Trajan",
+			Level = 1,
+			Trait = "Damage I",
 			Data = Properties.controls,
 			native = {
-				Position = UDim2.fromScale(0.5, 0.4),
+				AnchorPoint = Vector2.new(0.5, 0.5),
+				Size = UDim2.fromScale(0.8, 0.8),
 			},
 		})
 		return Frame

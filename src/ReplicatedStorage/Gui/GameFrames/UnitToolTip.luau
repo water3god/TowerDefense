@@ -21,12 +21,17 @@ local Join = HelperFunctions.joinDicts
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
+local UIStroke = require(CoreGame.UIStroke)
+local AnimatedGradient = require(CoreGame.AnimatedGradient)
+
+local TraitFrame = require(Gui.Components.TraitFrame)
 
 local Client = ReplicatedStorage.Client
 local GlobalClient = Client.GlobalClient
 local UnitClient = require(GlobalClient.UnitClient)
 
 local Shared = ReplicatedStorage.Shared
+local RarityInfo = require(Shared.RarityInfo)
 local UnitInfo = require(Shared.UnitInfo)
 local Stats = UnitInfo.Stats
 
@@ -41,6 +46,8 @@ export type ConnectedProps = {
 
 export type Props = {
 	UnitName: string,
+	Level: number,
+	Trait: string?,
 	Data: { [UnitInfo.StatProperty]: number },
 
 	Position: React.Binding<Vector2>?,
@@ -61,11 +68,11 @@ local function CreateStatFrame(Props: StatProps)
 			BackgroundTransparency = 0,
 			BackgroundColor3 = Color3.fromRGB(52, 8, 70),
 			LayoutOrder = Stats.Layout[Props.Type],
-			Size = UDim2.fromScale(0.4, 1),
+			Size = UDim2.fromScale(0.3, 1),
 		}, Props.native),
 	}, {
 		UIAspectRatio = e("UIAspectRatioConstraint", {
-			AspectRatio = 1.3,
+			AspectRatio = 1.8,
 		}),
 		UICorner = e("UICorner", {
 			CornerRadius = UDim.new(0.3, 0),
@@ -84,7 +91,7 @@ local function CreateStatFrame(Props: StatProps)
 		Label = e(Main.TextLabel, {
 			native = {
 				Position = UDim2.fromScale(0.7, 0.5),
-				Size = UDim2.fromScale(0.5, 0.4),
+				Size = UDim2.fromScale(0.5, 0.5),
 				Text = HelperFunctions.NumberScaler.ShortenNumber(Props.Value),
 				AutoLocalize = false,
 				TextColor3 = Stats.Colors[Props.Type],
@@ -107,6 +114,14 @@ local function CreateUnitToolTip(Props: Props)
 		SetFrames(Table)
 	end, { Props.Data })
 
+	local UnitData = React.useMemo(function()
+		return UnitInfo.UnitInfo[Props.UnitName]
+	end, { Props.UnitName })
+
+	local RarityData = React.useMemo(function()
+		return RarityInfo[UnitData.Rarity]
+	end, { UnitData.Rarity })
+
 	return e(Main.ImageLabel, {
 		native = Join({
 			Size = UDim2.fromScale(0.15, 0.1),
@@ -122,17 +137,49 @@ local function CreateUnitToolTip(Props: Props)
 		UIAspectRatio = e("UIAspectRatioConstraint", {
 			AspectRatio = 2,
 		}),
-		TextLabel = e(Main.TextLabel, {
+		TraitFrame = e(TraitFrame, {
+			Trait = Props.Trait,
 			native = {
-				Position = UDim2.fromScale(0.5, 0.275),
-				Size = UDim2.fromScale(0.9, 0.25),
+				Position = UDim2.fromScale(0.85, 0.33),
+				Size = UDim2.fromScale(0.165, 0.525),
+			},
+		}),
+		NameLabel = e(Main.TextLabel, {
+			native = {
+				Position = UDim2.fromScale(0.5, 0.225),
+				Size = UDim2.fromScale(0.9, 0.2),
 				Text = Props.UnitName,
 			},
+		}, {
+			UIGradient = e(AnimatedGradient, {
+				GradColor = RarityData.Color,
+				Animate = true,
+			}),
+			UIStroke = e(UIStroke.UIStrokeGradient, {
+				GradColor = RarityData.StrokeColor,
+				Stroke = 0.01,
+			}),
+		}),
+		LevelLabel = e(Main.TextLabel, {
+			native = {
+				Position = UDim2.fromScale(0.5, 0.45),
+				Size = UDim2.fromScale(0.9, 0.15),
+				Text = string.format("Level: %u", 1),
+			},
+		}, {
+			UIGradient = e(AnimatedGradient, {
+				GradColor = RarityData.Color,
+				Animate = true,
+			}),
+			UIStroke = e(UIStroke.UIStrokeGradient, {
+				GradColor = RarityData.StrokeColor,
+				Stroke = 0.01,
+			}),
 		}),
 		Bar = e(Main.Frame, {
 			native = {
-				Position = UDim2.fromScale(0.5, 0.7),
-				Size = UDim2.fromScale(0.8, 0.4),
+				Position = UDim2.fromScale(0.5, 0.75),
+				Size = UDim2.fromScale(0.9, 0.4),
 			},
 		}, {
 			UIListLayout = e("UIListLayout", {
@@ -148,6 +195,7 @@ end
 
 local function UnitConnected(Props: ConnectedProps)
 	local Data, SetData = React.useState({
+		Level = 1,
 		UnitName = "",
 		Data = {},
 	})
@@ -158,12 +206,14 @@ local function UnitConnected(Props: ConnectedProps)
 			local Unit = UnitClient.GetUnit(Props.UnitId)
 			if Unit then
 				SetData({
+					Level = Unit.Level,
 					UnitName = Unit.UnitName,
 					Data = Unit:GetProperties(),
 				})
 
 				NewTrove:Connect(Unit.Upgraded, function()
 					SetData({
+						Level = Unit.Level,
 						UnitName = Unit.UnitName,
 						Data = Unit:GetProperties(),
 					})
@@ -171,6 +221,7 @@ local function UnitConnected(Props: ConnectedProps)
 
 				NewTrove:Connect(Unit.PropertyChanged, function()
 					SetData({
+						Level = Unit.Level,
 						UnitName = Unit.UnitName,
 						Data = Unit:GetProperties(),
 					})
@@ -184,6 +235,7 @@ local function UnitConnected(Props: ConnectedProps)
 	end, { Props.UnitId })
 
 	return e(CreateUnitToolTip, {
+		Level = Data.Level,
 		UnitName = Data.UnitName,
 		Data = Data.Data,
 		Position = Props.Position,

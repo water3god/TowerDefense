@@ -21,25 +21,24 @@ local function HandleUnit(Unit: UnitClient.Unit)
 	local Root = ReactRoblox.createRoot(Instance.new("Folder"))
 
 	local function HandleAll()
-		task.defer(function()
-			Root:render(ReactRoblox.createPortal(
-				e("BillboardGui", {
-					Adornee = Unit.Root,
-					Size = UDim2.fromScale(6, 4),
-					AlwaysOnTop = true,
-					ExtentsOffsetWorldSpace = Vector3.new(0, -1, 0),
-				}, {
-					UnitBuffsFrame = e(UnitBuffs.Connected, {
-						UniqueId = Unit.UniqueId,
-					}),
+		Root:unmount()
+		Root:render(ReactRoblox.createPortal(
+			e("BillboardGui", {
+				Adornee = Unit.Root,
+				Size = UDim2.fromScale(6, 4),
+				AlwaysOnTop = true,
+				ExtentsOffsetWorldSpace = Vector3.new(0, -1, 0),
+			}, {
+				UnitBuffsFrame = e(UnitBuffs.Connected, {
+					UniqueId = Unit.UniqueId,
 				}),
-				Unit.Root
-			))
-			Unit.CharacterTrove:Add(HandleAll)
-		end)
+			}),
+			Unit.Root
+		))
 	end
 
 	HandleAll()
+	Unit.Upgraded:Connect(HandleAll)
 
 	Unit.Destroying:Once(function()
 		task.defer(Root.unmount, Root)

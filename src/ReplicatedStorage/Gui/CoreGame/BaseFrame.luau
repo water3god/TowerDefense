@@ -74,7 +74,7 @@ local function CreateBaseFrame(Properties: Properties)
 		end
 
 		return function() end
-	end, { Properties.Animated, Properties.BackgroundColor :: any })
+	end, { Properties.Animated, Properties.BackgroundColor } :: { unknown })
 
 	return e(Main.Frame, {
 		native = Join({

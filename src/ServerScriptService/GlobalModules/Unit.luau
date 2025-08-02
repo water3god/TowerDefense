@@ -774,7 +774,7 @@ function Unit:UnitIsInRange(OtherUnit: Unit)
 	local Range: number = self:GetProperty("Range")
 	local PositionA = Vector2.new(self.CFrame.X, self.CFrame.Z)
 	local PositionB = Vector2.new(OtherUnit.CFrame.X, OtherUnit.CFrame.Z)
-	return (PositionA - PositionB).Magnitude <= Range
+	return (PositionA - PositionB).Magnitude <= Range / 2
 end
 
 function Unit:GetEnemiesInRange()

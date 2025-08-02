@@ -31,7 +31,12 @@ local Story = {
 		local Frame = e(TipsContext.Context.Provider, {
 			value = Properties.controls.Text,
 		}, {
-			TipsGui = e(Tips),
+			TipsGui = e(Tips, {
+				native = {
+					Size = UDim2.fromScale(0.9, 0.5),
+					Position = UDim2.fromScale(0.5, 0.5),
+				},
+			}),
 		})
 
 		return Frame

@@ -23,6 +23,7 @@ local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
 
 export type Data = {
+	OwnerId: number?,
 	UniqueId: string,
 	UnitName: string,
 	UpgradeData: UnitClient.TotalUnitData,
@@ -49,6 +50,7 @@ export type Data = {
 }
 
 local DefaultValue: Data = {
+	OwnerId = 1,
 	UniqueId = "IOD97208U43RI47U6RJE9i",
 	UnitName = "Pompey",
 	UpgradeData = {
@@ -103,36 +105,61 @@ local function UpgradeProvider(props: Props)
 		local UpgradeTrove = Trove.new()
 		local Unit = props.UnitId and UnitClient.GetUnit(props.UnitId)
 		if Unit then
-			local function Set(EnabledInput: boolean?)
-				local Enabled = true
-				if EnabledInput ~= nil then
-					Enabled = EnabledInput
-				end
+			SetData({
+				OwnerId = Unit.OwnerId,
+				UniqueId = Unit.UniqueId,
+				UnitName = Unit.UnitName,
+				UpgradeData = Unit.UnitData.UnitData,
+				Properties = Unit:GetProperties(),
+				NextProperties = Unit:GetNextProperties(),
+				Trait = Unit.Trait,
+				TotalCost = Unit.TotalCost,
+				Level = Unit.Level,
+				Enabled = true,
+				Priority = Unit.AttackPriority,
+				Abilities = Unit.Abilities,
+			} :: any)
 
-				SetData({
-					UniqueId = Unit.UniqueId,
-					UnitName = Unit.UnitName,
-					UpgradeData = Unit.UnitData.UnitData,
-					Properties = Unit:GetProperties() :: any,
-					NextProperties = Unit:GetNextProperties() :: any,
-					Trait = Unit.Trait,
-					TotalCost = Unit.TotalCost,
-					Level = Unit.Level,
-					Enabled = Enabled,
-					Priority = Unit.AttackPriority,
-					Abilities = Unit.Abilities,
-				})
-			end
-
-			Set()
-
-			UpgradeTrove:Connect(Unit.Upgraded, Set)
-			UpgradeTrove:Connect(Unit.PriorityChanged, Set)
-			UpgradeTrove:Connect(Unit.AbilityUsed, Set)
-			UpgradeTrove:Connect(Unit.PropertyChanged, Set)
+			UpgradeTrove:Connect(Unit.Upgraded, function()
+				SetData(function(Input)
+					return Join(Input, {
+						Properties = Unit:GetProperties(),
+						NextProperties = Unit:GetNextProperties(),
+						Trait = Unit.Trait,
+						TotalCost = Unit.TotalCost,
+						Level = Unit.Level,
+					}) :: any
+				end)
+			end)
+			UpgradeTrove:Connect(Unit.PriorityChanged, function(Priority: UnitInfo.SortType)
+				SetData(function(Input)
+					return Join(Input, {
+						Priority = Priority,
+					}) :: any
+				end)
+			end)
+			UpgradeTrove:Connect(Unit.AbilityUsed, function()
+				SetData(function(Input)
+					return Join(Input, {
+						Abilities = table.clone(Unit.Abilities),
+					}) :: any
+				end)
+			end)
+			UpgradeTrove:Connect(Unit.PropertyChanged, function()
+				SetData(function(Input)
+					return Join(Input, {
+						Properties = Unit:GetProperties(),
+						NextProperties = Unit:GetNextProperties(),
+					}) :: any
+				end)
+			end)
 
 			UpgradeTrove:Connect(Unit.Destroying, function()
-				Set(false)
+				SetData(function(Input)
+					return Join(Input, {
+						Enabled = false,
+					}) :: any
+				end)
 			end)
 		else
 			SetData(Join(Data, {

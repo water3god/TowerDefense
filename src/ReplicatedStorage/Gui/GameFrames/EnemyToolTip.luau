@@ -78,7 +78,7 @@ local function CreateEnemyToolTip(Props: Props)
 				CornerRadius = UDim.new(0.3, 0),
 			}),
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.02,
+				Stroke = 0.015,
 				native = {
 					Color = Color3.fromRGB(127, 32, 165),
 					LineJoinMode = Enum.LineJoinMode.Round,
@@ -101,8 +101,8 @@ local function CreateEnemyToolTip(Props: Props)
 					ZIndex = 2,
 				},
 			}, {
-				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.001,
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.015,
 				}),
 			}),
 		}),
@@ -128,15 +128,19 @@ local function CreateConnected(Props: ConnectedProps)
 				})
 
 				NewTrove:Connect(Enemy.HealthChanged, function(Health: number)
-					SetData(Join(Data, {
-						Health = Health,
-					}) :: any)
+					SetData(function(Current)
+						return Join(Current, {
+							Health = Health,
+						}) :: any
+					end)
 				end)
 
 				NewTrove:Connect(Enemy.MaxHealthChanged, function(MaxHealth: number)
-					SetData(Join(Data, {
-						MaxHealth = MaxHealth,
-					}) :: any)
+					SetData(function(Current)
+						return Join(Current, {
+							MaxHealth = MaxHealth,
+						}) :: any
+					end)
 				end)
 
 				NewTrove:Connect(Enemy.Destroying, NewTrove:WrapClean())
