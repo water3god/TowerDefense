@@ -328,7 +328,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 						continue
 					end
 
-					Frames[Property] = CreatePropertyFrame({
+					Frames[Property] = e(CreatePropertyFrame, {
 						PropertyName = Property :: any,
 						Inital = if Property ~= "Special" then Value else 1,
 						Final = 1,
@@ -343,7 +343,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 		end
 
 		return Frames
-	end, { UpgradeData.UpgradeData, UpgradeData.Level } :: { unknown })
+	end, { UpgradeData.UpgradeData, UpgradeData.Level, UpgradeData.UniqueId } :: { unknown })
 
 	local AbilityFrames = React.useMemo(function()
 		local Frames: { [string]: React.Node } = {}
@@ -363,7 +363,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 		end
 
 		return Frames
-	end, { UpgradeData, OwnerName } :: { unknown })
+	end, { UpgradeData.Abilities, UpgradeData.Level, OwnerName, UpgradeData.UniqueId } :: { unknown })
 
 	local PriorityClick = React.useCallback(function()
 		if OwnerName == Player.Name then
@@ -431,7 +431,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 				HelperFunctions.NumberScaler.ShortenNumber(math.floor(UpgradeData.TotalCost / Constants.CostDivider))
 			)
 		end
-	end, { UpgradeData.TotalCost, InSell :: any })
+	end, { UpgradeData.TotalCost, InSell } :: { unknown })
 
 	local HasNextLevel = React.useMemo(function()
 		if UpgradeData.UpgradeData[UpgradeData.Level + 1] then
