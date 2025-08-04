@@ -73,7 +73,7 @@ local function CreateBaseFrame(Properties: OtherProps)
 		if Properties.UniqueId then
 			Properties.OnClick(Properties.UniqueId)
 		end
-	end, { Properties.UniqueId :: any, Properties.OnClick :: any })
+	end, { Properties.UniqueId, Properties.OnClick } :: { unknown })
 
 	return e(UnitFrame.CreateUnitFrame, {
 		UnitName = if Properties.UnitName and not IsDisabled then Properties.UnitName else "BLANK",

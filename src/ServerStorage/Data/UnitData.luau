@@ -168,11 +168,16 @@ local function DelayAOE(
 		Promise.delay(Delay * Unit.Ratios.FireRate):andThen(function()
 			if Unit.CurrentEnemy then
 				if ShapeData.Type == "Cone" then
-					local UnitToTarget = (Unit.CurrentEnemy.CFrame.Position - Unit.CFrame.Position).Unit
+					-- Ignore Y axis for cone calculations
+					local UnitPos = Vector3.new(Unit.CFrame.Position.X, 0, Unit.CFrame.Position.Z)
+					local TargetPos =
+						Vector3.new(Unit.CurrentEnemy.CFrame.Position.X, 0, Unit.CurrentEnemy.CFrame.Position.Z)
+					local UnitToTarget = (TargetPos - UnitPos).Unit
 					local ConeThreshold = math.cos(math.rad(ShapeData.Size / 2))
 
 					for _, Enemy in pairs(Unit:GetEnemiesInRange()) do
-						local UnitToEnemy = (Enemy.CFrame.Position - Unit.CFrame.Position).Unit
+						local EnemyPos = Vector3.new(Enemy.CFrame.Position.X, 0, Enemy.CFrame.Position.Z)
+						local UnitToEnemy = (EnemyPos - UnitPos).Unit
 						local DotProduct = UnitToTarget:Dot(UnitToEnemy)
 
 						if DotProduct >= ConeThreshold then
@@ -180,10 +185,15 @@ local function DelayAOE(
 						end
 					end
 				elseif ShapeData.Type == "Line" then
-					local UnitToTarget = (Unit.CurrentEnemy.CFrame.Position - Unit.CFrame.Position).Unit
+					-- Ignore Y axis for line calculations
+					local UnitPos = Vector3.new(Unit.CFrame.Position.X, 0, Unit.CFrame.Position.Z)
+					local TargetPos =
+						Vector3.new(Unit.CurrentEnemy.CFrame.Position.X, 0, Unit.CurrentEnemy.CFrame.Position.Z)
+					local UnitToTarget = (TargetPos - UnitPos).Unit
 
 					for _, Enemy in pairs(Unit:GetEnemiesInRange()) do
-						local UnitToEnemy = Enemy.CFrame.Position - Unit.CFrame.Position
+						local EnemyPos = Vector3.new(Enemy.CFrame.Position.X, 0, Enemy.CFrame.Position.Z)
+						local UnitToEnemy = EnemyPos - UnitPos
 						local ProjectionLength = UnitToTarget:Dot(UnitToEnemy)
 						local RejectionMagnitude = math.sqrt(UnitToEnemy.Magnitude ^ 2 - ProjectionLength ^ 2)
 

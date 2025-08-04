@@ -253,7 +253,7 @@ local function CreateMainStory(Properties: Properties)
 			})
 		end
 		return FrameTable
-	end, { Difficulty })
+	end, { CurrentMap, Stage, Difficulty } :: { unknown })
 
 	local MapData = React.useMemo(function()
 		local Data: { [string]: React.Node } = {}
@@ -261,7 +261,9 @@ local function CreateMainStory(Properties: Properties)
 			local Enabled: boolean = nil
 
 			if MapInfo.Prerequisite then
-				if StoryData.CompletedMaps[MapInfo.Prerequisite] then
+				local PrerequisiteData = StoryData.CompletedMaps[MapInfo.Prerequisite]
+				local CurrentMapInfo = GameInfo.GetMapFromId(MapInfo.MapId)
+				if PrerequisiteData and CurrentMapInfo and PrerequisiteData[#CurrentMapInfo.LevelInfo] then
 					Enabled = true
 				else
 					Enabled = false

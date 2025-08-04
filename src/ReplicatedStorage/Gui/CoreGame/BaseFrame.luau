@@ -35,6 +35,7 @@ export type Properties = {
 	Hidden: boolean?,
 
 	Animated: boolean?,
+	Shine: boolean?,
 
 	BackgroundColor: ColorSequence?,
 	NameColor: ColorSequence?,
@@ -76,6 +77,28 @@ local function CreateBaseFrame(Properties: Properties)
 		return function() end
 	end, { Properties.Animated, Properties.BackgroundColor } :: { unknown })
 
+	local Shine, SetShine = React.useBinding(-4)
+
+	React.useEffect(function()
+		if Properties.Shine then
+			local Connection = RunService.PostSimulation:Connect(function(Delta: number)
+				local NewShine = Shine:getValue() + Delta * 2
+
+				if NewShine > 4 then
+					SetShine(NewShine - 8)
+				else
+					SetShine(NewShine)
+				end
+			end)
+
+			return function()
+				Connection:Disconnect()
+			end
+		end
+
+		return function() end
+	end, { Properties.Shine })
+
 	return e(Main.Frame, {
 		native = Join({
 			Position = Properties.Position or UDim2.fromScale(0.5, 0.5),
@@ -93,11 +116,54 @@ local function CreateBaseFrame(Properties: Properties)
 				[React.Event.MouseButton1Click] = Properties.OnClick,
 			},
 		}, {
+			ShineWrap = Properties.Shine and e(Main.Frame, {
+				native = {
+					BackgroundTransparency = 0,
+					Size = UDim2.fromScale(0.86, 0.86),
+					ZIndex = 0,
+				},
+			}, {
+				UICorner = e("UICorner", {
+					CornerRadius = UDim.new(0.05, 0),
+				}),
+				Shine = e("UIGradient", {
+					Color = Properties.BackgroundColor or ColorSequence.new(Color3.new(1, 1, 1)),
+					Transparency = Shine:map(function(Value: number)
+						local first = math.clamp(Value - 0.1, 0, 1)
+						local second = math.clamp(Value + 0.1, 0, 1)
+
+						local FirstKeypoint = NumberSequenceKeypoint.new(first, 1)
+
+						local SecondKeypoint = NumberSequenceKeypoint.new(second, 1)
+
+						local Keypoints = {
+							FirstKeypoint,
+							SecondKeypoint,
+						}
+
+						if Value >= 0 and Value <= 1 then
+							table.insert(Keypoints, 2, NumberSequenceKeypoint.new(Value, 0.5))
+						end
+
+						if FirstKeypoint.Time ~= 0 then
+							table.insert(Keypoints, 1, NumberSequenceKeypoint.new(0, 1))
+						end
+
+						if SecondKeypoint.Time ~= 1 then
+							table.insert(Keypoints, NumberSequenceKeypoint.new(1, 1))
+						end
+
+						return NumberSequence.new(Keypoints)
+					end),
+					Rotation = 45,
+				}),
+			}),
+
 			BackgroundImage = e(Main.ImageLabel, {
 				native = {
 					Position = UDim2.fromScale(0.5, 0.5),
 					Size = UDim2.fromScale(1, 1),
-					ZIndex = 0,
+					ZIndex = -1,
 					Image = if Properties.Hovered then HighlightedBackgroundImage else DefaultBackgroundImage,
 					ImageTransparency = if Properties.Hidden then 0.5 else 0,
 				},

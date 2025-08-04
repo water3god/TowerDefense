@@ -10,17 +10,20 @@ export type RarityInfo = {
 	Color: ColorSequence, -- Color of the main text
 	StrokeColor: ColorSequence, -- color of the stroke of the main text;
 	BackgroundColor: ColorSequence, -- color of the background frame (small frame only);
+	Animate: boolean,
 }
 
 local RarityInfo: { [Rarity]: RarityInfo } = {
 	BLANK = {
 		Priority = 0,
+		Value = 0,
 		Color = ColorSequence.new(Color3.new(1, 1, 1)),
 		StrokeColor = ColorSequence.new(Color3.new(0, 0, 0)),
 		BackgroundColor = ColorSequence.new(
 			Color3.new(0.258824, 0.043137, 0.384314),
 			Color3.new(0.564706, 0.113725, 0.827451)
 		),
+		Animate = false,
 	},
 	Common = {
 		Priority = 1,
@@ -28,6 +31,7 @@ local RarityInfo: { [Rarity]: RarityInfo } = {
 		Color = ColorSequence.new(Color3.new(0.9, 0.9, 0.9)),
 		StrokeColor = ColorSequence.new(Color3.new(0.2, 0.2, 0.2)),
 		BackgroundColor = ColorSequence.new(Color3.new(0.7, 0.7, 0.7)),
+		Animate = false,
 	},
 	Rare = {
 		Priority = 2,
@@ -35,6 +39,7 @@ local RarityInfo: { [Rarity]: RarityInfo } = {
 		Color = ColorSequence.new(Color3.new(0.1, 0.8, 0.1)),
 		StrokeColor = ColorSequence.new(Color3.new(0.05, 0.4, 0.05)),
 		BackgroundColor = ColorSequence.new(Color3.new(0.2, 0.9, 0.2)),
+		Animate = false,
 	},
 	Epic = {
 		Priority = 3,
@@ -42,6 +47,7 @@ local RarityInfo: { [Rarity]: RarityInfo } = {
 		Color = ColorSequence.new(Color3.new(0.1, 0.5, 1)),
 		StrokeColor = ColorSequence.new(Color3.new(0.05, 0.25, 0.5)),
 		BackgroundColor = ColorSequence.new(Color3.new(0.2, 0.6, 1)),
+		Animate = false,
 	},
 	Legendary = {
 		Priority = 4,
@@ -53,6 +59,7 @@ local RarityInfo: { [Rarity]: RarityInfo } = {
 		}),
 		StrokeColor = ColorSequence.new(Color3.new(0.5, 0.4, 0.05), Color3.new(0.3, 0.25, 0.02)),
 		BackgroundColor = ColorSequence.new(Color3.new(0.95, 0.85, 0.15), Color3.new(0.75, 0.65, 0.08)),
+		Animate = true,
 	},
 	Mythic = {
 		Priority = 5,
@@ -72,6 +79,7 @@ local RarityInfo: { [Rarity]: RarityInfo } = {
 			ColorSequenceKeypoint.new(0.5, Color3.new(0.6, 0.1, 0.7)),
 			ColorSequenceKeypoint.new(1, Color3.new(0.85, 0.15, 0.95)),
 		}),
+		Animate = true,
 	},
 	Godly = {
 		Priority = 6,
@@ -94,6 +102,7 @@ local RarityInfo: { [Rarity]: RarityInfo } = {
 			ColorSequenceKeypoint.new(0.7, Color3.new(0.9, 0.75, 0.1)),
 			ColorSequenceKeypoint.new(1, Color3.new(0.85, 0.7, 0.15)),
 		}),
+		Animate = true,
 	},
 }
 

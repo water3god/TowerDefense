@@ -27,6 +27,7 @@ export type Properties = {
 	Hovered: boolean?,
 	Trait: string?,
 	Hidden: boolean?,
+	Shine: boolean?,
 
 	UnitImage: string,
 	Color: ColorSequence?,
@@ -82,6 +83,8 @@ local function CreateUnitFrameRaw(Properties: Properties)
 		NameColor = Properties.Color,
 		NameStrokeColor = Properties.StrokeColor,
 
+		Shine = Properties.Shine,
+
 		Disabled = Properties.Disabled,
 		Hovered = Properties.Hovered,
 		OnClick = Properties.OnClick,
@@ -131,6 +134,7 @@ local function CreateUnitFrame(Properties: PropertiesMain)
 		BackgroundColor = RarityData.BackgroundColor,
 		UnitImage = UnitData.Image or DefaultImage,
 		Hidden = Properties.Hidden,
+		Shine = RarityData.Animate,
 
 		Disabled = Properties.Disabled,
 		Hovered = Properties.Hovered,

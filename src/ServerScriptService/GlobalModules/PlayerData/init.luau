@@ -800,9 +800,13 @@ function PlayerData:OwnsMap(Map: string)
 	else
 		local MapData = GameInfo.GetMapFromId(Map)
 		if MapData then
-			if not MapData.Prerequisite then
-				return true
-			elseif CompletedMaps[MapData.Prerequisite] then
+			if MapData.Prerequisite then
+				local PrerequisiteData = CompletedMaps[MapData.Prerequisite]
+				local CurrentMapInfo = GameInfo.GetMapFromId(MapData.Prerequisite)
+				if PrerequisiteData and CurrentMapInfo and PrerequisiteData[#CurrentMapInfo.LevelInfo] then
+					return true
+				end
+			else
 				return true
 			end
 		end
