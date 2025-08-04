@@ -16,6 +16,8 @@ local Gui = ReplicatedStorage.Gui
 local Traits = Gui.Traits
 local TraitsFrame = require(Traits.TraitsFrame)
 
+local PurchaseContext = require(ReplicatedStorage.Gui.Store.PurchaseContext)
+
 -- Controls --
 local controls = {}
 
@@ -23,9 +25,9 @@ local controls = {}
 local Story = {
 	react = React,
 	reactRoblox = ReactRoblox,
-	controls = controls,
+	--controls = controls,
 	story = function()
-		local Frame = e(TraitsFrame, {})
+		local Frame = e(PurchaseContext.Provider, {}, e(TraitsFrame, {}))
 		return Frame
 	end,
 }

@@ -45,6 +45,8 @@ local function CreateResourceFrame(props: ResourceProps)
 		OnClick = props.OnClick,
 		MainImage = ResourceData.Image,
 
+		Shine = RarityData.Animate,
+
 		BackgroundColor = RarityData.BackgroundColor,
 		NameColor = RarityData.Color,
 		NameStrokeColor = RarityData.StrokeColor,

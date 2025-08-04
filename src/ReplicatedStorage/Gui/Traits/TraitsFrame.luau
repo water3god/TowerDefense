@@ -34,6 +34,7 @@ local Hooks = require(CoreGame.Hooks)
 local InventoryFolder = Gui.Inventory
 local InventoryContext = require(InventoryFolder.InventoryContext)
 local PromptContext = require(InventoryFolder.PromptContext)
+local ProductFrame = require(InventoryFolder.ProductFrame)
 
 local UnitFrame = require(InventoryFolder.UnitFrame)
 local ResourceFrame = require(InventoryFolder.ResourceFrame)
@@ -47,22 +48,29 @@ local TraitsInfo = require(TraitsFolder.TraitsInfo)
 local WarningFolder = Gui.Warning
 local WarningContext = require(WarningFolder.WarningContext)
 
+local Store = Gui.Store
+local PurchaseContext = require(Store.PurchaseContext)
+
 local Shared = ReplicatedStorage.Shared
 local Traits = require(Shared.Traits)
 local RarityInfo = require(Shared.RarityInfo)
 local Types = require(Shared.Types)
+local ProductInfo = require(Shared.ProductInfo)
 
 export type Properties = {
-	SetVisible: () -> (),
+	SetVisible: (() -> ())?,
 	CloseClick: (() -> ())?,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
 
+local Products = { 3348443298 }
+
 local function CreateTraitsFrame(props: Properties)
 	local InventoryData = React.useContext(InventoryContext.Context)
 	local PromptData = React.useContext(PromptContext.Context)
 	local WarningData = React.useContext(WarningContext.Context)
+	local PurchaseData = React.useContext(PurchaseContext.Context)
 
 	local Unit, SetUnit = React.useState(nil :: Types.VisualUnitData?)
 	local Count, SetCount = React.useState(0)
@@ -179,6 +187,29 @@ local function CreateTraitsFrame(props: Properties)
 			SetUnit(table.clone(Unit))
 		end
 	end, { Unit })
+
+	local ProductFrames = React.useMemo(function()
+		local Frames: { [string]: React.Node } = {}
+
+		if not PurchaseData.Loaded then
+			return Frames
+		end
+
+		for _, ProductId in ipairs(Products) do
+			local ProductData, IsGamepass = ProductInfo.GetProductFromIdOnly(ProductId)
+
+			if ProductData and IsGamepass ~= nil then
+				Frames["Product" .. ProductId] = e(ProductFrame, {
+					ProductId = ProductId,
+					Count = 0,
+					IsGamepass = IsGamepass,
+					Purchaseable = true,
+				})
+			end
+		end
+
+		return Frames
+	end, { PurchaseData.Loaded })
 
 	return e(Main.Frame, {
 		native = Join({
@@ -317,6 +348,60 @@ local function CreateTraitsFrame(props: Properties)
 			Position = UDim2.fromScale(1, 0),
 			Size = UDim2.fromScale(0.2, 0.3),
 			OnClick = props.CloseClick,
+		}),
+		RightContainer = e(Main.Frame, {
+			native = {
+				BackgroundTransparency = 0,
+				Size = UDim2.fromScale(0.55, 0.7),
+				Position = UDim2.fromScale(1.32, 0.5),
+				BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
+			},
+		}, {
+			MainProductFrame = e(Main.ScrollingFrame, {
+				BarSize = 0.01,
+				native = {
+					Position = UDim2.fromScale(0.5, 0.51),
+					Size = UDim2.fromScale(0.95, 0.9),
+					AutomaticCanvasSize = Enum.AutomaticSize.Y,
+				},
+			}, {
+				UIGridLayout = e("UIGridLayout", {
+					SortOrder = Enum.SortOrder.LayoutOrder,
+					CellSize = UDim2.fromScale(0.5, 0.3),
+					CellPadding = UDim2.fromScale(0, 0),
+					FillDirection = Enum.FillDirection.Horizontal,
+					HorizontalAlignment = Enum.HorizontalAlignment.Left,
+					VerticalAlignment = Enum.VerticalAlignment.Top,
+				}),
+			}, ProductFrames),
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.02, 0),
+			}),
+			InnerFrame = e(Main.Frame, {
+				native = {
+					Position = UDim2.fromScale(0.5, 0.51),
+					Size = UDim2.fromScale(0.9, 0.9),
+				},
+			}, {
+				UICorner = e("UICorner", {
+					CornerRadius = UDim.new(0.015, 0),
+				}),
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Color = Color3.new(0.388235, 0.101961, 0.486275),
+					Stroke = 0.004,
+					native = {
+						Transparency = 0.1,
+						LineJoinMode = Enum.LineJoinMode.Round,
+					},
+				}),
+			}),
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Color = Color3.new(0.866667, 0.866667, 0.866667),
+				Stroke = 0.002,
+				native = {
+					LineJoinMode = Enum.LineJoinMode.Round,
+				},
+			}),
 		}),
 		InnerFrame = e(Main.Frame, {
 			native = {
