@@ -118,7 +118,7 @@ local function ApplyBuff(Unit: UnitModule.Unit, BuffType: string, Ratio: number,
 		end)
 	end
 
-	BuffTrove:Add(function()
+	BuffTrove:Connect(Unit.Destroying, function()
 		for _, OtherUnit in pairs(HandlingUnits) do
 			local Name = string.format("Buff_%s_%s", Unit.UnitName, BuffType)
 			OtherUnit:CancelRatio(Name, Unit.UniqueId)
@@ -138,7 +138,9 @@ local function ApplyBuff(Unit: UnitModule.Unit, BuffType: string, Ratio: number,
 
 	BuffTrove:Connect(Unit.Upgraded, BuffTrove:WrapClean())
 
-	return BuffTrove:WrapClean()
+	return function()
+		task.defer(BuffTrove.Destroy, BuffTrove)
+	end
 end
 
 local function DelayAttack(Unit: UnitModule.Unit, Damage: number, Delay: number, Name: string?)

@@ -705,6 +705,7 @@ function Unit:CancelRatio(Name: string, SubName: string)
 		if self.RatioData[Name][SubName] then
 			self.RatioData[Name][SubName] = nil
 			self:_CalculateRatio()
+
 			RatioEvent.FireList(self.ReplicateTo, self.UniqueId, Name, SubName, nil)
 		end
 		if not next(self.RatioData[Name]) then

@@ -1368,7 +1368,12 @@ RatioEvent.SetCallback(
 				end
 			else
 				Unit:CancelPromise(PromiseName)
-				Unit.RatioData[Name] = nil
+				if Unit.RatioData[Name] and Unit.RatioData[Name][SubName] then
+					Unit.RatioData[Name][SubName] = nil
+				end
+				if not next(Unit.RatioData[Name]) then
+					Unit.RatioData[Name] = nil
+				end
 			end
 			Unit:_CalculateRatio()
 		end

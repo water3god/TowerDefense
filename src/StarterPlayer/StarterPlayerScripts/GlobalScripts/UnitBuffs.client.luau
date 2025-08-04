@@ -21,7 +21,6 @@ local function HandleUnit(Unit: UnitClient.Unit)
 	local Root = ReactRoblox.createRoot(Instance.new("Folder"))
 
 	local function HandleAll()
-		Root:unmount()
 		Root:render(ReactRoblox.createPortal(
 			e("BillboardGui", {
 				Adornee = Unit.Root,

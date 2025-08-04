@@ -54,11 +54,9 @@ local function CreateBuff(props: BuffProps)
 	end, { props.Buff, props.Value } :: { unknown })
 
 	local BuffPercent = React.useMemo(function()
-		if props.Value == 1 then
-			return "0%"
-		end
+		local Value = if props.Buff == "FireRate" then 1 / props.Value else props.Value
 
-		return string.format("%d%%", (props.Value - 1) * 100)
+		return string.format("%d%%", (Value - 1) * 100)
 	end, { props.Value })
 
 	return tonumber(BuffNumber) > 0
