@@ -102,6 +102,10 @@ local function CreateMainFrame(props: any)
 			ZIndex = 100,
 		}, props.native),
 	}, {
+		UISizeConstraint = e("UISizeConstraint", {
+			MinSize = Vector2.new(300, 100),
+			MaxSize = Vector2.new(600, 200),
+		}),
 		UIListLayout = e("UIListLayout", {
 			FillDirection = Enum.FillDirection.Vertical,
 			HorizontalAlignment = Enum.HorizontalAlignment.Center,

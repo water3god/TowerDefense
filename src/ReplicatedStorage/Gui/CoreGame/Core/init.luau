@@ -1021,7 +1021,7 @@ local function Render()
 								if NewData[2] and table.find(VisibleFrames[NewData[2]], "Bottom") then
 									return UDim2.fromScale(0.5, 1)
 								else
-									return UDim2.fromScale(0.5, 1):Lerp(UDim2.fromScale(0.5, 1.2), NewData[1])
+									return UDim2.fromScale(0.5, 1):Lerp(UDim2.fromScale(0.5, 1.3), NewData[1])
 								end
 							end),
 					},

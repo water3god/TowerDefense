@@ -620,13 +620,15 @@ local function CreateEndFrameButton(props)
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
 			MinSize = Vector2.new(230, 60),
-			MaxSize = Vector2.new(600, 150),
+			MaxSize = Vector2.new(600, 170),
+		}),
+		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+			AspectRatio = 3.555,
 		}),
 		Button = e(Main.Animateables.ImageButton, {
 			native = {
 				Image = "rbxassetid://105684513155812",
-				AnchorPoint = Vector2.new(0.5, 1),
-				Position = UDim2.fromScale(0.5, -0.3),
+				Position = UDim2.fromScale(0.5, -0.8),
 				Size = UDim2.fromScale(0.9, 0.4),
 				[React.Event.MouseButton1Click] = function()
 					props.SetVisible(true)

@@ -129,8 +129,8 @@ local function CreateBaseFrame(Properties: Properties)
 				Shine = e("UIGradient", {
 					Color = Properties.BackgroundColor or ColorSequence.new(Color3.new(1, 1, 1)),
 					Transparency = Shine:map(function(Value: number)
-						local first = math.clamp(Value - 0.1, 0, 1)
-						local second = math.clamp(Value + 0.1, 0, 1)
+						local first = math.clamp(Value - 0.15, 0, 1)
+						local second = math.clamp(Value + 0.15, 0, 1)
 
 						local FirstKeypoint = NumberSequenceKeypoint.new(first, 1)
 
@@ -142,7 +142,7 @@ local function CreateBaseFrame(Properties: Properties)
 						}
 
 						if Value >= 0 and Value <= 1 then
-							table.insert(Keypoints, 2, NumberSequenceKeypoint.new(Value, 0.5))
+							table.insert(Keypoints, 2, NumberSequenceKeypoint.new(Value, 0.3))
 						end
 
 						if FirstKeypoint.Time ~= 0 then
