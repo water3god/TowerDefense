@@ -252,9 +252,18 @@ local function CreateUpgradeFrame(Properties: Properties)
 
 	React.useEffect(function()
 		if UpgradeData.OwnerId then
-			HelperFunctions.GetNameFromIdAsync(UpgradeData.OwnerId):andThen(function(Name: string)
-				SetOwnerName(Name)
-			end)
+			local function NamePromise()
+				return HelperFunctions.GetNameFromIdAsync(UpgradeData.OwnerId)
+					:andThen(function(Name: string)
+						SetOwnerName(Name)
+					end)
+					:catch(function()
+						task.wait(3)
+						return NamePromise()
+					end)
+			end
+
+			NamePromise()
 		else
 			SetOwnerName(nil)
 		end

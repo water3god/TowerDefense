@@ -710,6 +710,16 @@ function UnitModule:ApplyDetail()
 		end
 		self.AdornmentLevel = AdornmentLevel
 		self.Adornment = SetAdornment(self.Character, self.UnitName, self.Level)
+
+		if self.Adornment then
+			for _, BasePart in ipairs(self.Adornment:GetDescendants()) do
+				if BasePart:IsA("BasePart") then
+					BasePart.CanCollide = false
+					BasePart.CanQuery = false
+					BasePart.CanTouch = false
+				end
+			end
+		end
 	end
 end
 

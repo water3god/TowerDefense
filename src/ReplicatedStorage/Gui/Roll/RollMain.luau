@@ -3,7 +3,11 @@
 -- By Wa1er_God --
 
 -- Services --
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local MarketplaceService = game:GetService("MarketplaceService")
+
+local LocalPlayer = Players.LocalPlayer
 
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
@@ -26,6 +30,7 @@ local AnimatedGradient = require(CoreGame.AnimatedGradient)
 
 local Inventory = Gui.Inventory
 local InventoryContext = require(Inventory.InventoryContext)
+local ProductFrame = require(Inventory.ProductFrame)
 
 local Roll = Gui.Roll
 local RollContext = require(Roll.RollContext)
@@ -37,6 +42,9 @@ local WarningContext = require(Warning.WarningContext)
 local GameFrames = Gui.GameFrames
 local CurrencyContext = require(GameFrames.Currency)
 
+local Store = Gui.Store
+local PurchaseContext = require(Store.PurchaseContext)
+
 local Client = ReplicatedStorage.Client
 local LobbyClient = Client.LobbyClient
 local RollService = require(LobbyClient.RollService)
@@ -47,6 +55,7 @@ local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
 local RarityInfo = require(Shared.RarityInfo)
 local Constants = require(Shared.Constants)
+local ProductInfo = require(Shared.ProductInfo)
 
 export type Properties = {
 	CloseClick: () -> (),
@@ -117,7 +126,7 @@ local function CreateUnitViewport(props: ViewportProps)
 		}),
 		RarityLabel = e(Main.TextLabel, {
 			native = {
-				Size = UDim2.fromScale(0.8, 0.15),
+				Size = UDim2.fromScale(0.75, 0.10),
 				Position = UDim2.fromScale(0.5, 0.9),
 				Text = Data.Rarity or "",
 				ZIndex = 2,
@@ -136,11 +145,17 @@ local function CreateUnitViewport(props: ViewportProps)
 	}, props.children)
 end
 
+local Products = {
+	3348441372,
+	3348441586,
+}
+
 local function CreateRollMain(props: Properties)
 	local RollData = React.useContext(RollContext.Context)
 	local WarningData = React.useContext(WarningContext.Context)
 	local CurrencyData = React.useContext(CurrencyContext.Context)
 	local InventoryData = React.useContext(InventoryContext.Context)
+	local PurchaseData = React.useContext(PurchaseContext.Context)
 
 	local RollMultiplier, SetRollMultiplier = React.useState(1)
 
@@ -202,6 +217,7 @@ local function CreateRollMain(props: Properties)
 
 		if CurrencyData.Value < NewCost then
 			WarningData.Add(string.format("You are missing %u Gold!", NewCost - CurrencyData.Value))
+			MarketplaceService:PromptGamePassPurchase(LocalPlayer, 3348441372)
 			return
 		end
 
@@ -229,6 +245,29 @@ local function CreateRollMain(props: Properties)
 	local UnitVisCloseClick = React.useCallback(function()
 		SetUnitInfoVis(false)
 	end, {})
+
+	local ProductFrames = React.useMemo(function()
+		local Frames: { [string]: React.Node } = {}
+
+		if not PurchaseData.Loaded then
+			return Frames
+		end
+
+		for _, ProductId in ipairs(Products) do
+			local ProductData, IsGamepass = ProductInfo.GetProductFromIdOnly(ProductId)
+
+			if ProductData and IsGamepass ~= nil then
+				Frames["Product" .. ProductId] = e(ProductFrame, {
+					ProductId = ProductId,
+					Count = 0,
+					IsGamepass = IsGamepass,
+					Purchaseable = true,
+				})
+			end
+		end
+
+		return Frames
+	end, { PurchaseData.Loaded })
 
 	return e(Main.ImageLabel, {
 		native = Join({
@@ -327,7 +366,7 @@ local function CreateRollMain(props: Properties)
 		SummonCountButton = e(Main.Animateables.TextButton, {
 			native = {
 				Size = UDim2.fromScale(0.15, 0.125),
-				Position = UDim2.fromScale(0.9, 0.7),
+				Position = UDim2.fromScale(0.9, 0.725),
 				BackgroundTransparency = 0,
 				Text = "",
 				AutoLocalize = false,
@@ -336,10 +375,19 @@ local function CreateRollMain(props: Properties)
 			},
 		}, {
 			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.2, 0),
+				CornerRadius = UDim.new(0.16, 0),
 			}),
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 				AspectRatio = 1,
+			}),
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.04,
+				Color = Color3.new(0.376471, 0.066667, 0.564706),
+				native = {
+					LineJoinMode = Enum.LineJoinMode.Round,
+					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+					Transparency = 0.5,
+				},
 			}),
 			Label = e(Main.TextLabel, {
 				native = {
@@ -354,9 +402,57 @@ local function CreateRollMain(props: Properties)
 		}),
 		RightContainer = e(Main.Frame, {
 			native = {
-				Size = UDim2.fromScale(0.4, 0.8),
-				Position = UDim2.fromScale(1.25, 0.5),
+				BackgroundTransparency = 0,
+				Size = UDim2.fromScale(0.3, 0.8),
+				Position = UDim2.fromScale(1.2, 0.5),
+				BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
 			},
+		}, {
+			MainProductFrame = e(Main.ScrollingFrame, {
+				BarSize = 0.01,
+				native = {
+					Position = UDim2.fromScale(0.5, 0.51),
+					Size = UDim2.fromScale(0.95, 0.9),
+					AutomaticCanvasSize = Enum.AutomaticSize.Y,
+				},
+			}, {
+				UIGridLayout = e("UIGridLayout", {
+					SortOrder = Enum.SortOrder.LayoutOrder,
+					CellSize = UDim2.fromScale(0.5, 0.3),
+					CellPadding = UDim2.fromScale(0, 0),
+					FillDirection = Enum.FillDirection.Horizontal,
+					HorizontalAlignment = Enum.HorizontalAlignment.Left,
+					VerticalAlignment = Enum.VerticalAlignment.Top,
+				}),
+			}, ProductFrames),
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.02, 0),
+			}),
+			InnerFrame = e(Main.Frame, {
+				native = {
+					Position = UDim2.fromScale(0.5, 0.51),
+					Size = UDim2.fromScale(0.9, 0.9),
+				},
+			}, {
+				UICorner = e("UICorner", {
+					CornerRadius = UDim.new(0.03, 0),
+				}),
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Color = Color3.new(0.388235, 0.101961, 0.486275),
+					Stroke = 0.007,
+					native = {
+						Transparency = 0.1,
+						LineJoinMode = Enum.LineJoinMode.Round,
+					},
+				}),
+			}),
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Color = Color3.new(0.866667, 0.866667, 0.866667),
+				Stroke = 0.002,
+				native = {
+					LineJoinMode = Enum.LineJoinMode.Round,
+				},
+			}),
 		}),
 		TimeLeft = e(Main.TextLabel, {
 			native = {

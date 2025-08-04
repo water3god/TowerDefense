@@ -17,6 +17,8 @@ local Roll = Gui.Roll
 local RollMain = require(Roll.RollMain)
 local RollContext = require(Roll.RollContext)
 
+local PurchaseContext = require(ReplicatedStorage.Gui.Store.PurchaseContext)
+
 -- Controls --
 local controls = {}
 
@@ -26,20 +28,22 @@ local Story = {
 	reactRoblox = ReactRoblox,
 	--controls = controls,
 	story = function(Properties)
-		local Roll = e(RollContext.Context.Provider, {
-			value = {
-				Units = { "Augustus", "Trajan", "Julius Caesar" },
-				TimeStart = workspace:GetServerTimeNow(),
-				TotalTime = workspace:GetServerTimeNow() + 30,
-			},
-		}, {
-			RollMain = e(RollMain, {
-				CloseClick = function() end,
-				SetVisible = function() end,
+		local RollFrame = e(PurchaseContext.Provider, {}, {
+			RollProvider = e(RollContext.Context.Provider, {
+				value = {
+					Units = { "Augustus", "Trajan", "Julius Caesar" },
+					TimeStart = workspace:GetServerTimeNow(),
+					TotalTime = workspace:GetServerTimeNow() + 30,
+				},
+			}, {
+				RollMain = e(RollMain, {
+					CloseClick = function() end,
+					SetVisible = function() end,
+				}),
 			}),
 		})
 
-		return Roll
+		return RollFrame
 	end,
 }
 

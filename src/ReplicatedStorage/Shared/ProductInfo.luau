@@ -99,15 +99,15 @@ local function GetProductFromId(Data: { Id: number, IsGamepass: boolean }): (Pro
 	return
 end
 
-local function GetProductFromIdOnly(Id: number): (ProductData?, number?)
+local function GetProductFromIdOnly(Id: number): (ProductData?, boolean?)
 	for ProductId, OtherData in pairs(ProductInfo) do
 		if Id == ProductId then
-			return OtherData, ProductId
+			return OtherData, false
 		end
 	end
 	for ProductId, OtherData in pairs(GamepassInfo) do
 		if Id == ProductId then
-			return OtherData, ProductId
+			return OtherData, true
 		end
 	end
 

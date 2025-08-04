@@ -19,9 +19,16 @@ local Hooks = require(CoreGame.Hooks)
 
 export type ProductInfo = PurchaseService.ProductInfo
 
+export type Data = {
+	ProductInfo: PurchaseService.ProductInfo,
+	Owned: boolean?,
+	Rarity: string,
+}
+
 local Default: {
 	ProductData: { [number]: {
 		ProductInfo: PurchaseService.ProductInfo,
+		Owned: boolean?,
 		Rarity: string,
 	} },
 	GamepassData: { [number]: {

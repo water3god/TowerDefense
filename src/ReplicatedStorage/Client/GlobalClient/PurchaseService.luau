@@ -7,6 +7,7 @@
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 
 local Player = Players.LocalPlayer
 
@@ -156,7 +157,7 @@ task.spawn(function()
 		}
 	end
 
-	local Ids = GamepassIds or GamepassSynced:Wait()
+	local Ids = if RunService:IsRunning() then GamepassIds or GamepassSynced:Wait() else {}
 	for GamepassId, Data in pairs(ProductInfo.GamepassInfo) do
 		Module.GamepassData[GamepassId] = {
 			ProductInfo = MarketplaceService:GetProductInfo(GamepassId, Enum.InfoType.GamePass),
