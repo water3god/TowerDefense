@@ -77,6 +77,7 @@ local Settings = require(SettingFolder.Settings)
 
 local StoreFolder = Gui.Store
 local Store = require(StoreFolder.Store)
+local Boosts = require(StoreFolder.Boosts)
 
 local TipsFolder = Gui.Tips
 local TipsGui = require(TipsFolder.TipsGui)
@@ -1200,6 +1201,7 @@ local function Render()
 					OnCloseClick(Constants.SETTINGS)
 				end,
 			}),
+			BoostsFrame = e(Boosts.Connected),
 			WarningGui = e(NewGui, {
 				DisplayOrder = 1001,
 			}, {

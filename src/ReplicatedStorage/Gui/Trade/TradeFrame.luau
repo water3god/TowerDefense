@@ -131,8 +131,8 @@ local function TradeMain(Properties: Properties)
 			for _, Unit in ipairs(TradeData.YourUnits) do
 				Frames["Unit" .. Unit.UniqueId] = e(UnitFrame.CreateUnitFrame, {
 					UnitName = Unit.Unit,
-					Trait = Unit.Trait,
 					Level = Unit.Level,
+					Trait = Unit.Trait,
 					native = {
 						LayoutOrder = LayoutOrder(),
 					},

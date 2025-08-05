@@ -13,7 +13,7 @@ local e = React.createElement
 local InventoryService = require(ReplicatedStorage.Client.GlobalClient.InventoryService)
 
 export type Value = {
-	Units: { [number]: { UniqueId: string, Unit: string, Level: number } },
+	Units: { [number]: { UniqueId: string, Unit: string, Level: number, Trait: string? } },
 	GlobalLevel: number,
 	XP: number,
 	NeededXP: number,
@@ -45,6 +45,7 @@ local function Provider(props)
 					UniqueId = Id,
 					Unit = Data.Unit,
 					Level = Data.Level,
+					Trait = Data.Trait,
 				}
 			end
 
@@ -70,19 +71,13 @@ local function Provider(props)
 			Update()
 		end)
 
-		local Connection = InventoryService.UnitEquipChanged:Connect(function()
-			Update()
-		end)
-
-		local Connection1 = InventoryService.LevelChanged:Connect(function()
-			Update()
-		end)
-
-		local Connection2 = InventoryService.XPChanged:Connect(function()
-			Update()
-		end)
+		local Connection3 = InventoryService.UnitChanged:Connect(Update)
+		local Connection = InventoryService.UnitEquipChanged:Connect(Update)
+		local Connection1 = InventoryService.LevelChanged:Connect(Update)
+		local Connection2 = InventoryService.XPChanged:Connect(Update)
 
 		return function()
+			Connection3:Disconnect()
 			Connection:Disconnect()
 			Connection1:Disconnect()
 			Connection2:Disconnect()

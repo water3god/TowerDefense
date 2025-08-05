@@ -148,6 +148,11 @@ end
 local Products = {
 	3348441372,
 	3348441586,
+	3348442115,
+	3348442394,
+	3348443298,
+	3359651817,
+	3359652520,
 }
 
 local function CreateRollMain(props: Properties)
@@ -253,7 +258,7 @@ local function CreateRollMain(props: Properties)
 			return Frames
 		end
 
-		for _, ProductId in ipairs(Products) do
+		for Index, ProductId in ipairs(Products) do
 			local ProductData, IsGamepass = ProductInfo.GetProductFromIdOnly(ProductId)
 
 			if ProductData and IsGamepass ~= nil then
@@ -262,6 +267,9 @@ local function CreateRollMain(props: Properties)
 					Count = 0,
 					IsGamepass = IsGamepass,
 					Purchaseable = true,
+					native = {
+						LayoutOrder = Index,
+					},
 				})
 			end
 		end

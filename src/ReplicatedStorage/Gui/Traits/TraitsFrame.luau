@@ -64,7 +64,7 @@ export type Properties = {
 	children: { [any]: any }?,
 }
 
-local Products = { 3348443298 }
+local Products = { 3359654911, 3359655092, 3359656288, 3359656647 }
 
 local function CreateTraitsFrame(props: Properties)
 	local InventoryData = React.useContext(InventoryContext.Context)
@@ -195,7 +195,7 @@ local function CreateTraitsFrame(props: Properties)
 			return Frames
 		end
 
-		for _, ProductId in ipairs(Products) do
+		for Index, ProductId in ipairs(Products) do
 			local ProductData, IsGamepass = ProductInfo.GetProductFromIdOnly(ProductId)
 
 			if ProductData and IsGamepass ~= nil then
@@ -204,6 +204,9 @@ local function CreateTraitsFrame(props: Properties)
 					Count = 0,
 					IsGamepass = IsGamepass,
 					Purchaseable = true,
+					native = {
+						LayoutOrder = Index,
+					},
 				})
 			end
 		end

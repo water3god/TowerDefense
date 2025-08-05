@@ -42,6 +42,42 @@ local ProductInfo: { [number]: ProductData } = {
 		Rarity = "Common",
 		Func = function() end,
 	},
+	[3359651817] = {
+		Name = "2x Luck Boost (1 Hour)",
+		Image = "rbxassetid://13737320585",
+		Rarity = "Rare",
+		Func = function() end,
+	},
+	[3359652520] = {
+		Name = "3x Luck Boost (1 Hour)",
+		Image = "rbxassetid://13737320809",
+		Rarity = "Rare",
+		Func = function() end,
+	},
+	[3359654911] = {
+		Name = "10 Omen Coins",
+		Image = "rbxassetid://13737321336",
+		Rarity = "Common",
+		Func = function() end,
+	},
+	[3359655092] = {
+		Name = "50 Omen Coins",
+		Image = "rbxassetid://13737321714",
+		Rarity = "Common",
+		Func = function() end,
+	},
+	[3359656288] = {
+		Name = "100 Omen Coins",
+		Image = "rbxassetid://13737321883",
+		Rarity = "Common",
+		Func = function() end,
+	},
+	[3359656647] = {
+		Name = "1000 Omen Coins",
+		Image = "rbxassetid://13737322036",
+		Rarity = "Common",
+		Func = function() end,
+	},
 }
 
 local GamepassInfo: { [number]: ProductData } = {}

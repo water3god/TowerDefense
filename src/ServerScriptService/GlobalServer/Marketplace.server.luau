@@ -42,6 +42,30 @@ local Products: { [number]: (Data: PlayerData.PlayerData) -> boolean } = {
 		Data:AddGold(100000)
 		return true
 	end,
+	[3359651817] = function(Data: PlayerData.PlayerData): boolean
+		Data:AddBoost("2x Luck", 3600)
+		return true
+	end,
+	[3359652520] = function(Data: PlayerData.PlayerData): boolean
+		Data:AddBoost("3x Luck", 3600)
+		return true
+	end,
+	[3359654911] = function(Data: PlayerData.PlayerData): boolean
+		Data:AddResource("Omen Coins", 10)
+		return true
+	end,
+	[3359655092] = function(Data: PlayerData.PlayerData): boolean
+		Data:AddResource("Omen Coins", 50)
+		return true
+	end,
+	[3359656288] = function(Data: PlayerData.PlayerData): boolean
+		Data:AddResource("Omen Coins", 100)
+		return true
+	end,
+	[3359656647] = function(Data: PlayerData.PlayerData): boolean
+		Data:AddResource("Omen Coins", 1000)
+		return true
+	end,
 }
 
 local Gamepasses: { [number]: (Data: PlayerData.PlayerData) -> () } = {}

@@ -7,10 +7,10 @@ export type BoostData = {
 }
 
 local Boosts = {
-	["2x XP"] = {
+	["3x Luck"] = {
 		Icon = "rbxassetid://13737320585",
 	},
-	["Luck"] = {
+	["2x Luck"] = {
 		Icon = "rbxassetid://13737320809",
 	},
 }

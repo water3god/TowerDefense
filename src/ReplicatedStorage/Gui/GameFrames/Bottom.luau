@@ -58,6 +58,7 @@ export type OtherProps = {
 	GlobalLevel: number,
 	Level: number?,
 	LevelReq: number,
+	Trait: string?,
 
 	OnClick: (UniqueId: string) -> (),
 
@@ -79,6 +80,7 @@ local function CreateBaseFrame(Properties: OtherProps)
 		UnitName = if Properties.UnitName and not IsDisabled then Properties.UnitName else "BLANK",
 		Disabled = IsDisabled,
 		Level = Properties.Level or 1,
+		Trait = Properties.Trait,
 		native = Properties.native,
 		OnClick = OnClick,
 		containerChildren = {
@@ -291,6 +293,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 			LevelReq = LevelRequirements.EquippedFrames[1],
 			UnitName = Units[1] and Units[1].Unit,
 			Level = Units[1] and Units[1].Level,
+			Trait = Units[1] and Units[1].Trait,
 			GlobalLevel = UnitsContext.GlobalLevel,
 			OnClick = Click,
 			native = {
@@ -303,6 +306,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 			LevelReq = LevelRequirements.EquippedFrames[2],
 			UnitName = Units[2] and Units[2].Unit,
 			Level = Units[2] and Units[2].Level,
+			Trait = Units[2] and Units[2].Trait,
 			GlobalLevel = UnitsContext.GlobalLevel,
 			OnClick = Click,
 			native = {
@@ -315,6 +319,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 			LevelReq = LevelRequirements.EquippedFrames[3],
 			UnitName = Units[3] and Units[3].Unit,
 			Level = Units[3] and Units[3].Level,
+			Trait = Units[3] and Units[3].Trait,
 			GlobalLevel = UnitsContext.GlobalLevel,
 			OnClick = Click,
 			native = {
@@ -327,6 +332,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 			LevelReq = LevelRequirements.EquippedFrames[4],
 			UnitName = Units[4] and Units[4].Unit,
 			Level = Units[4] and Units[4].Level,
+			Trait = Units[4] and Units[4].Trait,
 			GlobalLevel = UnitsContext.GlobalLevel,
 			OnClick = Click,
 			native = {
@@ -339,6 +345,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 			LevelReq = LevelRequirements.EquippedFrames[5],
 			UnitName = Units[5] and Units[5].Unit,
 			Level = Units[5] and Units[5].Level,
+			Trait = Units[5] and Units[5].Trait,
 			GlobalLevel = UnitsContext.GlobalLevel,
 			OnClick = Click,
 			native = {

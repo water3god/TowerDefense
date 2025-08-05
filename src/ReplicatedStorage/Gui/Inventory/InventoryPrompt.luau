@@ -116,6 +116,7 @@ local function HandleUnit(Data: UnitData)
 	return e(UnitFrame.CreateUnitFrame, {
 		UnitName = Data.Data.Unit,
 		Level = Data.Data.Level,
+		Trait = Data.Data.Trait,
 		Cost = UnitData.UnitData[0].Cost,
 
 		OnClick = function()

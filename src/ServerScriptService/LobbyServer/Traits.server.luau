@@ -41,7 +41,7 @@ RollTrait.SetCallback(function(Player: Player, Data: { UniqueId: string })
 		return
 	end
 
-	local HasEnoughCoins = PlayerDataModule:HasEnoughResource("OmenCoins", 1)
+	local HasEnoughCoins = PlayerDataModule:HasEnoughResource("Omen Coins", 1)
 	if not HasEnoughCoins then
 		return
 	end
@@ -49,7 +49,7 @@ RollTrait.SetCallback(function(Player: Player, Data: { UniqueId: string })
 	local TraitName = RandomGenerate(TraitChances)
 
 	if TraitName then
-		PlayerDataModule:RemoveResource("OmenCoins", 1)
+		PlayerDataModule:RemoveResource("Omen Coins", 1)
 		PlayerDataModule:ChangeUnitTrait(Unit.UniqueId, TraitName)
 		TraitRolled.Fire(Player, {
 			UniqueId = Unit.UniqueId,

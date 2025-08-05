@@ -61,8 +61,20 @@ local function Roll(Data: PlayerData.PlayerData, Count: number, Auto: boolean)
 
 	local SendData = {}
 
+	local Chance = 0
+
+	if Data:HasBoost("2x Luck") then
+		Chance += 2
+	end
+
+	if Data:HasBoost("3x Luck") then
+		Chance += 4
+	end
+
+	local GeneratedChances = ChanceData.CalculateChanceOnLuck(0)
+
 	for _ = 1, Count, 1 do
-		local UnitName = RandomGenerate(ChanceData) :: string
+		local UnitName = RandomGenerate(GeneratedChances) :: string
 		local UnitData = Data:AddUnit(UnitName)
 		if UnitData then
 			Data.Summoned:Fire(UnitData)
