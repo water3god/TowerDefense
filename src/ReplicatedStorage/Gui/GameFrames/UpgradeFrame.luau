@@ -305,54 +305,64 @@ local function CreateUpgradeFrame(Properties: Properties)
 		SetSell(false)
 	end, { UpgradeData })
 
-	local UpgradeFrames = React.useMemo(function()
-		local LevelData = UpgradeData.Properties
-		local AboveData = UpgradeData.NextProperties
+	local UpgradeFrames = React.useMemo(
+		function()
+			local LevelData = UpgradeData.Properties
+			local AboveData = UpgradeData.NextProperties
 
-		local Frames: { [string]: React.Node } = {}
+			local Frames: { [string]: React.Node } = {}
 
-		if AboveData then
-			for Property, Value in pairs(AboveData) do
-				if Value == 0 then
-					continue
-				end
-
-				if table.find(Stats.StatProperties, Property) then
-					Frames[Property] = e(CreatePropertyFrame, {
-						PropertyName = Property :: any,
-						Inital = if Property ~= "Special" then LevelData[Property] else 1,
-						Final = if Property ~= "Special" then Value else 1,
-						Other = tostring(Value),
-						Maxxed = false,
-						native = {
-							LayoutOrder = Stats.Layout[Property :: any],
-						},
-					})
-				end
-			end
-		else
-			for Property, Value in pairs(LevelData) do
-				if table.find(Stats.StatProperties, Property) then
+			if AboveData then
+				for Property, Value in pairs(AboveData) do
 					if Value == 0 then
 						continue
 					end
 
-					Frames[Property] = e(CreatePropertyFrame, {
-						PropertyName = Property :: any,
-						Inital = if Property ~= "Special" then Value else 1,
-						Final = 1,
-						Other = tostring(Value),
-						Maxxed = true,
-						native = {
-							LayoutOrder = Stats.Layout[Property :: any],
-						},
-					})
+					if table.find(Stats.StatProperties, Property) then
+						Frames[Property] = e(CreatePropertyFrame, {
+							PropertyName = Property :: any,
+							Inital = if Property ~= "Special" then LevelData[Property] else 1,
+							Final = if Property ~= "Special" then Value else 1,
+							Other = tostring(Value),
+							Maxxed = false,
+							native = {
+								LayoutOrder = Stats.Layout[Property :: any],
+							},
+						})
+					end
+				end
+			else
+				for Property, Value in pairs(LevelData) do
+					if table.find(Stats.StatProperties, Property) then
+						if Value == 0 then
+							continue
+						end
+
+						Frames[Property] = e(CreatePropertyFrame, {
+							PropertyName = Property :: any,
+							Inital = if Property ~= "Special" then Value else 1,
+							Final = 1,
+							Other = tostring(Value),
+							Maxxed = true,
+							native = {
+								LayoutOrder = Stats.Layout[Property :: any],
+							},
+						})
+					end
 				end
 			end
-		end
 
-		return Frames
-	end, { UpgradeData.UpgradeData, UpgradeData.Level, UpgradeData.UniqueId } :: { unknown })
+			return Frames
+		end,
+		{
+			UpgradeData,
+			UpgradeData.UpgradeData,
+			UpgradeData.NextProperties,
+			UpgradeData.Properties,
+			UpgradeData.Level,
+			UpgradeData.UniqueId,
+		} :: { unknown }
+	)
 
 	local AbilityFrames = React.useMemo(function()
 		local Frames: { [string]: React.Node } = {}

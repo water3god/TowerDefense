@@ -62,7 +62,7 @@ local function CreateUnitStats(props: { UnitData: UnitInfo.UnitInfo, Level: numb
 				end
 
 				if Property == "Damage" then
-					if not FirstValue[0] or FirstValue[0] == 0 then
+					if not FirstValue[1] or FirstValue[1] == 0 then
 						continue
 					end
 				else

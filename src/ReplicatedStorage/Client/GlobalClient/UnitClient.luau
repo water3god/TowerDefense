@@ -844,11 +844,14 @@ end
 function UnitModule:GetProperties()
 	local UnitData = self.UnitData.UnitData
 	local Level = self.Level
+
+	local Coins = UnitData[Level].Coins
+
 	return {
 		Damage = math.ceil(UnitData[Level].Damage[1] * self.Ratios.Damage),
 		FireRate = UnitData[Level].FireRate * self.Ratios.FireRate,
 		Range = math.floor(UnitData[Level].Range * self.Ratios.Range),
-		Coins = UnitData[Level].Coins,
+		Coins = Coins and Coins * self.Ratios.Coins,
 		Special = UnitData[Level].Special,
 	}
 end
@@ -861,11 +864,13 @@ function UnitModule:GetNextProperties()
 		return nil
 	end
 
+	local Coins = UnitData[Level].Coins
+
 	return {
 		Damage = math.ceil(UnitData[Level].Damage[1] * self.Ratios.Damage),
 		FireRate = UnitData[Level].FireRate * self.Ratios.FireRate,
 		Range = UnitData[Level].Range * self.Ratios.Range,
-		Coins = UnitData[Level].Coins,
+		Coins = Coins and Coins * self.Ratios.Coins,
 		Special = UnitData[Level].Special,
 	}
 end

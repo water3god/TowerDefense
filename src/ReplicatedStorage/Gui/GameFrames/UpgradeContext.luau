@@ -122,13 +122,15 @@ local function UpgradeProvider(props: Props)
 
 			UpgradeTrove:Connect(Unit.Upgraded, function()
 				SetData(function(Input)
-					return Join(Input, {
+					local Table = Join(Input, {
 						Properties = Unit:GetProperties(),
-						NextProperties = Unit:GetNextProperties(),
 						Trait = Unit.Trait,
 						TotalCost = Unit.TotalCost,
 						Level = Unit.Level,
 					}) :: any
+					Table.NextProperties = Unit:GetNextProperties() :: any
+
+					return Table
 				end)
 			end)
 			UpgradeTrove:Connect(Unit.PriorityChanged, function(Priority: UnitInfo.SortType)
