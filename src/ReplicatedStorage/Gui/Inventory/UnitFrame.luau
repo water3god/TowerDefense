@@ -52,7 +52,7 @@ local function CreateUnitFrameRaw(Properties: Properties)
 				return e(Main.ImageLabel, {
 					native = {
 						Size = UDim2.fromScale(0.3, 0.3),
-						Position = UDim2.fromScale(0.7, 0.5),
+						Position = UDim2.fromScale(0.25, 0.45),
 					},
 				}, {
 					UIGradient = e(AnimatedGradient, {

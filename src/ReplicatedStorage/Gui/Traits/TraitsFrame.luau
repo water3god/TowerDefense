@@ -79,7 +79,7 @@ local function CreateTraitsFrame(props: Properties)
 	local Styles, API = ReactSpring.useSpring(function()
 		return {
 			alpha = 0,
-			config = { mass = 1, tension = 100, friction = 30, clamp = true },
+			config = { mass = 1, tension = 1000, friction = 30, clamp = true },
 		}
 	end, {})
 
@@ -89,21 +89,13 @@ local function CreateTraitsFrame(props: Properties)
 		end
 	end, { props.SetVisible })
 
-	local old = React.useRef(nil :: Types.VisualUnitData?)
 	React.useEffect(function()
-		if old.current and old.current.Trait ~= Unit.Trait then
-			API.start({
-				alpha = 1,
-				config = { mass = 1, tension = 100, friction = 30, immediate = true } :: any,
-			})
-			API.start({
-				alpha = 0,
-				config = {
-					duration = 200,
-				},
-			})
-		end
-		old.current = Unit
+		API.start({
+			from = { alpha = 1 },
+			to = { alpha = 0 },
+			config = { mass = 1, tension = 1000, friction = 30, clamp = true },
+			reset = true,
+		})
 	end, { Unit })
 
 	React.useEffect(function()

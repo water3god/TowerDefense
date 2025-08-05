@@ -23,6 +23,7 @@ local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
 local Hooks = require(CoreGame.Hooks)
+local UIStroke = require(CoreGame.UIStroke)
 
 local Shared = ReplicatedStorage.Shared
 local BoostsModule = require(Shared.Boosts)
@@ -45,7 +46,7 @@ local function CreateBoost(props: BoostProperties)
 
 	React.useEffect(function()
 		local TimeTotal = props.EndTime - workspace:GetServerTimeNow()
-		SetTime(TimeTotal, props.EndTime)
+		SetTime(TimeTotal, workspace:GetServerTimeNow())
 	end, { props.EndTime })
 
 	local BoostData = React.useMemo(function(): BoostsModule.BoostData
@@ -67,18 +68,26 @@ local function CreateBoost(props: BoostProperties)
 		NameLabel = e(Main.TextLabel, {
 			native = {
 				Text = props.Boost,
-				Size = UDim2.fromScale(1, 0.2),
+				Size = UDim2.fromScale(1, 0.3),
 				Position = UDim2.fromScale(0.5, 0.6),
 			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.015,
+			}),
 		}),
 		TimeLabel = e(Main.TextLabel, {
 			native = {
 				Text = Time:map(function(Input: number)
 					return HelperFunctions.FormatTime(math.floor(Input))
 				end),
-				Size = UDim2.fromScale(1, 0.2),
+				Size = UDim2.fromScale(1, 0.3),
 				Position = UDim2.fromScale(0.5, 0.9),
 			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.015,
+			}),
 		}),
 	}, props.children)
 end
@@ -98,11 +107,13 @@ local function CreateBoosts(props: Properties)
 				},
 			})
 		end
+
+		return Frames
 	end, { props.Boosts })
 
 	return e(Main.Frame, {
 		native = Join({
-			Position = UDim2.fromScale(0, 1),
+			Position = UDim2.fromScale(0.03, 0.96),
 			Size = UDim2.fromScale(0.4, 0.1),
 			AnchorPoint = Vector2.new(0, 1),
 		}, props.native),
@@ -110,10 +121,10 @@ local function CreateBoosts(props: Properties)
 		UIListLayout = e("UIListLayout", {
 			SortOrder = Enum.SortOrder.LayoutOrder,
 			FillDirection = Enum.FillDirection.Horizontal,
-			HorizontalAlignment = Enum.HorizontalAlignment.Center,
+			HorizontalAlignment = Enum.HorizontalAlignment.Left,
 			VerticalAlignment = Enum.VerticalAlignment.Center,
-		}, BoostsFrames),
-	}, props.children)
+		}),
+	}, BoostsFrames, props.children)
 end
 
 local function BoostsConnected(props)

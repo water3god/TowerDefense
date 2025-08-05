@@ -15,13 +15,13 @@ export type TraitData = {
 
 local Traits: { [string]: TraitData } = {
 	["Damage I"] = {
-		Icon = "rbxassetid://74203135188399", -- Replace with actual icon ID
+		Icon = "rbxassetid://74203135188399",
 		Rarity = "Common",
 		Data = {
 			Damage = 1.1,
 		},
 		Description = "Increases the damage dealt by your units.",
-		Chance = 0.5, -- Example chance, adjust as needed
+		Chance = 0.5,
 		Priority = 1,
 	},
 	["FireRate I"] = {

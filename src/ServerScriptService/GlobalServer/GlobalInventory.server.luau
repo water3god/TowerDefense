@@ -62,12 +62,12 @@ local function OnDataAdded(Data: PlayerData.PlayerData)
 
 	Data.ProductChanged:Connect(function(Type, ProductData)
 		local IsNil = Type == "Removed"
-		ItemChanged.Fire(Player, "Products", ProductData.UniqueId, not IsNil and ProductData)
+		ItemChanged.Fire(Player, "Products", ProductData.UniqueId, if not IsNil then ProductData else nil)
 	end)
 
 	Data.ResourceChanged:Connect(function(Type, ResourceData)
 		local IsNil = Type == "Removed"
-		ItemChanged.Fire(Player, "Resources", ResourceData.UniqueId, not IsNil and ResourceData)
+		ItemChanged.Fire(Player, "Resources", ResourceData.UniqueId, if not IsNil then ResourceData else nil)
 	end)
 
 	Data.LeveledUp:Connect(function(Level: number)
