@@ -149,6 +149,9 @@ if not RunService:IsRunning() then
 		ChooseStarter = table.freeze({
 			Fire = noop
 		}),
+		BoostsSync = table.freeze({
+			SetCallback = noop
+		}),
 		AllEquippedSync = table.freeze({
 			SetCallback = noop
 		}),
@@ -185,13 +188,14 @@ end
 
 RunService.Heartbeat:Connect(SendEvents)
 
-local reliable_events = table.create(6)
-local reliable_event_queue: { [number]: { any } } = table.create(6)
+local reliable_events = table.create(7)
+local reliable_event_queue: { [number]: { any } } = table.create(7)
 reliable_event_queue[4] = {}
 reliable_event_queue[5] = {}
 reliable_event_queue[1] = {}
 reliable_event_queue[2] = {}
 reliable_event_queue[3] = 0
+reliable_event_queue[6] = {}
 reliable_event_queue[0] = {}
 reliable.OnClientEvent:Connect(function(buff, inst)
 	incoming_buff = buff
@@ -320,7 +324,7 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 					warn(`[ZAP] {reliable_event_queue[3]} events in queue for FirstJoin. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 0 then
+		elseif id == 6 then
 			local value
 			local bool_6 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
@@ -328,32 +332,54 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 				for _ = 1, buffer.readu16(incoming_buff, read(2)) + 1 do
 					local key_1
 					local val_6
-					incoming_ipos = incoming_ipos + 1
-					key_1 = incoming_inst[incoming_ipos]
-					assert(key_1 ~= nil, "received instance is nil!")
-					assert(key_1:IsA("Player"), "received instance is not of the Player class!")
-					val_6 = {  }
 					local len_14 = buffer.readu16(incoming_buff, read(2))
-					val_6["Title"] = buffer.readstring(incoming_buff, read(len_14), len_14)
-					val_6["Level"] = buffer.readu16(incoming_buff, read(2))
-					local len_15 = buffer.readu16(incoming_buff, read(2))
-					val_6["EquippedUnits"] = table.create(len_15)
-					for i_6 = 1, len_15 do
-						local bool_7 = buffer.readu8(incoming_buff, read(1))
-						local val_7
-						if bit32.btest(bool_7, 0b0000000000000001) then
-							val_7 = {  }
-							local len_16 = buffer.readu16(incoming_buff, read(2))
-							val_7["Id"] = buffer.readstring(incoming_buff, read(len_16), len_16)
-							val_7["Level"] = buffer.readu16(incoming_buff, read(2))
-							local len_17 = buffer.readu16(incoming_buff, read(2))
-							val_7["UnitName"] = buffer.readstring(incoming_buff, read(len_17), len_17)
-						else
-							val_7 = nil
-						end
-						val_6["EquippedUnits"][i_6] = val_7
-					end
+					key_1 = buffer.readstring(incoming_buff, read(len_14), len_14)
+					val_6 = buffer.readf64(incoming_buff, read(8))
 					value[key_1] = val_6
+				end
+			end
+			if reliable_events[6] then
+				task.spawn(reliable_events[6], value)
+			else
+				table.insert(reliable_event_queue[6], value)
+				if #reliable_event_queue[6] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[6]} events in queue for BoostsSync. Did you forget to attach a listener?`)
+				end
+			end
+		elseif id == 0 then
+			local value
+			local bool_7 = buffer.readu8(incoming_buff, read(1))
+			value = {  }
+			if not bit32.btest(bool_7, 0b0000000000000001) then
+				for _ = 1, buffer.readu16(incoming_buff, read(2)) + 1 do
+					local key_2
+					local val_7
+					incoming_ipos = incoming_ipos + 1
+					key_2 = incoming_inst[incoming_ipos]
+					assert(key_2 ~= nil, "received instance is nil!")
+					assert(key_2:IsA("Player"), "received instance is not of the Player class!")
+					val_7 = {  }
+					local len_15 = buffer.readu16(incoming_buff, read(2))
+					val_7["Title"] = buffer.readstring(incoming_buff, read(len_15), len_15)
+					val_7["Level"] = buffer.readu16(incoming_buff, read(2))
+					local len_16 = buffer.readu16(incoming_buff, read(2))
+					val_7["EquippedUnits"] = table.create(len_16)
+					for i_6 = 1, len_16 do
+						local bool_8 = buffer.readu8(incoming_buff, read(1))
+						local val_8
+						if bit32.btest(bool_8, 0b0000000000000001) then
+							val_8 = {  }
+							local len_17 = buffer.readu16(incoming_buff, read(2))
+							val_8["Id"] = buffer.readstring(incoming_buff, read(len_17), len_17)
+							val_8["Level"] = buffer.readu16(incoming_buff, read(2))
+							local len_18 = buffer.readu16(incoming_buff, read(2))
+							val_8["UnitName"] = buffer.readstring(incoming_buff, read(len_18), len_18)
+						else
+							val_8 = nil
+						end
+						val_7["EquippedUnits"][i_6] = val_8
+					end
+					value[key_2] = val_7
 				end
 			end
 			if reliable_events[0] then
@@ -407,12 +433,12 @@ local returns = {
 		Fire = function(Value: (boolean))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-			local bool_8 = 0
-			local bool_8_pos_1 = alloc(1)
+			local bool_9 = 0
+			local bool_9_pos_1 = alloc(1)
 			if Value then
-				bool_8 = bit32.bor(bool_8, 0b0000000000000001)
+				bool_9 = bit32.bor(bool_9, 0b0000000000000001)
 			end
-			buffer.writeu8(outgoing_buff, bool_8_pos_1, bool_8)
+			buffer.writeu8(outgoing_buff, bool_9_pos_1, bool_9)
 		end,
 	},
 	RollTrait = {
@@ -421,22 +447,22 @@ local returns = {
 		}))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
-			local len_18 = #Value["UniqueId"]
+			local len_19 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_18)
-			alloc(len_18)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_18)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_19)
+			alloc(len_19)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_19)
 		end,
 	},
 	RedeemQuest = {
 		Fire = function(Value: (string))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-			local len_19 = #Value
+			local len_20 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_19)
-			alloc(len_19)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_19)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_20)
+			alloc(len_20)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_20)
 		end,
 	},
 	QuestSync = {
@@ -506,22 +532,34 @@ local returns = {
 		}))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
-			local len_20 = #Value["UniqueId"]
+			local len_21 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_20)
-			alloc(len_20)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_20)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_21)
+			alloc(len_21)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_21)
 		end,
 	},
 	ChooseStarter = {
 		Fire = function(Value: (string))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
-			local len_21 = #Value
+			local len_22 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_21)
-			alloc(len_21)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_21)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_22)
+			alloc(len_22)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_22)
+		end,
+	},
+	BoostsSync = {
+		SetCallback = function(Callback: (Value: ({ [(string)]: (number) })) -> ()): () -> ()
+			reliable_events[6] = Callback
+			for _, value in reliable_event_queue[6] do
+				task.spawn(Callback, value)
+			end
+			reliable_event_queue[6] = {}
+			return function()
+				reliable_events[6] = nil
+			end
 		end,
 	},
 	AllEquippedSync = {

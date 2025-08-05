@@ -118,3 +118,12 @@ event TraitRolled = {
 		NewTrait: string.binary,
 	},
 }
+
+-- Boosts --
+
+event BoostsSync = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: map { [string.binary]: f64 },
+}

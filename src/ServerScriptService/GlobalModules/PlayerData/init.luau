@@ -99,6 +99,8 @@ type PlayerDataData<T> = {
 	QuestProgressed: Signal.Signal<{ { Id: string, Data: QuestData.DefaultQuestData } }>,
 	QuestRedeemed: Signal.Signal<QuestData.DefaultQuestData>,
 
+	BoostChanged: Signal.Signal<string, number>,
+
 	Destroying: Signal.Signal<>,
 }
 
@@ -181,6 +183,9 @@ type PlayerDataImpl = {
 
 	AddUnitXP: (self: PlayerData, UnitId: string, XP: number) -> (),
 	AddXP: (self: PlayerData, XP: number) -> (),
+
+	AddBoost: (self: PlayerData, Boost: string, Duration: number) -> (),
+	HasBoost: (self: PlayerData, Boost: string) -> boolean,
 
 	Delete: (self: PlayerData) -> (),
 
@@ -314,6 +319,8 @@ function PlayerData.new(Player: Player)
 	self.QuestProgressed = self._Trove:Construct(Signal)
 	self.QuestRedeemed = self._Trove:Construct(Signal)
 
+	self.BoostChanged = self._Trove:Construct(Signal)
+
 	self.Destroying = self._Trove:Construct(Signal)
 
 	self.SettingSignals = {}
@@ -431,6 +438,32 @@ function PlayerData.new(Player: Player)
 
 	self._Trove:AddPromise(DailyQuestsPromise() :: any)
 	self._Trove:AddPromise(WeeklyQuestsPromise() :: any)
+
+	do
+		local Promises: { [string]: Promise.Promise } = {}
+
+		local function HandleBoostChange(Boost: string, EndTime: number)
+			if Promises[Boost] then
+				self._Trove:Remove(Promises[Boost] :: any)
+			end
+
+			Promises[Boost] = Promise.delay(EndTime - DateTime.now().UnixTimestamp):andThen(function()
+				self.Profile.Data.Boosts[Boost] = nil
+				Promises[Boost] = nil
+			end)
+			self._Trove:AddPromise(Promises[Boost] :: any)
+		end
+
+		for Boost, EndTime in pairs(self.Profile.Data.Boosts) do
+			if EndTime > DateTime.now().UnixTimestamp then
+				HandleBoostChange(Boost, EndTime)
+			else
+				self.Profile.Data.Boosts[Boost] = nil
+			end
+		end
+
+		self.BoostChanged:Connect(HandleBoostChange)
+	end
 
 	if self.Profile.Data.Gold < 20 then
 		self:AddGold(1000000)
@@ -1174,6 +1207,28 @@ function PlayerData:AddXP(XPInput: number)
 	end
 
 	self.XPChanged:Fire(Data.XP)
+end
+
+function PlayerData:AddBoost(Boost: string, Duration: number)
+	local Data = self.Profile.Data
+
+	if Data.Boosts[Boost] then
+		Data.Boosts[Boost] += Duration
+	else
+		Data.Boosts[Boost] = DateTime.now().UnixTimestamp + Duration
+	end
+
+	self.BoostChanged:Fire(Boost, Data.Boosts[Boost])
+end
+
+function PlayerData:HasBoost(Boost: string)
+	local Data = self.Profile.Data
+
+	if Data.Boosts[Boost] then
+		return true
+	else
+		return false
+	end
 end
 
 function PlayerData:Delete()
