@@ -9,7 +9,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Shared = ReplicatedStorage.Shared
 local RarityInfo = require(Shared.RarityInfo)
 
-type ProductData = { Name: string, Image: string, Rarity: RarityInfo.Rarity | string, Func: () -> () }
+export type ProductData = { Name: string, Image: string, Rarity: RarityInfo.Rarity | string, Func: () -> () }
 
 local ProductInfo: { [number]: ProductData } = {
 	[3348441372] = {
@@ -66,15 +66,15 @@ local function GetProductFromName(Data: { Name: string, IsGamepass: boolean }): 
 	return
 end
 
-local function GetProductFromNameOnly(Name: string): (ProductData?, number?)
+local function GetProductFromNameOnly(Name: string): (ProductData?, number?, boolean?)
 	for ProductId, OtherData in pairs(ProductInfo) do
 		if Name == OtherData.Name then
-			return OtherData, ProductId
+			return OtherData, ProductId, false
 		end
 	end
 	for ProductId, OtherData in pairs(GamepassInfo) do
 		if Name == OtherData.Name then
-			return OtherData, ProductId
+			return OtherData, ProductId, true
 		end
 	end
 

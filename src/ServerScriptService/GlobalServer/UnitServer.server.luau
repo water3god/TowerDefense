@@ -24,6 +24,7 @@ local Sell = Network.SellUnit
 
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
+local GameInfo = require(Shared.GameInfo)
 local Constants = require(Shared.Constants)
 
 local GlobalModules = ServerScriptService.GlobalModules
@@ -144,7 +145,7 @@ local function PlaceUnit(Player: Player, Wave: GlobalWave.GlobalWave, Data: Plac
 
 		if Wave:HasEnoughCoins(Player.UserId, Cost) then
 			local Result = CheckPlacement(InputCFrame, UnitUnitInfo)
-			local DamageMultiplier = 1 + PDataUnit.Level * 0.01
+			local DamageMultiplier = GameInfo.XPData.GetDamageMultiplierFromLevel(PDataUnit.Level)
 			if Result then
 				local NewUnit = Unit.new({
 					CFrame = InputCFrame,

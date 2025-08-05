@@ -8,6 +8,7 @@ export type TraitData = {
 	Icon: string,
 	Rarity: string,
 	Data: { [TraitType | string]: number },
+	Description: string,
 	Chance: number,
 	Priority: number,
 }
@@ -19,6 +20,7 @@ local Traits: { [string]: TraitData } = {
 		Data = {
 			Damage = 1.1,
 		},
+		Description = "Increases the damage dealt by your units.",
 		Chance = 0.5, -- Example chance, adjust as needed
 		Priority = 1,
 	},
@@ -28,6 +30,7 @@ local Traits: { [string]: TraitData } = {
 		Data = {
 			FireRate = 1.1,
 		},
+		Description = "Increases the fire rate of your units.",
 		Chance = 0.5, -- Example chance, adjust as needed
 		Priority = 2,
 	},
@@ -37,6 +40,7 @@ local Traits: { [string]: TraitData } = {
 		Data = {
 			Range = 1.1,
 		},
+		Description = "Increases the range of your units.",
 		Chance = 0.5, -- Example chance, adjust as needed
 		Priority = 3,
 	},
@@ -46,6 +50,7 @@ local Traits: { [string]: TraitData } = {
 		Data = {
 			Coins = 1.1,
 		},
+		Description = "Increases the coins earned from battles.",
 		Chance = 0.5015, -- Example chance, adjust as needed
 		Priority = 4,
 	},

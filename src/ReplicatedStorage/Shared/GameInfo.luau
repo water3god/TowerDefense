@@ -871,16 +871,19 @@ local GameInfo: { MapInfo } = {
 export type RewardData = {
 	Image: string,
 	Rarity: RarityInfo.Rarity,
+	Description: string,
 }
 
 local RewardInfo: { [string]: RewardData } = {
 	["Omen Coins"] = {
 		Image = "rbxassetid://123591871678972",
 		Rarity = "Mythic",
+		Description = "A rare currency used to purchase powerful items and units.",
 	},
 	["Gold"] = {
 		Image = "rbxassetid://123591871678972",
 		Rarity = "Common",
+		Description = "A basic currency used for various transactions.",
 	},
 }
 
@@ -926,6 +929,10 @@ function XPData.CalculatePlayerXP(Level: number)
 	PlayerXPCache[Level] = Value
 
 	return Value
+end
+
+function XPData.GetDamageMultiplierFromLevel(Level: number)
+	return 1 + math.max(Level * 0.01, 0)
 end
 
 Data.XPData = XPData

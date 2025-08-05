@@ -31,8 +31,13 @@ local Story = {
 	--controls = controls,
 	story = function(Properties)
 		local Frame = e(StatsFrame, {
-			UnitName = "Trajan",
+			Name = "Trajans",
+			Type = "Unit",
+			Level = 1,
 			Visible = true,
+			native = {
+				Size = UDim2.fromScale(0.8, 0.8),
+			},
 		})
 		return Frame
 	end,

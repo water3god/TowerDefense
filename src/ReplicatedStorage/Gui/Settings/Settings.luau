@@ -318,13 +318,13 @@ local function CreateSettingsFrame(props: Properties)
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 0.8,
 		}),
-		UICorner = e("UICorner", {
-			CornerRadius = UDim.new(0.02, 0),
-		}),
 		CloseButton = e(CloseButton, {
 			Position = UDim2.fromScale(1, 0),
 			Size = UDim2.fromScale(0.2, 0.3),
 			OnClick = props.CloseClick,
+		}),
+		UICorner = e("UICorner", {
+			CornerRadius = UDim.new(0.02, 0),
 		}),
 		InnerFrame = e(Main.Frame, {
 			native = {

@@ -221,6 +221,8 @@ local function CreateUnitInfo(Props: Props)
 			}),
 			UnitInfoStatsFrame = e(StatsFrame, {
 				UnitName = CurrentStats,
+				Type = "Unit",
+				Level = 1,
 				Visible = StatsVisible,
 				CloseClick = StatsCloseClick,
 			}),

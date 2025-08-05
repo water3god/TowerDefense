@@ -719,6 +719,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			local Default = {
 				Data = nil,
 				Name = "",
+				Level = 0,
 				Rarity = nil,
 				RarityInfo = nil,
 				Type = OpenFrame,
@@ -778,6 +779,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 					return {
 						Data = Data.CurrentUnit,
 						Name = Name,
+						Level = Data.CurrentUnit.Level or 0,
 						Rarity = Data.Rarity,
 						RarityInfo = Data.RarityData,
 						Type = OpenFrame,
@@ -827,7 +829,9 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		}, Properties.native),
 	}, {
 		InventoryStatsFrame = e(StatsFrame, {
-			UnitName = if OpenFrame == "Unit" and InfoFrameData.Visible then InfoFrameData.Name else nil,
+			Name = if OpenFrame and InfoFrameData.Visible then InfoFrameData.Name else nil,
+			Type = OpenFrame,
+			Level = InfoFrameData.Level,
 			Visible = InfoVisible,
 			CloseClick = CloseInfoClick,
 		}),
