@@ -127,36 +127,36 @@ export type UnitData = {
 	children: { [any]: any }?,
 }
 
-local function HandleUnit(Data: UnitData)
+local function HandleUnit(props: UnitData)
 	local UnitData = React.useMemo(function()
-		return UnitInfo.UnitInfo[Data.Data.Unit]
-	end, { Data.Data })
+		return UnitInfo.UnitInfo[props.Data.Unit]
+	end, { props.Data })
 
 	local RarityData = React.useMemo(function()
 		return RarityInfo[UnitData.Rarity]
 	end, { UnitData })
 
 	return e(UnitFrame.CreateUnitFrame, {
-		UnitName = Data.Data.Unit,
-		Level = Data.Data.Level,
-		Trait = Data.Data.Trait,
+		UnitName = props.Data.Unit,
+		Level = props.Data.Level,
+		Trait = props.Data.Trait,
 		Cost = UnitData.UnitData[0].Cost,
 
 		OnClick = function()
-			Data.SmallFrameClick({
+			props.SmallFrameClick({
 				Data = {
-					CurrentUnit = Data.Data,
+					CurrentUnit = props.Data,
 					Rarity = UnitData.Rarity,
 					RarityData = RarityData,
 				},
-				UniqueId = Data.Data.UniqueId,
+				UniqueId = props.Data.UniqueId,
 			})
 		end,
 
-		Hovered = Data.HoveredId == Data.UniqueId,
-		native = Data.native,
+		Hovered = props.HoveredId == props.UniqueId,
+		native = props.native,
 		containerChildren = {
-			CheckMark = Data.IsEquipped and e(Main.ImageLabel, {
+			CheckMark = props.IsEquipped and e(Main.ImageLabel, {
 				native = {
 					Size = UDim2.fromScale(0.25, 0.25),
 					Position = UDim2.fromScale(0.75, 0.6),
@@ -168,9 +168,9 @@ local function HandleUnit(Data: UnitData)
 		},
 	}, {
 		BeingSoldFrame = e(BeingSoldFrame, {
-			Visible = Data.XVisible,
+			Visible = props.XVisible,
 		}),
-	}, Data.children)
+	}, props.children)
 end
 
 export type ProductData = {
@@ -214,6 +214,7 @@ local function HandleProduct(props: ProductData)
 		end,
 		Count = Data.Count,
 		ProductId = Data.ProductId,
+		Hovered = props.HoveredId == Data.UniqueId,
 		native = props.native,
 	}, {
 		BeingSoldFrame = e(BeingSoldFrame, {
@@ -256,6 +257,7 @@ local function HandleResource(props: ResourceData)
 				UniqueId = Data.UniqueId,
 			})
 		end,
+		Hovered = props.HoveredId == Data.UniqueId,
 		native = props.native,
 	}, {
 		BeingSoldFrame = e(BeingSoldFrame, {
@@ -264,8 +266,8 @@ local function HandleResource(props: ResourceData)
 	}, props.children)
 end
 
-export type ClickedUnitData = {
-	CurrentUnit: any,
+export type ClickedUnitData<T> = {
+	CurrentUnit: T,
 	Rarity: string,
 	RarityData: typeof(RarityInfo["Common" :: RarityInfo.Rarity]),
 }?
@@ -279,9 +281,12 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 	local HoveredId: string?, SetHovered = React.useState(nil :: string?)
 	local InSell, ToggleSell = React.useState(false)
 
-	local ClickedUnitData: ClickedUnitData, SetClickedUnitData = React.useState(nil :: ClickedUnitData)
-	local ClickedProductData: ClickedUnitData, SetClickedProductData = React.useState(nil :: ClickedUnitData)
-	local ClickedResourceData: ClickedUnitData, SetClickedResourceData = React.useState(nil :: ClickedUnitData)
+	local ClickedUnitData: ClickedUnitData<Types.VisualUnitData>, SetClickedUnitData =
+		React.useState(nil :: ClickedUnitData<Types.VisualUnitData>)
+	local ClickedProductData: ClickedUnitData<Types.ProductData>, SetClickedProductData =
+		React.useState(nil :: ClickedUnitData<Types.ProductData>)
+	local ClickedResourceData: ClickedUnitData<Types.ResourceData>, SetClickedResourceData =
+		React.useState(nil :: ClickedUnitData<Types.ResourceData>)
 
 	local OpenFrame: string, SetOpenFrame = React.useState("Unit")
 
@@ -317,7 +322,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		end
 	end, { InSell, HoveredId } :: { unknown })
 
-	React.useEffect(function()
+	React.useLayoutEffect(function()
 		local SellingUnitsCloned = table.clone(SellingItems)
 		for i = #SellingUnitsCloned, 1, -1 do
 			local Id = SellingUnitsCloned[i]
@@ -677,35 +682,94 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 	end, {})
 
 	local IndConfirmDescription = React.useMemo(function()
-		if ClickedUnitData then
-			local UnitName = ClickedUnitData.CurrentUnit.Unit
-			local Rarity = UnitInfo.UnitInfo[UnitName].Rarity
-			local Cost = RarityInfo[Rarity :: any].Value
-			return string.format(Translate("Are you sure you want to Sell %s for %u Gold?"), UnitName, Cost)
+		local Name: string? = nil
+		local Cost: number = 0
+
+		if OpenFrame == "Unit" then
+			if ClickedUnitData then
+				local Info = ClickedUnitData.CurrentUnit
+				Name = Info.Unit
+				if Name then
+					local Rarity = UnitInfo.UnitInfo[Name].Rarity
+					Cost = RarityInfo[Rarity :: RarityInfo.Rarity].Value
+				end
+			end
+		elseif OpenFrame == "Product" then
+			if ClickedProductData then
+				local Info = ClickedProductData.CurrentUnit
+				local ProductId = Info.ProductId
+
+				local ProductData = ProductInfo.GetProductFromIdOnly(ProductId)
+
+				if ProductData then
+					Name = ProductData.Name
+					Cost = RarityInfo[ProductData.Rarity :: RarityInfo.Rarity].Value * Info.Count
+				end
+			end
+		elseif OpenFrame == "Resource" then
+			if ClickedResourceData then
+				local Info = ClickedResourceData.CurrentUnit
+				Name = Info.Resource
+				if Name then
+					local Rarity = GameInfo.RewardInfo[Name].Rarity
+					Cost = (RarityInfo[Rarity :: RarityInfo.Rarity].Value * Info.Count) / 10
+				end
+			end
+		end
+
+		if Name then
+			return string.format(Translate("Are you sure you want to Sell %s for %u Gold?"), Name, Cost)
 		else
 			return ""
 		end
-	end, { ClickedUnitData })
+	end, { ClickedUnitData, ClickedProductData, ClickedResourceData, Translator, OpenFrame } :: { unknown })
 
 	local BulkConfirmDescription = React.useMemo(function()
 		if SellingItems then
 			local TotalCost = 0
 
 			for _, Id in ipairs(SellingItems) do
-				local UnitData: Types.VisualUnitData = InventoryData.Units[Id]
-				local Rarity = UnitInfo.UnitInfo[UnitData.Unit].Rarity
-				TotalCost += RarityInfo[Rarity :: any].Value
+				if OpenFrame == "Unit" then
+					local UnitData: Types.VisualUnitData = InventoryData.Units[Id]
+					if UnitData then
+						local Rarity = UnitInfo.UnitInfo[UnitData.Unit].Rarity
+						local RarityData = RarityInfo[Rarity :: RarityInfo.Rarity]
+
+						TotalCost += RarityData.Value
+					end
+				elseif OpenFrame == "Product" then
+					local ProductData: Types.ProductData = InventoryData.Products[Id]
+					if ProductData then
+						local Rarity = ProductInfo.GetProductFromIdOnly(ProductData.ProductId)
+
+						if Rarity then
+							local RarityData = RarityInfo[Rarity.Rarity :: RarityInfo.Rarity]
+							TotalCost += (RarityData.Value * ProductData.Count)
+						end
+					end
+				elseif OpenFrame == "Resource" then
+					local ResourceData: Types.ResourceData = InventoryData.Resources[Id]
+					if ResourceData then
+						local Rarity = GameInfo.RewardInfo[ResourceData.Resource].Rarity
+
+						if Rarity then
+							local RarityData = RarityInfo[Rarity :: RarityInfo.Rarity]
+							TotalCost += (RarityData.Value * ResourceData.Count) / 10
+						end
+					end
+				end
 			end
 
 			return string.format(
-				Translate("Are you sure you want to Sell %u Units for %u Gold?"),
+				Translate("Are you sure you want to Sell %u %s for %u Gold?"),
 				#SellingItems,
+				OpenFrame .. "s",
 				TotalCost
 			)
 		else
 			return ""
 		end
-	end, { SellingItems, Translator })
+	end, { SellingItems, Translator, OpenFrame } :: { unknown })
 
 	local UnitCountText = React.useMemo(function()
 		if OpenFrame == "Unit" then
@@ -740,7 +804,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 				return false
 			end
 
-			local function GetProduct(Data: ClickedUnitData)
+			local function GetProduct(Data: ClickedUnitData<any>)
 				if not Data then
 					return Default
 				end
@@ -837,13 +901,13 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			CloseClick = CloseInfoClick,
 		}),
 		IndConfirm = e(Confirm, {
-			Title = "Selling Unit",
+			Title = string.format("Selling %s", OpenFrame),
 			Description = IndConfirmDescription,
 			Enabled = IndEnabled,
 			Handler = IndividualSell,
 		}),
 		BulkConfirm = e(Confirm, {
-			Title = "Selling Units",
+			Title = string.format("Selling %s", OpenFrame .. "s"),
 			Description = BulkConfirmDescription,
 			Enabled = BulkEnabled,
 			Handler = BulkSell,

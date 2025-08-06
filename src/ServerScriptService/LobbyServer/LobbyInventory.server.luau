@@ -21,6 +21,8 @@ local SendWarning = Network.SendWarning
 
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
+local ProductInfo = require(Shared.ProductInfo)
+local GameInfo = require(Shared.GameInfo)
 local RarityInfo = require(Shared.RarityInfo)
 
 EquipUnit.SetCallback(function(Player: Player, Data: { UniqueId: string, Equip: boolean })
@@ -106,9 +108,13 @@ Sell.SetCallback(function(Player: Player, Type: string, Data: { string })
 				if not Product then
 					continue
 				end
-				local Rarity = UnitInfo.UnitInfo[Product.UniqueId].Rarity
-				TotalCost += RarityInfo[Rarity :: any].Value
-				PData:DeleteUnit(UniqueId)
+				local ProductData = ProductInfo.GetProductFromIdOnly(Product.ProductId)
+
+				if ProductData then
+					local Rarity = ProductData.Rarity
+					TotalCost += (RarityInfo[Rarity :: any].Value * Product.Count)
+					PData:RemoveProduct(Product.ProductId)
+				end
 			end
 		elseif Type == "Resource" then
 			local PlayerResources = PData.Profile.Data.Resources
@@ -117,13 +123,13 @@ Sell.SetCallback(function(Player: Player, Type: string, Data: { string })
 					continue
 				end
 
-				local Product = PlayerResources.Products[UniqueId]
-				if not Product then
+				local Resource = PlayerResources[UniqueId]
+				if not Resource then
 					continue
 				end
-				local Rarity = UnitInfo.UnitInfo[Product.UniqueId].Rarity
-				TotalCost += RarityInfo[Rarity :: any].Value
-				PData:DeleteUnit(UniqueId)
+				local Rarity = UnitInfo.UnitInfo[Resource.Resource].Rarity
+				TotalCost += (RarityInfo[Rarity :: any].Value * Resource.Count) / 10
+				PData:RemoveResource(Resource.Resource)
 			end
 		end
 

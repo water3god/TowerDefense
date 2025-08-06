@@ -121,15 +121,6 @@ UseProduct.SetCallback(function(Player: Player, ProductId: number, IsGamepass: b
 	if typeof(ProductId) ~= "number" or typeof(IsGamepass) ~= "boolean" then
 		return
 	end
-	if IsGamepass then
-		if not Gamepasses[ProductId] then
-			return
-		end
-	else
-		if not Products[ProductId] then
-			return
-		end
-	end
 
 	local Data = PlayerData.GetPlayerData(Player)
 
@@ -137,6 +128,7 @@ UseProduct.SetCallback(function(Player: Player, ProductId: number, IsGamepass: b
 		if Data:HasProduct(ProductId, IsGamepass) then
 			if IsGamepass then
 				if Data:HasRedeemedGamepass(ProductId) then
+					SendWarning.Fire(Player, "You have already redeemed this gamepass.", Color3.fromRGB(255, 0, 0))
 					return
 				end
 				Data:RedeemGamepass(ProductId)
@@ -149,6 +141,13 @@ end)
 
 local function OnPlayerData(Data: PlayerData.PlayerData)
 	local ProfData = Data.Profile.Data
+
+	for ProductId, _ in pairs(ProductInfo.GamepassInfo) do
+		if Data:HasRedeemedGamepass(ProductId) and not table.find(ProfData.Gamepasses, ProductId) then
+			table.insert(ProfData.Gamepasses, ProductId)
+			Data.ProductRedeemed:Fire(ProductId, true)
+		end
+	end
 
 	OwnedGamepasses.Fire(Data.Player, ProfData.Gamepasses)
 
