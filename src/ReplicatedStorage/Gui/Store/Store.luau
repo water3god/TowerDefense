@@ -166,10 +166,14 @@ local function CreateStoreFrame(Properties: Properties)
 
 	local GiftId = React.useMemo(function()
 		if HoveredProduct then
-			return PurchaseData.GiftIds[HoveredProduct] :: number?
-		else
-			return nil
+			for GiftKey, ProductId in pairs(PurchaseData.GiftIds) do
+				if ProductId == HoveredProduct then
+					return GiftKey :: number?
+				end
+			end
 		end
+
+		return nil
 	end, { HoveredProduct })
 
 	local BuyFunc = React.useCallback(function()
@@ -186,21 +190,14 @@ local function CreateStoreFrame(Properties: Properties)
 	end, { HoveredProduct, OpenFrame } :: { unknown })
 
 	local GiftFunc = React.useCallback(function()
-		if not HoveredProduct then
-			return
-		end
-		if OpenFrame == "Products" then
+		if OpenFrame == "Products" or OpenFrame == "Gamepasses" then
 			if GiftId then
-				MarketplaceService:PromptProductPurchase(Player, HoveredProduct)
-			end
-		elseif OpenFrame == "Gamepasses" then
-			if GiftId then
-				MarketplaceService:PromptGamePassPurchase(Player, HoveredProduct)
+				MarketplaceService:PromptProductPurchase(Player, GiftId)
 			end
 		elseif OpenFrame == "Offers" then
 			return
 		end
-	end, { HoveredProduct, OpenFrame } :: { unknown })
+	end, { HoveredProduct, OpenFrame, GiftId } :: { unknown })
 
 	local InfoData = React.useMemo(function()
 		local Default = {
@@ -295,7 +292,7 @@ local function CreateStoreFrame(Properties: Properties)
 		}, {
 			IconFrame = e(Main.ImageLabel, {
 				native = {
-					Position = UDim2.fromScale(0.5, 0.525),
+					Position = UDim2.fromScale(0.5, 0.475),
 					Size = UDim2.fromScale(0.9, 0.45),
 					Image = "rbxassetid://" .. InfoData.Image,
 				},

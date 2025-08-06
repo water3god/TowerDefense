@@ -196,13 +196,11 @@ for _, Data in pairs(PlayerData.GetDatas()) do
 end
 PlayerData.DataAdded:Connect(OnPlayerData)
 
-MarketplaceService.PromptGamePassPurchaseFinished:Connect(
-	function(Player: Player, GamepassId: number, Purchased: boolean)
-		if Purchased and MarketplaceService:UserOwnsGamePassAsync(Player.UserId, GamepassId) then
-			local Data = PlayerData.GetPlayerData(Player)
-			if Data then
-				Data:RedeemGamepass(GamepassId)
-			end
+MarketplaceService.GamePassPurchaseFinished:Connect(function(Player: Player, GamepassId: number, Purchased: boolean)
+	if Purchased and MarketplaceService:UserOwnsGamePassAsync(Player.UserId, GamepassId) then
+		local Data = PlayerData.GetPlayerData(Player)
+		if Data then
+			Data:RedeemGamepass(GamepassId)
 		end
 	end
-)
+end)

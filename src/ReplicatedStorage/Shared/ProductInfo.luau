@@ -80,9 +80,19 @@ local ProductInfo: { [number]: ProductData } = {
 	},
 }
 
-local GamepassInfo: { [number]: ProductData } = {}
+local GamepassInfo: { [number]: ProductData } = {
+	[1382164818] = {
+		Name = "VIP",
+		Image = "rbxassetid://1382164818",
+		Rarity = "Legendary",
+		Func = function() end,
+	},
+}
 
-local GiftIds: { [number]: number } = {}
+-- GiftId = ProductId --
+local GiftIds: { [number]: number } = {
+	[3360124700] = 1382164818, -- VIP --
+}
 
 local function GetProductFromName(Data: { Name: string, IsGamepass: boolean }): (ProductData?, number?)
 	if Data.IsGamepass then
@@ -160,12 +170,9 @@ local function ProductIsGamepass(ProductId: number): boolean
 	end
 end
 
-local function GetProductFromGiftId(GiftId: number): (ProductData?, number?)
+local function GetProductFromGiftId(GiftId: number): (ProductData?, boolean?)
 	if GiftIds[GiftId] then
-		return GetProductFromId({
-			Id = GiftIds[GiftId],
-			IsGamepass = false,
-		})
+		return GetProductFromIdOnly(GiftIds[GiftId])
 	else
 		return nil, nil
 	end

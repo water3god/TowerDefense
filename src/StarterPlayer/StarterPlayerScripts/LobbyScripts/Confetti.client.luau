@@ -98,11 +98,15 @@ local function OnPurchase(RobuxSpent: number)
 end
 
 PurchaseService.GiftPurchased:Connect(function(ProductId: number)
-	local ProductData, _ = ProductInfo.GetProductFromIdOnly(ProductId)
+	local ProductData, IsGamepass = ProductInfo.GetProductFromIdOnly(ProductId)
 	if ProductData then
 		SendWarning:Fire(string.format("Successfully purchased gift: %s", ProductData.Name), Color3.new(0, 1, 0))
 	end
-	OnPurchase(PurchaseService.ProductData[ProductId].ProductInfo.PriceInRobux)
+	if IsGamepass then
+		OnPurchase(PurchaseService.GamepassData[ProductId].ProductInfo.PriceInRobux)
+	else
+		OnPurchase(PurchaseService.ProductData[ProductId].ProductInfo.PriceInRobux)
+	end
 end)
 
 PurchaseService.ProductPurchased:Connect(function(ProductId: number)

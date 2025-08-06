@@ -144,7 +144,7 @@ local function CreateInfoFrame(Properties: Properties)
 		}),
 		IconFrame = e(Main.ImageLabel, {
 			native = {
-				Position = UDim2.fromScale(0.5, 0.525),
+				Position = UDim2.fromScale(0.5, 0.475),
 				Size = UDim2.fromScale(0.9, 0.45),
 				Image = Icon,
 			},
@@ -187,7 +187,7 @@ local function CreateInfoFrame(Properties: Properties)
 		}),
 		SellButton = Properties.OnSellClick and e(Main.Animateables.ImageButton, {
 			native = {
-				Position = UDim2.fromScale(0.5, 0.79),
+				Position = FirstText == "" and UDim2.fromScale(0.5, 0.92) or UDim2.fromScale(0.5, 0.79),
 				Size = UDim2.fromScale(0.8, 0.125),
 				Image = "rbxassetid://135833754402129",
 				ImageColor3 = Color3.fromRGB(255, 43, 47),

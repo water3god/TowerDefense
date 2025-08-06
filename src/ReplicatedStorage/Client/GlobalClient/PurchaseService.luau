@@ -9,7 +9,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
-local Player = Players.LocalPlayer
+local LocalPlayer = Players.LocalPlayer
 
 local Packages = ReplicatedStorage.Packages
 local Signal = require(Packages.Signal)
@@ -109,8 +109,8 @@ function Module.OwnsGamepass(GamepassId: number): boolean
 	return Module.GamepassData[GamepassId] and Module.GamepassData[GamepassId].Owned or false
 end
 
-local function GamepassDone(GamepassId: number, Purchased: boolean)
-	if Purchased then
+local function GamepassDone(Player: Player, GamepassId: number, Purchased: boolean)
+	if LocalPlayer == Player and Purchased then
 		task.spawn(function()
 			if not Module.IsLoaded then
 				Module.Loaded:Wait()
@@ -127,9 +127,10 @@ local function ProductDone(UserId: number, ProductId: number, Purchased: boolean
 			if not Module.IsLoaded then
 				Module.Loaded:Wait()
 			end
-			if UserId == Player.UserId then
-				if ProductInfo.GetProductFromGiftId(ProductId) then
-					Module.GiftPurchased:Fire(ProductId)
+			if UserId == LocalPlayer.UserId then
+				local ProductFromGiftId = ProductInfo.GiftIds[ProductId]
+				if ProductFromGiftId then
+					Module.GiftPurchased:Fire(ProductFromGiftId)
 				else
 					Module.ProductPurchased:Fire(ProductId)
 				end

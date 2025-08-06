@@ -63,8 +63,6 @@ local function CreateProductFrame(props: ProductProps)
 			else
 				MarketplaceService:PromptProductPurchase(game.Players.LocalPlayer, props.ProductId)
 			end
-		else
-			warn(string.format("Product %d is not purchaseable", props.ProductId))
 		end
 		if props.OnClick then
 			props.OnClick()
@@ -106,7 +104,7 @@ local function CreateProductFrame(props: ProductProps)
 		RightStrokeColor = RarityData.StrokeColor,
 		native = props.native,
 		containerChildren = {
-			RobuxLabel = Info and e(Main.TextLabel, {
+			RobuxLabel = props.Purchaseable and Info and e(Main.TextLabel, {
 				native = {
 					Position = UDim2.fromScale(0.5, 0.2),
 					Size = UDim2.fromScale(0.7, 0.16),
@@ -114,7 +112,7 @@ local function CreateProductFrame(props: ProductProps)
 					TextColor3 = Color3.new(0.078431, 1, 0.231373),
 				},
 			}),
-			Owned = Info and e(Main.TextLabel, {
+			Owned = props.Purchaseable and Info and e(Main.TextLabel, {
 				native = {
 					Visible = Info.Owned == true,
 					Text = "Owned!",
