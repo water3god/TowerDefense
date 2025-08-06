@@ -23,6 +23,7 @@ export type ResourceProps = {
 	Name: string,
 	Value: number?,
 	LeftValue: string?,
+	Hovered: boolean?,
 	OnClick: (() -> ())?,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
@@ -46,6 +47,7 @@ local function CreateResourceFrame(props: ResourceProps)
 		MainImage = ResourceData.Image,
 
 		Shine = RarityData.Animate,
+		Hovered = props.Hovered,
 
 		BackgroundColor = RarityData.BackgroundColor,
 		NameColor = RarityData.Color,

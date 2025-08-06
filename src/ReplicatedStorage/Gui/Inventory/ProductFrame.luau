@@ -33,6 +33,7 @@ export type ProductProps = {
 	Count: number,
 
 	Purchaseable: boolean?,
+	Hovered: boolean?,
 
 	OnClick: (() -> ())?,
 	native: { [any]: any }?,
@@ -96,6 +97,7 @@ local function CreateProductFrame(props: ProductProps)
 		OnClick = OnClick,
 
 		Shine = RarityData.Animate,
+		Hovered = props.Hovered,
 
 		BackgroundColor = RarityData.BackgroundColor,
 		NameColor = RarityData.Color,

@@ -195,7 +195,7 @@ local function HandleProduct(props: ProductData)
 	end, { props.Data })
 
 	local RarityData = React.useMemo(function()
-		return RarityInfo[Rarity :: any]
+		return RarityInfo[Rarity :: RarityInfo.Rarity]
 	end, { Rarity })
 
 	local Data = props.Data
@@ -240,7 +240,7 @@ local function HandleResource(props: ResourceData)
 	end, { props.Data })
 
 	local RarityData = React.useMemo(function()
-		return RarityInfo[Rarity :: any]
+		return RarityInfo[Rarity :: RarityInfo.Rarity]
 	end, { Rarity })
 
 	local Data = props.Data
