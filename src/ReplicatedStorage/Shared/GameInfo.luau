@@ -876,7 +876,7 @@ export type RewardData = {
 
 local RewardInfo: { [string]: RewardData } = {
 	["Omen Coins"] = {
-		Image = "rbxassetid://123591871678972",
+		Image = "rbxassetid://72575091810623",
 		Rarity = "Mythic",
 		Description = "A rare currency used to purchase powerful items and units.",
 	},
