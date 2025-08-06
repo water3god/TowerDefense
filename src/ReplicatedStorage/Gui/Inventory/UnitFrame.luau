@@ -10,6 +10,10 @@ local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
 local e = React.createElement
 
+local Modules = ReplicatedStorage.Modules
+local HelperFunctions = require(Modules.HelperFunctions)
+local Join = HelperFunctions.joinDicts
+
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
@@ -90,9 +94,9 @@ local function CreateUnitFrameRaw(Properties: Properties)
 		OnClick = Properties.OnClick,
 
 		native = Properties.native,
-		containerChildren = Properties.containerChildren,
-	}, {
-		TraitFrame = TraitFrame,
+		containerChildren = Join({
+			TraitFrame = TraitFrame,
+		}, Properties.containerChildren),
 	}, Properties.children)
 end
 
