@@ -60,7 +60,6 @@ local function CreateStage(Props: { Hovered: boolean, Number: number, OnClick: (
 			Size = UDim2.fromScale(0.85, 0.225),
 		},
 	}, {
-
 		Button = e(Main.Animateables.TextButton, {
 			native = {
 				BackgroundTransparency = 0,

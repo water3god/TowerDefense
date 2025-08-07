@@ -8,9 +8,13 @@ local Players = game:GetService("Players")
 local LocalizationService = game:GetService("LocalizationService")
 
 local Packages = ReplicatedStorage.Packages
+local Signal = require(Packages.Signal)
 local React = require(Packages.React)
 local e = React.createElement
-local Signal = require(Packages.Signal)
+
+local Modules = ReplicatedStorage.Modules
+local HelperFunctions = require(Modules.HelperFunctions)
+local FindAncestor = require(Modules.FindAncestor)
 
 local Player = Players.LocalPlayer
 
@@ -48,6 +52,56 @@ function Hooks.ContextStack(props: {
 	end
 
 	return mostRecent
+end
+
+function Hooks.UseVisible(Props: { ref: React.Ref<GuiObject?> })
+	local Visible, SetVisible = React.useState(true)
+
+	React.useEffect(function()
+		if typeof(Props.ref) == "table" and typeof(Props.ref.current) == "Instance" then
+			local GuiObject = Props.ref.current :: GuiObject
+
+			local function Update()
+				local Table = {}
+				if not GuiObject:IsDescendantOf(game) then
+					SetVisible(false)
+					return
+				end
+
+				if not GuiObject.Visible then
+					SetVisible(false)
+					return
+				end
+
+				for _, Ancestor in ipairs(FindAncestor.GetAncestors(GuiObject)) do
+					if Ancestor:IsA("GuiObject") then
+						if not Ancestor.Visible then
+							SetVisible(false)
+
+							Ancestor:GetPropertyChangedSignal("Visible"):Connect(function()
+								if Ancestor.Visible then
+									Update()
+								end
+							end)
+
+							return
+						end
+					elseif Ancestor:IsA("LayerCollector") then
+						if not Ancestor.Enabled then
+							SetVisible(false)
+							return
+						end
+					end
+				end
+
+				SetVisible(true)
+			end
+
+			local Connection = GuiObject.AncestryChanged:Connect(function(Child: Instance, Parent: Instance?) end)
+		end
+	end, { Props.ref })
+
+	return Visible
 end
 
 function Hooks.UseTime()

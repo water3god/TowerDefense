@@ -111,6 +111,14 @@ end
 
 local UnitFrameSize = UDim2.fromScale(0.25, 0.65)
 
+local Positions = {
+	0.15,
+	0.325,
+	0.5,
+	0.675,
+	0.85,
+}
+
 type PlacementData = {
 	Trove: Trove.Trove,
 	UniqueId: string,
@@ -235,6 +243,28 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 		return string.format("Level %u (%u/%u)", UnitsContext.GlobalLevel, UnitsContext.XP, UnitsContext.NeededXP)
 	end, { UnitsContext.GlobalLevel, UnitsContext.XP, UnitsContext.NeededXP })
 
+	local CoreFrames = React.useMemo(function()
+		local Frames: { [string]: React.Node } = {}
+
+		for i = 1, 5, 1 do
+			Frames["Frame" .. i] = e(CreateBaseFrame, {
+				UniqueId = Units[i] and Units[i].UniqueId,
+				LevelReq = LevelRequirements.EquippedFrames[i],
+				UnitName = Units[i] and Units[i].Unit,
+				Level = Units[i] and Units[i].Level,
+				Trait = Units[i] and Units[i].Trait,
+				GlobalLevel = UnitsContext.GlobalLevel,
+				OnClick = Click,
+				native = {
+					Position = UDim2.fromScale(Positions[i], 0.35),
+					Size = UnitFrameSize,
+				},
+			})
+		end
+
+		return Frames
+	end, { Units, UnitsContext.GlobalLevel, Click } :: { unknown })
+
 	return e(Main.Frame, {
 		native = Join({
 			Size = UDim2.fromScale(0.7, 0.2),
@@ -288,71 +318,6 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 				}),
 			}),
 		}),
-		Frame1 = e(CreateBaseFrame, {
-			UniqueId = Units[1] and Units[1].UniqueId,
-			LevelReq = LevelRequirements.EquippedFrames[1],
-			UnitName = Units[1] and Units[1].Unit,
-			Level = Units[1] and Units[1].Level,
-			Trait = Units[1] and Units[1].Trait,
-			GlobalLevel = UnitsContext.GlobalLevel,
-			OnClick = Click,
-			native = {
-				Position = UDim2.fromScale(0.15, 0.35),
-				Size = UnitFrameSize,
-			},
-		}),
-		Frame2 = e(CreateBaseFrame, {
-			UniqueId = Units[2] and Units[2].UniqueId,
-			LevelReq = LevelRequirements.EquippedFrames[2],
-			UnitName = Units[2] and Units[2].Unit,
-			Level = Units[2] and Units[2].Level,
-			Trait = Units[2] and Units[2].Trait,
-			GlobalLevel = UnitsContext.GlobalLevel,
-			OnClick = Click,
-			native = {
-				Position = UDim2.fromScale(0.325, 0.35),
-				Size = UnitFrameSize,
-			},
-		}),
-		Frame3 = e(CreateBaseFrame, {
-			UniqueId = Units[3] and Units[3].UniqueId,
-			LevelReq = LevelRequirements.EquippedFrames[3],
-			UnitName = Units[3] and Units[3].Unit,
-			Level = Units[3] and Units[3].Level,
-			Trait = Units[3] and Units[3].Trait,
-			GlobalLevel = UnitsContext.GlobalLevel,
-			OnClick = Click,
-			native = {
-				Position = UDim2.fromScale(0.5, 0.35),
-				Size = UnitFrameSize,
-			},
-		}),
-		Frame4 = e(CreateBaseFrame, {
-			UniqueId = Units[4] and Units[4].UniqueId,
-			LevelReq = LevelRequirements.EquippedFrames[4],
-			UnitName = Units[4] and Units[4].Unit,
-			Level = Units[4] and Units[4].Level,
-			Trait = Units[4] and Units[4].Trait,
-			GlobalLevel = UnitsContext.GlobalLevel,
-			OnClick = Click,
-			native = {
-				Position = UDim2.fromScale(0.675, 0.35),
-				Size = UnitFrameSize,
-			},
-		}),
-		Frame5 = e(CreateBaseFrame, {
-			UniqueId = Units[5] and Units[5].UniqueId,
-			LevelReq = LevelRequirements.EquippedFrames[5],
-			UnitName = Units[5] and Units[5].Unit,
-			Level = Units[5] and Units[5].Level,
-			Trait = Units[5] and Units[5].Trait,
-			GlobalLevel = UnitsContext.GlobalLevel,
-			OnClick = Click,
-			native = {
-				Position = UDim2.fromScale(0.85, 0.35),
-				Size = UnitFrameSize,
-			},
-		}),
 		LevelBar = e(Main.ImageLabel, {
 			native = {
 				Position = UDim2.fromScale(0.5, 0.8),
@@ -390,7 +355,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 				},
 			}),
 		}),
-	}, Properties.children)
+	}, CoreFrames, Properties.children)
 end)
 
 return CreateBottomFrame
