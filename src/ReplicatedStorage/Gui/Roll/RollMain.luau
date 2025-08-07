@@ -222,7 +222,7 @@ local function CreateRollMain(props: Properties)
 
 		if CurrencyData.Value < NewCost then
 			WarningData.Add(string.format("You are missing %u Gold!", NewCost - CurrencyData.Value))
-			MarketplaceService:PromptGamePassPurchase(LocalPlayer, 3348441372)
+			MarketplaceService:PromptProductPurchase(LocalPlayer, 3348441372)
 			return
 		end
 

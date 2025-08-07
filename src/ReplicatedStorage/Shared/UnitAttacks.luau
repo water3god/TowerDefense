@@ -3,13 +3,11 @@
 -- By Wa1er_God --
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local ServerStorage = game:GetService("ServerStorage")
 local TweenService = game:GetService("TweenService")
 local SoundService = game:GetService("SoundService")
 local RunService = game:GetService("RunService")
 
 local Packages = ReplicatedStorage.Packages
-local HelperFunctions = require(ReplicatedStorage.Modules.HelperFunctions)
 local Promise = require(Packages.Promise)
 
 local Client = ReplicatedStorage.Client
@@ -580,6 +578,58 @@ local UnitAttacks: {
 		["William the Conqueror"] = {
 			[0] = {
 				function(Unit, AttackInput, Enemy, Delay)
+					local DelayTime1 = CalculateDelay(0.2, AttackInput.SpeedRatio, Delay)
+					local DelayTime2 = CalculateDelay(0.4, AttackInput.SpeedRatio, Delay)
+					local DelayTime3 = CalculateDelay(0.6, AttackInput.SpeedRatio, Delay)
+
+					local DelProm1 = Promise.delay(DelayTime1):andThen(function()
+						Emit(
+							Unit,
+							{ Emitters.Green_slash },
+							Unit.Root.CFrame
+								+ Unit.CFrame.RightVector * 0.8
+								+ Unit.CFrame.LookVector
+								+ Unit.CFrame.UpVector,
+							true,
+							true,
+							2,
+							function(emitter)
+								emitter.Rotation = NumberRange.new(-60)
+								emitter.EmissionDirection = Enum.NormalId.Left
+							end
+						)
+					end)
+
+					local DelProm2 = Promise.delay(DelayTime2):andThen(function()
+						Emit(
+							Unit,
+							{ Emitters.Green_slash },
+							Unit.Root.CFrame + Unit.CFrame.RightVector * 0.8 + Unit.CFrame.LookVector * 2,
+							true,
+							true,
+							2,
+							function(emitter)
+								emitter.EmissionDirection = Enum.NormalId.Bottom
+								emitter.Rotation = NumberRange.new(90, 90)
+							end
+						)
+					end)
+
+					local DelProm3 = Promise.delay(DelayTime3):andThen(function()
+						Emit(
+							Unit,
+							{ Emitters.green_line },
+							Unit.Root.CFrame + Unit.CFrame.RightVector * 0.6 + Unit.CFrame.LookVector * 2,
+							true,
+							true,
+							2
+						)
+					end)
+
+					Unit:AddAttackPromise(DelProm1, "WilliamAttackEmit1")
+					Unit:AddAttackPromise(DelProm2, "WilliamAttackEmit2")
+					Unit:AddAttackPromise(DelProm3, "WilliamAttackEmit3")
+
 					DefaultAttack(Unit, AttackInput, Enemy, Delay)
 					DelayedAttackHit(Unit, AttackInput, Enemy, 0.3, Delay, "1")
 					DelayedAttackHit(Unit, AttackInput, Enemy, 0.5, Delay, "2")

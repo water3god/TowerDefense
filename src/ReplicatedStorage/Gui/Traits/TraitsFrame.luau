@@ -3,7 +3,11 @@
 -- By Wa1er_God --
 
 -- Services --
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local MarketplaceService = game:GetService("MarketplaceService")
+
+local Player = Players.LocalPlayer
 
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
@@ -165,6 +169,7 @@ local function CreateTraitsFrame(props: Properties)
 		if not Unit then
 			WarningData.Add("You need to select a Unit first!")
 		elseif Count <= 0 then
+			MarketplaceService:PromptProductPurchase(Player, 3359654911)
 			WarningData.Add("You don't have any Omen Coins!")
 		else
 			RollTrait.Fire({

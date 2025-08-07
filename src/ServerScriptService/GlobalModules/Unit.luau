@@ -330,6 +330,10 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 		self:ChangeRatio("__DamageMultiplier", "Global", "Damage", UserInput.DamageMultiplier, math.huge)
 	end
 
+	--[[if RunService:IsStudio() then
+		self:ChangeRatio("Studio", "Global", "FireRate", 5, math.huge)
+	end]]
+
 	if #SharedUnitData.Abilities ~= #Data.Abilities then
 		warn("Incorrect Ability Configuration for: " .. self.UnitName)
 	end
