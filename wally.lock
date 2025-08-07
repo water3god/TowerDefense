@@ -4,38 +4,18 @@ registry = "test"
 
 [[package]]
 name = "alicesaidhi/conch"
-version = "0.2.4"
-dependencies = [["ast", "alicesaidhi/conch-ast@0.2.1"], ["compiler", "alicesaidhi/conch-compiler@0.2.2"], ["intel", "alicesaidhi/conch-analysis@0.2.1"], ["types", "alicesaidhi/conch-types@0.2.1"], ["vm", "alicesaidhi/conch-vm@0.2.1"]]
+version = "0.3.0"
+dependencies = [["language", "alicesaidhi/conch-language@0.3.0"]]
 
 [[package]]
-name = "alicesaidhi/conch-analysis"
-version = "0.2.1"
-dependencies = [["types", "alicesaidhi/conch-types@0.2.1"]]
-
-[[package]]
-name = "alicesaidhi/conch-ast"
-version = "0.2.1"
-dependencies = [["types", "alicesaidhi/conch-types@0.2.1"]]
-
-[[package]]
-name = "alicesaidhi/conch-compiler"
-version = "0.2.2"
-dependencies = [["types", "alicesaidhi/conch-types@0.2.1"]]
-
-[[package]]
-name = "alicesaidhi/conch-types"
-version = "0.2.1"
+name = "alicesaidhi/conch-language"
+version = "0.3.0"
 dependencies = []
 
 [[package]]
 name = "alicesaidhi/conch-ui"
-version = "0.2.4"
-dependencies = [["ast", "alicesaidhi/conch-ast@0.2.1"], ["conch", "alicesaidhi/conch@0.2.4"], ["vide", "centau/vide@0.3.1"]]
-
-[[package]]
-name = "alicesaidhi/conch-vm"
-version = "0.2.1"
-dependencies = [["types", "alicesaidhi/conch-types@0.2.1"]]
+version = "0.3.0"
+dependencies = [["conch", "alicesaidhi/conch@0.3.0"], ["language", "alicesaidhi/conch-language@0.3.0"], ["vide", "centau/vide@0.3.1"]]
 
 [[package]]
 name = "centau/vide"
@@ -155,7 +135,12 @@ dependencies = []
 [[package]]
 name = "rogershi/main"
 version = "0.1.0"
-dependencies = [["BufferUtil", "sleitnick/buffer-util@0.3.1"], ["Conch", "alicesaidhi/conch@0.2.4"], ["Conch_ui", "alicesaidhi/conch-ui@0.2.4"], ["Concur", "sleitnick/concur@0.1.2"], ["Input", "sleitnick/input@2.3.0"], ["Log", "sleitnick/log@0.1.1"], ["Promise", "lukadev-0/typed-promise@4.0.2"], ["React", "jsdotlua/react@17.2.1"], ["ReactRoblox", "jsdotlua/react-roblox@17.2.1"], ["ReactSpring", "chriscerie/react-spring@2.0.0"], ["Signal", "sleitnick/signal@2.0.3"], ["Streamable", "sleitnick/streamable@1.2.4"], ["TableUtil", "sleitnick/table-util@1.2.1"], ["Timer", "sleitnick/timer@1.1.2"], ["Trove", "sleitnick/trove@1.5.1"], ["UI-LABS", "pepeeltoro41/ui-labs@2.3.8"], ["WaitFor", "sleitnick/wait-for@1.0.0"]]
+dependencies = [["BufferUtil", "sleitnick/buffer-util@0.3.1"], ["Conch", "alicesaidhi/conch@0.3.0"], ["Conch_ui", "alicesaidhi/conch-ui@0.3.0"], ["Concur", "sleitnick/concur@0.1.2"], ["Input", "sleitnick/input@2.3.0"], ["Log", "sleitnick/log@0.1.1"], ["Promise", "lukadev-0/typed-promise@4.0.2"], ["React", "jsdotlua/react@17.2.1"], ["ReactRoblox", "jsdotlua/react-roblox@17.2.1"], ["ReactSpring", "chriscerie/react-spring@2.0.0"], ["Signal", "sleitnick/signal@2.0.3"], ["Streamable", "sleitnick/streamable@1.2.4"], ["TableUtil", "sleitnick/table-util@1.2.1"], ["Timer", "sleitnick/timer@1.1.2"], ["Trove", "sleitnick/trove@1.5.1"], ["UI-LABS", "pepeeltoro41/ui-labs@2.3.8"], ["WaitFor", "sleitnick/wait-for@1.0.0"], ["studiocomponents", "sircfenner/studiocomponents@1.2.0"]]
+
+[[package]]
+name = "sircfenner/studiocomponents"
+version = "1.2.0"
+dependencies = [["react", "jsdotlua/react@17.2.1"], ["react-roblox", "jsdotlua/react-roblox@17.2.1"]]
 
 [[package]]
 name = "sleitnick/buffer-util"
