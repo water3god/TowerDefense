@@ -6,7 +6,7 @@ local RunService = game:GetService("RunService")
 
 local Delays: { [any]: number } = {}
 
-RunService.PostSimulation:Connect(function(DeltaTime: number)
+RunService.Heartbeat:Connect(function(DeltaTime: number)
 	for Name, DelayTime in pairs(Delays) do
 		Delays[Name] = math.max(DelayTime - DeltaTime, 0)
 

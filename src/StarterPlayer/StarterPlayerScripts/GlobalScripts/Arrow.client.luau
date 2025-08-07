@@ -75,7 +75,7 @@ end)
 WaveService.Passed:Connect(StartTrove:WrapClean())
 WaveService.Ended:Connect(StartTrove:WrapClean())
 
-RunService.PostSimulation:Connect(function()
+RunService.Heartbeat:Connect(function()
 	for _, ArrowData in ipairs(Arrows) do
 		local Bezier = Beziers[ArrowData.Bezier]
 		local Time = CalculateArrowTimePosition(ArrowData)

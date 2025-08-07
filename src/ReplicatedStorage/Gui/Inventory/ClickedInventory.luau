@@ -286,7 +286,7 @@ local function Connected(props)
 					OnClick(Mouse:GetPosition())
 				end)
 
-				ClickedTrove:Connect(RunService.PostSimulation, function()
+				ClickedTrove:Connect(RunService.Heartbeat, function()
 					UpdatePosition(Mouse:GetPosition())
 				end)
 			end
@@ -307,7 +307,7 @@ local function Connected(props)
 				local WorldPromise = Promise.try(function()
 					return ClickedCharacter
 				end):andThen(function(Model: Model)
-					Connection = RunService.PostSimulation:Connect(function()
+					Connection = RunService.Heartbeat:Connect(function()
 						local Position = Camera:WorldToScreenPoint(Model:GetPivot().Position)
 						SetClickedPosition(UDim2.fromOffset(Position.X, Position.Y))
 					end)

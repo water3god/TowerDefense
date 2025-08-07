@@ -68,7 +68,7 @@ local function CreateBaseFrame(Properties: Properties)
 
 	React.useEffect(function()
 		if Properties.Animated then
-			local Connection = RunService.PostSimulation:Connect(function()
+			local Connection = RunService.Heartbeat:Connect(function()
 				local NewRotation = Rotation:getValue() + 0.4
 
 				if NewRotation > 360 then
@@ -90,7 +90,7 @@ local function CreateBaseFrame(Properties: Properties)
 
 	React.useEffect(function()
 		if Properties.Shine then
-			local Connection = RunService.PostSimulation:Connect(function()
+			local Connection = RunService.Heartbeat:Connect(function()
 				SetShine(ShineVar)
 			end)
 

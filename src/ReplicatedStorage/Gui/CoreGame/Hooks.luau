@@ -24,7 +24,7 @@ function Hooks.useClock()
 	local clockBinding, setClockBinding = React.useBinding(0)
 
 	React.useEffect(function()
-		local stepConnection = RunService.PostSimulation:Connect(function(delta)
+		local stepConnection = RunService.Heartbeat:Connect(function(delta)
 			setClockBinding(clockBinding:getValue() + delta)
 		end)
 
@@ -112,7 +112,7 @@ function Hooks.UseTime()
 	React.useEffect(function()
 		SetTotalTime(TimeData.TotalTime)
 		local Connection: RBXScriptConnection? = nil
-		Connection = RunService.PostSimulation:Connect(function()
+		Connection = RunService.Heartbeat:Connect(function()
 			local NewTime = math.clamp(
 				TimeData.StartTime - workspace:GetServerTimeNow() + TimeData.TotalTime,
 				0,

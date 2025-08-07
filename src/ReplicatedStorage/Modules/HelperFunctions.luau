@@ -426,7 +426,7 @@ end
 function Funcs.ConnectTime(_StartTime: number, EndTime: number, Func: (Time: number) -> (), TimeTrove: Trove.Trove?)
 	local Connection = nil
 	if TimeTrove then
-		Connection = TimeTrove:Connect(RunService.PostSimulation, function()
+		Connection = TimeTrove:Connect(RunService.Heartbeat, function()
 			local NewTime = -(workspace:GetServerTimeNow() - EndTime)
 
 			if NewTime >= 0 then
@@ -436,7 +436,7 @@ function Funcs.ConnectTime(_StartTime: number, EndTime: number, Func: (Time: num
 			end
 		end)
 	else
-		Connection = RunService.PostSimulation:Connect(function()
+		Connection = RunService.Heartbeat:Connect(function()
 			local NewTime = -(workspace:GetServerTimeNow() - EndTime)
 			if NewTime >= 0 then
 				Func(NewTime)
@@ -462,7 +462,7 @@ function Funcs.TweenPromise(TotalTime: number, Handler: (alpha: number) -> ())
 			end
 		end)
 
-		Connection = RunService.PostSimulation:Connect(function(Delta: number)
+		Connection = RunService.Heartbeat:Connect(function(Delta: number)
 			Count = math.clamp(Count + Delta / TotalTime, 0, 1)
 			Handler(Count)
 

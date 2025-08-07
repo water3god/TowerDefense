@@ -375,7 +375,7 @@ local function FireArrow(
 		end)
 	end
 
-	local Connection = RunService.PostSimulation:Connect(function()
+	local Connection = RunService.Heartbeat:Connect(function()
 		if Enemy then
 			Unit:RotateToEnemy(Enemy)
 		end

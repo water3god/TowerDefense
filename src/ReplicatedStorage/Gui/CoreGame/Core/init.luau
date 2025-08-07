@@ -526,7 +526,7 @@ local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (strin
 						OnPress(Mouse:GetPosition())
 					end)
 
-					InputTrove:Connect(RunService.PostSimulation, function()
+					InputTrove:Connect(RunService.Heartbeat, function()
 						OnFrame(Mouse:GetPosition())
 					end)
 				elseif Preferred == "Gamepad" then

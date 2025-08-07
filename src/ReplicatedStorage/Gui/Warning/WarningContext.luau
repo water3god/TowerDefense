@@ -57,7 +57,7 @@ local function WarningProvider(props)
 		end)
 	end, {})
 
-	Hooks.useEventConnection(RunService.PostSimulation, function()
+	Hooks.useEventConnection(RunService.Heartbeat, function()
 		local NewTable = table.clone(Value)
 		local Changed = false
 		for Id, Data in pairs(Value) do

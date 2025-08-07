@@ -385,7 +385,7 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 		end
 
 		if self:GetProperty("FireRate") ~= 0 then
-			local Connection = self._Trove:Connect(RunService.PostSimulation, function()
+			local Connection = self._Trove:Connect(RunService.Heartbeat, function()
 				self:UpdateEnemy()
 			end)
 

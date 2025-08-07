@@ -162,4 +162,4 @@ local function OnFrame()
 	end
 end
 
-RunService.PostSimulation:Connect(OnFrame)
+RunService.Heartbeat:Connect(OnFrame)

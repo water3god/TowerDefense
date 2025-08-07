@@ -331,7 +331,7 @@ local function CalculateTimePosition(Enemy: Types.EnemyClient)
 	return NewTime
 end
 
-RunService.PostSimulation:Connect(function()
+RunService.Heartbeat:Connect(function()
 	for _, self in pairs(Enemies) do
 		local TimePosition = CalculateTimePosition(self)
 
