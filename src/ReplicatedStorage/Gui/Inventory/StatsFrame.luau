@@ -19,6 +19,7 @@ local CloseButton = require(CoreGame.CloseButton)
 local Main = require(CoreGame.Main)
 local Title = require(CoreGame.Title)
 local UIStroke = require(CoreGame.UIStroke)
+local AnimatedGradient = require(CoreGame.AnimatedGradient)
 
 local PurchaseContext = require(Gui.Store.PurchaseContext)
 
@@ -311,8 +312,10 @@ local function CreateStatsFrame(props: Props)
 					TextXAlignment = Enum.TextXAlignment.Left,
 				},
 			}, {
-				ColorGradient = e("UIGradient", {
-					Color = RarityData.Color,
+				ColorGradient = e(AnimatedGradient, {
+					GradColor = RarityData.Color,
+					Animate = true,
+					Speed = 1,
 				}),
 				Stroke = e(UIStroke.UIStrokeGradient, {
 					Stroke = 0.02,
@@ -327,8 +330,10 @@ local function CreateStatsFrame(props: Props)
 					TextXAlignment = Enum.TextXAlignment.Left,
 				},
 			}, {
-				ColorGradient = e("UIGradient", {
-					Color = RarityData.Color,
+				ColorGradient = e(AnimatedGradient, {
+					GradColor = RarityData.Color,
+					Animate = true,
+					Speed = 1,
 				}),
 				Stroke = e(UIStroke.UIStrokeGradient, {
 					Stroke = 0.02,

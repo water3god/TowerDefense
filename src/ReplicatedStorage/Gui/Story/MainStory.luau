@@ -287,10 +287,6 @@ local function CreateMainStory(Properties: Properties)
 		SetStage(1)
 	end, { CurrentMap })
 
-	React.useEffect(function()
-		SetDifficulty("Normal")
-	end, { Stage })
-
 	local DifficultyLayoutOrder = LayoutOrder()
 
 	local CancelCallback = React.useCallback(function()
@@ -357,7 +353,7 @@ local function CreateMainStory(Properties: Properties)
 			and MapInfo[Stage][Difficulty :: any]
 			and MapInfo[Stage][Difficulty :: any].FastestTime
 		then
-			return tostring(MapInfo[Stage][Difficulty :: any].FastestTime)
+			return HelperFunctions.FormatTime(MapInfo[Stage][Difficulty :: any].FastestTime)
 		else
 			return "N/A"
 		end

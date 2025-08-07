@@ -469,6 +469,25 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		end
 	end, { OpenFrame })
 
+	React.useEffect(function()
+		if not HoveredId then
+			return
+		end
+		if OpenFrame == "Unit" then
+			if not InventoryData.Units[HoveredId] then
+				SetHovered(nil)
+			end
+		elseif OpenFrame == "Product" then
+			if not InventoryData.Products[HoveredId] then
+				SetHovered(nil)
+			end
+		elseif OpenFrame == "Resource" then
+			if not InventoryData.Resources[HoveredId] then
+				SetHovered(nil)
+			end
+		end
+	end, { InventoryData, HoveredId } :: { unknown })
+
 	local SortData = React.useMemo(function()
 		local Sorts = {}
 		if OpenFrame == "Unit" then
@@ -514,25 +533,6 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 
 		return Data
 	end, { InventoryData, FilterMethod, OpenFrame, Translator } :: { unknown })
-
-	React.useEffect(function()
-		if not HoveredId then
-			return
-		end
-		if OpenFrame == "Unit" then
-			if not InventoryData.Units[HoveredId] then
-				SetHovered(nil)
-			end
-		elseif OpenFrame == "Product" then
-			if not InventoryData.Products[HoveredId] then
-				SetHovered(nil)
-			end
-		elseif OpenFrame == "Resource" then
-			if not InventoryData.Resources[HoveredId] then
-				SetHovered(nil)
-			end
-		end
-	end, { InventoryData, HoveredId } :: { unknown })
 
 	local function Translate(String: string)
 		if Translator then

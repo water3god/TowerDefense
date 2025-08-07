@@ -54,6 +54,15 @@ export type Properties = {
 	containerChildren: { [any]: any }?,
 }
 
+local ShineVar = -4
+
+RunService.Heartbeat:Connect(function(DeltaTime: number)
+	ShineVar = ShineVar + DeltaTime * 2
+	if ShineVar > 4 then
+		ShineVar = ShineVar - 8
+	end
+end)
+
 local function CreateBaseFrame(Properties: Properties)
 	local Rotation, SetRotation = React.useBinding(0)
 
@@ -81,14 +90,8 @@ local function CreateBaseFrame(Properties: Properties)
 
 	React.useEffect(function()
 		if Properties.Shine then
-			local Connection = RunService.PostSimulation:Connect(function(Delta: number)
-				local NewShine = Shine:getValue() + Delta * 2
-
-				if NewShine > 4 then
-					SetShine(NewShine - 8)
-				else
-					SetShine(NewShine)
-				end
+			local Connection = RunService.PostSimulation:Connect(function()
+				SetShine(ShineVar)
 			end)
 
 			return function()

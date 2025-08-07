@@ -187,6 +187,7 @@ local function HandleProduct(props: ProductData)
 		end,
 		Count = Data.Count,
 		ProductId = Data.ProductId,
+		Hovered = props.HoveredId == Data.UniqueId,
 		native = props.native,
 	}, props.children)
 end
@@ -225,6 +226,7 @@ local function HandleResource(props: ResourceData)
 				UniqueId = Data.UniqueId,
 			})
 		end,
+		HoveredId = props.HoveredId == Data.UniqueId,
 		native = props.native,
 	}, props.children)
 end
