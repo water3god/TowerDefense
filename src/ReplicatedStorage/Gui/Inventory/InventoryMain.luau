@@ -322,7 +322,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		end
 	end, { InSell, HoveredId } :: { unknown })
 
-	React.useLayoutEffect(function()
+	React.useEffect(function()
 		local SellingUnitsCloned = table.clone(SellingItems)
 		for i = #SellingUnitsCloned, 1, -1 do
 			local Id = SellingUnitsCloned[i]

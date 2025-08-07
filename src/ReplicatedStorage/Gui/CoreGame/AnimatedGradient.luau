@@ -190,7 +190,7 @@ local function createAnimatedColorSequence(colors: { Color3 }, progress: number)
 end
 
 local function CreateAnimatedGradient(
-	props: Properties & { GradColor: ColorSequence, Animate: boolean, Speed: number? }
+	props: Properties & { GradColor: ColorSequence, Animate: boolean?, Speed: number? }
 )
 	local Color, SetColor = React.useBinding(nil :: ColorSequence?)
 
@@ -207,7 +207,9 @@ local function CreateAnimatedGradient(
 	React.useEffect(function()
 		SetColor(props.GradColor)
 
-		if props.GradColor and props.Animate and not isUniform then
+		local Animate = if props.Animate == nil then true else props.Animate
+
+		if props.GradColor and Animate and not isUniform then
 			-- Subscribe to the shared animation system
 			local unsubscribe = subscribeToAnimation(function(progress: number)
 				local animatedColor = createAnimatedColorSequence(extractedColors, progress)

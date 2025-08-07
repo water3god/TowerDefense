@@ -25,6 +25,7 @@ local DailyRewards = require(Shared.DailyRewards)
 local SettingData = require(Shared.Settings)
 local TitleData = require(Shared.Titles)
 local QuestData = require(Shared.Quests)
+local Traits = require(Shared.Traits)
 local Constants = require(Shared.Constants)
 
 local CalculateUnitXP = GameInfo.XPData.CalculateUnitXP
@@ -352,6 +353,14 @@ function PlayerData.new(Player: Player)
 				Data.EquippedUnits[Index] = NewId
 			end
 		end)
+
+		for _, Unit in pairs(Data.Units) do
+			if Unit and Unit.Trait then
+				if not Traits.Traits[Unit.Trait] then
+					Unit.Trait = nil
+				end
+			end
+		end
 
 		SyncIds(Data.Products)
 		SyncIds(Data.Resources)

@@ -22,6 +22,7 @@ local UIStroke = require(CoreGame.UIStroke)
 local CloseButton = require(CoreGame.CloseButton)
 local Title = require(CoreGame.Title)
 local NewGui = require(CoreGame.NewGui)
+local AnimatedGradient = require(CoreGame.AnimatedGradient)
 
 local Shared = ReplicatedStorage.Shared
 local Traits = require(Shared.Traits)
@@ -72,8 +73,9 @@ local function CreateTrait(props: TraitProperties)
 					Stroke = 0.015,
 					GradColor = RarityData.StrokeColor,
 				}),
-				UIGradient = e("UIGradient", {
-					Color = RarityData.Color,
+				UIGradient = e(AnimatedGradient, {
+					GradColor = RarityData.Color,
+					Speed = 1,
 				}),
 			}),
 			Chance = e(Main.TextLabel, {
@@ -88,8 +90,9 @@ local function CreateTrait(props: TraitProperties)
 					Stroke = 0.015,
 					GradColor = RarityData.StrokeColor,
 				}),
-				UIGradient = e("UIGradient", {
-					Color = RarityData.Color,
+				UIGradient = e(AnimatedGradient, {
+					GradColor = RarityData.Color,
+					Speed = 1,
 				}),
 			}),
 			Icon = e(Main.ImageLabel, {
