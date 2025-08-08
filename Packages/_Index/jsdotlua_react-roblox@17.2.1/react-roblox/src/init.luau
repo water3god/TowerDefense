@@ -9,6 +9,8 @@
  * @flow
 ]]
 
-local HostTypes = require(script:WaitForChild('client'):WaitForChild('ReactRobloxHostTypes.roblox'))
+_G.__DEV__ = game:GetService("RunService"):IsStudio()
+
+local HostTypes = require(script:WaitForChild("client"):WaitForChild("ReactRobloxHostTypes.roblox"))
 export type RootType = HostTypes.RootType
-return require(script:WaitForChild('client'):WaitForChild('ReactRoblox'))
+return require(script:WaitForChild("client"):WaitForChild("ReactRoblox"))

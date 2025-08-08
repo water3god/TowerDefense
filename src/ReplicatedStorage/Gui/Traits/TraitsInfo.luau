@@ -64,8 +64,8 @@ local function CreateTrait(props: TraitProperties)
 			Label = e(Main.TextLabel, {
 				native = {
 					Text = props.Trait,
-					Size = UDim2.fromScale(0.5, 0.5),
-					Position = UDim2.fromScale(0.45, 0.5),
+					Size = UDim2.fromScale(0.45, 0.45),
+					Position = UDim2.fromScale(0.425, 0.5),
 					TextXAlignment = Enum.TextXAlignment.Left,
 				},
 			}, {

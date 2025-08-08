@@ -148,7 +148,7 @@ local function CreateTraitsFrame(props: Properties)
 
 	local RarityData = React.useMemo(function()
 		if Trait and Trait ~= "None" then
-			local TraitData = Traits[Trait]
+			local TraitData = Traits.Traits[Trait]
 			if TraitData then
 				return RarityInfo[TraitData.Rarity :: any]
 			end
