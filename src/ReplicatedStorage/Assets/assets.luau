@@ -9,6 +9,9 @@ local assets = {
 		["Rammeses.png"] = "rbxassetid://115676624628103",
 		["Tut.png"] = "rbxassetid://127377869922808",
 	},
+	Icons = {
+		["gold-ingot.png"] = "rbxassetid://81695874378087",
+	},
 	audio = {
 		["657948__lilmati__family-friendly-inspect-sound-ui-or-in-game-notification.wav"] = "rbxassetid://72255888882620",
 		["explosion.mp3"] = "rbxassetid://133965358324268",

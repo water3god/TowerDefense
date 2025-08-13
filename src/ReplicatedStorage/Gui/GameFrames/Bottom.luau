@@ -20,6 +20,11 @@ local DelayHandler = require(Modules.DelayHandler)
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
 
+local Client = ReplicatedStorage.Client
+local GlobalClient = Client.GlobalClient
+local UnitClient = require(GlobalClient.UnitClient)
+local InventoryService = require(GlobalClient.InventoryService)
+
 -- Reference UI --
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
@@ -35,11 +40,6 @@ local WaveContext = require(GameFrames.WaveContext)
 local Shared = ReplicatedStorage.Shared
 local LevelRequirements = require(Shared.LevelRequirements)
 local IsLobby = require(Shared.IsLobby)
-
-local Client = ReplicatedStorage.Client
-local GlobalClient = Client.GlobalClient
-local UnitClient = require(GlobalClient.UnitClient)
-local InventoryService = require(GlobalClient.InventoryService)
 
 export type Properties = {
 	SetHovered: (HoveredId: string?) -> ()?,

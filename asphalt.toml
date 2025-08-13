@@ -15,4 +15,4 @@ strip_extension = true
 
 [inputs.assets]
 path = "assets/**/*"
-output_path = "assets/init"
+output_path = "src/ReplicatedStorage/Assets"

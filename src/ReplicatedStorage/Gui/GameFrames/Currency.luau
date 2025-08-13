@@ -16,6 +16,7 @@ local CurrencyService = require(GlobalClient.CurrencyService)
 
 local Shared = ReplicatedStorage.Shared
 local IsLobby = require(Shared.IsLobby)
+local GameInfo = require(Shared.GameInfo)
 
 export type CurrencyName = "Gold" | "Coins"
 
@@ -39,7 +40,7 @@ local function CurrencyProvider(props)
 	React.useEffect(function()
 		if IsLobby then
 			SetCurrencyName("Gold")
-			SetIcon("rbxassetid://123591871678972")
+			SetIcon(GameInfo.RewardInfo["Gold"].Image)
 		else
 			SetCurrencyName("Coins")
 			SetIcon("rbxassetid://72304165589077")

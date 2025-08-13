@@ -881,7 +881,7 @@ local RewardInfo: { [string]: RewardData } = {
 		Description = "A rare currency used to purchase powerful items and units.",
 	},
 	["Gold"] = {
-		Image = "rbxassetid://123591871678972",
+		Image = "rbxassetid://81695874378087",
 		Rarity = "Common",
 		Description = "A basic currency used for various transactions.",
 	},
