@@ -67,7 +67,7 @@ local function CreateTopFrame(Props: Properties)
 		and e(Main.Frame, {
 			native = Join({
 				AnchorPoint = Vector2.new(0.5, 0),
-				Position = UDim2.fromScale(0.5, 0.05),
+				Position = UDim2.fromScale(0.5, 0),
 				Size = UDim2.fromScale(0.5, 0.1),
 			}, Props.native),
 		}, {

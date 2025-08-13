@@ -54,7 +54,7 @@ local function CreateTipsGui(props: Properties)
 			AnchorPoint = Vector2.new(0.5, 0),
 			BackgroundTransparency = 0,
 			BackgroundColor3 = Color3.fromRGB(60, 21, 78),
-			Position = UDim2.fromScale(0.5, 0.02),
+			Position = UDim2.fromScale(0.5, 0),
 			Size = UDim2.fromScale(0.48, 0.08),
 			ZIndex = 0,
 		}, props.native),
