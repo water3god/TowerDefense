@@ -126,7 +126,7 @@ type PlayerDataImpl = {
 	HasProduct: (self: PlayerData, Id: number, IsGamepass: boolean) -> boolean,
 
 	RedeemGamepass: (self: PlayerData, GamepassId: number) -> (),
-	HasRedeemedGamepass: (self: PlayerData, GamepassId: number) -> boolean,
+	OwnsGamepass: (self: PlayerData, GamepassId: number) -> boolean,
 
 	AddProduct: (self: PlayerData, ProductId: number, Count: number?) -> (),
 	RemoveProduct: (self: PlayerData, ProductId: number, Count: number?) -> (),
@@ -637,7 +637,7 @@ function PlayerData:RedeemGamepass(GamepassId: number)
 	end
 end
 
-function PlayerData:HasRedeemedGamepass(GamepassId: number)
+function PlayerData:OwnsGamepass(GamepassId: number)
 	if table.find(self.Profile.Data.Gamepasses, GamepassId) then
 		return true
 	else

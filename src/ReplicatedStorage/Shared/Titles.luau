@@ -41,6 +41,11 @@ local Titles: {
 		Description = "A tester ensuring game quality.",
 		Priority = 6,
 	},
+	VIP = {
+		Color = ColorSequence.new(Color3.fromRGB(255, 215, 0), Color3.fromRGB(255, 230, 150)),
+		Description = "A player who has achieved VIP status.",
+		Priority = 7,
+	},
 	["God"] = {
 		Color = ColorSequence.new(Color3.fromRGB(255, 0, 255), Color3.fromRGB(255, 100, 200)),
 		Description = "A player who has achieved God status.",

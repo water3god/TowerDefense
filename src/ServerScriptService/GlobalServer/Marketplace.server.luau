@@ -68,7 +68,12 @@ local Products: { [number]: (Data: PlayerData.PlayerData) -> boolean } = {
 	end,
 }
 
-local Gamepasses: { [number]: (Data: PlayerData.PlayerData) -> () } = {}
+local Gamepasses: { [number]: (Data: PlayerData.PlayerData) -> () } = {
+	-- VIP --
+	[1382164818] = function(Data: PlayerData.PlayerData)
+		Data:AddTitle("VIP")
+	end,
+}
 
 type ReceiptInfo = {
 	PurchaseId: number,
@@ -127,7 +132,7 @@ UseProduct.SetCallback(function(Player: Player, ProductId: number, IsGamepass: b
 	if Data then
 		if Data:HasProduct(ProductId, IsGamepass) then
 			if IsGamepass then
-				if Data:HasRedeemedGamepass(ProductId) then
+				if Data:OwnsGamepass(ProductId) then
 					SendWarning.Fire(Player, "You have already redeemed this gamepass.", Color3.fromRGB(255, 0, 0))
 					return
 				end
@@ -143,7 +148,7 @@ local function OnPlayerData(Data: PlayerData.PlayerData)
 	local ProfData = Data.Profile.Data
 
 	for ProductId, _ in pairs(ProductInfo.GamepassInfo) do
-		if Data:HasRedeemedGamepass(ProductId) and not table.find(ProfData.Gamepasses, ProductId) then
+		if Data:OwnsGamepass(ProductId) and not table.find(ProfData.Gamepasses, ProductId) then
 			table.insert(ProfData.Gamepasses, ProductId)
 			Data.ProductRedeemed:Fire(ProductId, true)
 		end
@@ -171,8 +176,18 @@ local function OnPlayerData(Data: PlayerData.PlayerData)
 		end
 	end
 
+	for _, GamepassId in ipairs(ProfData.Gamepasses) do
+		if Gamepasses[GamepassId] then
+			Gamepasses[GamepassId](Data)
+		end
+	end
+
 	Data.ProductRedeemed:Connect(function(ProductId: number, IsGamepass: boolean)
-		if not IsGamepass then
+		if IsGamepass then
+			if Gamepasses[ProductId] then
+				Gamepasses[ProductId](Data)
+			end
+		else
 			Redeem(ProductId)
 		end
 		local ProductData = ProductInfo.GetProductFromId({
