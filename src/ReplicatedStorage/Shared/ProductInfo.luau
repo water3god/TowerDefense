@@ -9,83 +9,59 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Shared = ReplicatedStorage.Shared
 local RarityInfo = require(Shared.RarityInfo)
 
-export type ProductData = { Name: string, Image: string, Rarity: RarityInfo.Rarity | string, Func: () -> () }
+export type ProductData = { Name: string, Rarity: RarityInfo.Rarity | string, Func: () -> ()? }
 
 local ProductInfo: { [number]: ProductData } = {
 	[3348441372] = {
 		Name = "1000 Gold",
-		Image = "rbxassetid://18349426643",
 		Rarity = "Common",
-		Func = function() end,
 	},
 	[3348441586] = {
 		Name = "2000 Gold",
-		Image = "rbxassetid://12448142732",
 		Rarity = "Common",
-		Func = function() end,
 	},
 	[3348442115] = {
 		Name = "5000 Gold",
-		Image = "rbxassetid://12448181490",
 		Rarity = "Common",
-		Func = function() end,
 	},
 	[3348442394] = {
 		Name = "20000 Gold",
-		Image = "rbxassetid://6438570209",
 		Rarity = "Common",
-		Func = function() end,
 	},
 	[3348443298] = {
 		Name = "100000 Gold",
-		Image = "rbxassetid://100308684981950",
 		Rarity = "Common",
-		Func = function() end,
 	},
 	[3359651817] = {
 		Name = "2x Luck Boost (1 Hour)",
-		Image = "rbxassetid://13737320585",
 		Rarity = "Rare",
-		Func = function() end,
 	},
 	[3359652520] = {
 		Name = "3x Luck Boost (1 Hour)",
-		Image = "rbxassetid://13737320809",
 		Rarity = "Rare",
-		Func = function() end,
 	},
 	[3359654911] = {
 		Name = "10 Omen Coins",
-		Image = "rbxassetid://13737321336",
 		Rarity = "Common",
-		Func = function() end,
 	},
 	[3359655092] = {
 		Name = "50 Omen Coins",
-		Image = "rbxassetid://13737321714",
 		Rarity = "Common",
-		Func = function() end,
 	},
 	[3359656288] = {
 		Name = "100 Omen Coins",
-		Image = "rbxassetid://13737321883",
 		Rarity = "Common",
-		Func = function() end,
 	},
 	[3359656647] = {
 		Name = "1000 Omen Coins",
-		Image = "rbxassetid://13737322036",
 		Rarity = "Common",
-		Func = function() end,
 	},
 }
 
 local GamepassInfo: { [number]: ProductData } = {
 	[1382164818] = {
 		Name = "VIP",
-		Image = "rbxassetid://1382164818",
 		Rarity = "Legendary",
-		Func = function() end,
 	},
 }
 

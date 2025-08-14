@@ -63,6 +63,8 @@ local function CreateBoost(props: BoostProperties)
 			native = {
 				Image = BoostData.Icon,
 				Size = UDim2.fromScale(0.9, 0.9),
+				Position = UDim2.fromScale(0.5, 0),
+				ZIndex = 0,
 			},
 		}),
 		NameLabel = e(Main.TextLabel, {
@@ -73,7 +75,7 @@ local function CreateBoost(props: BoostProperties)
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.015,
+				Stroke = 0.02,
 			}),
 		}),
 		TimeLabel = e(Main.TextLabel, {
@@ -86,7 +88,7 @@ local function CreateBoost(props: BoostProperties)
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.015,
+				Stroke = 0.02,
 			}),
 		}),
 	}, props.children)

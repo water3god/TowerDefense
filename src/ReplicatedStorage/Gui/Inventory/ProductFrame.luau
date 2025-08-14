@@ -65,10 +65,7 @@ local function CreateProductFrame(props: ProductProps)
 				MarketplaceService:PromptProductPurchase(game.Players.LocalPlayer, props.ProductId)
 			end
 		end
-		if props.OnClick then
-			props.OnClick()
-		end
-	end, { props.OnClick, props.Purchaseable, props.ProductId, props.IsGamepass } :: { unknown })
+	end, { props.Purchaseable, props.ProductId, props.IsGamepass } :: { unknown })
 
 	local Info = React.useMemo(function(): PurchaseContext.Data?
 		if not PurchaseData.Loaded then
@@ -94,10 +91,11 @@ local function CreateProductFrame(props: ProductProps)
 		Name = ProductData.Name,
 		LeftText = "",
 		RightText = not props.Purchaseable and string.format("%ux", props.Count) or "",
-		OnClick = OnClick,
+		OnClick = props.OnClick or OnClick,
 
 		Shine = RarityData.Animate,
 		Hovered = props.Hovered,
+		MainImage = Info and "rbxassetid://" .. Info.ProductInfo.IconImageAssetId,
 
 		BackgroundColor = RarityData.BackgroundColor,
 		NameColor = RarityData.Color,
@@ -113,6 +111,10 @@ local function CreateProductFrame(props: ProductProps)
 					Text = string.format("\u{E002}%s", PriceText),
 					TextColor3 = Color3.new(0.078431, 1, 0.231373),
 				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.03,
+				}),
 			}),
 			Owned = props.Purchaseable and Info and e(Main.TextLabel, {
 				native = {

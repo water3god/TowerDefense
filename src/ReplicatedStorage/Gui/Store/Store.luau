@@ -26,7 +26,7 @@ local CloseButton = require(CoreGame.CloseButton)
 local UIStroke = require(CoreGame.UIStroke)
 local Title = require(CoreGame.Title)
 local BaseButton = require(CoreGame.BaseButton)
-local BaseFrame = require(CoreGame.BaseFrame)
+local ProductFrame = require(Gui.Inventory.ProductFrame)
 
 local StoreFolder = Gui.Store
 local PurchaseContext = require(StoreFolder.PurchaseContext)
@@ -50,46 +50,6 @@ export type ProductProps = {
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
-
-local function CreateProductFrame(props: ProductProps)
-	local PriceText = React.useMemo(function()
-		return HelperFunctions.NumberScaler.ShortenNumber(props.Price)
-	end, { props.Price })
-
-	return e(BaseFrame, {
-		LeftText = "",
-		RightText = "",
-		Image = props.Image,
-		Name = props.Name,
-		Hovered = props.Hovered,
-		OnClick = props.OnClick,
-		BackgroundColor = ColorSequence.new(Color3.new(0.188235, 1, 0.282353)),
-		containerChildren = {
-			RobuxLabel = e(Main.TextLabel, {
-				native = {
-					Position = UDim2.fromScale(0.5, 0.2),
-					Size = UDim2.fromScale(0.7, 0.18),
-					Text = string.format("\u{E002}%s", PriceText),
-					TextColor3 = Color3.new(0.078431, 1, 0.231373),
-				},
-			}),
-			Owned = e(Main.TextLabel, {
-				native = {
-					Visible = props.Owned,
-					Text = "Owned!",
-					Size = UDim2.fromScale(0.9, 0.3),
-					Rotation = -45,
-					ZIndex = 5,
-					TextColor3 = Color3.new(0.568627, 0.568627, 0.568627),
-				},
-			}, {
-				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.03,
-				}),
-			}),
-		},
-	}, {})
-end
 
 local function CreateBasicTable(props: { children: { [any]: any }? })
 	return e(Main.ScrollingFrame, {
@@ -127,17 +87,18 @@ local function CreateStoreFrame(Properties: Properties)
 			return {}
 		end
 
-		local Frames = {}
+		local Frames: { [string]: React.Node } = {}
 
 		if OpenFrame == "Offers" then
 			return Frames
 		elseif OpenFrame == "Gamepasses" then
 			for Id, Data in pairs(PurchaseData.GamepassData) do
-				Frames[Id] = e(CreateProductFrame, {
-					Name = Data.ProductInfo.Name,
-					Image = Data.ProductInfo.IconImageAssetId,
-					Price = Data.ProductInfo.PriceInRobux,
+				Frames["Gamepass" .. Id] = e(ProductFrame, {
+					IsGamepass = true,
+					ProductId = Id,
 					Owned = Data.Owned,
+					Purchaseable = true,
+					Count = 1,
 					Hovered = HoveredProduct == Id,
 					OnClick = function()
 						SetHovered(Id)
@@ -145,12 +106,12 @@ local function CreateStoreFrame(Properties: Properties)
 				})
 			end
 		elseif OpenFrame == "Products" then
-			for Id, Data in pairs(PurchaseData.ProductData) do
-				Frames[Id] = e(CreateProductFrame, {
-					Name = Data.ProductInfo.Name,
-					Image = Data.ProductInfo.IconImageAssetId,
-					Price = Data.ProductInfo.PriceInRobux,
-					Owned = false,
+			for Id, _ in pairs(PurchaseData.ProductData) do
+				Frames["Product" .. Id] = e(ProductFrame, {
+					IsGamepass = false,
+					ProductId = Id,
+					Purchaseable = true,
+					Count = 1,
 					Hovered = HoveredProduct == Id,
 					OnClick = function()
 						SetHovered(Id)
@@ -292,7 +253,7 @@ local function CreateStoreFrame(Properties: Properties)
 		}, {
 			IconFrame = e(Main.ImageLabel, {
 				native = {
-					Position = UDim2.fromScale(0.5, 0.475),
+					Position = UDim2.fromScale(0.5, 0.45),
 					Size = UDim2.fromScale(0.9, 0.45),
 					Image = "rbxassetid://" .. InfoData.Image,
 				},
@@ -321,7 +282,7 @@ local function CreateStoreFrame(Properties: Properties)
 			}),
 			InfoButton = e(Main.Animateables.ImageButton, {
 				native = {
-					Position = UDim2.fromScale(0.78, 0.66),
+					Position = UDim2.fromScale(0.78, 0.67),
 					Size = UDim2.fromScale(0.21, 0.12),
 					Image = "rbxassetid://77078349522524",
 				},
