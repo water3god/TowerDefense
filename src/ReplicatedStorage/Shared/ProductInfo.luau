@@ -9,52 +9,63 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Shared = ReplicatedStorage.Shared
 local RarityInfo = require(Shared.RarityInfo)
 
-export type ProductData = { Name: string, Rarity: RarityInfo.Rarity | string, Func: () -> ()? }
+export type ProductData = { Name: string, Rarity: RarityInfo.Rarity | string, Priority: number, Func: () -> ()? }
 
 local ProductInfo: { [number]: ProductData } = {
 	[3348441372] = {
 		Name = "1000 Gold",
 		Rarity = "Common",
+		Priority = 1,
 	},
 	[3348441586] = {
 		Name = "2000 Gold",
 		Rarity = "Common",
+		Priority = 2,
 	},
 	[3348442115] = {
 		Name = "5000 Gold",
 		Rarity = "Common",
+		Priority = 3,
 	},
 	[3348442394] = {
 		Name = "20000 Gold",
 		Rarity = "Common",
+		Priority = 4,
 	},
 	[3348443298] = {
 		Name = "100000 Gold",
 		Rarity = "Common",
-	},
-	[3359651817] = {
-		Name = "2x Luck Boost (1 Hour)",
-		Rarity = "Rare",
-	},
-	[3359652520] = {
-		Name = "3x Luck Boost (1 Hour)",
-		Rarity = "Rare",
+		Priority = 5,
 	},
 	[3359654911] = {
 		Name = "10 Omen Coins",
 		Rarity = "Common",
+		Priority = 6,
 	},
 	[3359655092] = {
 		Name = "50 Omen Coins",
 		Rarity = "Common",
+		Priority = 7,
 	},
 	[3359656288] = {
 		Name = "100 Omen Coins",
 		Rarity = "Common",
+		Priority = 8,
 	},
 	[3359656647] = {
 		Name = "1000 Omen Coins",
 		Rarity = "Common",
+		Priority = 9,
+	},
+	[3359651817] = {
+		Name = "2x Luck Boost (1 Hour)",
+		Rarity = "Rare",
+		Priority = 10,
+	},
+	[3359652520] = {
+		Name = "3x Luck Boost (1 Hour)",
+		Rarity = "Rare",
+		Priority = 11,
 	},
 }
 
@@ -62,12 +73,28 @@ local GamepassInfo: { [number]: ProductData } = {
 	[1382164818] = {
 		Name = "VIP",
 		Rarity = "Legendary",
+		Priority = 1,
 	},
 }
 
 -- GiftId = ProductId --
 local GiftIds: { [number]: number } = {
+	-- Gamepasses --
 	[3360124700] = 1382164818, -- VIP --
+	-- Products --
+	[3370830163] = 3359654911, -- 10 Omen Coins --
+	[3370847071] = 3359655092, -- 50 Omen Coins --
+	[3370831087] = 3359656288, -- 100 Omen Coins --
+	[3370831549] = 3359656647, -- 1000 Omen Coins --
+
+	[3370833945] = 3348441372, -- 1000 Gold --
+	[3370834600] = 3348441586, -- 2000 Gold --
+	[3370835080] = 3348442115, -- 5000 Gold --
+	[3370836058] = 3348442394, -- 20000 Gold --
+	[3370835535] = 3348443298, -- 100000 Gold --
+
+	[3370831956] = 3359651817, -- 2x Luck Boost (1 Hour) --
+	[3370832916] = 3359652520, -- 3x Luck Boost (1 Hour) --
 }
 
 local function GetProductFromName(Data: { Name: string, IsGamepass: boolean }): (ProductData?, number?)

@@ -13,6 +13,7 @@ local e = React.createElement
 
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
+local Join = HelperFunctions.joinDicts
 
 -- Reference UI --
 local Gui = ReplicatedStorage.Gui
@@ -102,7 +103,9 @@ local function CreateProductFrame(props: ProductProps)
 		NameStrokeColor = RarityData.StrokeColor,
 		RightColor = RarityData.Color,
 		RightStrokeColor = RarityData.StrokeColor,
-		native = props.native,
+		native = Join({
+			LayoutOrder = ProductData.Priority,
+		}, props.native),
 		containerChildren = {
 			RobuxLabel = props.Purchaseable and Info and e(Main.TextLabel, {
 				native = {
