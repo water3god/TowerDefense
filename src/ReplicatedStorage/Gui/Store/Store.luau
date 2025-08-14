@@ -64,6 +64,7 @@ local function CreateBasicTable(props: { children: { [any]: any }? })
 			CellPadding = UDim2.fromScale(0, 0),
 			CellSize = UDim2.fromScale(0.2, 0.3),
 			StartCorner = Enum.StartCorner.TopLeft,
+			SortOrder = Enum.SortOrder.LayoutOrder,
 		}),
 	}, props.children)
 end
