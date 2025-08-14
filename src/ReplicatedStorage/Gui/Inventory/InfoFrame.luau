@@ -15,6 +15,9 @@ local Main = require(CoreGame.Main)
 local UnitView = require(CoreGame.UnitView)
 local AnimatedGradient = require(CoreGame.AnimatedGradient)
 
+local StoreFolder = Gui.Store
+local PurchaseContext = require(StoreFolder.PurchaseContext)
+
 local Shared = ReplicatedStorage.Shared
 local GameInfo = require(Shared.GameInfo)
 local ProductInfo = require(Shared.ProductInfo)
@@ -47,6 +50,8 @@ export type Properties = {
 }
 
 local function CreateInfoFrame(Properties: Properties)
+	local PurchaseData = React.useContext(PurchaseContext.Context)
+
 	local IsUnit = React.useMemo(function()
 		return Properties.Type == "Unit"
 	end, { Properties.Type })
@@ -81,9 +86,11 @@ local function CreateInfoFrame(Properties: Properties)
 		elseif Properties.Type == "Product" then
 			if Properties.Data then
 				if Properties.Data.IsGamepass then
-					return ProductInfo.GamepassInfo[Properties.Data.ProductId].Image
+					return "rbxassetid://"
+						.. PurchaseData.GamepassData[Properties.Data.ProductId].ProductInfo.IconImageAssetId
 				else
-					return ProductInfo.ProductInfo[Properties.Data.ProductId].Image
+					return "rbxassetid://"
+						.. PurchaseData.ProductData[Properties.Data.ProductId].ProductInfo.IconImageAssetId
 				end
 			else
 				return ""
@@ -91,7 +98,7 @@ local function CreateInfoFrame(Properties: Properties)
 		else
 			return ""
 		end
-	end, { Properties.Type, Properties.Name, Properties.Rarity } :: { unknown })
+	end, { Properties.Type, Properties.Name, Properties.Rarity, PurchaseData.Loaded } :: { unknown })
 
 	local FirstText = React.useMemo(function()
 		if Properties.FirstText then
