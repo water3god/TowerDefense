@@ -187,6 +187,7 @@ local function OnPlayerData(Data: PlayerData.PlayerData)
 			if Gamepasses[ProductId] then
 				Gamepasses[ProductId](Data)
 			end
+			OwnedGamepasses.Fire(Data.Player, ProfData.Gamepasses)
 		else
 			Redeem(ProductId)
 		end

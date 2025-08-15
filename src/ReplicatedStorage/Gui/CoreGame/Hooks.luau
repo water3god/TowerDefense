@@ -206,6 +206,24 @@ function Hooks.useCamera()
 	end, {})
 end
 
+function Hooks.useMembership(OtherPlayer: Player)
+	local MembershipType, SetMembershipType = React.useState(Enum.MembershipType.None)
+
+	React.useEffect(function()
+		SetMembershipType(OtherPlayer.MembershipType)
+
+		local Connection = OtherPlayer:GetPropertyChangedSignal("MembershipType"):Connect(function()
+			SetMembershipType(OtherPlayer.MembershipType)
+		end)
+
+		return function()
+			Connection:Disconnect()
+		end
+	end, { OtherPlayer })
+
+	return MembershipType
+end
+
 function Hooks.useCharacter()
 	local Character: typeof(ReplicatedStorage.ModelStorage.Extra.Rig)?, SetCharacter =
 		React.useState(nil :: typeof(ReplicatedStorage.ModelStorage.Extra.Rig)?)

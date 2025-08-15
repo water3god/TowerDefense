@@ -35,6 +35,9 @@ local StoryContext = require(Story.StoryContext)
 local WarningFolder = Gui.Warning
 local WarningContext = require(WarningFolder.WarningContext)
 
+local MiscContexts = Gui.MiscContexts
+local MultiplierContext = require(MiscContexts.GoldMultiplier)
+
 local Shared = ReplicatedStorage.Shared
 local GameInfo = require(Shared.GameInfo)
 
@@ -205,6 +208,7 @@ local DefaultColor = Color3.new(0.227451, 0.082353, 0.290196)
 
 local function CreateMainStory(Properties: Properties)
 	local StoryData = React.useContext(StoryContext.Context)
+	local GoldMultiplier = React.useContext(MultiplierContext.Context)
 	local Time, TotalTime, SetTime = Hooks.UseTime()
 
 	React.useEffect(function()
@@ -243,16 +247,22 @@ local function CreateMainStory(Properties: Properties)
 		end
 
 		for _, Reward in ipairs(Data.Resources) do
+			local Value = Reward.Count
+
+			if Reward.Resource == "Gold" then
+				Value = math.floor(Reward.Count * GoldMultiplier)
+			end
+
 			FrameTable["Reward" .. Reward.Resource] = e(ResourceFrame, {
 				Name = Reward.Resource,
-				Value = Reward.Count,
+				Value = Value,
 				native = {
 					ZIndex = ResourceOrder(),
 				},
 			})
 		end
 		return FrameTable
-	end, { CurrentMap, Stage, Difficulty } :: { unknown })
+	end, { CurrentMap, Stage, Difficulty, GoldMultiplier } :: { unknown })
 
 	local MapData = React.useMemo(function()
 		local Data: { [string]: React.Node } = {}

@@ -99,6 +99,8 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 			local OtherSendData = {}
 
 			if PlayerDataModule then
+				local Multiplier = PlayerDataModule:CalculateGoldMultiplier()
+
 				if Win then
 					for _, Unit in ipairs(Wave.RewardInfo.Units) do
 						local Data = PlayerDataModule.Profile.Data
@@ -113,14 +115,21 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 				for _, Resource in ipairs(Wave.RewardInfo.Resources) do
 					if Resource.Resource == "Gold" then
 						if Win then
-							PlayerDataModule:AddGold(Resource.Count)
-							table.insert(SendData.Resources, Resource)
+							local Amount = math.floor(Resource.Count * Multiplier)
+							PlayerDataModule:AddGold(Amount)
+
+							local NewResource = table.clone(Resource)
+							NewResource.Count = Amount
+
+							table.insert(SendData.Resources, NewResource)
 						else
 							if not Wave.IsInfinite then
-								local Amount = math.floor(Resource.Count / WavePercentage / 2)
+								local Amount = math.floor((Resource.Count * Multiplier) / WavePercentage / 2)
 								if Amount > 0 then
 									PlayerDataModule:AddGold(Amount)
-									table.insert(SendData.Resources, Resource)
+									local NewResource = table.clone(Resource)
+									NewResource.Count = Amount
+									table.insert(SendData.Resources, NewResource)
 								end
 							end
 						end

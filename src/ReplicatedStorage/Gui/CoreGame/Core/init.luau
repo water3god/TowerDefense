@@ -92,6 +92,8 @@ local TraitsFolder = Gui.Traits
 local Evolution = require(TraitsFolder.Evolution)
 local TraitsFrame = require(TraitsFolder.TraitsFrame)
 
+local MiscContexts = Gui.MiscContexts
+
 -- Contexts --
 local InventoryContext = require(Inventory.InventoryContext)
 local PromptContext = require(Inventory.PromptContext)
@@ -108,6 +110,7 @@ local PurchaseContext = require(StoreFolder.PurchaseContext)
 local TipsContext = require(TipsFolder.TipsContext)
 local DailyContext = require(DailyFolder.DailyContext)
 local QuestsContext = require(QuestsFolder.QuestsContext)
+local MultiplierContext = require(MiscContexts.GoldMultiplier)
 
 local IsRunning = RunService:IsRunning()
 
@@ -865,6 +868,7 @@ local function Render()
 				DailyContext.Provider,
 				QuestsContext.Provider,
 				PromptContext.Provider,
+				MultiplierContext.Provider,
 			},
 		},
 		{

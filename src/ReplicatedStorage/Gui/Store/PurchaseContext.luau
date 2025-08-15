@@ -25,7 +25,7 @@ export type Data = {
 	Rarity: string,
 }
 
-local Default: {
+type Default = {
 	ProductData: { [number]: {
 		ProductInfo: PurchaseService.ProductInfo,
 		Owned: boolean?,
@@ -38,13 +38,14 @@ local Default: {
 	} },
 	GiftIds: { [number]: number },
 	Loaded: boolean,
-} =
-	{
-		ProductData = {},
-		GamepassData = {},
-		GiftIds = PurchaseService.GiftIds,
-		Loaded = false,
-	}
+}
+
+local Default: Default = {
+	ProductData = {},
+	GamepassData = {},
+	GiftIds = PurchaseService.GiftIds,
+	Loaded = false,
+}
 
 local PurchaseContext = React.createContext(Default)
 
@@ -62,16 +63,29 @@ local function PurchaseProvider(Props)
 
 	React.useEffect(function()
 		if PurchaseService.Loaded then
-			SetPurchasesNative(SetPurchases)
+			SetPurchases({
+				ProductData = PurchaseService.ProductData,
+				GamepassData = PurchaseService.GamepassData,
+				GiftIds = PurchaseService.GiftIds,
+				Loaded = PurchaseService.IsLoaded,
+			} :: any)
 		end
 	end, {})
 
 	Hooks.useEventConnection(PurchaseService.Loaded, function()
-		SetPurchasesNative(SetPurchases)
+		SetPurchases({
+			ProductData = PurchaseService.ProductData,
+			GamepassData = PurchaseService.GamepassData,
+			GiftIds = PurchaseService.GiftIds,
+			Loaded = PurchaseService.IsLoaded,
+		} :: any)
 	end, {})
 
-	Hooks.useEventConnection(PurchaseService.GamepassPurchased, function()
-		SetPurchasesNative(SetPurchases)
+	Hooks.useEventConnection(PurchaseService.GamepassSynced, function()
+		SetPurchasesNative(function(Old)
+			Old.GamepassData = table.clone(PurchaseService.GamepassData)
+			return Old
+		end)
 	end, {})
 
 	return e(PurchaseContext.Provider, {

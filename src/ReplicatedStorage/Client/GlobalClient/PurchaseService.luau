@@ -82,6 +82,7 @@ local Module: {
 		Rarity: string,
 	} },
 	GiftIds: { [number]: number },
+	GamepassSynced: Signal.Signal<{ number }>,
 	Loaded: Signal.Signal<>,
 	IsLoaded: boolean,
 	UsePurchase: (ProductId: number, IsGamepass: boolean) -> (),
@@ -95,6 +96,7 @@ local Module: {
 		ProductData = {},
 		GamepassData = {},
 		GiftIds = ProductInfo.GiftIds,
+		GamepassSynced = Signal.new(),
 		Loaded = Signal.new(),
 		IsLoaded = false,
 		UsePurchase = function(ProductId, IsGamepass)
@@ -143,11 +145,17 @@ MarketplaceService.PromptGamePassPurchaseFinished:Connect(GamepassDone)
 MarketplaceService.PromptProductPurchaseFinished:Connect(ProductDone)
 
 local GamepassIds = nil
-local GamepassSynced = Signal.new()
 
 OwnedGamepasses.SetCallback(function(Ids: { number })
 	GamepassIds = Ids
-	GamepassSynced:Fire(Ids)
+
+	for GamepassId, _ in pairs(ProductInfo.GamepassInfo) do
+		if Module.GamepassData[GamepassId] then
+			Module.GamepassData[GamepassId].Owned = table.find(Ids, GamepassId) ~= nil
+		end
+	end
+
+	Module.GamepassSynced:Fire(Ids)
 end)
 
 task.spawn(function()
@@ -158,7 +166,7 @@ task.spawn(function()
 		}
 	end
 
-	local Ids = if RunService:IsRunning() then GamepassIds or GamepassSynced:Wait() else {}
+	local Ids = if RunService:IsRunning() then GamepassIds or Module.GamepassSynced:Wait() else {}
 	for GamepassId, Data in pairs(ProductInfo.GamepassInfo) do
 		Module.GamepassData[GamepassId] = {
 			ProductInfo = MarketplaceService:GetProductInfo(GamepassId, Enum.InfoType.GamePass),
