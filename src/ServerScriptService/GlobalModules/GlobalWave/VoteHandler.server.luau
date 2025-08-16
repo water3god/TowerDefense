@@ -104,8 +104,17 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 		end
 	end)
 
-	Wave.Passed:Connect(function()
-		VoteTrove:Destroy()
+	local CurrentWave = Wave.Wave
+
+	Wave.Passed:Connect(function(WaveNum: number)
+		CurrentWave = WaveNum
+	end)
+
+	Wave.TimeChanged:Connect(function()
+		print(CurrentWave, Wave.Wave)
+		if CurrentWave == Wave.Wave and Wave.Wave ~= 0 then
+			VoteTrove:Destroy()
+		end
 	end)
 end
 

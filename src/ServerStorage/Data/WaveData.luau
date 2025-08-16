@@ -37,7 +37,7 @@ local WaveData: { [string]: WaveData } = {
 					["Egyptian Spearman"] = { 10 },
 				},
 				Length = 15,
-				CoinBonus = 200,
+				CoinBonus = 100,
 			},
 			[2] = {
 				Enemies = {
@@ -46,7 +46,7 @@ local WaveData: { [string]: WaveData } = {
 					["Egyptian Spearman"] = { 13, 14 },
 				},
 				Length = 21,
-				CoinBonus = 220,
+				CoinBonus = 120,
 			},
 			[3] = {
 				Enemies = {
@@ -55,7 +55,7 @@ local WaveData: { [string]: WaveData } = {
 					["Egyptian Spearman"] = { 15, 16, 17 },
 				},
 				Length = 25,
-				CoinBonus = 240,
+				CoinBonus = 140,
 			},
 			[4] = {
 				Enemies = {
@@ -64,7 +64,7 @@ local WaveData: { [string]: WaveData } = {
 					["Egyptian Spearman"] = { 17, 18, 19, 20 },
 				},
 				Length = 30,
-				CoinBonus = 260,
+				CoinBonus = 160,
 			},
 			[5] = {
 				Enemies = {
@@ -73,7 +73,7 @@ local WaveData: { [string]: WaveData } = {
 					["Egyptian Spearman"] = { 19, 20, 21, 22, 23 },
 				},
 				Length = 34,
-				CoinBonus = 280,
+				CoinBonus = 180,
 			},
 			[6] = {
 				Enemies = {
@@ -82,7 +82,7 @@ local WaveData: { [string]: WaveData } = {
 					["Egyptian Spearman"] = { 21, 22, 23, 24, 25, 26 },
 				},
 				Length = 39,
-				CoinBonus = 300,
+				CoinBonus = 200,
 			},
 			[7] = {
 				Enemies = {
@@ -91,7 +91,7 @@ local WaveData: { [string]: WaveData } = {
 					["Egyptian Spearman"] = { 23, 24, 25, 26, 27, 28, 29 },
 				},
 				Length = 44,
-				CoinBonus = 320,
+				CoinBonus = 220,
 			},
 			[8] = {
 				Enemies = {
@@ -100,7 +100,7 @@ local WaveData: { [string]: WaveData } = {
 					["Egyptian Spearman"] = { 25, 26, 27, 28, 29, 30, 31, 32 },
 				},
 				Length = 49,
-				CoinBonus = 340,
+				CoinBonus = 240,
 			},
 			[9] = {
 				Enemies = {
@@ -109,7 +109,7 @@ local WaveData: { [string]: WaveData } = {
 					["Egyptian Spearman"] = { 27, 28, 29, 30, 31, 32, 33, 34, 35 },
 				},
 				Length = 54,
-				CoinBonus = 360,
+				CoinBonus = 260,
 			},
 			[10] = {
 				Enemies = {
@@ -118,7 +118,7 @@ local WaveData: { [string]: WaveData } = {
 					["Egyptian Spearman"] = { 29, 30, 31, 32, 33, 34, 35, 36, 37, 38 },
 				},
 				Length = 59,
-				CoinBonus = 380,
+				CoinBonus = 280,
 			},
 			[11] = {
 				Enemies = {
@@ -127,7 +127,7 @@ local WaveData: { [string]: WaveData } = {
 					["Egyptian Spearman"] = { 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41 },
 				},
 				Length = 64,
-				CoinBonus = 400,
+				CoinBonus = 300,
 			},
 			[12] = {
 				Enemies = {
@@ -136,7 +136,7 @@ local WaveData: { [string]: WaveData } = {
 					["Egyptian Spearman"] = { 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44 },
 				},
 				Length = 69,
-				CoinBonus = 420,
+				CoinBonus = 320,
 			},
 			[13] = {
 				Enemies = {
@@ -145,7 +145,7 @@ local WaveData: { [string]: WaveData } = {
 					["Egyptian Spearman"] = { 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47 },
 				},
 				Length = 74,
-				CoinBonus = 440,
+				CoinBonus = 340,
 			},
 			[14] = {
 				Enemies = {
@@ -154,7 +154,7 @@ local WaveData: { [string]: WaveData } = {
 					["Egyptian Spearman"] = { 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50 },
 				},
 				Length = 79,
-				CoinBonus = 460,
+				CoinBonus = 360,
 			},
 			[15] = {
 				Enemies = {
@@ -163,7 +163,7 @@ local WaveData: { [string]: WaveData } = {
 					["Egyptian Spearman"] = { 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53 },
 				},
 				Length = 84,
-				CoinBonus = 480,
+				CoinBonus = 380,
 			},
 		},
 		EnemyData = {},
