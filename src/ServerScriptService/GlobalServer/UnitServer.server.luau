@@ -55,9 +55,6 @@ local function CloneCylinder(Radius: number)
 end
 
 ChangePriority.SetCallback(function(Player: Player, UniqueId: string)
-	if typeof(UniqueId) ~= "string" then
-		return
-	end
 	local CurrentUnit = Unit.GetUnit(UniqueId)
 
 	if CurrentUnit then
@@ -111,18 +108,28 @@ local function CheckPlacement(InputCFrame: CFrame, Info: UnitInfo.UnitInfo): Ray
 	return Raycast
 end
 
+local function GetUnitCount(Wave: GlobalWave.GlobalWave, OwnerId: number)
+	local Count = 0
+	for _, OtherUnit in pairs(Wave.Units) do
+		if OtherUnit.OwnerId == OwnerId then
+			Count += 1
+		end
+	end
+	return Count
+end
+
 local function PlaceUnit(Player: Player, Wave: GlobalWave.GlobalWave, Data: PlacementData)
 	local InputCFrame = CFrame.new(Data.UnitPosition) * CFrame.Angles(0, math.rad(-90 * Data.RotationIndex), 0)
 
 	local UnitUnitData = UnitData.UnitData[Data.Unit]
 
 	if not UnitUnitData then
-		warn(`No UnitInfo for '{Data.Unit}`)
+		warn(`No UnitData for '{Data.Unit}`)
 		return
 	end
 	local UnitUnitInfo = UnitInfo.UnitInfo[Data.Unit]
 	if not UnitUnitInfo then
-		warn(`No UnitData for {Data.Unit}`)
+		warn(`No UnitInfo for {Data.Unit}`)
 		return
 	end
 
@@ -139,7 +146,7 @@ local function PlaceUnit(Player: Player, Wave: GlobalWave.GlobalWave, Data: Plac
 		end
 	end
 
-	if UnitData and PDataUnit then
+	if UnitData and PDataUnit and GetUnitCount(Wave, Player.UserId) < Constants.MaxUnitCount then
 		local Cost = UnitUnitInfo.UnitData[0].Cost
 		local PlayerCoins = Wave.Coins[Player.UserId]
 
@@ -187,10 +194,6 @@ Placement.SetCallback(function(Player: Player, Data: PlacementData)
 end)
 
 Upgrade.SetCallback(function(Player: Player, UniqueId: string)
-	if typeof(UniqueId) ~= "string" then
-		return
-	end
-
 	local CurrentUnit = Unit.GetUnit(UniqueId)
 	local Wave = GlobalWave.GetWave()
 
@@ -204,10 +207,6 @@ Upgrade.SetCallback(function(Player: Player, UniqueId: string)
 end)
 
 UseAbility.SetCallback(function(Player: Player, UniqueId: string, Index: number)
-	if typeof(UniqueId) ~= "string" or typeof(Index) ~= "number" then
-		return
-	end
-
 	local CurrentUnit = Unit.GetUnit(UniqueId)
 
 	if CurrentUnit and CurrentUnit:IsOwnedBy(Player) then
@@ -216,10 +215,6 @@ UseAbility.SetCallback(function(Player: Player, UniqueId: string, Index: number)
 end)
 
 Sell.SetCallback(function(Player: Player, UniqueId: string)
-	if typeof(UniqueId) ~= "string" then
-		return
-	end
-
 	local CurrentUnit = Unit.GetUnit(UniqueId)
 	local Wave = GlobalWave.GetWave()
 

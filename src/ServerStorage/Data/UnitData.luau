@@ -372,7 +372,12 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 		UnitName = "Themistocles",
 
 		AttackFuncs = {},
-		DefaultRuns = {},
+		DefaultRuns = {
+			[0] = function(Unit)
+				local Range = Unit:GetPropertyRaw("Damage")
+				return ApplyBuff(Unit, "Range", Range, math.huge)
+			end,
+		},
 		Abilities = {},
 	},
 	["Alexander The Great"] = {
@@ -440,7 +445,8 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 		AttackFuncs = {},
 		DefaultRuns = {
 			[0] = function(Unit)
-				return ApplyBuff(Unit, "FireRate", 0.5, math.huge)
+				local Ratio = Unit:GetPropertyRaw("Damage")
+				return ApplyBuff(Unit, "FireRate", 1 / Ratio, math.huge)
 			end,
 		},
 		Abilities = {},
@@ -547,7 +553,39 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 		AttackFuncs = {},
 		DefaultRuns = {
 			[0] = function(Unit: UnitModule.Unit)
-				local Ratio = Unit:GetProperty("Damage")
+				local Ratio = Unit:GetPropertyRaw("Damage")
+				local Damage = ApplyBuff(Unit, "Damage", Ratio, math.huge)
+				local FireRate = ApplyBuff(Unit, "FireRate", 1 / Ratio, math.huge)
+				local Range = ApplyBuff(Unit, "Range", Ratio, math.huge)
+				return function()
+					Damage()
+					FireRate()
+					Range()
+				end
+			end,
+		},
+		Abilities = {},
+	},
+	["Cao Cao"] = {
+		UnitName = "Cao Cao",
+
+		AttackFuncs = {
+			[0] = {
+				function(Unit: UnitModule.Unit, Damage: number)
+					DelayAttack(Unit, Damage, 0.6)
+				end,
+			},
+		},
+		DefaultRuns = {},
+		Abilities = {},
+	},
+	["Qin Shi Huang"] = {
+		UnitName = "Qin Shi Huang",
+
+		AttackFuncs = {},
+		DefaultRuns = {
+			function(Unit: UnitModule.Unit)
+				local Ratio = Unit:GetPropertyRaw("Damage")
 				local Damage = ApplyBuff(Unit, "Damage", Ratio, math.huge)
 				local FireRate = ApplyBuff(Unit, "FireRate", 1 / Ratio, math.huge)
 				local Range = ApplyBuff(Unit, "Range", Ratio, math.huge)

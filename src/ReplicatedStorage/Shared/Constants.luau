@@ -21,6 +21,7 @@ local Constants = {
 
 	WarningTime = 3,
 	CostDivider = 2,
+	MaxUnitCount = 15,
 
 	CurrentEvent = "None",
 	EndTime = 1, -- Unix Timestamp of event end time

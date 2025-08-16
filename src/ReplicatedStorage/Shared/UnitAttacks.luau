@@ -870,6 +870,38 @@ local UnitAttacks: {
 				end,
 			},
 		},
+		["Cao Cao"] = {
+			[0] = {
+				function(Unit, AttackInput, Enemy, Delay)
+					DefaultAttack(Unit, AttackInput, Enemy, Delay)
+					DelayedAttackHit(Unit, AttackInput, Enemy, 0.6, Delay)
+
+					local DelayTime = CalculateDelay(0.4, AttackInput.SpeedRatio, Delay)
+
+					local DelProm = Promise.delay(DelayTime):andThen(function()
+						Emit(
+							Unit,
+							{ Emitters["Grey-alpha"] },
+							Unit.Root.CFrame + Unit.CFrame.RightVector * 0.6 + Unit.CFrame.LookVector,
+							true,
+							true,
+							2,
+							function(Emitter: ParticleEmitter, Attachment: Attachment)
+								Attachment.CFrame *= CFrame.Angles(0, math.rad(15), 0)
+								Emitter.EmissionDirection = Enum.NormalId.Right
+								Emitter.Size = NumberSequence.new(5)
+								Emitter.Color = ColorSequence.new(Color3.fromRGB(151, 184, 20))
+								Emitter.Rotation = NumberRange.new(270, 270)
+							end
+						)
+					end)
+
+					Unit:AddAttackPromise(DelProm, "CharlemagneAttackEmit")
+
+					DelayedSound(Unit, { Sounds.HeavySwordSwing, Sounds.HeavySwing2 }, AttackInput, Enemy, 0.3, Delay)
+				end,
+			},
+		},
 	}
 
 local DefaultRuns: { [string]: { [number]: (Unit: Types.Unit) -> () } } = {

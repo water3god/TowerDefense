@@ -75,12 +75,24 @@ local GamepassInfo: { [number]: ProductData } = {
 		Rarity = "Legendary",
 		Priority = 1,
 	},
+	[1403443463] = {
+		Name = "Ultra VIP",
+		Rarity = "Legendary",
+		Priority = 2,
+	},
+	[1403365727] = {
+		Name = "20% XP Boost",
+		Rarity = "Legendary",
+		Priority = 3,
+	},
 }
 
 -- GiftId = ProductId --
 local GiftIds: { [number]: number } = {
 	-- Gamepasses --
 	[3360124700] = 1382164818, -- VIP --
+	[3371898460] = 1403443463, -- Ultra VIP --
+	[3371892823] = 1403365727, -- 20% XP Boost --
 	-- Products --
 	[3370830163] = 3359654911, -- 10 Omen Coins --
 	[3370847071] = 3359655092, -- 50 Omen Coins --
