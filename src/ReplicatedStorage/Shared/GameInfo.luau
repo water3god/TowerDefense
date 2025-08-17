@@ -52,7 +52,33 @@ local GameInfo: { MapInfo } = {
 		Name = "Egypt",
 		Image = "rbxassetid://137415330481106",
 		LevelInfo = {
-			{
+			[0] = {
+				Name = "Infinite",
+				GameId = "AncientEgypt_Infinite",
+				Index = 0,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 120, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 250, UniqueId = "" },
+						},
+					},
+				},
+			},
+			[1] = {
 				Name = "Desert Reconnaissance",
 				GameId = "AncientEgypt_DesertReconnaissance",
 				Index = 1,
@@ -78,7 +104,7 @@ local GameInfo: { MapInfo } = {
 					},
 				},
 			},
-			{
+			[2] = {
 				Name = "Arrow Barrage",
 				GameId = "AncientEgypt_ArrowBarrage",
 				Index = 2,
@@ -104,7 +130,7 @@ local GameInfo: { MapInfo } = {
 					},
 				},
 			},
-			{
+			[3] = {
 				Name = "Shielded Formation",
 				GameId = "AncientEgypt_ShieldedFormation",
 				Index = 3,
@@ -130,7 +156,7 @@ local GameInfo: { MapInfo } = {
 					},
 				},
 			},
-			{
+			[4] = {
 				Name = "Chariot Assault",
 				GameId = "AncientEgypt_ChariotAssault",
 				Index = 4,
@@ -156,7 +182,7 @@ local GameInfo: { MapInfo } = {
 					},
 				},
 			},
-			{
+			[5] = {
 				Name = "Sacred Ritual",
 				GameId = "AncientEgypt_SacredRitual",
 				Index = 5,
@@ -182,7 +208,7 @@ local GameInfo: { MapInfo } = {
 					},
 				},
 			},
-			{
+			[6] = {
 				Name = "Final Defense",
 				GameId = "AncientEgypt_FinalDefense",
 				Index = 6,

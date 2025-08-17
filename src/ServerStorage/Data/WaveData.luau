@@ -4983,13 +4983,48 @@ export type InfiniteData = {
 }
 
 local InfiniteData: { [string]: InfiniteData } = {
-	["Egypt"] = {
+	["AncientEgypt_Infinite"] = {
 		Data = {
-			["Medieval Footman"] = {
+			["Egyptian Scout"] = {
 				FirstSpawnWave = 1,
+				SpawnCount = 10,
+				OrderPriority = 1,
+			},
+			["Egyptian Archer"] = {
+				FirstSpawnWave = 1,
+				SpawnCount = 10,
+				OrderPriority = 2,
+			},
+			["Egyptian Spearman"] = {
+				FirstSpawnWave = 1,
+				SpawnCount = 10,
+				OrderPriority = 3,
+			},
+			["Charioteer"] = {
+				FirstSpawnWave = 1,
+				SpawnCount = 8,
+				OrderPriority = 4,
+			},
+			["War Priest"] = {
+				FirstSpawnWave = 1,
+				SpawnCount = 3,
+				OrderPriority = 5,
+			},
+			["Egyptian Commander"] = {
+				FirstSpawnWave = 1,
+				SpawnCount = 2,
+				OrderPriority = 6,
+			},
+			["Royal Guard"] = {
+				FirstSpawnWave = 10,
+				SpawnCount = 4,
+				OrderPriority = 7,
+			},
+			["Ramesses II"] = {
+				FirstSpawnWave = 15,
 				SpawnCount = 1,
-				OrderPriority = 0,
-				WaveDelay = 1,
+				OrderPriority = 8,
+				WaveDelay = 15,
 			},
 		},
 		EnemyData = {},

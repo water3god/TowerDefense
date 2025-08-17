@@ -312,3 +312,26 @@ event DailyRedeemed = {
 		LastRedeemed: Time,
 	},
 }
+
+-- Titles --
+
+event TitleChanged = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: string.binary,
+}
+
+event TitleAdded = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: string.binary,
+}
+
+event EquipTitle = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: string.binary,
+}

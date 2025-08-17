@@ -309,19 +309,6 @@ end
 Players.PlayerRemoving:Connect(function(player)
 	player_map[player] = nil
 end)
-export type Health = (number)
-export type ProductData = ({
-	["UniqueId"]: (string),
-	["Product"]: (number),
-	["Count"]: (number),
-})
-export type PlacementData = ({
-	["Unit"]: (string),
-	["UnitPosition"]: (Vector3),
-	["RotationIndex"]: (number),
-})
-export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
-export type Time = (number)
 export type UnitInput = ({
 	["UniqueId"]: (string),
 	["UnitName"]: (string),
@@ -337,17 +324,8 @@ export type UnitInput = ({
 	["Trait"]: ((string)?),
 	["Abilities"]: ({ (number) }),
 })
-export type ProductId = (number)
-export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
-export type UnitAttackInput = ({
-	["UniqueId"]: (string),
-	["Index"]: (number),
-	["EnemyId"]: (string),
-	["Firetime"]: (number),
-	["SpeedRatio"]: (number),
-})
-export type Level = (number)
-export type AbilityIndex = (number)
+export type XP = (number)
+export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
 export type UnitData = ({
 	["Unit"]: (string),
 	["Level"]: (number),
@@ -356,13 +334,35 @@ export type UnitData = ({
 	["XP"]: (number),
 	["NeededXP"]: (number),
 })
+export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
+export type SortType = ("First" | "Last" | "Strongest" | "Weakest")
+export type PlacementData = ({
+	["Unit"]: (string),
+	["UnitPosition"]: (Vector3),
+	["RotationIndex"]: (number),
+})
+export type Level = (number)
+export type Time = (number)
+export type Health = (number)
+export type AbilityIndex = (number)
 export type ResourceData = ({
 	["UniqueId"]: (string),
 	["Resource"]: (string),
 	["Count"]: (number),
 })
-export type SortType = ("First" | "Last" | "Strongest" | "Weakest")
-export type XP = (number)
+export type ProductId = (number)
+export type UnitAttackInput = ({
+	["UniqueId"]: (string),
+	["Index"]: (number),
+	["EnemyId"]: (string),
+	["Firetime"]: (number),
+	["SpeedRatio"]: (number),
+})
+export type ProductData = ({
+	["UniqueId"]: (string),
+	["Product"]: (number),
+	["Count"]: (number),
+})
 
 local function SendEvents()
 	for player, outgoing in player_map do
