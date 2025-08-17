@@ -368,7 +368,7 @@ function GlobalWave:NextWave()
 		end
 
 		if self.Wave ~= #self.Data.Data or self.IsInfinite then
-			self.WaveTrove:Add(task.delay(LongestTime, function()
+			self.WaveTrove:Add(task.delay(LongestTime + 2, function()
 				self.OnSkipPrompt:Fire()
 			end))
 		end
