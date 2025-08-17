@@ -85,19 +85,39 @@ local function Init(DataInput: Types.RecieveData?)
 				return
 			end
 
-			for PlayerId, _ in pairs(Wave.Coins) do
-				local Player = Players:GetPlayerByUserId(PlayerId)
+			if Wave.IsInfinite then
+				for PlayerId, _ in pairs(Wave.Coins) do
+					local Player = Players:GetPlayerByUserId(PlayerId)
 
-				if Player then
-					local DataModule = PlayerData.GetPlayerData(Player)
+					if Player then
+						local DataModule = PlayerData.GetPlayerData(Player)
 
-					if DataModule then
-						DataModule:AddStage({
-							Map = Data.MapId,
-							Stage = LevelInfo.Index,
-							Difficulty = Data.Difficulty,
-							TimeFinished = math.floor(workspace:GetServerTimeNow() - Wave.InitTime),
-						})
+						if DataModule then
+							DataModule:AddInfiniteStage({
+								Map = Data.MapId,
+								Stage = LevelInfo.Index,
+								Difficulty = Data.Difficulty,
+								Damage = Wave.TotalDamage,
+								Wave = Wave.Wave,
+							})
+						end
+					end
+				end
+			else
+				for PlayerId, _ in pairs(Wave.Coins) do
+					local Player = Players:GetPlayerByUserId(PlayerId)
+
+					if Player then
+						local DataModule = PlayerData.GetPlayerData(Player)
+
+						if DataModule then
+							DataModule:AddStage({
+								Map = Data.MapId,
+								Stage = LevelInfo.Index,
+								Difficulty = Data.Difficulty,
+								TimeFinished = math.floor(workspace:GetServerTimeNow() - Wave.InitTime),
+							})
+						end
 					end
 				end
 			end

@@ -45,7 +45,7 @@ export type BoothData = {
 export type MapCrossData = {
 	MapId: string,
 	LevelId: string,
-	Difficulty: GameInfo.Difficulty,
+	Difficulty: string,
 }
 
 export type StageData = {
@@ -53,12 +53,20 @@ export type StageData = {
 	FinishedCount: number,
 }
 
+export type InfiniteStageData = {
+	Wave: number,
+	Damage: number,
+}
+
 -- First is MapId, then is Stage number, then Difficulty
-export type MapData = { [string]: { [number]: { [GameInfo.Difficulty]: StageData } } }
+export type MapData = { [string]: { [number]: { [string]: StageData } } }
+export type InfiniteMapData = { [string]: { [number]: { [string]: InfiniteStageData } } }
 
 local Module: {
 	MapData: MapData,
+	InfiniteMapData: InfiniteMapData,
 	MapDataChanged: Signal.Signal<MapData>,
+	InfiniteMapDataChanged: Signal.Signal<InfiniteMapData>,
 	Data: BoothData?,
 	-- Owner has been initated and he is chooing the map (No one else can join)
 	BoothChoosing: Signal.Signal<TimeData>,
@@ -77,7 +85,9 @@ local Module: {
 } =
 	{
 		MapData = {},
+		InfiniteMapData = {},
 		MapDataChanged = Signal.new(),
+		InfiniteMapDataChanged = Signal.new(),
 		BoothChoosing = Signal.new(),
 		BoothMapLoading = Signal.new(),
 		BoothRestarted = Signal.new(),
@@ -141,9 +151,11 @@ PlayerChanged.SetCallback(function(PlayerId: number, Added: boolean)
 	Module.PlayerChanged:Fire(PlayerId, Added, Changed)
 end)
 
-DataSync.SetCallback(function(Data: MapData)
+DataSync.SetCallback(function(Data: MapData, InfiniteData: InfiniteMapData)
 	Module.MapData = Data
+	Module.InfiniteMapData = InfiniteData
 	Module.MapDataChanged:Fire(Data)
+	Module.InfiniteMapDataChanged:Fire(InfiniteData)
 end)
 
 return Module

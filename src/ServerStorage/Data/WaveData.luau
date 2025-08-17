@@ -4982,7 +4982,19 @@ export type InfiniteData = {
 	},
 }
 
-local InfiniteData: { [string]: InfiniteData } = {}
+local InfiniteData: { [string]: InfiniteData } = {
+	["Egypt"] = {
+		Data = {
+			["Medieval Footman"] = {
+				FirstSpawnWave = 1,
+				SpawnCount = 1,
+				OrderPriority = 0,
+				WaveDelay = 1,
+			},
+		},
+		EnemyData = {},
+	},
+}
 
 Data.WaveData = WaveData
 Data.InfiniteData = InfiniteData

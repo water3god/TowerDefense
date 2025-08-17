@@ -66,6 +66,8 @@ type Data = {
 	BaseHealth: number,
 	MaxHealth: number,
 
+	TotalDamage: number,
+
 	Coins: { [number]: number },
 	CoinsChangedSignals: { [number]: Signal.Signal<number> },
 
@@ -88,6 +90,8 @@ type Data = {
 	MaxHealthChanged: Signal.Signal<number>,
 	OnSkipPrompt: Signal.Signal<>,
 
+	EnemyDamaged: Signal.Signal<number>,
+
 	EnemyAdded: Signal.Signal<Enemy.Enemy>,
 	EnemyDestroying: Signal.Signal<Enemy.Enemy>,
 
@@ -109,6 +113,7 @@ type Impl = {
 	AddCoinsToUser: (self: GlobalWave, UserId: number, Coins: number) -> (),
 
 	AddUnit: (self: GlobalWave, Unit: Unit.Unit) -> (),
+	AddDamage: (self: GlobalWave, Damage: number) -> (),
 
 	GetCoinsChangedSignal: (self: GlobalWave, UserId: number) -> Signal.Signal<number>,
 
@@ -155,6 +160,8 @@ function GlobalWave.new(Input: Input)
 	self.MaxHealthChanged = self.Trove:Construct(Signal)
 	self.OnSkipPrompt = self.Trove:Construct(Signal)
 
+	self.EnemyDamaged = self.Trove:Construct(Signal)
+
 	self.EnemyAdded = self.Trove:Construct(Signal)
 	self.EnemyDestroying = self.Trove:Construct(Signal)
 
@@ -166,14 +173,15 @@ function GlobalWave.new(Input: Input)
 	self.Time = 0
 	self.StartTime = 0
 
+	self.TotalDamage = 0
+
 	self.DifficultyData = DifficultyData[Input.Difficulty]
 	self.IsInfinite = Input.IsInfinite
 	self.XPMultiplier = Input.XPMultiplier
 	self.RewardInfo = Input.RewardInfo
 
 	if not Input.IsInfinite then
-		self.DifficultyData.HealthRatio = 1
-		self.DifficultyData.HeathIncrRatio = 1
+		self.DifficultyData.HealthIncrRatio = 1
 		self.DifficultyData.SpeedAdditive = 0
 	end
 
@@ -262,8 +270,6 @@ function GlobalWave.infinite(InfInput: InfiniteInput)
 		OrderPriority[Info.OrderPriority] = EnemyKey
 	end
 
-	local Wave: GlobalWave = GlobalWave.new(Input)
-
 	local function AddInfoToWave(WaveNum: number)
 		WaveNum += 1
 
@@ -289,8 +295,10 @@ function GlobalWave.infinite(InfInput: InfiniteInput)
 			Time += 2
 		end
 
-		InfData.Data[WaveNum] = { Enemies = EnemiesData, Length = Time, CoinBonus = 200 + 50 * WaveNum }
+		InfData.Data[WaveNum] = { Enemies = EnemiesData, Length = Time, CoinBonus = 200 + 20 * WaveNum }
 	end
+
+	local Wave: GlobalWave = GlobalWave.new(Input)
 
 	AddInfoToWave(Wave.Wave)
 	Wave.Passed:Connect(AddInfoToWave)
@@ -332,10 +340,15 @@ function GlobalWave:NextWave()
 			end
 		end)
 
+		local Ratio = math.pow(self.DifficultyData.HealthIncrRatio, self.Wave)
+		local SpeedRatio = 1 + self.DifficultyData.SpeedAdditive * self.Wave
+
 		for EnemyName, Times in pairs(ThisWaveData.Enemies) do
 			local EnemyDataClone = HelperFunctions.DeepClone(EnemyData[EnemyName])
 
+			EnemyDataClone.Health *= Ratio
 			EnemyDataClone.Health *= self.DifficultyData.HealthRatio
+			EnemyDataClone.Speed *= SpeedRatio
 
 			for _, Time in ipairs(Times) do
 				ThreadCount += 1
@@ -352,6 +365,10 @@ function GlobalWave:NextWave()
 						if Health == 0 and NewEnemy.Trove then
 							task.defer(NewEnemy.Destroy, NewEnemy, true)
 						end
+					end)
+
+					NewEnemy.Damaged:Connect(function(Damage: number)
+						self:AddDamage(Damage)
 					end)
 
 					NewEnemy.Trove:Connect(self.Ended, function()
@@ -443,6 +460,11 @@ function GlobalWave:AddUnit(UnitInput: Unit.Unit)
 	end)
 
 	self.UnitAdded:Fire(UnitInput)
+end
+
+function GlobalWave:AddDamage(Damage: number)
+	self.TotalDamage += Damage
+	self.EnemyDamaged:Fire(Damage)
 end
 
 function GlobalWave:Damage(Damage: number)

@@ -33,6 +33,11 @@ export type StageData = {
 	FinishedCount: number,
 }
 
+export type InfiniteStageData = {
+	Wave: number,
+	Damage: number,
+}
+
 export type Data = {
 	EquippedUnits: { string },
 	Units: {
@@ -47,6 +52,7 @@ export type Data = {
 		[string]: ResourceData,
 	},
 	CompletedMaps: { [string]: { [number]: { [string]: StageData } } }, -- MapId, Index, Difficulty, StageData
+	CompletedInfinites: { [string]: { [number]: { [string]: InfiniteStageData } } },
 	Level: number,
 	XP: number,
 	RollCount: number,
@@ -78,6 +84,7 @@ local Data: Data = {
 	Resources = {},
 	Settings = Settings.Default,
 	CompletedMaps = {},
+	CompletedInfinites = {},
 	Level = 1,
 	XP = 0,
 	RollCount = 0,

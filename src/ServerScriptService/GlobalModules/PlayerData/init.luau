@@ -49,6 +49,14 @@ export type StageParamData = {
 	TimeFinished: number,
 }
 
+export type InfiniteStageParamData = {
+	Map: string,
+	Stage: number,
+	Difficulty: string,
+	Wave: number,
+	Damage: number,
+}
+
 type PlayerDataData<T> = {
 	_Trove: Trove.Trove,
 
@@ -74,6 +82,7 @@ type PlayerDataData<T> = {
 	ResourceChanged: Signal.Signal<string, Template.ResourceData, number?>,
 
 	StageChanged: Signal.Signal<StageParamData>,
+	InfiniteStageChanged: Signal.Signal<InfiniteStageParamData>,
 
 	Rolled: Signal.Signal<any>,
 	Summoned: Signal.Signal<Template.UnitData>,
@@ -152,6 +161,7 @@ type PlayerDataImpl = {
 	OwnsMap: (self: PlayerData, Map: string) -> boolean,
 	OwnsStage: (self: PlayerData, Data: GetStageData) -> boolean,
 	AddStage: (self: PlayerData, Data: StageParamData) -> (),
+	AddInfiniteStage: (self: PlayerData, Data: InfiniteStageParamData) -> (),
 
 	RedeemDaily: (self: PlayerData) -> (),
 
@@ -307,7 +317,9 @@ function PlayerData.new(Player: Player)
 	self.RobuxSpent = self._Trove:Construct(Signal)
 	self.TotalGoldGained = self._Trove:Construct(Signal)
 	self.DamageDone = self._Trove:Construct(Signal)
+
 	self.StageChanged = self._Trove:Construct(Signal)
+	self.InfiniteStageChanged = self._Trove:Construct(Signal)
 
 	self.DailyRedeemed = self._Trove:Construct(Signal)
 
@@ -926,6 +938,43 @@ function PlayerData:AddStage(StageParamData: StageParamData)
 	end
 	DifficultyData.FinishedCount += 1
 	self.StageChanged:Fire(StageParamData)
+end
+
+function PlayerData:AddInfiniteStage(StageParamData: InfiniteStageParamData)
+	if
+		typeof(StageParamData) ~= "table"
+		or typeof(StageParamData.Map) ~= "string"
+		or typeof(StageParamData.Wave) ~= "number"
+		or typeof(StageParamData.Stage) ~= "number"
+		or typeof(StageParamData.Difficulty) ~= "string"
+	then
+		warn("PlayerData:AddInfiniteStage (Invalid Parameters)")
+		return
+	end
+
+	local Data = self.Profile.Data
+	if not Data.CompletedInfinites[StageParamData.Map] then
+		Data.CompletedInfinites[StageParamData.Map] = {}
+	end
+	local MapData = Data.CompletedInfinites[StageParamData.Map]
+	if not MapData[StageParamData.Stage] then
+		MapData[StageParamData.Stage] = {}
+	end
+	local StageData = MapData[StageParamData.Stage]
+	if StageData[StageParamData.Difficulty] then
+		local DifficultyData = StageData[StageParamData.Difficulty]
+		if DifficultyData.Wave < StageParamData.Wave then
+			DifficultyData.Wave = StageParamData.Wave
+			DifficultyData.Damage = StageParamData.Damage
+		end
+	else
+		StageData[StageParamData.Difficulty] = {
+			Damage = StageParamData.Damage,
+			Wave = StageParamData.Wave,
+		}
+	end
+
+	self.InfiniteStageChanged:Fire(StageParamData)
 end
 
 function PlayerData:RedeemDaily()

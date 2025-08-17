@@ -21,6 +21,7 @@ local Hooks = require(CoreGame.Hooks)
 type Context = {
 	Enabled: boolean,
 	CompletedMaps: StoryService.MapData,
+	CompletedInfinites: StoryService.InfiniteMapData,
 	Data: StoryService.BoothData?,
 	BoothTimeData: StoryService.TimeData?,
 }
@@ -79,6 +80,12 @@ local function Provider(props)
 	Hooks.useEventConnection(StoryService.MapDataChanged, function(Data)
 		local NewTable = table.clone(Value)
 		NewTable.CompletedMaps = table.clone(Data)
+		SetValue(NewTable)
+	end, { Value })
+
+	Hooks.useEventConnection(StoryService.InfiniteMapDataChanged, function(Data)
+		local NewTable = table.clone(Value)
+		NewTable.CompletedInfinites = table.clone(Data)
 		SetValue(NewTable)
 	end, { Value })
 

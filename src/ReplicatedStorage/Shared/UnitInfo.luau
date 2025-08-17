@@ -676,7 +676,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 			},
 			[2] = {
 				Damage = { 15 },
-				FireRate = 1,
+				FireRate = 1.2,
 				Range = 50,
 				Cost = 500,
 			},
@@ -710,7 +710,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 			},
 			[3] = {
 				Damage = { 40 },
-				FireRate = 1,
+				FireRate = 1.2,
 				Range = 60,
 				Cost = 1000,
 			},

@@ -19,7 +19,8 @@ local PlayerData = require(GlobalModules.PlayerData)
 
 local function HandleData(Data: PlayerData.PlayerData)
 	local function SendData()
-		DataSync.Fire(Data.Player, Data.Profile.Data.CompletedMaps :: any)
+		local PData = Data.Profile.Data
+		DataSync.Fire(Data.Player, PData.CompletedMaps, PData.CompletedInfinites)
 	end
 
 	SendData()

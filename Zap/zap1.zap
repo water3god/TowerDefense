@@ -13,11 +13,14 @@ type Time = f64
 
 -- Booth --
 
-type Difficulty = enum { Normal, Hard, Insane }
-
 type StageData = struct {
 	FastestTime: Time,
 	FinishedCount: u32,
+}
+
+type InfiniteStageData = struct {
+	Wave: u32,
+	Damage: f64,
 }
 
 type TimeData = struct {
@@ -42,7 +45,7 @@ event ChooseMap = {
 	data: struct {
 		MapId: string.binary,
 		LevelId: string.binary,
-		Difficulty: Difficulty,
+		Difficulty: string.binary,
 	},
 }
 
@@ -72,7 +75,10 @@ event StoryDataSync = {
 	from: Server,
 	type: Reliable,
 	call: SingleAsync,
-	data: map { [string.binary]: map { [u8]: map { [Difficulty]: StageData } } },
+	data: (
+		map { [string.binary]: map { [u8]: map { [string.binary]: StageData } } },
+		map { [string.binary]: map { [u8]: map { [string.binary]: InfiniteStageData } } },
+	),
 }
 event BoothChoosing = {
 	from: Server,
