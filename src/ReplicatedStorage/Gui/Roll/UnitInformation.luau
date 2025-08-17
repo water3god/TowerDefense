@@ -24,7 +24,6 @@ local UIStroke = require(CoreGame.UIStroke)
 local Title = require(CoreGame.Title)
 local CloseButton = require(CoreGame.CloseButton)
 local NewGui = require(CoreGame.NewGui)
-local Hooks = require(CoreGame.Hooks)
 
 local Inventory = Gui.Inventory
 local UnitFrame = require(Inventory.UnitFrame)
@@ -220,7 +219,7 @@ local function CreateUnitInfo(Props: Props)
 				end),
 			}),
 			UnitInfoStatsFrame = e(StatsFrame, {
-				UnitName = CurrentStats,
+				Name = CurrentStats,
 				Type = "Unit",
 				Level = 1,
 				Visible = StatsVisible,

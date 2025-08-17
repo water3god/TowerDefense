@@ -26,6 +26,7 @@ export type UnitInfo = {
 	Vector3Offset: Vector3?,
 	ViewportOffset: CFrame?,
 	CollisionRadius: number,
+	Static: boolean?,
 	Abilities: { { MinimumLevel: number, Name: string, Icon: string, Length: number, Cooldown: number } },
 }
 
@@ -146,6 +147,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 			},
 		},
 		CollisionRadius = 3,
+		Static = true,
 		Abilities = {},
 	},
 	["Pyrrhus"] = {
@@ -246,6 +248,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 			},
 		},
 		CollisionRadius = 3,
+		Static = true,
 		Abilities = {},
 	},
 	["Julius Caesar"] = {
@@ -620,6 +623,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 			},
 		},
 		CollisionRadius = 3,
+		Static = true,
 		Abilities = {},
 	},
 	["Leif Erikson"] = {
@@ -654,6 +658,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 			},
 		},
 		CollisionRadius = 3,
+		Static = true,
 		Abilities = {},
 	},
 	["Ptolemy"] = {
@@ -784,6 +789,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 			},
 		},
 		CollisionRadius = 3,
+		Static = true,
 		Abilities = {},
 	},
 	["Ramesses II"] = {
@@ -858,6 +864,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 			},
 		},
 		CollisionRadius = 3,
+		Static = true,
 		Abilities = {},
 	},
 	["Cao Cao"] = {
@@ -926,6 +933,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 			},
 		},
 		CollisionRadius = 4,
+		Static = true,
 		Abilities = {},
 	},
 }

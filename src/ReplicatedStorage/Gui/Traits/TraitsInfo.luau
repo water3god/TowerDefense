@@ -24,6 +24,8 @@ local Title = require(CoreGame.Title)
 local NewGui = require(CoreGame.NewGui)
 local AnimatedGradient = require(CoreGame.AnimatedGradient)
 
+local StatsFrame = require(Gui.Inventory.StatsFrame)
+
 local Shared = ReplicatedStorage.Shared
 local Traits = require(Shared.Traits)
 local RarityInfo = require(Shared.RarityInfo)
@@ -36,6 +38,7 @@ export type Properties = {
 
 export type TraitProperties = {
 	Trait: string,
+	SetTrait: (Trait: string) -> (),
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
@@ -48,6 +51,10 @@ local function CreateTrait(props: TraitProperties)
 	local RarityData = React.useMemo(function()
 		return RarityInfo[TraitData.Rarity :: any]
 	end, { TraitData.Rarity })
+
+	local InfoClick = React.useCallback(function()
+		props.SetTrait(props.Trait)
+	end, { props.SetTrait, props.Trait } :: { unknown })
 
 	return e(Main.Frame, {
 		native = Join({
@@ -113,6 +120,7 @@ local function CreateTrait(props: TraitProperties)
 					Size = UDim2.fromScale(0.3, 0.7),
 					Image = "rbxassetid://77078349522524",
 					ZIndex = 2,
+					[React.Event.MouseButton1Click] = InfoClick,
 				},
 			}, {
 				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
@@ -127,12 +135,15 @@ local function CreateTrait(props: TraitProperties)
 end
 
 local function CreateTraitsInfo(props: Properties)
+	local SelectedTrait: string?, SetTrait = React.useState(nil :: string?)
+
 	local TraitFrames = React.useMemo(function()
 		local Frames: { [string]: React.Node } = {}
 
 		for TraitName, Data in pairs(Traits.Traits) do
 			Frames[TraitName] = e(CreateTrait, {
 				Trait = TraitName,
+				SetTrait = SetTrait,
 				native = {
 					BackgroundColor3 = Color3.fromRGB(255, 255, 255),
 					BorderSizePixel = 0,
@@ -142,11 +153,22 @@ local function CreateTraitsInfo(props: Properties)
 		end
 
 		return Frames
-	end)
+	end, {})
+
+	local StatsCloseClick = React.useCallback(function()
+		SetTrait(nil)
+	end, {})
 
 	return e(NewGui, {
 		DisplayOrder = 2,
 	}, {
+		StatsFrame = e(StatsFrame, {
+			Type = "Trait",
+			Level = 1,
+			Visible = SelectedTrait ~= nil,
+			Name = SelectedTrait,
+			CloseClick = StatsCloseClick,
+		}),
 		Main = e(Main.Frame, {
 			native = Join({
 				BackgroundTransparency = 0,

@@ -37,6 +37,7 @@ export type Props = {
 	Type: string,
 	Visible: boolean,
 	Level: number,
+	Trait: string?,
 	CloseClick: (() -> ())?,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
@@ -129,7 +130,9 @@ local function CreateUnitStats(props: { UnitData: UnitInfo.UnitInfo, Level: numb
 				if Property == "Damage" then
 					Value = Value[1]
 					Value *= GameInfo.XPData.GetDamageMultiplierFromLevel(props.Level)
-					Value = math.ceil(Value)
+					if not props.UnitData.Static then
+						Value = math.ceil(Value)
+					end
 				end
 
 				if Value == 0 then
@@ -207,6 +210,74 @@ local function CreateUnitStats(props: { UnitData: UnitInfo.UnitInfo, Level: numb
 	})
 end
 
+local function CreateTraitStats(props: { TraitName: string? })
+	local TraitData = React.useMemo(function()
+		return Traits.Traits[props.TraitName :: string] or Traits.Traits.SharpEyed
+	end, { props.TraitName })
+
+	local TraitFrames = React.useMemo(function()
+		local Frames: { [string]: React.Node } = {}
+
+		for Stat, Value in pairs(TraitData.Data) do
+			local StatString = HelperFunctions.FormatNumberConditional(Value * 100) .. "%"
+			local Color = UnitInfo.Stats.Colors[Stat :: UnitInfo.StatProperty] or Color3.new(1, 1, 1)
+			Frames[Stat] = e(Main.Frame, {
+				native = {
+					Size = UDim2.fromScale(0.23, 0.6),
+					LayoutOrder = UnitInfo.Stats.Layout[Stat :: any] or 0,
+				},
+			}, {
+				StatName = e(Main.TextLabel, {
+					native = {
+						Text = Stat,
+						Size = UDim2.fromScale(0.95, 0.3),
+						Position = UDim2.fromScale(0.5, 0.3),
+						TextColor3 = Color,
+					},
+				}),
+				StatValue = e(Main.TextLabel, {
+					native = {
+						Text = StatString,
+						Size = UDim2.fromScale(0.9, 0.3),
+						Position = UDim2.fromScale(0.5, 0.7),
+						TextColor3 = Color,
+					},
+				}),
+			})
+		end
+
+		return Frames
+	end, { TraitData })
+
+	return e(Main.Frame, {
+		native = {
+			Position = UDim2.fromScale(0.675, 0.35),
+			Size = UDim2.fromScale(0.5, 0.4),
+			BackgroundTransparency = 0,
+			BackgroundColor3 = Color3.new(0.298039, 0.094118, 0.470588),
+		},
+	}, {
+		UICorner = e("UICorner", {
+			CornerRadius = UDim.new(0.05, 0),
+		}),
+		MainFrame = e(Main.ScrollingFrame, {
+			BarSize = 0.01,
+			native = {
+				Size = UDim2.fromScale(0.95, 0.95),
+				Position = UDim2.fromScale(0.5, 0.48),
+				AutomaticCanvasSize = Enum.AutomaticSize.Y,
+			},
+		}, {
+			UIListLayout = e("UIListLayout", {
+				SortOrder = Enum.SortOrder.LayoutOrder,
+				FillDirection = Enum.FillDirection.Horizontal,
+				HorizontalAlignment = Enum.HorizontalAlignment.Center,
+				Padding = UDim.new(0.02, 0),
+			}),
+		}, TraitFrames),
+	})
+end
+
 local function CreateStatsFrame(props: Props)
 	local PurchaseData = React.useContext(PurchaseContext.Context)
 
@@ -252,6 +323,20 @@ local function CreateStatsFrame(props: Props)
 		end
 	end, { props.Name, props.Type })
 
+	local Rarity = React.useMemo(function()
+		if props.Type == "Unit" then
+			return UnitData.Rarity
+		elseif props.Type == "Product" and ProductData then
+			return ProductData.Rarity
+		elseif props.Type == "Resource" then
+			return ResourceData.Rarity
+		elseif props.Type == "Trait" then
+			return TraitData.Rarity
+		else
+			return "Common"
+		end
+	end, { UnitData, ProductData, ResourceData, TraitData, props.Type } :: { unknown })
+
 	local RarityData = React.useMemo(function()
 		if props.Type == "Unit" then
 			return RarityInfo[UnitData.Rarity]
@@ -286,10 +371,25 @@ local function CreateStatsFrame(props: Props)
 				UnitData = UnitData,
 				Level = props.Level,
 			})
+		elseif props.Type == "Trait" then
+			return e(CreateTraitStats, {
+				TraitName = props.Name,
+			})
 		end
 
 		return
-	end, { UnitData, props.Type, props.Level } :: { unknown })
+	end, { UnitData, props.Type, props.Level, props.Name } :: { unknown })
+
+	local TraitRarity = React.useMemo(function()
+		if props.Type == "Unit" and props.Trait then
+			local TraitInfo = Traits.Traits[props.Trait :: string]
+			return RarityInfo[TraitInfo.Rarity :: RarityInfo.Rarity]
+		elseif props.Type == "Trait" and TraitData then
+			return RarityInfo[TraitData.Rarity :: RarityInfo.Rarity]
+		else
+			return RarityInfo["Common" :: "Common"]
+		end
+	end, { TraitData, props.Type, props.Trait } :: { unknown })
 
 	return e(NewGui, {
 		DisplayOrder = 4,
@@ -326,7 +426,7 @@ local function CreateStatsFrame(props: Props)
 				native = {
 					Position = UDim2.fromScale(0.225, 0.3),
 					Size = UDim2.fromScale(0.3, 0.08),
-					Text = UnitData.Rarity,
+					Text = Rarity,
 					TextXAlignment = Enum.TextXAlignment.Left,
 				},
 			}, {
@@ -338,6 +438,24 @@ local function CreateStatsFrame(props: Props)
 				Stroke = e(UIStroke.UIStrokeGradient, {
 					Stroke = 0.02,
 					GradColor = RarityData.StrokeColor,
+				}),
+			}),
+			TraitLabel = props.Trait and e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.225, 0.425),
+					Size = UDim2.fromScale(0.3, 0.08),
+					Text = props.Trait,
+					TextXAlignment = Enum.TextXAlignment.Left,
+				},
+			}, {
+				ColorGradient = e(AnimatedGradient, {
+					GradColor = TraitRarity.Color,
+					Animate = true,
+					Speed = 1,
+				}),
+				Stroke = e(UIStroke.UIStrokeGradient, {
+					Stroke = 0.02,
+					GradColor = TraitRarity.StrokeColor,
 				}),
 			}),
 			Description = e(Main.TextLabel, {

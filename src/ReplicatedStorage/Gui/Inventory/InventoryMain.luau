@@ -848,6 +848,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 						Rarity = Data.Rarity,
 						RarityInfo = Data.RarityData,
 						Type = OpenFrame,
+						Trait = Data.CurrentUnit.Trait,
 						Visible = if HoveredId then true else false,
 						IsEquipped = IsEquippedBool,
 						OnFirstClick = FirstClick,
@@ -898,6 +899,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			Type = OpenFrame,
 			Level = InfoFrameData.Level,
 			Visible = InfoVisible,
+			Trait = InfoFrameData.Trait,
 			CloseClick = CloseInfoClick,
 		}),
 		IndConfirm = e(Confirm, {

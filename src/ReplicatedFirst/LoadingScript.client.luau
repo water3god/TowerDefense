@@ -160,6 +160,14 @@ end
 ReplicatedFirst:RemoveDefaultLoadingScreen()
 PreloadAsync()
 
-TweenService
-	:Create(Gui.Main, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), { GroupTransparency = 1 })
-	:Play()
+local Tween = TweenService:Create(
+	Gui.Main,
+	TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out),
+	{ GroupTransparency = 1 }
+)
+
+Tween.Completed:Connect(function()
+	Gui:Destroy()
+end)
+
+Tween:Play()

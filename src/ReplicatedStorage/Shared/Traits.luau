@@ -94,7 +94,7 @@ local Traits: { [string]: TraitData } = {
 		Rarity = "Legendary",
 		Data = { Range = 0.20, Damage = 0.20, FireRate = 0.10 },
 		Description = "Major boost to range, damage, and fire rate.",
-		Chance = 0.02,
+		Chance = 0.025,
 		Priority = 10,
 	},
 
@@ -103,7 +103,7 @@ local Traits: { [string]: TraitData } = {
 		Rarity = "Legendary",
 		Data = { Coins = 0.25, Range = 0.10, FireRate = 0.10 },
 		Description = "Greatly increases coins with bonus range and fire rate.",
-		Chance = 0.02,
+		Chance = 0.025,
 		Priority = 11,
 	},
 
@@ -113,7 +113,7 @@ local Traits: { [string]: TraitData } = {
 		Rarity = "Mythic",
 		Data = { Damage = 0.30, FireRate = 0.20, Range = 0.10 },
 		Description = "Huge boost to combat effectiveness.",
-		Chance = 0.02,
+		Chance = 0.01,
 		Priority = 12,
 	},
 
@@ -132,7 +132,7 @@ local Traits: { [string]: TraitData } = {
 		Rarity = "Godly",
 		Data = { Damage = 0.35, FireRate = 0.25, Range = 0.15, Coins = 0.10 },
 		Description = "Unmatched power in all combat stats.",
-		Chance = 0.004,
+		Chance = 0.003,
 		Priority = 14,
 	},
 
@@ -150,7 +150,7 @@ local Traits: { [string]: TraitData } = {
 		Rarity = "Godly",
 		Data = { Range = 0.30, Damage = 0.25, FireRate = 0.20, Coins = 0.10 },
 		Description = "Elite trait boosting everything considerably.",
-		Chance = 0.002,
+		Chance = 0.003,
 		Priority = 16,
 	},
 
