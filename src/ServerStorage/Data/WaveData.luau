@@ -5001,26 +5001,209 @@ local InfiniteData: { [string]: InfiniteData } = {
 				OrderPriority = 3,
 			},
 			["Charioteer"] = {
-				FirstSpawnWave = 1,
+				FirstSpawnWave = 2,
 				SpawnCount = 8,
 				OrderPriority = 4,
 			},
 			["War Priest"] = {
-				FirstSpawnWave = 1,
+				FirstSpawnWave = 3,
 				SpawnCount = 3,
 				OrderPriority = 5,
 			},
 			["Egyptian Commander"] = {
-				FirstSpawnWave = 1,
+				FirstSpawnWave = 5,
 				SpawnCount = 2,
 				OrderPriority = 6,
 			},
 			["Royal Guard"] = {
-				FirstSpawnWave = 10,
+				FirstSpawnWave = 9,
 				SpawnCount = 4,
 				OrderPriority = 7,
+				WaveDelay = 3,
 			},
 			["Ramesses II"] = {
+				FirstSpawnWave = 15,
+				SpawnCount = 1,
+				OrderPriority = 8,
+				WaveDelay = 15,
+			},
+		},
+		EnemyData = {},
+	},
+	["Greece_Infinite"] = {
+		Data = {
+			["Peltast"] = {
+				FirstSpawnWave = 1,
+				SpawnCount = 10,
+				OrderPriority = 1,
+			},
+			["Hoplite"] = {
+				FirstSpawnWave = 1,
+				SpawnCount = 10,
+				OrderPriority = 2,
+			},
+			["Greek Slinger"] = {
+				FirstSpawnWave = 1,
+				SpawnCount = 10,
+				OrderPriority = 3,
+			},
+			["Greek Calvaryman"] = {
+				FirstSpawnWave = 2,
+				SpawnCount = 8,
+				OrderPriority = 4,
+			},
+			["Strategos"] = {
+				FirstSpawnWave = 3,
+				SpawnCount = 3,
+				OrderPriority = 5,
+			},
+			["Polemarch"] = {
+				FirstSpawnWave = 5,
+				SpawnCount = 2,
+				OrderPriority = 6,
+			},
+			["Palace Guard"] = {
+				FirstSpawnWave = 9,
+				SpawnCount = 4,
+				OrderPriority = 7,
+				WaveDelay = 3,
+			},
+			["Pyrrhus"] = {
+				FirstSpawnWave = 15,
+				SpawnCount = 1,
+				OrderPriority = 8,
+				WaveDelay = 15,
+			},
+		},
+		EnemyData = {},
+	},
+	["Rome_Infinite"] = {
+		Data = {
+			["Roman Slinger"] = {
+				FirstSpawnWave = 1,
+				SpawnCount = 10,
+				OrderPriority = 1,
+			},
+			["Legionary"] = {
+				FirstSpawnWave = 1,
+				SpawnCount = 10,
+				OrderPriority = 2,
+			},
+			["Roman Archer"] = {
+				FirstSpawnWave = 1,
+				SpawnCount = 10,
+				OrderPriority = 3,
+			},
+			["Standard Bearer"] = {
+				FirstSpawnWave = 2,
+				SpawnCount = 8,
+				OrderPriority = 4,
+			},
+			["Centurion"] = {
+				FirstSpawnWave = 3,
+				SpawnCount = 3,
+				OrderPriority = 5,
+			},
+			["Tribune"] = {
+				FirstSpawnWave = 5,
+				SpawnCount = 2,
+				OrderPriority = 6,
+			},
+			["Praetorian Guard"] = {
+				FirstSpawnWave = 9,
+				SpawnCount = 4,
+				OrderPriority = 7,
+				WaveDelay = 3,
+			},
+			["Trajan"] = {
+				FirstSpawnWave = 15,
+				SpawnCount = 1,
+				OrderPriority = 8,
+				WaveDelay = 15,
+			},
+		},
+		EnemyData = {},
+	},
+	["China_Infinite"] = {
+		Data = {
+			["Foot Soldier"] = {
+				FirstSpawnWave = 1,
+				SpawnCount = 10,
+				OrderPriority = 1,
+			},
+			["Chinese Spearman"] = {
+				FirstSpawnWave = 1,
+				SpawnCount = 10,
+				OrderPriority = 2,
+			},
+			["Chinese Archer"] = {
+				FirstSpawnWave = 1,
+				SpawnCount = 10,
+				OrderPriority = 3,
+			},
+			["Shield Bearer"] = {
+				FirstSpawnWave = 2,
+				SpawnCount = 8,
+				OrderPriority = 4,
+			},
+			["Chinese Commander"] = {
+				FirstSpawnWave = 3,
+				SpawnCount = 3,
+				OrderPriority = 5,
+			},
+			["Imperial Guard"] = {
+				FirstSpawnWave = 5,
+				SpawnCount = 2,
+				OrderPriority = 6,
+			},
+			["Qin Shi Huang"] = {
+				FirstSpawnWave = 15,
+				SpawnCount = 1,
+				OrderPriority = 7,
+				WaveDelay = 15,
+			},
+		},
+		EnemyData = {},
+	},
+	["Medieval_Infinite"] = {
+		Data = {
+			["Medieval Footman"] = {
+				FirstSpawnWave = 1,
+				SpawnCount = 10,
+				OrderPriority = 1,
+			},
+			["Medieval Spearman"] = {
+				FirstSpawnWave = 1,
+				SpawnCount = 10,
+				OrderPriority = 2,
+			},
+			["Axeman"] = {
+				FirstSpawnWave = 1,
+				SpawnCount = 10,
+				OrderPriority = 3,
+			},
+			["Knight"] = {
+				FirstSpawnWave = 2,
+				SpawnCount = 8,
+				OrderPriority = 4,
+			},
+			["Medieval Captain"] = {
+				FirstSpawnWave = 3,
+				SpawnCount = 3,
+				OrderPriority = 5,
+			},
+			["Banneret"] = {
+				FirstSpawnWave = 5,
+				SpawnCount = 2,
+				OrderPriority = 6,
+			},
+			["Bodyguard"] = {
+				FirstSpawnWave = 9,
+				SpawnCount = 4,
+				OrderPriority = 7,
+				WaveDelay = 3,
+			},
+			["Charlemagne"] = {
 				FirstSpawnWave = 15,
 				SpawnCount = 1,
 				OrderPriority = 8,

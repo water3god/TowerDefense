@@ -241,7 +241,33 @@ local GameInfo: { MapInfo } = {
 		Name = "Greece",
 		Image = "rbxassetid://87671289193280",
 		LevelInfo = {
-			{
+			[0] = {
+				Name = "Infinite",
+				GameId = "Greece_Infinite",
+				Index = 0,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 120, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 250, UniqueId = "" },
+						},
+					},
+				},
+			},
+			[1] = {
 				Name = "Spartan Defense",
 				GameId = "Greece_SpartanDefense",
 				Index = 1,
@@ -267,7 +293,7 @@ local GameInfo: { MapInfo } = {
 					},
 				},
 			},
-			{
+			[2] = {
 				Name = "Olympian Challenge",
 				GameId = "Greece_OlympianChallenge",
 				Index = 2,
@@ -293,7 +319,7 @@ local GameInfo: { MapInfo } = {
 					},
 				},
 			},
-			{
+			[3] = {
 				Name = "Athenian Walls",
 				GameId = "Greece_AthenianWalls",
 				Index = 3,
@@ -319,7 +345,7 @@ local GameInfo: { MapInfo } = {
 					},
 				},
 			},
-			{
+			[4] = {
 				Name = "Phalanx Advance",
 				GameId = "Greece_PhalanxAdvance",
 				Index = 4,
@@ -345,7 +371,7 @@ local GameInfo: { MapInfo } = {
 					},
 				},
 			},
-			{
+			[5] = {
 				Name = "Oracle's Prophecy",
 				GameId = "Greece_OraclesProphecy",
 				Index = 5,
@@ -371,7 +397,7 @@ local GameInfo: { MapInfo } = {
 					},
 				},
 			},
-			{
+			[6] = {
 				Name = "Final Stand",
 				GameId = "Greece_FinalStand",
 				Index = 6,
@@ -405,7 +431,33 @@ local GameInfo: { MapInfo } = {
 		Name = "Rome",
 		Image = "rbxassetid://81260716481225",
 		LevelInfo = {
-			{
+			[0] = {
+				Name = "Infinite",
+				GameId = "Rome_Infinite",
+				Index = 0,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 120, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 250, UniqueId = "" },
+						},
+					},
+				},
+			},
+			[1] = {
 				Name = "Legion's March",
 				GameId = "Rome_LegionsMarch",
 				Index = 1,
@@ -431,7 +483,7 @@ local GameInfo: { MapInfo } = {
 					},
 				},
 			},
-			{
+			[2] = {
 				Name = "Centurion's Charge",
 				GameId = "Rome_CenturionsCharge",
 				Index = 2,
@@ -457,7 +509,7 @@ local GameInfo: { MapInfo } = {
 					},
 				},
 			},
-			{
+			[3] = {
 				Name = "Imperial Walls",
 				GameId = "Rome_ImperialWalls",
 				Index = 3,
@@ -483,7 +535,7 @@ local GameInfo: { MapInfo } = {
 					},
 				},
 			},
-			{
+			[4] = {
 				Name = "Chariot Onslaught",
 				GameId = "Rome_ChariotOnslaught",
 				Index = 4,
@@ -509,7 +561,7 @@ local GameInfo: { MapInfo } = {
 					},
 				},
 			},
-			{
+			[5] = {
 				Name = "Sacred Arena",
 				GameId = "Rome_SacredArena",
 				Index = 5,
@@ -535,7 +587,7 @@ local GameInfo: { MapInfo } = {
 					},
 				},
 			},
-			{
+			[6] = {
 				Name = "Final Triumph",
 				GameId = "Rome_FinalTriumph",
 				Index = 6,
@@ -569,7 +621,33 @@ local GameInfo: { MapInfo } = {
 		Name = "China",
 		Image = "rbxassetid://96878463422313",
 		LevelInfo = {
-			{
+			[0] = {
+				Name = "Infinite",
+				GameId = "China_Infinite",
+				Index = 0,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 120, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 250, UniqueId = "" },
+						},
+					},
+				},
+			},
+			[1] = {
 				Name = "Yellow River Defense",
 				GameId = "China_YellowRiverDefense",
 				Index = 1,
@@ -595,7 +673,7 @@ local GameInfo: { MapInfo } = {
 					},
 				},
 			},
-			{
+			[2] = {
 				Name = "Terracotta Barrage",
 				GameId = "China_TerracottaBarrage",
 				Index = 2,
@@ -621,7 +699,7 @@ local GameInfo: { MapInfo } = {
 					},
 				},
 			},
-			{
+			[3] = {
 				Name = "Great Wall Stand",
 				GameId = "China_GreatWallStand",
 				Index = 3,
@@ -647,7 +725,7 @@ local GameInfo: { MapInfo } = {
 					},
 				},
 			},
-			{
+			[4] = {
 				Name = "Imperial Cavalry",
 				GameId = "China_ImperialCavalry",
 				Index = 4,
@@ -673,7 +751,7 @@ local GameInfo: { MapInfo } = {
 					},
 				},
 			},
-			{
+			[5] = {
 				Name = "Sacred Scrolls",
 				GameId = "China_SacredScrolls",
 				Index = 5,
@@ -699,7 +777,7 @@ local GameInfo: { MapInfo } = {
 					},
 				},
 			},
-			{
+			[6] = {
 				Name = "Final Dynasty",
 				GameId = "China_FinalDynasty",
 				Index = 6,
@@ -733,7 +811,33 @@ local GameInfo: { MapInfo } = {
 		Name = "Medieval",
 		Image = "rbxassetid://74203135188399",
 		LevelInfo = {
-			{
+			[0] = {
+				Name = "Infinite",
+				GameId = "Medieval_Infinite",
+				Index = 0,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 50, UniqueId = "" },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 120, UniqueId = "" },
+						},
+					},
+					Insane = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 250, UniqueId = "" },
+						},
+					},
+				},
+			},
+			[1] = {
 				Name = "Knight's Stand",
 				GameId = "Medieval_KnightsStand",
 				Index = 1,
@@ -759,7 +863,7 @@ local GameInfo: { MapInfo } = {
 					},
 				},
 			},
-			{
+			[2] = {
 				Name = "Archer's Volley",
 				GameId = "Medieval_ArchersVolley",
 				Index = 2,
@@ -785,7 +889,7 @@ local GameInfo: { MapInfo } = {
 					},
 				},
 			},
-			{
+			[3] = {
 				Name = "Shield Wall",
 				GameId = "Medieval_ShieldWall",
 				Index = 3,
@@ -811,7 +915,7 @@ local GameInfo: { MapInfo } = {
 					},
 				},
 			},
-			{
+			[4] = {
 				Name = "Cavalry Charge",
 				GameId = "Medieval_CavalryCharge",
 				Index = 4,
@@ -837,7 +941,7 @@ local GameInfo: { MapInfo } = {
 					},
 				},
 			},
-			{
+			[5] = {
 				Name = "Sacred Relics",
 				GameId = "Medieval_SacredRelics",
 				Index = 5,
@@ -863,7 +967,7 @@ local GameInfo: { MapInfo } = {
 					},
 				},
 			},
-			{
+			[6] = {
 				Name = "Final Crusade",
 				GameId = "Medieval_FinalCrusade",
 				Index = 6,
