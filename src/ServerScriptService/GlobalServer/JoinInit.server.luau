@@ -62,29 +62,37 @@ local function Init(DataInput: Types.RecieveData?)
 
 	local _, LevelInfo = GameInfo.GetDataFromInfo(Data.MapId, Data.LevelId)
 	local XPMultiplier: number = (LevelInfo :: any).XPMultiplier
-
-	local FoundData = WaveData.WaveData[Data.LevelId]
-
-	if FoundData then
+	if LevelInfo then
 		for _, Unit in pairs(UnitModule.GetUnits()) do
 			Unit:Delete()
 		end
-		local Wave = GlobalWave.new({
-			PlayerIds = Data.PlayerIds,
-			XPMultiplier = XPMultiplier,
-			RewardInfo = (LevelInfo :: any).RewardInfo[Data.Difficulty],
-			Data = FoundData,
-			Positions = Positions,
-			Difficulty = Data.Difficulty,
-			IsInfinite = false,
-		})
+		local Wave = nil
+		if LevelInfo.Index == 0 then
+			local FoundData = WaveData.InfiniteData[Data.LevelId]
+			Wave = GlobalWave.infinite({
+				PlayerIds = Data.PlayerIds,
+				XPMultiplier = XPMultiplier,
+				RewardInfo = (LevelInfo :: any).RewardInfo[Data.Difficulty],
+				Data = FoundData,
+				Positions = Positions,
+				Difficulty = Data.Difficulty,
+			})
+		else
+			local FoundData = WaveData.WaveData[Data.LevelId]
+			if FoundData then
+				Wave = GlobalWave.new({
+					PlayerIds = Data.PlayerIds,
+					XPMultiplier = XPMultiplier,
+					RewardInfo = (LevelInfo :: any).RewardInfo[Data.Difficulty],
+					Data = FoundData,
+					Positions = Positions,
+					Difficulty = Data.Difficulty,
+					IsInfinite = false,
+				})
+			end
+		end
 
 		Wave.Ended:Once(function()
-			if not LevelInfo then
-				error(string.format("No LevelInfo! MapId: %s, LevelId: %s", Data.MapId, Data.LevelId))
-				return
-			end
-
 			if Wave.IsInfinite then
 				for PlayerId, _ in pairs(Wave.Coins) do
 					local Player = Players:GetPlayerByUserId(PlayerId)
@@ -95,7 +103,7 @@ local function Init(DataInput: Types.RecieveData?)
 						if DataModule then
 							DataModule:AddInfiniteStage({
 								Map = Data.MapId,
-								Stage = LevelInfo.Index,
+								Stage = 0,
 								Difficulty = Data.Difficulty,
 								Damage = Wave.TotalDamage,
 								Wave = Wave.Wave,
@@ -122,6 +130,8 @@ local function Init(DataInput: Types.RecieveData?)
 				end
 			end
 		end)
+	elseif not LevelInfo then
+		error(string.format("No LevelInfo! MapId: %s, LevelId: %s", Data.MapId, Data.LevelId))
 	end
 end
 
@@ -139,7 +149,7 @@ if game["Run Service"]:IsStudio() then
 end
 
 local function KickPlayer(Player: Player)
-	Player:Kick("Error Whille Loading Game. Please Rejoin.")
+	Player:Kick("Error While Loading Game. Please Rejoin.")
 end
 
 local function OnError()

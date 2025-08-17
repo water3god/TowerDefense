@@ -87,7 +87,7 @@ local function CreateStage(Props: { Hovered: boolean, Number: number, OnClick: (
 			Label = e(Main.TextLabel, {
 				native = {
 					Size = UDim2.fromScale(0.9, 0.55),
-					Text = tostring(Props.Number),
+					Text = Props.Number == 0 and "∞" or tostring(Props.Number),
 				},
 			}),
 		}),
@@ -222,6 +222,10 @@ local function CreateMainStory(Properties: Properties)
 	local Stage, SetStage = React.useState(1)
 	local Difficulty, SetDifficulty = React.useState("Normal")
 
+	local IsInfinite = React.useMemo(function()
+		return Stage == 0
+	end, { Stage })
+
 	local MapClicked = React.useCallback(function(MapId)
 		if CurrentMap ~= MapId then
 			SetMap(MapId)
@@ -339,34 +343,64 @@ local function CreateMainStory(Properties: Properties)
 	end, { CurrentMap })
 
 	local FirstValue = React.useMemo(function()
-		local MapInfo = StoryData.CompletedMaps[CurrentMap]
+		if IsInfinite then
+			local MapInfo = StoryData.CompletedInfinites[CurrentMap]
 
-		if
-			MapInfo
-			and MapInfo[Stage]
-			and MapInfo[Stage][Difficulty :: any]
-			and MapInfo[Stage][Difficulty :: any].FinishedCount
-		then
-			return tostring(MapInfo[Stage][Difficulty :: any].FinishedCount)
+			if
+				MapInfo
+				and MapInfo[Stage]
+				and MapInfo[Stage][Difficulty :: any]
+				and MapInfo[Stage][Difficulty :: any].Wave
+			then
+				return tostring(MapInfo[Stage][Difficulty :: any].Wave)
+			else
+				return "N/A"
+			end
 		else
-			return "N/A"
+			local MapInfo = StoryData.CompletedMaps[CurrentMap]
+
+			if
+				MapInfo
+				and MapInfo[Stage]
+				and MapInfo[Stage][Difficulty :: any]
+				and MapInfo[Stage][Difficulty :: any].FinishedCount
+			then
+				return tostring(MapInfo[Stage][Difficulty :: any].FinishedCount)
+			else
+				return "N/A"
+			end
 		end
-	end, { CurrentMap, Stage, Difficulty, StoryData } :: { unknown })
+	end, { CurrentMap, Stage, Difficulty, StoryData, IsInfinite } :: { unknown })
 
 	local SecondValue = React.useMemo(function()
-		local MapInfo = StoryData.CompletedMaps[CurrentMap]
+		if IsInfinite then
+			local MapInfo = StoryData.CompletedInfinites[CurrentMap]
 
-		if
-			MapInfo
-			and MapInfo[Stage]
-			and MapInfo[Stage][Difficulty :: any]
-			and MapInfo[Stage][Difficulty :: any].FastestTime
-		then
-			return HelperFunctions.FormatTime(MapInfo[Stage][Difficulty :: any].FastestTime)
+			if
+				MapInfo
+				and MapInfo[Stage]
+				and MapInfo[Stage][Difficulty :: any]
+				and MapInfo[Stage][Difficulty :: any].Damage
+			then
+				return HelperFunctions.FormatTime(MapInfo[Stage][Difficulty :: any].Damage)
+			else
+				return "N/A"
+			end
 		else
-			return "N/A"
+			local MapInfo = StoryData.CompletedMaps[CurrentMap]
+
+			if
+				MapInfo
+				and MapInfo[Stage]
+				and MapInfo[Stage][Difficulty :: any]
+				and MapInfo[Stage][Difficulty :: any].FastestTime
+			then
+				return HelperFunctions.FormatTime(MapInfo[Stage][Difficulty :: any].FastestTime)
+			else
+				return "N/A"
+			end
 		end
-	end, { CurrentMap, Stage, Difficulty, StoryData } :: { unknown })
+	end, { CurrentMap, Stage, Difficulty, StoryData, IsInfinite } :: { unknown })
 
 	local MapImage = React.useMemo(function()
 		return (GameInfo.GetMapFromId(CurrentMap) :: any).Image :: string
@@ -384,6 +418,18 @@ local function CreateMainStory(Properties: Properties)
 
 	local StageData = React.useMemo(function()
 		local Data: { [string]: React.Node } = {}
+
+		if (GameInfo.GetMapFromId(CurrentMap) :: any).LevelInfo[0] then
+			Data["Stage_Infinite"] = e(CreateStage, {
+				Number = 0,
+				Hovered = Stage == 0,
+				Visible = LevelCount >= 0,
+				Enabled = EnabledIndex >= 0,
+				OnClick = function()
+					SetStage(0)
+				end,
+			})
+		end
 
 		for i = 1, LevelCount do
 			Data["Stage" .. i] = e(CreateStage, {
