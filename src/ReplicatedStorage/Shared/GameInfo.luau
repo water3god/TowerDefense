@@ -977,7 +977,7 @@ function Data.GetDataFromInfo(MapId: string, LevelId: string): (MapInfo?, LevelI
 	local MapInfo = Data.GetMapFromId(MapId)
 
 	if MapInfo then
-		for _, Info in ipairs(MapInfo.LevelInfo) do
+		for _, Info in pairs(MapInfo.LevelInfo) do
 			if Info.GameId == LevelId then
 				return MapInfo, Info
 			end

@@ -888,12 +888,12 @@ function PlayerData:OwnsStage(ParamData: GetStageData)
 	local CompletedMaps = self.Profile.Data.CompletedMaps
 
 	if CompletedMaps[ParamData.Map] then
-		if ParamData.Stage == 1 or CompletedMaps[ParamData.Map][ParamData.Stage - 1] then
+		if ParamData.Stage == 0 or ParamData.Stage == 1 or CompletedMaps[ParamData.Map][ParamData.Stage - 1] then
 			return true
 		end
 	else
 		local MapData = GameInfo.GetMapFromId(ParamData.Map)
-		if MapData and ParamData.Stage == 1 then
+		if MapData and (ParamData.Stage == 1 or ParamData.Stage == 0) then
 			if not MapData.Prerequisite then
 				return true
 			elseif CompletedMaps[MapData.Prerequisite] then

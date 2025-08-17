@@ -29,6 +29,7 @@ type Context = {
 local Context = React.createContext({
 	Enabled = false,
 	CompletedMaps = {},
+	CompletedInfinites = {},
 } :: Context)
 
 local function Provider(props)
@@ -37,6 +38,7 @@ local function Provider(props)
 		Data = nil,
 		BoothTimeData = nil,
 		CompletedMaps = StoryService.MapData,
+		CompletedInfinites = StoryService.InfiniteMapData,
 	} :: Context)
 
 	Hooks.useEventConnection(StoryService.BoothChoosing, function(Data)

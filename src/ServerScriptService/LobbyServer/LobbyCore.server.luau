@@ -197,7 +197,6 @@ Network.ChooseMap.SetCallback(
 		if typeof(Data) ~= "table" then
 			return
 		end
-
 		if
 			typeof(Data.MapId) ~= "string"
 			or typeof(Data.LevelId) ~= "string"

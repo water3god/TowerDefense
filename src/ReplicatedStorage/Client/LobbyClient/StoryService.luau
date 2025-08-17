@@ -118,6 +118,7 @@ BoothRestarted.SetCallback(function()
 end)
 
 BoothWaiting.SetCallback(function(Data: any)
+	print("Set")
 	Module.Data = Data
 	Module.BoothWaiting:Fire(Data)
 end)
