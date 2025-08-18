@@ -155,6 +155,7 @@ end)
 DataSync.SetCallback(function(Data: MapData, InfiniteData: InfiniteMapData)
 	Module.MapData = Data
 	Module.InfiniteMapData = InfiniteData
+
 	Module.MapDataChanged:Fire(Data)
 	Module.InfiniteMapDataChanged:Fire(InfiniteData)
 end)

@@ -37,58 +37,72 @@ local function Provider(props)
 		Enabled = false,
 		Data = nil,
 		BoothTimeData = nil,
-		CompletedMaps = StoryService.MapData,
-		CompletedInfinites = StoryService.InfiniteMapData,
+		CompletedMaps = {},
+		CompletedInfinites = {},
 	} :: Context)
 
 	Hooks.useEventConnection(StoryService.BoothChoosing, function(Data)
-		local NewTable = table.clone(Value)
-		NewTable.Enabled = true
-		NewTable.BoothTimeData = Data
-		SetValue(NewTable)
+		SetValue(function(Table)
+			local NewTable = table.clone(Table)
+			NewTable.Enabled = true
+			NewTable.BoothTimeData = Data
+			return NewTable
+		end)
 	end, { Value })
 
 	Hooks.useEventConnection(StoryService.BoothRestarted, function()
-		local NewTable = table.clone(Value)
-		NewTable.Enabled = false
-		NewTable.Data = nil
-		NewTable.BoothTimeData = nil
-
-		SetValue(NewTable)
+		SetValue(function(Table)
+			local NewTable = table.clone(Table)
+			NewTable.Enabled = false
+			NewTable.Data = nil
+			NewTable.BoothTimeData = nil
+			return NewTable
+		end)
 	end, { Value })
 
 	Hooks.useEventConnection(StoryService.BoothWaiting, function(Data: StoryService.BoothData)
-		local NewTable = table.clone(Value)
-		NewTable.Enabled = true
-		NewTable.Data = Data
-		NewTable.BoothTimeData = nil
-		SetValue(NewTable)
+		SetValue(function(Table)
+			local NewTable = table.clone(Table)
+			NewTable.Enabled = true
+			NewTable.Data = Data
+			NewTable.BoothTimeData = nil
+			return NewTable
+		end)
 	end, { Value })
 
 	Hooks.useEventConnection(StoryService.PlayerChanged, function(_, _, Changed: boolean)
 		if Changed and Value.Data and StoryService.Data then
-			local NewTable = table.clone(Value)
-			NewTable.Data = StoryService.Data
-			SetValue(NewTable)
+			SetValue(function(Table)
+				local NewTable = table.clone(Table)
+				NewTable.Data = StoryService.Data
+				return NewTable
+			end)
 		end
 	end, { Value })
 
 	React.useEffect(function()
-		local NewTable = table.clone(Value)
-		NewTable.CompletedMaps = table.clone(StoryService.MapData or {})
-		SetValue(NewTable)
+		SetValue(function(Table)
+			local NewTable = table.clone(Table)
+			NewTable.CompletedMaps = table.clone(StoryService.MapData or {})
+			NewTable.CompletedInfinites = table.clone(StoryService.InfiniteMapData or {})
+			return NewTable
+		end)
 	end, {})
 
 	Hooks.useEventConnection(StoryService.MapDataChanged, function(Data)
-		local NewTable = table.clone(Value)
-		NewTable.CompletedMaps = table.clone(Data)
-		SetValue(NewTable)
+		SetValue(function(Table)
+			local NewTable = table.clone(Table)
+			NewTable.CompletedMaps = table.clone(Data)
+			return NewTable
+		end)
 	end, { Value })
 
 	Hooks.useEventConnection(StoryService.InfiniteMapDataChanged, function(Data)
-		local NewTable = table.clone(Value)
-		NewTable.CompletedInfinites = table.clone(Data)
-		SetValue(NewTable)
+		SetValue(function(Table)
+			local NewTable = table.clone(Table)
+			NewTable.CompletedInfinites = table.clone(Data)
+			return NewTable
+		end)
 	end, { Value })
 
 	return e(Context.Provider, {
