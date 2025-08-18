@@ -54,7 +54,7 @@ local function CreateTraitFrame(props: Properties)
 			AspectRatio = 1,
 		}),
 		UIGradient = e(AnimatedGradient, {
-			GradColor = RarityData and RarityData.Color or ColorSequence.new(Color3.fromRGB(255, 255, 255)),
+			GradColor = RarityData and RarityData.BackgroundColor or ColorSequence.new(Color3.fromRGB(255, 255, 255)),
 			Animate = true,
 		}),
 	}, props.children)

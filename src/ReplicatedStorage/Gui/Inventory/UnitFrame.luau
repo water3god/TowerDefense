@@ -55,12 +55,13 @@ local function CreateUnitFrameRaw(Properties: Properties)
 				local RarityData = RarityInfo[TraitData.Rarity :: any]
 				return e(Main.ImageLabel, {
 					native = {
+						Image = TraitData.Icon,
 						Size = UDim2.fromScale(0.3, 0.3),
 						Position = UDim2.fromScale(0.25, 0.45),
 					},
 				}, {
 					UIGradient = e(AnimatedGradient, {
-						GradColor = RarityData.Color,
+						GradColor = RarityData.BackgroundColor,
 						Animate = true,
 						Speed = 1,
 					}),
