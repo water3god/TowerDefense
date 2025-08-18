@@ -110,6 +110,11 @@ local function CreateTrait(props: TraitProperties)
 					BackgroundTransparency = 1,
 				},
 			}, {
+				UIGradient = e(AnimatedGradient, {
+					GradColor = RarityData.BackgroundColor,
+					Animate = true,
+					Speed = 1,
+				}),
 				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 					AspectRatio = 1,
 				}),

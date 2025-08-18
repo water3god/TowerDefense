@@ -15,7 +15,7 @@ export type TraitData = {
 
 local Traits: { [string]: TraitData } = {
 	SharpEyed = {
-		Icon = "",
+		Icon = "rbxassetid://122185382899091",
 		Rarity = "Common",
 		Data = { Range = 0.08 },
 		Description = "Increases unit range by 8%.",
@@ -24,7 +24,7 @@ local Traits: { [string]: TraitData } = {
 	},
 
 	["Fast Loader"] = {
-		Icon = "",
+		Icon = "rbxassetid://131130794346076",
 		Rarity = "Common",
 		Data = { FireRate = 0.08 },
 		Description = "Increases fire rate by 8%.",
@@ -33,7 +33,7 @@ local Traits: { [string]: TraitData } = {
 	},
 
 	["Hard Hitter"] = {
-		Icon = "",
+		Icon = "rbxassetid://136940392261450",
 		Rarity = "Common",
 		Data = { Damage = 0.08 },
 		Description = "Increases damage by 8%.",
@@ -42,7 +42,7 @@ local Traits: { [string]: TraitData } = {
 	},
 
 	Greedy = {
-		Icon = "",
+		Icon = "rbxassetid://127736146775622",
 		Rarity = "Common",
 		Data = { Coins = 0.08 },
 		Description = "Increases money gained from this unit by 8%.",
@@ -52,7 +52,7 @@ local Traits: { [string]: TraitData } = {
 
 	-- RARE
 	["Quick Hands"] = {
-		Icon = "",
+		Icon = "rbxassetid://73467033417948",
 		Rarity = "Rare",
 		Data = { FireRate = 0.07, Coins = 0.07 },
 		Description = "Moderately increases fire rate and coins.",
@@ -61,7 +61,7 @@ local Traits: { [string]: TraitData } = {
 	},
 
 	["Ranged Veteran"] = {
-		Icon = "",
+		Icon = "rbxassetid://91396981570027",
 		Rarity = "Rare",
 		Data = { Range = 0.10, Damage = 0.05 },
 		Description = "Boosts range and damage slightly.",
@@ -71,7 +71,7 @@ local Traits: { [string]: TraitData } = {
 
 	-- EPIC
 	Deadshot = {
-		Icon = "",
+		Icon = "rbxassetid://105101578867166",
 		Rarity = "Epic",
 		Data = { Damage = 0.18, Range = 0.12 },
 		Description = "Significantly boosts damage and range.",
@@ -80,7 +80,7 @@ local Traits: { [string]: TraitData } = {
 	},
 
 	["Greedy Hunter"] = {
-		Icon = "",
+		Icon = "rbxassetid://138889605430553",
 		Rarity = "Epic",
 		Data = { Damage = 0.10, Coins = 0.15 },
 		Description = "Boosts coins and damage for high-profit kills.",
@@ -90,7 +90,7 @@ local Traits: { [string]: TraitData } = {
 
 	-- LEGENDARY
 	Sharpshooter = {
-		Icon = "",
+		Icon = "rbxassetid://102716307344081",
 		Rarity = "Legendary",
 		Data = { Range = 0.20, Damage = 0.20, FireRate = 0.10 },
 		Description = "Major boost to range, damage, and fire rate.",
@@ -99,7 +99,7 @@ local Traits: { [string]: TraitData } = {
 	},
 
 	["Treasure Seeker"] = {
-		Icon = "",
+		Icon = "rbxassetid://128643620969084",
 		Rarity = "Legendary",
 		Data = { Coins = 0.25, Range = 0.10, FireRate = 0.10 },
 		Description = "Greatly increases coins with bonus range and fire rate.",
@@ -109,7 +109,7 @@ local Traits: { [string]: TraitData } = {
 
 	-- MYTHIC
 	Annihilator = {
-		Icon = "",
+		Icon = "rbxassetid://114935210571228",
 		Rarity = "Mythic",
 		Data = { Damage = 0.30, FireRate = 0.20, Range = 0.10 },
 		Description = "Huge boost to combat effectiveness.",
@@ -118,7 +118,7 @@ local Traits: { [string]: TraitData } = {
 	},
 
 	Stormcaller = {
-		Icon = "",
+		Icon = "rbxassetid://81412171819994",
 		Rarity = "Mythic",
 		Data = { FireRate = 0.25, Range = 0.15, Coins = 0.15 },
 		Description = "Lightning fast fire rate with solid profits.",
@@ -128,7 +128,7 @@ local Traits: { [string]: TraitData } = {
 
 	-- GODLY
 	Omnistrike = {
-		Icon = "",
+		Icon = "rbxassetid://87359585001441",
 		Rarity = "Godly",
 		Data = { Damage = 0.35, FireRate = 0.25, Range = 0.15, Coins = 0.10 },
 		Description = "Unmatched power in all combat stats.",
@@ -137,7 +137,7 @@ local Traits: { [string]: TraitData } = {
 	},
 
 	["Eternal Greed"] = {
-		Icon = "",
+		Icon = "rbxassetid://104394794140208",
 		Rarity = "Godly",
 		Data = { Coins = 0.40, FireRate = 0.25, Damage = 0.15, Range = 0.10 },
 		Description = "Maximize wealth with powerful support stats.",
@@ -146,18 +146,18 @@ local Traits: { [string]: TraitData } = {
 	},
 
 	["All Seeing"] = {
-		Icon = "",
+		Icon = "rbxassetid://119612261371730",
 		Rarity = "Godly",
-		Data = { Range = 0.30, Damage = 0.25, FireRate = 0.20, Coins = 0.10 },
+		Data = { Range = 0.30, Damage = 0.25, FireRate = 0.20, Coins = 0.20 },
 		Description = "Elite trait boosting everything considerably.",
 		Chance = 0.003,
 		Priority = 16,
 	},
 
 	Ascended = {
-		Icon = "",
+		Icon = "rbxassetid://72619437947138",
 		Rarity = "Godly",
-		Data = { Damage = 1, FireRate = 1, Range = 1, Coins = 1 },
+		Data = { Damage = 0.5, FireRate = 0.5, Range = 0.5, Coins = 0.5 },
 		Description = "Perfect balance across all attributes.",
 		Chance = 0.001,
 		Priority = 17,
