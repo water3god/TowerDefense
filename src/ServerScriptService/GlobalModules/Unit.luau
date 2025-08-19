@@ -315,7 +315,8 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 	if self.Trait then
 		local TraitData = Traits.Traits[self.Trait]
 		for TraitType, TraitValue in pairs(TraitData.Data) do
-			self:ChangeRatio("__Trait__" .. TraitType, "Global", TraitType, TraitValue, math.huge)
+			local Value = if TraitType == "FireRate" then 1 / (TraitValue + 1) else 1 + TraitValue
+			self:ChangeRatio("__Trait__" .. TraitType, "Global", TraitType, Value, math.huge)
 		end
 	end
 

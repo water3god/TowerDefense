@@ -107,6 +107,9 @@ local function ApplyBuff(Unit: UnitModule.Unit, BuffType: string, Ratio: number,
 		end
 
 		local Name = string.format("Buff_%s_%s", Unit.UnitName, BuffType)
+		if BuffType == "FireRate" then
+			Ratio = 1 / Ratio
+		end
 		OtherUnit:ChangeRatio(Name, Unit.UniqueId, BuffType, Ratio, Duration)
 		table.insert(HandlingUnits, OtherUnit)
 
@@ -446,7 +449,7 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 		DefaultRuns = {
 			[0] = function(Unit)
 				local Ratio = Unit:GetPropertyRaw("Damage")
-				return ApplyBuff(Unit, "FireRate", 1 / Ratio, math.huge)
+				return ApplyBuff(Unit, "FireRate", Ratio, math.huge)
 			end,
 		},
 		Abilities = {},
@@ -555,7 +558,7 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 			[0] = function(Unit: UnitModule.Unit)
 				local Ratio = Unit:GetPropertyRaw("Damage")
 				local Damage = ApplyBuff(Unit, "Damage", Ratio, math.huge)
-				local FireRate = ApplyBuff(Unit, "FireRate", 1 / Ratio, math.huge)
+				local FireRate = ApplyBuff(Unit, "FireRate", Ratio, math.huge)
 				local Range = ApplyBuff(Unit, "Range", Ratio, math.huge)
 				return function()
 					Damage()
@@ -587,7 +590,7 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 			function(Unit: UnitModule.Unit)
 				local Ratio = Unit:GetPropertyRaw("Damage")
 				local Damage = ApplyBuff(Unit, "Damage", Ratio, math.huge)
-				local FireRate = ApplyBuff(Unit, "FireRate", 1 / Ratio, math.huge)
+				local FireRate = ApplyBuff(Unit, "FireRate", Ratio, math.huge)
 				local Range = ApplyBuff(Unit, "Range", Ratio, math.huge)
 				return function()
 					Damage()

@@ -43,7 +43,7 @@ export type Props = {
 	children: { [any]: any }?,
 }
 
-local function CreateUnitStats(props: { UnitData: UnitInfo.UnitInfo, Level: number })
+local function CreateUnitStats(props: { UnitData: UnitInfo.UnitInfo, Level: number, Trait: string? })
 	local LevelFrames = React.useMemo(function()
 		local Frames: { [string]: React.Node } = {}
 
@@ -137,6 +137,19 @@ local function CreateUnitStats(props: { UnitData: UnitInfo.UnitInfo, Level: numb
 
 				if Value == 0 then
 					continue
+				end
+
+				if props.Trait then
+					local TraitData = Traits.Traits[props.Trait]
+
+					if TraitData.Data[Property] then
+						local TraitMulti = 1 + TraitData.Data[Property]
+						if Property == "FireRate" then
+							Value *= 1 / TraitMulti
+						else
+							Value *= TraitMulti
+						end
+					end
 				end
 
 				local Color = UnitInfo.Stats.Colors[Property :: UnitInfo.StatProperty] or Color3.new(1, 1, 1)
@@ -370,6 +383,7 @@ local function CreateStatsFrame(props: Props)
 			return e(CreateUnitStats, {
 				UnitData = UnitData,
 				Level = props.Level,
+				Trait = props.Trait,
 			})
 		elseif props.Type == "Trait" then
 			return e(CreateTraitStats, {
