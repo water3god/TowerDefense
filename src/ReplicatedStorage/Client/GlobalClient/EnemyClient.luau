@@ -124,6 +124,8 @@ end
 local Enemies: { [string]: Types.EnemyClient } = {}
 local Beziers: { [string]: BezierPath.Path } = {}
 
+export type Enemy = Types.EnemyClient
+
 local EnemyModule: Types.EnemyModule = {} :: Types.EnemyModule
 EnemyModule.__index = EnemyModule
 
@@ -135,6 +137,9 @@ local function NewEnemy(Input: Types.EnemyInput, SpectateFire: boolean)
 	self.UniqueId = Input.UniqueId
 	GenerateId.AddId(self.UniqueId)
 	self.Trove = Trove.new()
+
+	self.Damaged = self.Trove:Construct(Signal)
+	self.Healed = self.Trove:Construct(Signal)
 
 	self.SpeedChanged = self.Trove:Construct(Signal)
 	self.HealthChanged = self.Trove:Construct(Signal)
@@ -212,6 +217,17 @@ local function NewEnemy(Input: Types.EnemyInput, SpectateFire: boolean)
 			Particle.Parent = ParticlesFolder
 			OtherParticle.Parent = ParticlesFolder
 		end
+	end)
+
+	local OldHealth = self.Health
+
+	self.HealthChanged:Connect(function(Health: number)
+		if Health < OldHealth then
+			self.Damaged:Fire(OldHealth - Health)
+		elseif Health > OldHealth then
+			self.Healed:Fire(Health - OldHealth)
+		end
+		OldHealth = Health
 	end)
 
 	Enemies[self.UniqueId] = self

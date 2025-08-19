@@ -134,6 +134,9 @@ type EnemyData = {
 	YOffset: number,
 	Animations: { [string]: AnimationTrack },
 
+	Damaged: Signal.Signal<number>,
+	Healed: Signal.Signal<number>,
+
 	SpeedChanged: Signal.Signal<number>,
 	HealthChanged: Signal.Signal<number>,
 	MaxHealthChanged: Signal.Signal<number>,
