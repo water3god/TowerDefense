@@ -47,6 +47,14 @@ export type MainXPData = {
 	NewLevel: number,
 }
 
+export type UnitXPData = {
+	Trait: string,
+	OldXP: number,
+	NewXP: number,
+	OldLevel: number,
+	NewLevel: number,
+}
+
 local Module: {
 	Added: Signal.Signal<WaveData>,
 	HealthChanged: Signal.Signal<number, number>,

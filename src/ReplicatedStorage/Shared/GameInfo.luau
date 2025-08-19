@@ -33,7 +33,7 @@ export type LevelInfo = {
 export type ResourceData = {
 	Units: { string },
 	Resources: { { Resource: string, Count: number } },
-	ExistingUnits: { { Name: string, OldLevel: number, NewLevel: number, OldXP: number, NewXP: number } },
+	ExistingUnits: { { Name: string, Trait: string?, OldLevel: number, NewLevel: number, OldXP: number, NewXP: number } },
 }
 
 export type MapInfo = {

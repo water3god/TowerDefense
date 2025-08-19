@@ -204,6 +204,7 @@ type ResourceData = struct {
 	}[],
 	ExistingUnits: struct {
 		Name: string.binary,
+		Trait: string.binary?,
 		OldLevel: Level,
 		NewLevel: Level,
 		OldXP: XP,

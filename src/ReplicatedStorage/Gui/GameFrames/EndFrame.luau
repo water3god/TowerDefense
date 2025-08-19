@@ -69,7 +69,7 @@ export type ResourceProps = {
 }
 
 export type UnitXPProps = {
-	Data: { Name: string, OldLevel: number, NewLevel: number, OldXP: number, NewXP: number },
+	Data: { Name: string, Trait: string?, OldLevel: number, NewLevel: number, OldXP: number, NewXP: number },
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
@@ -276,6 +276,7 @@ local function CreateUnitXPFrame(props: UnitXPProps)
 				Position = UDim2.fromScale(0.15, 0.5),
 			},
 			UnitName = props.Data.Name,
+			Trait = props.Data.Trait,
 			Level = XPInfo:map(function(data: UnitXP)
 				return data.Level
 			end),

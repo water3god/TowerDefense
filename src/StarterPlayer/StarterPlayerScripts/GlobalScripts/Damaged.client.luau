@@ -42,7 +42,7 @@ local function CreateDamage(props: { Damage: number })
 		},
 	}, {
 		UIStroke = e(UIStroke.UIStrokeAdvanced, {
-			Stroke = 0.01,
+			Stroke = 0.02,
 			native = {
 				Transparency = Styles.Transparency,
 			},
