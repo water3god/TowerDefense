@@ -847,7 +847,7 @@ function UnitModule:GetProperties()
 
 	local Coins = UnitData[Level].Coins
 
-	local Damage = UnitData[Level].Damage[1] * self.Ratios.Damage
+	local Damage = UnitData[Level].Damage[1]
 	if not self.UnitData.Static then
 		Damage = math.ceil(UnitData[Level].Damage[1] * self.Ratios.Damage)
 	end
@@ -871,7 +871,7 @@ function UnitModule:GetNextProperties()
 
 	local Coins = UnitData[Level].Coins
 
-	local Damage = UnitData[Level].Damage[1] * self.Ratios.Damage
+	local Damage = UnitData[Level].Damage[1]
 	if not self.UnitData.Static then
 		Damage = math.ceil(UnitData[Level].Damage[1] * self.Ratios.Damage)
 	end

@@ -99,6 +99,10 @@ end
 local function ApplyBuff(Unit: UnitModule.Unit, BuffType: string, Ratio: number, Duration: number): () -> ()
 	local BuffTrove = Unit._Trove:Extend()
 
+	if BuffType == "FireRate" then
+		Ratio = 1 / Ratio
+	end
+
 	local HandlingUnits = {}
 
 	local function Handle(OtherUnit: UnitModule.Unit)
@@ -107,9 +111,7 @@ local function ApplyBuff(Unit: UnitModule.Unit, BuffType: string, Ratio: number,
 		end
 
 		local Name = string.format("Buff_%s_%s", Unit.UnitName, BuffType)
-		if BuffType == "FireRate" then
-			Ratio = 1 / Ratio
-		end
+
 		OtherUnit:ChangeRatio(Name, Unit.UniqueId, BuffType, Ratio, Duration)
 		table.insert(HandlingUnits, OtherUnit)
 

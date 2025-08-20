@@ -7,6 +7,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local MemoryStoreService = game:GetService("MemoryStoreService")
+local Lighting = game:GetService("Lighting")
+local TweenService = game:GetService("TweenService")
 
 if require(ReplicatedStorage.Shared.IsLobby) then
 	return
@@ -14,6 +16,13 @@ end
 
 local ServerOnly = require(ReplicatedStorage.Network.ServerOnly)
 local StartGame = ServerOnly.StartGame
+
+local Packages = ReplicatedStorage.Packages
+local Promise = require(Packages.Promise)
+
+local Modules = ReplicatedStorage.Modules
+local Lerps = require(Modules.Lerps)
+local HelperFunctions = require(Modules.HelperFunctions)
 
 local Shared = ReplicatedStorage.Shared
 local Constants = require(Shared.Constants)
@@ -32,6 +41,27 @@ local PlayerData = require(GlobalModules.PlayerData)
 local MapStore = MemoryStoreService:GetHashMap(Constants.INFORMATIONHASHMAP)
 
 local OldValues: Types.RecieveData? = nil
+
+local TimeLerp = Lerps.string("14:30:00", "20:30:00")
+
+local currentp: Promise.Promise? = nil
+
+local function ChangeDay(Day: boolean)
+	if currentp then
+		currentp:cancel()
+		currentp = nil
+	end
+	currentp = HelperFunctions.TweenPromise(1, function(Time: number)
+		if Day then
+			Time = 1 - Time
+		end
+		Time = TweenService:GetValue(Time, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut)
+		local NewTime = TimeLerp(Time)
+		Lighting.TimeOfDay = NewTime
+	end):finally(function()
+		currentp = nil
+	end)
+end
 
 local function Init(DataInput: Types.RecieveData?)
 	if not Map then
@@ -89,10 +119,17 @@ local function Init(DataInput: Types.RecieveData?)
 					Difficulty = Data.Difficulty,
 					IsInfinite = false,
 				})
+
+				Wave.Passed:Connect(function(WaveNum: number)
+					if WaveNum == #Wave.Data.Data - 1 then
+						ChangeDay(false)
+					end
+				end)
 			end
 		end
 
 		Wave.Ended:Once(function()
+			ChangeDay(true)
 			if Wave.IsInfinite then
 				for PlayerId, _ in pairs(Wave.Coins) do
 					local Player = Players:GetPlayerByUserId(PlayerId)

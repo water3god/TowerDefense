@@ -198,7 +198,7 @@ local function CreateUnitStats(props: { UnitData: UnitInfo.UnitInfo, Level: numb
 		end
 
 		return Frames
-	end, { props.UnitData, props.Level } :: { unknown })
+	end, { props.UnitData, props.Level, props.Trait } :: { unknown })
 
 	return e(Main.Frame, {
 		native = {
