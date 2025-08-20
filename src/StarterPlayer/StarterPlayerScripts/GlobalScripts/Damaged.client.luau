@@ -56,8 +56,7 @@ local function HandleEnemy(Enemy: EnemyClient.Enemy)
 		Part.Transparency = 1
 		Part.Name = "DamagePart"
 
-		local NewVec =
-			Vector3.new(Random:NextNumber(-0.5, 0.5), Random:NextNumber(-0.5, 0.5), Random:NextNumber(-0.5, 0.5))
+		local NewVec = Vector3.new(Random:NextNumber(-0.5, 0.5), Random:NextNumber(-1, 0), Random:NextNumber(-0.5, 0.5))
 		local FlattenedVec = Vector3.new(NewVec.X, 0, NewVec.Z)
 		local Orig = Enemy.Root.CFrame
 
