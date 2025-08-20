@@ -127,14 +127,6 @@ local function CreateUnitStats(props: { UnitData: UnitInfo.UnitInfo, Level: numb
 					continue
 				end
 
-				if Property == "Damage" then
-					Value = Value[1]
-					Value *= GameInfo.XPData.GetDamageMultiplierFromLevel(props.Level)
-					if not props.UnitData.Static then
-						Value = math.ceil(Value)
-					end
-				end
-
 				if Value == 0 then
 					continue
 				end
@@ -146,11 +138,23 @@ local function CreateUnitStats(props: { UnitData: UnitInfo.UnitInfo, Level: numb
 						local TraitMulti = 1 + TraitData.Data[Property]
 						if Property == "FireRate" then
 							Value *= 1 / TraitMulti
+						elseif Property == "Damage" then
+							Value[1] *= TraitMulti
 						else
 							Value *= TraitMulti
 						end
 					end
 				end
+
+				if Property == "Damage" then
+					Value = Value[1]
+					if not props.UnitData.Static then
+						Value *= GameInfo.XPData.GetDamageMultiplierFromLevel(props.Level)
+						Value = math.ceil(Value)
+					end
+				end
+
+				Value = HelperFunctions.Round(Value, 2)
 
 				local Color = UnitInfo.Stats.Colors[Property :: UnitInfo.StatProperty] or Color3.new(1, 1, 1)
 

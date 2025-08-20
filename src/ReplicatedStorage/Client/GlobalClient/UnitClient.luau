@@ -847,11 +847,16 @@ function UnitModule:GetProperties()
 
 	local Coins = UnitData[Level].Coins
 
+	local Damage = UnitData[Level].Damage[1] * self.Ratios.Damage
+	if not self.UnitData.Static then
+		Damage = math.ceil(UnitData[Level].Damage[1] * self.Ratios.Damage)
+	end
+
 	return {
-		Damage = math.ceil(UnitData[Level].Damage[1] * self.Ratios.Damage),
-		FireRate = UnitData[Level].FireRate * self.Ratios.FireRate,
-		Range = math.floor(UnitData[Level].Range * self.Ratios.Range),
-		Coins = Coins and Coins * self.Ratios.Coins,
+		Damage = Damage,
+		FireRate = HelperFunctions.Round(UnitData[Level].FireRate * self.Ratios.FireRate, 2),
+		Range = HelperFunctions.Round(UnitData[Level].Range * self.Ratios.Range, 2),
+		Coins = Coins and math.floor(Coins * self.Ratios.Coins),
 		Special = UnitData[Level].Special,
 	}
 end
@@ -866,11 +871,16 @@ function UnitModule:GetNextProperties()
 
 	local Coins = UnitData[Level].Coins
 
+	local Damage = UnitData[Level].Damage[1] * self.Ratios.Damage
+	if not self.UnitData.Static then
+		Damage = math.ceil(UnitData[Level].Damage[1] * self.Ratios.Damage)
+	end
+
 	return {
-		Damage = math.ceil(UnitData[Level].Damage[1] * self.Ratios.Damage),
-		FireRate = UnitData[Level].FireRate * self.Ratios.FireRate,
-		Range = UnitData[Level].Range * self.Ratios.Range,
-		Coins = Coins and Coins * self.Ratios.Coins,
+		Damage = Damage,
+		FireRate = HelperFunctions.Round(UnitData[Level].FireRate * self.Ratios.FireRate, 2),
+		Range = HelperFunctions.Round(UnitData[Level].Range * self.Ratios.Range, 2),
+		Coins = Coins and math.floor(Coins * self.Ratios.Coins),
 		Special = UnitData[Level].Special,
 	}
 end

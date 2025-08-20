@@ -50,13 +50,16 @@ local function CreateBuff(props: BuffProps)
 		local Value = if props.Buff == "FireRate" then 1 / props.Value else props.Value
 
 		local Floored = math.floor(Value * 100) / 100
+
 		return HelperFunctions.FormatNumberConditional(Floored - 1)
 	end, { props.Buff, props.Value } :: { unknown })
 
 	local BuffPercent = React.useMemo(function()
 		local Value = if props.Buff == "FireRate" then 1 / props.Value else props.Value
 
-		return string.format("%d%%", (Value - 1) * 100)
+		local Floored = HelperFunctions.Round((Value - 1) * 100, 2) .. "%"
+
+		return Floored
 	end, { props.Value })
 
 	return tonumber(BuffNumber) > 0

@@ -565,9 +565,9 @@ function Unit:GetProperty(PropertyName: string): number
 	if PropertyName == "Damage" then
 		return math.ceil(self.UnitData.UnitData[self.Level].Damage[1] * self.Ratios.Damage)
 	elseif PropertyName == "FireRate" then
-		return self.UnitData.UnitData[self.Level].FireRate * self.Ratios.FireRate
+		return HelperFunctions.Round(self.UnitData.UnitData[self.Level].FireRate * self.Ratios.FireRate, 2)
 	elseif PropertyName == "Range" then
-		return math.floor(self.UnitData.UnitData[self.Level].Range * self.Ratios.Range)
+		return HelperFunctions.Round(self.UnitData.UnitData[self.Level].Range * self.Ratios.Range, 2)
 	elseif PropertyName == "Coins" then
 		local Coins = self.UnitData.UnitData[self.Level].Coins
 		if not Coins then
@@ -593,7 +593,7 @@ function Unit:GetPropertyRaw(PropertyName: string): number
 			error("Unit does not generate coins!")
 		end
 
-		return Coins
+		return math.floor(Coins)
 	else
 		error("Invalid Property: " .. tostring(PropertyName))
 	end
