@@ -115,13 +115,14 @@ type Impl = {
 	AddUnit: (self: GlobalWave, Unit: Unit.Unit) -> (),
 	AddDamage: (self: GlobalWave, Damage: number) -> (),
 
+	AddAlly: (self: GlobalWave, Ally: string, ExtraData: {}?) -> Enemy.Enemy,
+	AddEnemy: (self: GlobalWave, EnemyName: string) -> (),
+
 	GetCoinsChangedSignal: (self: GlobalWave, UserId: number) -> Signal.Signal<number>,
 
 	Damage: (self: GlobalWave, Damage: number) -> (),
 	Heal: (self: GlobalWave, Healing: number) -> (),
 	SetHealth: (self: GlobalWave, Health: number) -> (),
-
-	AddAlly: (self: GlobalWave, Ally: string, ExtraData: {}?) -> Enemy.Enemy,
 
 	End: (self: GlobalWave, Win: boolean) -> (),
 
@@ -462,6 +463,47 @@ function GlobalWave:AddUnit(UnitInput: Unit.Unit)
 	self.UnitAdded:Fire(UnitInput)
 end
 
+function GlobalWave:AddEnemy(EnemyName: string)
+	if not EnemyData[EnemyName] then
+		error("Enemy " .. EnemyName .. " does not exist in EnemyData")
+	end
+
+	local DeepClone = HelperFunctions.DeepClone(EnemyData[EnemyName])
+
+	local NewEnemy = self.Trove:Construct(Enemy, {
+		EnemyInfo = DeepClone,
+		BezierId = self.BezierId,
+	})
+
+	NewEnemy.HealthChanged:Connect(function(Health: number)
+		if Health == 0 and NewEnemy.Trove then
+			task.defer(NewEnemy.Destroy, NewEnemy, true)
+		end
+	end)
+
+	NewEnemy.Damaged:Connect(function(Damage: number)
+		self:AddDamage(Damage)
+	end)
+
+	NewEnemy.Trove:Connect(self.Ended, function()
+		task.defer(NewEnemy.Destroy, NewEnemy, false)
+	end)
+
+	self.EnemyAdded:Fire(NewEnemy)
+	NewEnemy.Destroying:Once(function()
+		self.EnemyDestroying:Fire(NewEnemy)
+	end)
+
+	return NewEnemy
+end
+
+function GlobalWave:AddAlly(Ally: string, ExtraData: {}?)
+	return self.Trove:Construct(Enemy, {
+		EnemyInfo = HelperFunctions.joinDicts(EnemyData[Ally], ExtraData) :: any,
+		BezierId = self.BezierId,
+	})
+end
+
 function GlobalWave:AddDamage(Damage: number)
 	self.TotalDamage += Damage
 	self.EnemyDamaged:Fire(Damage)
@@ -485,13 +527,6 @@ function GlobalWave:SetHealth(Health: number)
 	elseif Old < self.BaseHealth then
 		self.Healed:Fire(self.BaseHealth - Old)
 	end
-end
-
-function GlobalWave:AddAlly(Ally: string, ExtraData: {}?)
-	return self.Trove:Construct(Enemy, {
-		EnemyInfo = HelperFunctions.joinDicts(EnemyData[Ally], ExtraData) :: any,
-		BezierId = self.BezierId,
-	})
 end
 
 function GlobalWave:End(Win: boolean)
