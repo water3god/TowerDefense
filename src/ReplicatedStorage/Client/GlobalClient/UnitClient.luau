@@ -392,6 +392,7 @@ local function NewUnit(Input: Types.UnitInput, New: boolean)
 		BillboardGui.Name = "CoinsAddedTempGui"
 		BillboardGui.Size = UDim2.fromScale(6, 4)
 		BillboardGui.StudsOffset = Vector3.new(0, 3 * self.SizeRatio, 0)
+		BillboardGui.ResetOnSpawn = false
 		BillboardGui.Adornee = self.Character.Head
 		BillboardGui.Parent = self.Character.Head
 
@@ -548,7 +549,9 @@ function UnitModule:LoadCharacter(Character)
 	local function OnClose()
 		self:AddPromise(
 			Promise.defer(function()
-				TweenTransparency(self.RadiusPart, 1)
+				if not Variables.InPlacement then
+					TweenTransparency(self.RadiusPart, 1)
+				end
 			end),
 			"ClickClosePromise"
 		)
