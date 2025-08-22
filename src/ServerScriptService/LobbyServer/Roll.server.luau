@@ -24,6 +24,7 @@ local StopAutoRollClient = Network.StopAutoRollClient
 
 local Shared = ReplicatedStorage.Shared
 local IsLobby = require(Shared.IsLobby)
+local Variables = require(Shared.Variables)
 local Constants = require(Shared.Constants)
 local RollDelayTime = Constants.ROLLDELAYTIME
 
@@ -72,6 +73,10 @@ local function Roll(Data: PlayerData.PlayerData, Count: number, Auto: boolean)
 	end
 
 	local GeneratedChances = ChanceData.CalculateChanceOnLuck(0)
+
+	for _, Unit in pairs(Variables.Banner) do
+		GeneratedChances[Unit] *= 3
+	end
 
 	for _ = 1, Count, 1 do
 		local UnitName = RandomGenerate(GeneratedChances) :: string

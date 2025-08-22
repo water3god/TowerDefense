@@ -137,14 +137,69 @@ Conch.register("AddEnemy", {
 	end,
 })
 
+local function AboveRank(otherPlayer: Player)
+	local commandContext = Conch.get_command_context()
+	local player = commandContext.executor.player
+
+	if typeof(player) == "Instance" and player:IsA("Player") then
+		local OtherRank = Ranks[otherPlayer.UserId]
+		if OtherRank then
+			return Ranks[player.UserId] and Ranks[player.UserId] > OtherRank
+		end
+	end
+
+	return false
+end
+
 Conch.register("kick", {
 	permissions = { "admin" },
 	arguments = function()
 		return Conch.args.player("player", "Player to kick"), Conch.args.string("reason", "Reason for kicking")
 	end,
 	callback = function(player, reason)
-		player:Kick(reason)
-		Conch.log("info", "Kicked player " .. player.Name .. " for reason: " .. reason)
+		if AboveRank(player) then
+			player:Kick(reason)
+			Conch.log("info", "Kicked player " .. player.Name .. " for reason: " .. reason)
+		end
+	end,
+})
+
+Conch.register("ban", {
+	permissions = { "admin" },
+	arguments = function()
+		return Conch.args.player("player", "Player to ban"),
+			Conch.args.duration("duration", "Duration of the ban"),
+			Conch.args.string("reason", "Reason for banning")
+	end,
+	callback = function(player, duration, reason)
+		if AboveRank(player) then
+			local commandContext = Conch.get_command_context()
+			local admin = commandContext.executor.player
+			Players:BanAsync({
+				UserIds = { player.UserId },
+				Duration = duration,
+				Reason = reason,
+				PrivateReason = reason .. " Banned by " .. admin.Name,
+				ApplyToUniverse = true,
+			})
+			Conch.log("info", "Banned player " .. player.Name .. " for reason: " .. reason)
+		end
+	end,
+})
+
+Conch.register("unban", {
+	permissions = { "admin" },
+	arguments = function()
+		return Conch.args.player("player", "Player to unban")
+	end,
+	callback = function(player)
+		if AboveRank(player) then
+			Players:UnbanAsync({
+				UserIds = { player.UserId },
+				ApplyToUniverse = true,
+			})
+			Conch.log("info", "Unbanned player " .. player.Name)
+		end
 	end,
 })
 

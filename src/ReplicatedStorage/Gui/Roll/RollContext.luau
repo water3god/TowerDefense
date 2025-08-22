@@ -10,14 +10,12 @@ local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
 local e = React.createElement
 
+local Network = require(ReplicatedStorage.Network.Client)
+local NewBanner = Network.NewBanner
+
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
-local Main = require(CoreGame.Main)
 local Hooks = require(CoreGame.Hooks)
-
-local Client = ReplicatedStorage.Client
-local LobbyClient = Client.LobbyClient
-local RollService = require(LobbyClient.RollService)
 
 export type RollData = {
 	Units: { [number]: string },
@@ -35,6 +33,14 @@ local RollContext = React.createContext(Default)
 
 local function RollProvider(props)
 	local State: RollData, SetState = React.useState(Default)
+
+	Hooks.useZapConnection(NewBanner, function(data)
+		SetState({
+			Units = data.Units,
+			TimeStart = workspace:GetServerTimeNow(),
+			TotalTime = data.TimeEnd - workspace:GetServerTimeNow(),
+		})
+	end, {})
 
 	return e(RollContext.Provider, {
 		value = State,

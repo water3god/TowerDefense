@@ -2,9 +2,8 @@
 
 -- By Wa1er_God --
 
-local Random = Random.new()
-
-return function(RandomList: { [string]: number }): string?
+return function(RandomList: { [string]: number }, Seed: number?): string?
+	local Random = Random.new(Seed)
 	local TotalPercent: number = 0
 	local CurrentValue: number = 0
 

@@ -54,6 +54,17 @@ event StopAutoRollClient = {
 	call: SingleAsync,
 }
 
+event NewBanner = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: struct {
+		Id: string.binary,
+		Units: string.binary[],
+		TimeEnd: f64,
+	},
+}
+
 -- Settings --
 
 event ChangeSettingClient = {
