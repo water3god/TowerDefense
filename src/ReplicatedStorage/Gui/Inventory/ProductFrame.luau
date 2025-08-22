@@ -39,6 +39,7 @@ export type ProductProps = {
 	OnClick: (() -> ())?,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
+	containerChildren: { [any]: any }?,
 }
 
 local function CreateProductFrame(props: ProductProps)
@@ -106,7 +107,7 @@ local function CreateProductFrame(props: ProductProps)
 		native = Join({
 			LayoutOrder = ProductData.Priority,
 		}, props.native),
-		containerChildren = {
+		containerChildren = Join({
 			RobuxLabel = props.Purchaseable and Info and e(Main.TextLabel, {
 				native = {
 					Position = UDim2.fromScale(0.5, 0.2),
@@ -133,7 +134,7 @@ local function CreateProductFrame(props: ProductProps)
 					Stroke = 0.03,
 				}),
 			}),
-		},
+		}, props.containerChildren),
 	}, props.children)
 end
 

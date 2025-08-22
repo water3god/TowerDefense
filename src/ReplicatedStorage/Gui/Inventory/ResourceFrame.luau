@@ -27,6 +27,7 @@ export type ResourceProps = {
 	OnClick: (() -> ())?,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
+	containerChildren: { [any]: any }?,
 }
 
 local function CreateResourceFrame(props: ResourceProps)
@@ -56,6 +57,7 @@ local function CreateResourceFrame(props: ResourceProps)
 		RightColor = RarityData.Color,
 		RightStrokeColor = RarityData.StrokeColor,
 		native = props.native,
+		containerChildren = props.containerChildren,
 	}, props.children)
 end
 
