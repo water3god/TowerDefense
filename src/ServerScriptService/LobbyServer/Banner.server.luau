@@ -90,7 +90,7 @@ SafePlayerAdded:Connect(function(Player: Player)
 			task.wait()
 		until CurrentBanner
 	end
-	local WaitTime = DateTime.now().UnixTimestamp - NextTime
+	local WaitTime = NextTime - DateTime.now().UnixTimestamp
 	NewBanner.Fire(Player, {
 		Id = "MAIN",
 		TimeEnd = workspace:GetServerTimeNow() + WaitTime,

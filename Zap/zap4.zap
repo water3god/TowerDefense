@@ -5,6 +5,29 @@ opt remote_folder = "Zap4"
 
 type Level = u16
 
+-- Titles --
+
+event TitleChanged = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: string.binary,
+}
+
+event TitleAdded = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: string.binary,
+}
+
+event EquipTitle = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: string.binary,
+}
+
 -- Misc --
 
 event AllEquippedSync = {

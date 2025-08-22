@@ -2,6 +2,11 @@
 
 -- By Wa1er_God --
 
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Modules = ReplicatedStorage.Modules
+local HelperFunctions = require(Modules.HelperFunctions)
+
 local Units = {
 	Common = { "Pyrrhus", "Pompey", "Robert the Bruce", "Ptolemy" },
 	Rare = { "Socrates", "Spartacus", "Leif Erikson", "Cleopatra" },
@@ -22,9 +27,18 @@ local Chances: { [string]: number } = {
 
 local CachedChances = {}
 
-local function CalculateChanceOnLuck(Luck: number)
-	if CachedChances[Luck] then
-		return CachedChances[Luck]
+local function CalculateChanceOnLuck(Luck: number, BannerUnits: { string }?)
+	-- Create a cache key that includes both luck and banner units
+	local BannerKey = ""
+	if BannerUnits then
+		local sortedBanner = table.clone(BannerUnits)
+		table.sort(sortedBanner)
+		BannerKey = table.concat(sortedBanner, ",")
+	end
+	local CacheKey = tostring(Luck) .. "|" .. BannerKey
+
+	if CachedChances[CacheKey] then
+		return CachedChances[CacheKey]
 	else
 		local NewChances = {}
 		-- Luck multiplier: higher luck makes rarer units more likely
@@ -49,12 +63,48 @@ local function CalculateChanceOnLuck(Luck: number)
 			end
 
 			local ModifiedChance = BaseChance * RarityMultiplier
-			for _, Unit in pairs(Units[Rarity]) do
-				NewChances[Unit] = ModifiedChance / Length
+
+			-- Handle banner units with 3x chance
+			if BannerUnits and #BannerUnits > 0 then
+				-- Count how many banner units are in this rarity
+				local BannerUnitsInRarity = 0
+				for _, Unit in pairs(Units[Rarity]) do
+					if table.find(BannerUnits, Unit) then
+						BannerUnitsInRarity += 1
+					end
+				end
+
+				-- If there are banner units in this rarity, adjust chances
+				if BannerUnitsInRarity > 0 then
+					local NonBannerUnits = Length - BannerUnitsInRarity
+					-- Total weight: banner units get 3x weight, non-banner get 1x weight
+					local TotalWeight = (BannerUnitsInRarity * 3) + NonBannerUnits
+
+					-- Distribute chances proportionally
+					for _, Unit in pairs(Units[Rarity]) do
+						if table.find(BannerUnits, Unit) then
+							-- Banner units get 3x the base chance
+							NewChances[Unit] = HelperFunctions.Round((ModifiedChance * 3) / TotalWeight, 6)
+						else
+							-- Non-banner units get 1x the base chance
+							NewChances[Unit] = HelperFunctions.Round(ModifiedChance / TotalWeight, 6)
+						end
+					end
+				else
+					-- No banner units in this rarity, distribute evenly
+					for _, Unit in pairs(Units[Rarity]) do
+						NewChances[Unit] = HelperFunctions.Round(ModifiedChance / Length, 6)
+					end
+				end
+			else
+				-- No banner units specified, distribute evenly
+				for _, Unit in pairs(Units[Rarity]) do
+					NewChances[Unit] = HelperFunctions.Round(ModifiedChance / Length, 6)
+				end
 			end
 		end
 
-		CachedChances[Luck] = NewChances
+		CachedChances[CacheKey] = NewChances
 		return NewChances
 	end
 end
