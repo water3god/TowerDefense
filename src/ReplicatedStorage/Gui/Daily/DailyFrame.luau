@@ -33,6 +33,7 @@ local DailyContext = require(DailyFolder.DailyContext)
 
 local Shared = ReplicatedStorage.Shared
 local DailyRewards = require(Shared.DailyRewards)
+local ProductInfo = require(Shared.ProductInfo)
 
 export type Properties = {
 	CloseClick: (() -> ())?,
@@ -52,7 +53,7 @@ local function CreateDailyFrame(Properties: Properties)
 		if Day <= DailyData.Day then
 			DailyData.Redeem()
 		end
-	end, { DailyData.Day, DailyData.Redeem :: any })
+	end, { DailyData.Day, DailyData.Redeem } :: { unknown })
 
 	local Dailys = React.useMemo(function()
 		local Frames: { [string]: React.Node } = {}
@@ -104,10 +105,12 @@ local function CreateDailyFrame(Properties: Properties)
 					},
 				})
 			elseif RewardData.Type == "Product" then
+				local _, ProductId, IsGamepass = ProductInfo.GetProductFromNameOnly(RewardData.Name)
+
 				Frames[DayName] = e(ProductFrame, {
 					Name = RewardData.Name,
-					IsGamepass = RewardData.ExtraData.IsGamepass,
-					ProductId = RewardData.ExtraData.ProductId,
+					IsGamepass = IsGamepass :: any,
+					ProductId = ProductId :: any,
 					Count = RewardData.Count,
 					OnClick = function()
 						OnClick(Day)
@@ -123,7 +126,7 @@ local function CreateDailyFrame(Properties: Properties)
 		end
 
 		return Frames
-	end, { DailyData })
+	end, { DailyData } :: { unknown })
 
 	return e(Main.Frame, {
 		native = JoinDicts({
