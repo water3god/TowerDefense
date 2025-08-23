@@ -311,6 +311,7 @@ local function RenderDailyFrame(Props)
 	})
 
 	return e(DailyFrame, {
+		SetVisible = Props.SetVisible,
 		CloseClick = Props.CloseClick,
 		native = {
 			Position = Position,
@@ -946,6 +947,9 @@ local function Render()
 						Visible = VisibleFrame == Constants.DAILY_FRAME,
 						CloseClick = function()
 							OnCloseClick(Constants.DAILY_FRAME)
+						end,
+						SetVisible = function()
+							SetVisibleRetricted(Constants.DAILY_FRAME, true)
 						end,
 					}),
 					[Constants.TITLES_FRAME] = e(RenderTitlesFrame, {

@@ -19,6 +19,7 @@ local ClientOnly = {
 	FreecamToggled = Signal.new() :: Signal.Signal<boolean>,
 	EvolutionTouched = Signal.new(),
 	TraitsTouched = Signal.new(),
+	DailysTouched = Signal.new(),
 }
 
 return ClientOnly

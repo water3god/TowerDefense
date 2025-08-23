@@ -14,6 +14,9 @@ local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local JoinDicts = HelperFunctions.joinDicts
 
+local Network = ReplicatedStorage.Network
+local ClientOnly = require(Network.ClientOnly)
+
 -- Reference UI --
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
@@ -36,6 +39,7 @@ local DailyRewards = require(Shared.DailyRewards)
 local ProductInfo = require(Shared.ProductInfo)
 
 export type Properties = {
+	SetVisible: (() -> ())?,
 	CloseClick: (() -> ())?,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
@@ -45,12 +49,18 @@ local function CreateDailyFrame(Properties: Properties)
 	local DailyData = React.useContext(DailyContext.Context)
 	local Time, _, SetTime = Hooks.UseTime()
 
+	Hooks.useEventConnection(ClientOnly.DailysTouched, function()
+		if Properties.SetVisible then
+			Properties.SetVisible()
+		end
+	end, { Properties.SetVisible })
+
 	React.useEffect(function()
 		SetTime(60 * 60 * 24, DailyData.LastRedeemed)
 	end, { DailyData.LastRedeemed })
 
 	local OnClick = React.useCallback(function(Day: number)
-		if Day <= DailyData.Day then
+		if Day == DailyData.Day then
 			DailyData.Redeem()
 		end
 	end, { DailyData.Day, DailyData.Redeem } :: { unknown })

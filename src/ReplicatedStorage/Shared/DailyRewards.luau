@@ -33,7 +33,7 @@ local DailyRewards: {
 		{ Type = "Product", Name = "2x Luck Boost (1 Hour)", Count = 1 },
 		{ Type = "Unit", Name = "Charlemagne", Count = 1 },
 		{ Type = "Resource", Name = "Gold", Count = 243 },
-		{ Type = "Unit", Name = "Trajan", Count = 1 },
+		{ Type = "Unit", Name = "Julius Caesar", Count = 1 },
 		{ Type = "Resource", Name = "Gold", Count = 214 },
 		{ Type = "Resource", Name = "Gold", Count = 191 },
 		{ Type = "Resource", Name = "Omen Coins", Count = 6 },
@@ -68,7 +68,7 @@ local DailyRewards: {
 		{ Type = "Unit", Name = "Augustus", Count = 1 },
 		{ Type = "Resource", Name = "Gold", Count = 653 },
 		{ Type = "Product", Name = "3x Luck Boost (1 Hour)", Count = 1 },
-		{ Type = "Unit", Name = "Julius Caesar", Count = 1 },
+		{ Type = "Unit", Name = "Trajan", Count = 1 },
 	},
 }
 

@@ -12,6 +12,7 @@ local Signal = require(Packages.Signal)
 local ClientOnly = require(ReplicatedStorage.Network.ClientOnly)
 local EvolutionTouched = ClientOnly.EvolutionTouched
 local TraitsTouched = ClientOnly.TraitsTouched
+local DailysTouched = ClientOnly.DailysTouched
 
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
@@ -41,3 +42,4 @@ end
 
 HandleTouched("EvolutionTouch", EvolutionTouched)
 HandleTouched("TraitsTouch", TraitsTouched)
+HandleTouched("DailysTouch", DailysTouched)
