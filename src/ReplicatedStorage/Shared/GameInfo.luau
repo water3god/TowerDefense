@@ -61,19 +61,19 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 200 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 120, UniqueId = "" },
+							{ Resource = "Gold", Count = 240 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 250, UniqueId = "" },
+							{ Resource = "Gold", Count = 280 },
 						},
 					},
 				},
@@ -87,19 +87,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 200 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 120, UniqueId = "" },
+							{ Resource = "Gold", Count = 240 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 250, UniqueId = "" },
+							{ Resource = "Gold", Count = 280 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -113,19 +116,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 60, UniqueId = "" },
+							{ Resource = "Gold", Count = 220 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 140, UniqueId = "" },
+							{ Resource = "Gold", Count = 260 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 280, UniqueId = "" },
+							{ Resource = "Gold", Count = 300 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -139,19 +145,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 70, UniqueId = "" },
+							{ Resource = "Gold", Count = 240 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 160, UniqueId = "" },
+							{ Resource = "Gold", Count = 280 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 320, UniqueId = "" },
+							{ Resource = "Gold", Count = 320 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -165,19 +174,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 80, UniqueId = "" },
+							{ Resource = "Gold", Count = 260 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 180, UniqueId = "" },
+							{ Resource = "Gold", Count = 300 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 360, UniqueId = "" },
+							{ Resource = "Gold", Count = 340 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -191,19 +203,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 90, UniqueId = "" },
+							{ Resource = "Gold", Count = 280 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 320 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 400, UniqueId = "" },
+							{ Resource = "Gold", Count = 360 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -217,19 +232,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 300 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 220, UniqueId = "" },
+							{ Resource = "Gold", Count = 340 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 440, UniqueId = "" },
+							{ Resource = "Gold", Count = 380 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -250,19 +268,19 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 260 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 120, UniqueId = "" },
+							{ Resource = "Gold", Count = 300 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 250, UniqueId = "" },
+							{ Resource = "Gold", Count = 340 },
 						},
 					},
 				},
@@ -276,19 +294,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 280 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 120, UniqueId = "" },
+							{ Resource = "Gold", Count = 320 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 250, UniqueId = "" },
+							{ Resource = "Gold", Count = 360 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -302,19 +323,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 60, UniqueId = "" },
+							{ Resource = "Gold", Count = 300 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 140, UniqueId = "" },
+							{ Resource = "Gold", Count = 340 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 280, UniqueId = "" },
+							{ Resource = "Gold", Count = 380 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -328,19 +352,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 70, UniqueId = "" },
+							{ Resource = "Gold", Count = 320 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 160, UniqueId = "" },
+							{ Resource = "Gold", Count = 360 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 320, UniqueId = "" },
+							{ Resource = "Gold", Count = 400 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -354,19 +381,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 80, UniqueId = "" },
+							{ Resource = "Gold", Count = 340 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 180, UniqueId = "" },
+							{ Resource = "Gold", Count = 380 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 360, UniqueId = "" },
+							{ Resource = "Gold", Count = 420 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -380,19 +410,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 90, UniqueId = "" },
+							{ Resource = "Gold", Count = 360 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 400 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 400, UniqueId = "" },
+							{ Resource = "Gold", Count = 440 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -406,19 +439,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 380 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 220, UniqueId = "" },
+							{ Resource = "Gold", Count = 420 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 440, UniqueId = "" },
+							{ Resource = "Gold", Count = 460 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -440,19 +476,19 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 340 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 120, UniqueId = "" },
+							{ Resource = "Gold", Count = 380 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 250, UniqueId = "" },
+							{ Resource = "Gold", Count = 420 },
 						},
 					},
 				},
@@ -466,19 +502,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 360 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 120, UniqueId = "" },
+							{ Resource = "Gold", Count = 400 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 250, UniqueId = "" },
+							{ Resource = "Gold", Count = 440 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -492,19 +531,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 60, UniqueId = "" },
+							{ Resource = "Gold", Count = 380 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 140, UniqueId = "" },
+							{ Resource = "Gold", Count = 420 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 280, UniqueId = "" },
+							{ Resource = "Gold", Count = 460 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -518,19 +560,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 70, UniqueId = "" },
+							{ Resource = "Gold", Count = 400 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 160, UniqueId = "" },
+							{ Resource = "Gold", Count = 440 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 320, UniqueId = "" },
+							{ Resource = "Gold", Count = 480 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -544,19 +589,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 80, UniqueId = "" },
+							{ Resource = "Gold", Count = 420 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 180, UniqueId = "" },
+							{ Resource = "Gold", Count = 460 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 360, UniqueId = "" },
+							{ Resource = "Gold", Count = 500 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -570,19 +618,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 90, UniqueId = "" },
+							{ Resource = "Gold", Count = 440 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 480 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 400, UniqueId = "" },
+							{ Resource = "Gold", Count = 520 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -596,19 +647,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 460 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 220, UniqueId = "" },
+							{ Resource = "Gold", Count = 500 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 440, UniqueId = "" },
+							{ Resource = "Gold", Count = 540 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -630,19 +684,19 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 420 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 120, UniqueId = "" },
+							{ Resource = "Gold", Count = 460 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 250, UniqueId = "" },
+							{ Resource = "Gold", Count = 500 },
 						},
 					},
 				},
@@ -656,19 +710,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 440 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 120, UniqueId = "" },
+							{ Resource = "Gold", Count = 480 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 250, UniqueId = "" },
+							{ Resource = "Gold", Count = 520 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -682,19 +739,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 60, UniqueId = "" },
+							{ Resource = "Gold", Count = 460 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 140, UniqueId = "" },
+							{ Resource = "Gold", Count = 500 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 280, UniqueId = "" },
+							{ Resource = "Gold", Count = 540 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -708,19 +768,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 70, UniqueId = "" },
+							{ Resource = "Gold", Count = 480 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 160, UniqueId = "" },
+							{ Resource = "Gold", Count = 520 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 320, UniqueId = "" },
+							{ Resource = "Gold", Count = 560 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -734,19 +797,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 80, UniqueId = "" },
+							{ Resource = "Gold", Count = 500 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 180, UniqueId = "" },
+							{ Resource = "Gold", Count = 540 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 360, UniqueId = "" },
+							{ Resource = "Gold", Count = 580 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -760,19 +826,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 90, UniqueId = "" },
+							{ Resource = "Gold", Count = 520 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 560 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 400, UniqueId = "" },
+							{ Resource = "Gold", Count = 600 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -786,19 +855,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 540 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 220, UniqueId = "" },
+							{ Resource = "Gold", Count = 580 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 440, UniqueId = "" },
+							{ Resource = "Gold", Count = 620 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -820,19 +892,19 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 500 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 120, UniqueId = "" },
+							{ Resource = "Gold", Count = 540 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 250, UniqueId = "" },
+							{ Resource = "Gold", Count = 580 },
 						},
 					},
 				},
@@ -846,19 +918,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 50, UniqueId = "" },
+							{ Resource = "Gold", Count = 520 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 120, UniqueId = "" },
+							{ Resource = "Gold", Count = 560 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 250, UniqueId = "" },
+							{ Resource = "Gold", Count = 600 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -872,19 +947,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 60, UniqueId = "" },
+							{ Resource = "Gold", Count = 540 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 140, UniqueId = "" },
+							{ Resource = "Gold", Count = 580 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 280, UniqueId = "" },
+							{ Resource = "Gold", Count = 620 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -898,19 +976,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 70, UniqueId = "" },
+							{ Resource = "Gold", Count = 560 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 160, UniqueId = "" },
+							{ Resource = "Gold", Count = 600 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 320, UniqueId = "" },
+							{ Resource = "Gold", Count = 640 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -924,19 +1005,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 80, UniqueId = "" },
+							{ Resource = "Gold", Count = 580 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 180, UniqueId = "" },
+							{ Resource = "Gold", Count = 620 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 360, UniqueId = "" },
+							{ Resource = "Gold", Count = 660 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -950,19 +1034,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 90, UniqueId = "" },
+							{ Resource = "Gold", Count = 600 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 200, UniqueId = "" },
+							{ Resource = "Gold", Count = 640 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 400, UniqueId = "" },
+							{ Resource = "Gold", Count = 680 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -976,19 +1063,22 @@ local GameInfo: { MapInfo } = {
 					Normal = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 100, UniqueId = "" },
+							{ Resource = "Gold", Count = 620 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 220, UniqueId = "" },
+							{ Resource = "Gold", Count = 660 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
-							{ Resource = "Gold", Count = 440, UniqueId = "" },
+							{ Resource = "Gold", Count = 700 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
