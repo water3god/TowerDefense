@@ -239,6 +239,7 @@ export type QuestRemoteInfo = ({
 	["Id"]: (string),
 	["CurrentValue"]: (number),
 	["Redeemed"]: (boolean),
+	["Data"]: ((unknown)),
 })
 export type Level = (number)
 
@@ -753,21 +754,25 @@ local returns = {
 				["Id"]: (string),
 				["CurrentValue"]: (number),
 				["Redeemed"]: (boolean),
+				["Data"]: ((unknown)),
 			}) }),
 			["WeeklyQuests"]: ({ ({
 				["Id"]: (string),
 				["CurrentValue"]: (number),
 				["Redeemed"]: (boolean),
+				["Data"]: ((unknown)),
 			}) }),
 			["EventQuests"]: ({ ({
 				["Id"]: (string),
 				["CurrentValue"]: (number),
 				["Redeemed"]: (boolean),
+				["Data"]: ((unknown)),
 			}) }),
 			["GlobalQuests"]: ({ ({
 				["Id"]: (string),
 				["CurrentValue"]: (number),
 				["Redeemed"]: (boolean),
+				["Data"]: ((unknown)),
 			}) }),
 		}))
 			load_player(Player)
@@ -790,6 +795,10 @@ local returns = {
 				if val_1["Redeemed"] then
 					bool_2 = bit32.bor(bool_2, 0b0000000000000001)
 				end
+				if val_1["Data"] ~= nil then
+					bool_2 = bit32.bor(bool_2, 0b0000000000000010)
+					table.insert(outgoing_inst, val_1["Data"])
+				end
 				buffer.writeu8(outgoing_buff, bool_2_pos_1, bool_2)
 			end
 			local len_33 = #Value["WeeklyQuests"]
@@ -808,6 +817,10 @@ local returns = {
 				buffer.writef64(outgoing_buff, outgoing_apos, val_2["CurrentValue"])
 				if val_2["Redeemed"] then
 					bool_3 = bit32.bor(bool_3, 0b0000000000000001)
+				end
+				if val_2["Data"] ~= nil then
+					bool_3 = bit32.bor(bool_3, 0b0000000000000010)
+					table.insert(outgoing_inst, val_2["Data"])
 				end
 				buffer.writeu8(outgoing_buff, bool_3_pos_1, bool_3)
 			end
@@ -828,6 +841,10 @@ local returns = {
 				if val_3["Redeemed"] then
 					bool_4 = bit32.bor(bool_4, 0b0000000000000001)
 				end
+				if val_3["Data"] ~= nil then
+					bool_4 = bit32.bor(bool_4, 0b0000000000000010)
+					table.insert(outgoing_inst, val_3["Data"])
+				end
 				buffer.writeu8(outgoing_buff, bool_4_pos_1, bool_4)
 			end
 			local len_37 = #Value["GlobalQuests"]
@@ -847,6 +864,10 @@ local returns = {
 				if val_4["Redeemed"] then
 					bool_5 = bit32.bor(bool_5, 0b0000000000000001)
 				end
+				if val_4["Data"] ~= nil then
+					bool_5 = bit32.bor(bool_5, 0b0000000000000010)
+					table.insert(outgoing_inst, val_4["Data"])
+				end
 				buffer.writeu8(outgoing_buff, bool_5_pos_1, bool_5)
 			end
 			player_map[Player] = save()
@@ -856,21 +877,25 @@ local returns = {
 				["Id"]: (string),
 				["CurrentValue"]: (number),
 				["Redeemed"]: (boolean),
+				["Data"]: ((unknown)),
 			}) }),
 			["WeeklyQuests"]: ({ ({
 				["Id"]: (string),
 				["CurrentValue"]: (number),
 				["Redeemed"]: (boolean),
+				["Data"]: ((unknown)),
 			}) }),
 			["EventQuests"]: ({ ({
 				["Id"]: (string),
 				["CurrentValue"]: (number),
 				["Redeemed"]: (boolean),
+				["Data"]: ((unknown)),
 			}) }),
 			["GlobalQuests"]: ({ ({
 				["Id"]: (string),
 				["CurrentValue"]: (number),
 				["Redeemed"]: (boolean),
+				["Data"]: ((unknown)),
 			}) }),
 		}))
 			load_empty()
@@ -893,6 +918,10 @@ local returns = {
 				if val_5["Redeemed"] then
 					bool_6 = bit32.bor(bool_6, 0b0000000000000001)
 				end
+				if val_5["Data"] ~= nil then
+					bool_6 = bit32.bor(bool_6, 0b0000000000000010)
+					table.insert(outgoing_inst, val_5["Data"])
+				end
 				buffer.writeu8(outgoing_buff, bool_6_pos_1, bool_6)
 			end
 			local len_41 = #Value["WeeklyQuests"]
@@ -911,6 +940,10 @@ local returns = {
 				buffer.writef64(outgoing_buff, outgoing_apos, val_6["CurrentValue"])
 				if val_6["Redeemed"] then
 					bool_7 = bit32.bor(bool_7, 0b0000000000000001)
+				end
+				if val_6["Data"] ~= nil then
+					bool_7 = bit32.bor(bool_7, 0b0000000000000010)
+					table.insert(outgoing_inst, val_6["Data"])
 				end
 				buffer.writeu8(outgoing_buff, bool_7_pos_1, bool_7)
 			end
@@ -931,6 +964,10 @@ local returns = {
 				if val_7["Redeemed"] then
 					bool_8 = bit32.bor(bool_8, 0b0000000000000001)
 				end
+				if val_7["Data"] ~= nil then
+					bool_8 = bit32.bor(bool_8, 0b0000000000000010)
+					table.insert(outgoing_inst, val_7["Data"])
+				end
 				buffer.writeu8(outgoing_buff, bool_8_pos_1, bool_8)
 			end
 			local len_45 = #Value["GlobalQuests"]
@@ -950,6 +987,10 @@ local returns = {
 				if val_8["Redeemed"] then
 					bool_9 = bit32.bor(bool_9, 0b0000000000000001)
 				end
+				if val_8["Data"] ~= nil then
+					bool_9 = bit32.bor(bool_9, 0b0000000000000010)
+					table.insert(outgoing_inst, val_8["Data"])
+				end
 				buffer.writeu8(outgoing_buff, bool_9_pos_1, bool_9)
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -966,21 +1007,25 @@ local returns = {
 				["Id"]: (string),
 				["CurrentValue"]: (number),
 				["Redeemed"]: (boolean),
+				["Data"]: ((unknown)),
 			}) }),
 			["WeeklyQuests"]: ({ ({
 				["Id"]: (string),
 				["CurrentValue"]: (number),
 				["Redeemed"]: (boolean),
+				["Data"]: ((unknown)),
 			}) }),
 			["EventQuests"]: ({ ({
 				["Id"]: (string),
 				["CurrentValue"]: (number),
 				["Redeemed"]: (boolean),
+				["Data"]: ((unknown)),
 			}) }),
 			["GlobalQuests"]: ({ ({
 				["Id"]: (string),
 				["CurrentValue"]: (number),
 				["Redeemed"]: (boolean),
+				["Data"]: ((unknown)),
 			}) }),
 		}))
 			load_empty()
@@ -1003,6 +1048,10 @@ local returns = {
 				if val_9["Redeemed"] then
 					bool_10 = bit32.bor(bool_10, 0b0000000000000001)
 				end
+				if val_9["Data"] ~= nil then
+					bool_10 = bit32.bor(bool_10, 0b0000000000000010)
+					table.insert(outgoing_inst, val_9["Data"])
+				end
 				buffer.writeu8(outgoing_buff, bool_10_pos_1, bool_10)
 			end
 			local len_49 = #Value["WeeklyQuests"]
@@ -1021,6 +1070,10 @@ local returns = {
 				buffer.writef64(outgoing_buff, outgoing_apos, val_10["CurrentValue"])
 				if val_10["Redeemed"] then
 					bool_11 = bit32.bor(bool_11, 0b0000000000000001)
+				end
+				if val_10["Data"] ~= nil then
+					bool_11 = bit32.bor(bool_11, 0b0000000000000010)
+					table.insert(outgoing_inst, val_10["Data"])
 				end
 				buffer.writeu8(outgoing_buff, bool_11_pos_1, bool_11)
 			end
@@ -1041,6 +1094,10 @@ local returns = {
 				if val_11["Redeemed"] then
 					bool_12 = bit32.bor(bool_12, 0b0000000000000001)
 				end
+				if val_11["Data"] ~= nil then
+					bool_12 = bit32.bor(bool_12, 0b0000000000000010)
+					table.insert(outgoing_inst, val_11["Data"])
+				end
 				buffer.writeu8(outgoing_buff, bool_12_pos_1, bool_12)
 			end
 			local len_53 = #Value["GlobalQuests"]
@@ -1060,6 +1117,10 @@ local returns = {
 				if val_12["Redeemed"] then
 					bool_13 = bit32.bor(bool_13, 0b0000000000000001)
 				end
+				if val_12["Data"] ~= nil then
+					bool_13 = bit32.bor(bool_13, 0b0000000000000010)
+					table.insert(outgoing_inst, val_12["Data"])
+				end
 				buffer.writeu8(outgoing_buff, bool_13_pos_1, bool_13)
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -1078,21 +1139,25 @@ local returns = {
 				["Id"]: (string),
 				["CurrentValue"]: (number),
 				["Redeemed"]: (boolean),
+				["Data"]: ((unknown)),
 			}) }),
 			["WeeklyQuests"]: ({ ({
 				["Id"]: (string),
 				["CurrentValue"]: (number),
 				["Redeemed"]: (boolean),
+				["Data"]: ((unknown)),
 			}) }),
 			["EventQuests"]: ({ ({
 				["Id"]: (string),
 				["CurrentValue"]: (number),
 				["Redeemed"]: (boolean),
+				["Data"]: ((unknown)),
 			}) }),
 			["GlobalQuests"]: ({ ({
 				["Id"]: (string),
 				["CurrentValue"]: (number),
 				["Redeemed"]: (boolean),
+				["Data"]: ((unknown)),
 			}) }),
 		}))
 			load_empty()
@@ -1115,6 +1180,10 @@ local returns = {
 				if val_13["Redeemed"] then
 					bool_14 = bit32.bor(bool_14, 0b0000000000000001)
 				end
+				if val_13["Data"] ~= nil then
+					bool_14 = bit32.bor(bool_14, 0b0000000000000010)
+					table.insert(outgoing_inst, val_13["Data"])
+				end
 				buffer.writeu8(outgoing_buff, bool_14_pos_1, bool_14)
 			end
 			local len_57 = #Value["WeeklyQuests"]
@@ -1133,6 +1202,10 @@ local returns = {
 				buffer.writef64(outgoing_buff, outgoing_apos, val_14["CurrentValue"])
 				if val_14["Redeemed"] then
 					bool_15 = bit32.bor(bool_15, 0b0000000000000001)
+				end
+				if val_14["Data"] ~= nil then
+					bool_15 = bit32.bor(bool_15, 0b0000000000000010)
+					table.insert(outgoing_inst, val_14["Data"])
 				end
 				buffer.writeu8(outgoing_buff, bool_15_pos_1, bool_15)
 			end
@@ -1153,6 +1226,10 @@ local returns = {
 				if val_15["Redeemed"] then
 					bool_16 = bit32.bor(bool_16, 0b0000000000000001)
 				end
+				if val_15["Data"] ~= nil then
+					bool_16 = bit32.bor(bool_16, 0b0000000000000010)
+					table.insert(outgoing_inst, val_15["Data"])
+				end
 				buffer.writeu8(outgoing_buff, bool_16_pos_1, bool_16)
 			end
 			local len_61 = #Value["GlobalQuests"]
@@ -1172,6 +1249,10 @@ local returns = {
 				if val_16["Redeemed"] then
 					bool_17 = bit32.bor(bool_17, 0b0000000000000001)
 				end
+				if val_16["Data"] ~= nil then
+					bool_17 = bit32.bor(bool_17, 0b0000000000000010)
+					table.insert(outgoing_inst, val_16["Data"])
+				end
 				buffer.writeu8(outgoing_buff, bool_17_pos_1, bool_17)
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -1188,21 +1269,25 @@ local returns = {
 				["Id"]: (string),
 				["CurrentValue"]: (number),
 				["Redeemed"]: (boolean),
+				["Data"]: ((unknown)),
 			}) }),
 			["WeeklyQuests"]: ({ ({
 				["Id"]: (string),
 				["CurrentValue"]: (number),
 				["Redeemed"]: (boolean),
+				["Data"]: ((unknown)),
 			}) }),
 			["EventQuests"]: ({ ({
 				["Id"]: (string),
 				["CurrentValue"]: (number),
 				["Redeemed"]: (boolean),
+				["Data"]: ((unknown)),
 			}) }),
 			["GlobalQuests"]: ({ ({
 				["Id"]: (string),
 				["CurrentValue"]: (number),
 				["Redeemed"]: (boolean),
+				["Data"]: ((unknown)),
 			}) }),
 		}))
 			load_empty()
@@ -1225,6 +1310,10 @@ local returns = {
 				if val_17["Redeemed"] then
 					bool_18 = bit32.bor(bool_18, 0b0000000000000001)
 				end
+				if val_17["Data"] ~= nil then
+					bool_18 = bit32.bor(bool_18, 0b0000000000000010)
+					table.insert(outgoing_inst, val_17["Data"])
+				end
 				buffer.writeu8(outgoing_buff, bool_18_pos_1, bool_18)
 			end
 			local len_65 = #Value["WeeklyQuests"]
@@ -1243,6 +1332,10 @@ local returns = {
 				buffer.writef64(outgoing_buff, outgoing_apos, val_18["CurrentValue"])
 				if val_18["Redeemed"] then
 					bool_19 = bit32.bor(bool_19, 0b0000000000000001)
+				end
+				if val_18["Data"] ~= nil then
+					bool_19 = bit32.bor(bool_19, 0b0000000000000010)
+					table.insert(outgoing_inst, val_18["Data"])
 				end
 				buffer.writeu8(outgoing_buff, bool_19_pos_1, bool_19)
 			end
@@ -1263,6 +1356,10 @@ local returns = {
 				if val_19["Redeemed"] then
 					bool_20 = bit32.bor(bool_20, 0b0000000000000001)
 				end
+				if val_19["Data"] ~= nil then
+					bool_20 = bit32.bor(bool_20, 0b0000000000000010)
+					table.insert(outgoing_inst, val_19["Data"])
+				end
 				buffer.writeu8(outgoing_buff, bool_20_pos_1, bool_20)
 			end
 			local len_69 = #Value["GlobalQuests"]
@@ -1282,6 +1379,10 @@ local returns = {
 				if val_20["Redeemed"] then
 					bool_21 = bit32.bor(bool_21, 0b0000000000000001)
 				end
+				if val_20["Data"] ~= nil then
+					bool_21 = bit32.bor(bool_21, 0b0000000000000010)
+					table.insert(outgoing_inst, val_20["Data"])
+				end
 				buffer.writeu8(outgoing_buff, bool_21_pos_1, bool_21)
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -1299,6 +1400,7 @@ local returns = {
 			["Id"]: (string),
 			["CurrentValue"]: (number),
 			["Redeemed"]: (boolean),
+			["Data"]: ((unknown)),
 		}) }))
 			load_player(Player)
 			alloc(1)
@@ -1320,6 +1422,10 @@ local returns = {
 				if val_21["Redeemed"] then
 					bool_22 = bit32.bor(bool_22, 0b0000000000000001)
 				end
+				if val_21["Data"] ~= nil then
+					bool_22 = bit32.bor(bool_22, 0b0000000000000010)
+					table.insert(outgoing_inst, val_21["Data"])
+				end
 				buffer.writeu8(outgoing_buff, bool_22_pos_1, bool_22)
 			end
 			player_map[Player] = save()
@@ -1328,6 +1434,7 @@ local returns = {
 			["Id"]: (string),
 			["CurrentValue"]: (number),
 			["Redeemed"]: (boolean),
+			["Data"]: ((unknown)),
 		}) }))
 			load_empty()
 			alloc(1)
@@ -1349,6 +1456,10 @@ local returns = {
 				if val_22["Redeemed"] then
 					bool_23 = bit32.bor(bool_23, 0b0000000000000001)
 				end
+				if val_22["Data"] ~= nil then
+					bool_23 = bit32.bor(bool_23, 0b0000000000000010)
+					table.insert(outgoing_inst, val_22["Data"])
+				end
 				buffer.writeu8(outgoing_buff, bool_23_pos_1, bool_23)
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -1364,6 +1475,7 @@ local returns = {
 			["Id"]: (string),
 			["CurrentValue"]: (number),
 			["Redeemed"]: (boolean),
+			["Data"]: ((unknown)),
 		}) }))
 			load_empty()
 			alloc(1)
@@ -1385,6 +1497,10 @@ local returns = {
 				if val_23["Redeemed"] then
 					bool_24 = bit32.bor(bool_24, 0b0000000000000001)
 				end
+				if val_23["Data"] ~= nil then
+					bool_24 = bit32.bor(bool_24, 0b0000000000000010)
+					table.insert(outgoing_inst, val_23["Data"])
+				end
 				buffer.writeu8(outgoing_buff, bool_24_pos_1, bool_24)
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -1402,6 +1518,7 @@ local returns = {
 			["Id"]: (string),
 			["CurrentValue"]: (number),
 			["Redeemed"]: (boolean),
+			["Data"]: ((unknown)),
 		}) }))
 			load_empty()
 			alloc(1)
@@ -1423,6 +1540,10 @@ local returns = {
 				if val_24["Redeemed"] then
 					bool_25 = bit32.bor(bool_25, 0b0000000000000001)
 				end
+				if val_24["Data"] ~= nil then
+					bool_25 = bit32.bor(bool_25, 0b0000000000000010)
+					table.insert(outgoing_inst, val_24["Data"])
+				end
 				buffer.writeu8(outgoing_buff, bool_25_pos_1, bool_25)
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -1438,6 +1559,7 @@ local returns = {
 			["Id"]: (string),
 			["CurrentValue"]: (number),
 			["Redeemed"]: (boolean),
+			["Data"]: ((unknown)),
 		}) }))
 			load_empty()
 			alloc(1)
@@ -1458,6 +1580,10 @@ local returns = {
 				buffer.writef64(outgoing_buff, outgoing_apos, val_25["CurrentValue"])
 				if val_25["Redeemed"] then
 					bool_26 = bit32.bor(bool_26, 0b0000000000000001)
+				end
+				if val_25["Data"] ~= nil then
+					bool_26 = bit32.bor(bool_26, 0b0000000000000010)
+					table.insert(outgoing_inst, val_25["Data"])
 				end
 				buffer.writeu8(outgoing_buff, bool_26_pos_1, bool_26)
 			end

@@ -6,6 +6,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local ServerStorage = game:GetService("ServerStorage")
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 
 local Packages = ReplicatedStorage.Packages
 local Trove = require(Packages.Trove)
@@ -36,6 +37,8 @@ local Utility = ServerScriptService.Utility
 local ProfileStore = require(Utility.ProfileStore)
 
 local Template = require(ServerStorage.Data.DefaultData)
+
+local IsStudio = RunService:IsStudio()
 
 export type GetStageData = {
 	Map: string,
@@ -355,6 +358,10 @@ function PlayerData.new(Player: Player)
 		}) :: any
 	end
 
+	if IsStudio then
+		print("Loaded Profile " .. Player.UserId)
+	end
+
 	if self.Profile then
 		self.Profile:AddUserId(Player.UserId)
 		self.Profile:Reconcile()
@@ -373,6 +380,12 @@ function PlayerData.new(Player: Player)
 				if not Traits.Traits[Unit.Trait] then
 					Unit.Trait = nil
 				end
+			end
+		end
+
+		for i = #Data.Titles, 1, -1 do
+			if not TitleData[Data.Titles[i]] then
+				table.remove(Data.Titles, i)
 			end
 		end
 
@@ -1071,6 +1084,7 @@ function PlayerData:RegenerateWeeklyQuests()
 		local RandomQuest = WeeklyQuestsData[math.random(1, #WeeklyQuestsData)]
 		while table.find(UsedIds, RandomQuest.Id) do
 			RandomQuest = WeeklyQuestsData[math.random(1, #WeeklyQuestsData)]
+			print(UsedIds, RandomQuest.Id)
 		end
 
 		table.insert(UsedIds, RandomQuest.Id)
@@ -1138,7 +1152,7 @@ function PlayerData:RedeemQuest(Id: string)
 			self:AddResource(Reward.Value, Reward.Count)
 		end
 	elseif Reward.Type == "Product" then
-		local _, ProductId = ProductInfo.GetProductFromName({ Name = Reward.Value, IsGamepass = true })
+		local _, ProductId = ProductInfo.GetProductFromNameOnly(Reward.Value)
 		if ProductId then
 			self:AddProduct(ProductId, Reward.Count)
 		else

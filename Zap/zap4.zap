@@ -58,6 +58,7 @@ type QuestRemoteInfo = struct {
 	Id: string.binary,
 	CurrentValue: f64,
 	Redeemed: boolean,
+	Data: unknown,
 }
 
 event QuestSync = {

@@ -178,6 +178,7 @@ export type QuestRemoteInfo = ({
 	["Id"]: (string),
 	["CurrentValue"]: (number),
 	["Redeemed"]: (boolean),
+	["Data"]: ((unknown)),
 })
 export type Level = (number)
 
@@ -281,6 +282,12 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 				val_1["Id"] = buffer.readstring(incoming_buff, read(len_7), len_7)
 				val_1["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
 				val_1["Redeemed"] = bit32.btest(bool_1, 0b0000000000000001)
+				if bit32.btest(bool_1, 0b0000000000000010) then
+					incoming_ipos = incoming_ipos + 1
+					val_1["Data"] = incoming_inst[incoming_ipos]
+				else
+					val_1["Data"] = nil
+				end
 				value["DailyQuests"][i_1] = val_1
 			end
 			local len_8 = buffer.readu16(incoming_buff, read(2))
@@ -293,6 +300,12 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 				val_2["Id"] = buffer.readstring(incoming_buff, read(len_9), len_9)
 				val_2["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
 				val_2["Redeemed"] = bit32.btest(bool_2, 0b0000000000000001)
+				if bit32.btest(bool_2, 0b0000000000000010) then
+					incoming_ipos = incoming_ipos + 1
+					val_2["Data"] = incoming_inst[incoming_ipos]
+				else
+					val_2["Data"] = nil
+				end
 				value["WeeklyQuests"][i_2] = val_2
 			end
 			local len_10 = buffer.readu16(incoming_buff, read(2))
@@ -305,6 +318,12 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 				val_3["Id"] = buffer.readstring(incoming_buff, read(len_11), len_11)
 				val_3["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
 				val_3["Redeemed"] = bit32.btest(bool_3, 0b0000000000000001)
+				if bit32.btest(bool_3, 0b0000000000000010) then
+					incoming_ipos = incoming_ipos + 1
+					val_3["Data"] = incoming_inst[incoming_ipos]
+				else
+					val_3["Data"] = nil
+				end
 				value["EventQuests"][i_3] = val_3
 			end
 			local len_12 = buffer.readu16(incoming_buff, read(2))
@@ -317,6 +336,12 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 				val_4["Id"] = buffer.readstring(incoming_buff, read(len_13), len_13)
 				val_4["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
 				val_4["Redeemed"] = bit32.btest(bool_4, 0b0000000000000001)
+				if bit32.btest(bool_4, 0b0000000000000010) then
+					incoming_ipos = incoming_ipos + 1
+					val_4["Data"] = incoming_inst[incoming_ipos]
+				else
+					val_4["Data"] = nil
+				end
 				value["GlobalQuests"][i_4] = val_4
 			end
 			if reliable_events[3] then
@@ -339,6 +364,12 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 				val_5["Id"] = buffer.readstring(incoming_buff, read(len_15), len_15)
 				val_5["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
 				val_5["Redeemed"] = bit32.btest(bool_5, 0b0000000000000001)
+				if bit32.btest(bool_5, 0b0000000000000010) then
+					incoming_ipos = incoming_ipos + 1
+					val_5["Data"] = incoming_inst[incoming_ipos]
+				else
+					val_5["Data"] = nil
+				end
 				value[i_5] = val_5
 			end
 			if reliable_events[4] then
@@ -530,21 +561,25 @@ local returns = {
 				["Id"]: (string),
 				["CurrentValue"]: (number),
 				["Redeemed"]: (boolean),
+				["Data"]: ((unknown)),
 			}) }),
 			["WeeklyQuests"]: ({ ({
 				["Id"]: (string),
 				["CurrentValue"]: (number),
 				["Redeemed"]: (boolean),
+				["Data"]: ((unknown)),
 			}) }),
 			["EventQuests"]: ({ ({
 				["Id"]: (string),
 				["CurrentValue"]: (number),
 				["Redeemed"]: (boolean),
+				["Data"]: ((unknown)),
 			}) }),
 			["GlobalQuests"]: ({ ({
 				["Id"]: (string),
 				["CurrentValue"]: (number),
 				["Redeemed"]: (boolean),
+				["Data"]: ((unknown)),
 			}) }),
 		})) -> ()): () -> ()
 			reliable_events[3] = Callback
@@ -562,6 +597,7 @@ local returns = {
 			["Id"]: (string),
 			["CurrentValue"]: (number),
 			["Redeemed"]: (boolean),
+			["Data"]: ((unknown)),
 		}) })) -> ()): () -> ()
 			reliable_events[4] = Callback
 			for _, value in reliable_event_queue[4] do

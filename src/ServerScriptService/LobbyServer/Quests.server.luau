@@ -26,6 +26,7 @@ type QuestRemoteInfo = {
 	Id: string,
 	CurrentValue: number,
 	Redeemed: boolean,
+	Data: any,
 }
 
 local function HandlePlayerData(PData: PlayerData.PlayerData)

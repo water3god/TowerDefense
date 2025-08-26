@@ -1,7 +1,7 @@
 --!strict
 
 -- By Wa1er_God --
-
+-- PC WAS HEREEEEE --
 -- Services --
 
 local Titles: {
@@ -43,12 +43,12 @@ local Titles: {
 	},
 	VIP = {
 		Color = ColorSequence.new(Color3.fromRGB(255, 215, 0), Color3.fromRGB(255, 230, 150)),
-		Description = "A player who has achieved VIP status.",
+		Description = "A Rich Person.",
 		Priority = 7,
 	},
-	["God"] = {
+	["TOP 100"] = {
 		Color = ColorSequence.new(Color3.fromRGB(255, 0, 255), Color3.fromRGB(255, 100, 200)),
-		Description = "A player who has achieved God status.",
+		Description = "A player who is one of the top 100 in the leaderboard.",
 		Priority = 8,
 	},
 	["Destroyer Of Worlds"] = {
@@ -56,12 +56,12 @@ local Titles: {
 		Description = "A player who has achieved Destroyer of Worlds status.",
 		Priority = 7,
 	},
-	["Slayer I"] = {
+	["Eradicator"] = {
 		Color = ColorSequence.new(Color3.fromRGB(255, 0, 255), Color3.fromRGB(255, 100, 200)),
-		Description = "A player who has achieved Slayer I status.",
+		Description = "Damage Dealer.",
 		Priority = 10,
 	},
-	["Slayer II"] = {
+	["Slayer"] = {
 		Color = ColorSequence.new(Color3.fromRGB(200, 0, 255), Color3.fromRGB(200, 100, 200)),
 		Description = "A player who has achieved Slayer II status.",
 		Priority = 11,
@@ -71,22 +71,22 @@ local Titles: {
 		Description = "A player who has achieved Slayer III status.",
 		Priority = 12,
 	},
-	["Weekly Slayer"] = {
-		Color = ColorSequence.new(Color3.fromRGB(255, 0, 150), Color3.fromRGB(255, 100, 200)),
-		Description = "A player who has achieved the Weekly Slayer title.",
-		Priority = 20,
-	},
-	["Damage Dealer I"] = {
-		Color = ColorSequence.new(Color3.fromRGB(255, 100, 0), Color3.fromRGB(255, 150, 100)),
-		Description = "A player who excels in dealing damage.",
+	["Annahilator"] = {
+		Color = ColorSequence.new(Color3.fromRGB(255, 100, 0), Color3.fromRGB(135, 0, 172)),
+		Description = "Dealt 100k damage to enemies.",
 		Priority = 30,
 	},
-	["Damage Dealer II"] = {
-		Color = ColorSequence.new(Color3.fromRGB(255, 150, 0), Color3.fromRGB(255, 200, 100)),
+	["Furious"] = {
+		Color = ColorSequence.new(Color3.fromRGB(255, 150, 0), Color3.fromRGB(186, 203, 31)),
 		Description = "A player who excels in dealing damage at a higher level.",
 		Priority = 31,
 	},
-	["Damage Dealer III"] = {
+	["Veteran"] = {
+		Color = ColorSequence.new(Color3.fromRGB(255, 150, 0), Color3.fromRGB(203, 0, 3)),
+		Description = "A player who excels in dealing damage at a higher level.",
+		Priority = 31,
+	},
+	["Fighter"] = {
 		Color = ColorSequence.new(Color3.fromRGB(255, 200, 0), Color3.fromRGB(255, 250, 100)),
 		Description = "A player who excels in dealing damage at the highest level.",
 		Priority = 32,
@@ -96,9 +96,9 @@ local Titles: {
 		Description = "A player who has mastered advanced summoning techniques.",
 		Priority = 40,
 	},
-	["Tower Defense Enjoyer"] = {
+	["Wave Defender"] = {
 		Color = ColorSequence.new(Color3.fromRGB(0, 200, 255), Color3.fromRGB(100, 200, 255)),
-		Description = "A player who enjoys the Tower Defense game mode.",
+		Description = "A player who enjoys the Infinite Gamemode.",
 		Priority = 41,
 	},
 	["Wave Slayer"] = {
@@ -106,14 +106,14 @@ local Titles: {
 		Description = "A player who excels in defeating waves of enemies.",
 		Priority = 42,
 	},
-	["Winner I"] = {
-		Color = ColorSequence.new(Color3.fromRGB(255, 0, 0), Color3.fromRGB(255, 100, 100)),
-		Description = "A player who has won a specific competition or event.",
+	["Rookie"] = {
+		Color = ColorSequence.new(Color3.fromRGB(255, 0, 0), Color3.fromRGB(255, 195, 112)),
+		Description = "AFirst Win.",
 		Priority = 43,
 	},
-	["First Place"] = {
+	["Competitor"] = {
 		Color = ColorSequence.new(Color3.fromRGB(255, 215, 0), Color3.fromRGB(255, 230, 150)),
-		Description = "A player who achieved first place in a competition.",
+		Description = "A player who has won 5 games within a week.",
 		Priority = 44,
 	},
 	["Cleared"] = {
