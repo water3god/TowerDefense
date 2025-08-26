@@ -1084,7 +1084,6 @@ function PlayerData:RegenerateWeeklyQuests()
 		local RandomQuest = WeeklyQuestsData[math.random(1, #WeeklyQuestsData)]
 		while table.find(UsedIds, RandomQuest.Id) do
 			RandomQuest = WeeklyQuestsData[math.random(1, #WeeklyQuestsData)]
-			print(UsedIds, RandomQuest.Id)
 		end
 
 		table.insert(UsedIds, RandomQuest.Id)
