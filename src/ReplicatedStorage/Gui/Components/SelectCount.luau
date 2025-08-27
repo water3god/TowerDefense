@@ -59,7 +59,7 @@ local function CreateSelectCount(props: Properties)
 			native = {
 				Text = "Select Count",
 				Position = UDim2.fromScale(0.5, 0.175),
-				Size = UDim2.fromScale(0.9, 0.1),
+				Size = UDim2.fromScale(0.9, 0.08),
 			},
 		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
@@ -83,11 +83,11 @@ local function CreateSelectCount(props: Properties)
 			},
 		}, {
 			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.015, 0),
+				CornerRadius = UDim.new(0.02, 0),
 			}),
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
 				Color = Color3.new(0.388235, 0.101961, 0.486275),
-				Stroke = 0.002,
+				Stroke = 0.003,
 				native = {
 					Transparency = 0.1,
 					LineJoinMode = Enum.LineJoinMode.Round,
@@ -96,7 +96,7 @@ local function CreateSelectCount(props: Properties)
 		}),
 		UIStroke = e(UIStroke.UIStrokeAdvanced, {
 			Color = Color3.new(0.866667, 0.866667, 0.866667),
-			Stroke = 0.002,
+			Stroke = 0.003,
 			native = {
 				LineJoinMode = Enum.LineJoinMode.Round,
 			},
@@ -146,12 +146,12 @@ local function CreateSelectCount(props: Properties)
 			}),
 			TextLabel = e(Main.TextLabel, {
 				native = {
-					Size = UDim2.fromScale(0.9, 0.7),
+					Size = UDim2.fromScale(0.9, 0.6),
 					Text = "Enter",
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.04,
+					Stroke = 0.03,
 				}),
 			}),
 		}),

@@ -11,7 +11,18 @@ local RarityInfo = require(Shared.RarityInfo)
 
 export type ProductData = { Name: string, Rarity: RarityInfo.Rarity | string, Priority: number, Func: () -> ()? }
 
+local Offers = { 3385224877 }
+
 local ProductInfo: { [number]: ProductData } = {
+	-- Offers --
+	[3385224877] = {
+		Name = "Trajan's Offer",
+		Rarity = "Legendary",
+		Priority = 1001,
+	},
+
+	-- Products --
+
 	[3348441372] = {
 		Name = "1000 Gold",
 		Rarity = "Common",
@@ -107,6 +118,10 @@ local GiftIds: { [number]: number } = {
 
 	[3370831956] = 3359651817, -- 2x Luck Boost (1 Hour) --
 	[3370832916] = 3359652520, -- 3x Luck Boost (1 Hour) --
+
+	-- Offers --
+
+	[3385226960] = 3385224877, -- Trajan's Offer --
 }
 
 local function GetProductFromName(Data: { Name: string, IsGamepass: boolean }): (ProductData?, number?)
@@ -193,7 +208,18 @@ local function GetProductFromGiftId(GiftId: number): (ProductData?, boolean?)
 	end
 end
 
+local function GetProductIdFromGiftId(GiftId: number)
+	for GiftKey, ProductId in pairs(GiftIds) do
+		if ProductId == GiftId then
+			return GiftKey :: number?
+		end
+	end
+
+	return nil
+end
+
 return {
+	Offers = Offers,
 	GiftIds = GiftIds,
 	ProductInfo = ProductInfo,
 	GamepassInfo = GamepassInfo,
@@ -203,4 +229,5 @@ return {
 	GetProductFromIdOnly = GetProductFromIdOnly,
 	GetProductFromNameOnly = GetProductFromNameOnly,
 	GetProductFromGiftId = GetProductFromGiftId,
+	GetProductIdFromGiftId = GetProductIdFromGiftId,
 }

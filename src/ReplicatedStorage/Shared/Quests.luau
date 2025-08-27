@@ -3,6 +3,10 @@
 -- By Wa1er_God --
 
 -- Services --
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Shared = ReplicatedStorage.Shared
+local Constants = require(Shared.Constants)
 
 export type QuestType =
 	"Kills"
@@ -361,8 +365,8 @@ local Quests: Quests = {
 			Type = "Leaderboard",
 			Id = "Global_Leaderboard_1",
 			Name = "Top 100",
-			Description = "Reach Top 100 in Leaderboard.",
-			Data = { LeaderboardName = "Kills", Position = 100 } :: any,
+			Description = "Reach Top 100 in the Damage Leaderboard.",
+			Data = { LeaderboardName = Constants.DamageStore, Position = 100 } :: any,
 			CurrentValue = 0,
 			NeededValue = 100,
 			Redeemed = false,

@@ -36,6 +36,7 @@ type Default = {
 		Owned: boolean,
 		Rarity: string,
 	} },
+	Offers: { number },
 	GiftIds: { [number]: number },
 	Loaded: boolean,
 }
@@ -43,6 +44,7 @@ type Default = {
 local Default: Default = {
 	ProductData = {},
 	GamepassData = {},
+	Offers = PurchaseService.Offers,
 	GiftIds = PurchaseService.GiftIds,
 	Loaded = false,
 }
@@ -66,6 +68,7 @@ local function PurchaseProvider(Props)
 			SetPurchases({
 				ProductData = PurchaseService.ProductData,
 				GamepassData = PurchaseService.GamepassData,
+				Offers = PurchaseService.Offers,
 				GiftIds = PurchaseService.GiftIds,
 				Loaded = PurchaseService.IsLoaded,
 			} :: any)
@@ -76,13 +79,14 @@ local function PurchaseProvider(Props)
 		SetPurchases({
 			ProductData = PurchaseService.ProductData,
 			GamepassData = PurchaseService.GamepassData,
+			Offers = PurchaseService.Offers,
 			GiftIds = PurchaseService.GiftIds,
 			Loaded = PurchaseService.IsLoaded,
 		} :: any)
 	end, {})
 
 	Hooks.useEventConnection(PurchaseService.GamepassSynced, function()
-		SetPurchasesNative(function(Old)
+		SetPurchases(function(Old)
 			Old.GamepassData = table.clone(PurchaseService.GamepassData)
 			return Old
 		end)

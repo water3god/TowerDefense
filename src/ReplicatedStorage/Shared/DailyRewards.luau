@@ -68,7 +68,7 @@ local DailyRewards: {
 		{ Type = "Unit", Name = "Augustus", Count = 1 },
 		{ Type = "Resource", Name = "Gold", Count = 653 },
 		{ Type = "Product", Name = "3x Luck Boost (1 Hour)", Count = 1 },
-		{ Type = "Unit", Name = "Trajan", Count = 1 },
+		{ Type = "Unit", Name = "William the Conqueror", Count = 1 },
 	},
 }
 

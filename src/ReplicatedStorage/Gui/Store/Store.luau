@@ -32,6 +32,7 @@ local StoreFolder = Gui.Store
 local PurchaseContext = require(StoreFolder.PurchaseContext)
 
 local Shared = ReplicatedStorage.Shared
+local Info = require(Shared.ProductInfo)
 local RarityInfo = require(Shared.RarityInfo)
 
 export type Properties = {
@@ -51,20 +52,146 @@ export type ProductProps = {
 	children: { [any]: any }?,
 }
 
-local function CreateBasicTable(props: { children: { [any]: any }? })
+local function CreateBasicTable(props: { Grid: boolean, Position: UDim2, Size: UDim2, children: { [any]: any }? })
 	return e(Main.ScrollingFrame, {
 		BarSize = 0.01,
 		native = {
-			Size = UDim2.fromScale(0.6, 0.7),
-			Position = UDim2.fromScale(0.375, 0.575),
-			AutomaticSize = Enum.AutomaticSize.Y,
+			Size = props.Size,
+			Position = props.Position,
+			AutomaticCanvasSize = Enum.AutomaticSize.Y,
 		},
 	}, {
-		UIGridLayout = e("UIGridLayout", {
+		UIGridLayout = props.Grid and e("UIGridLayout", {
 			CellPadding = UDim2.fromScale(0, 0),
 			CellSize = UDim2.fromScale(0.2, 0.3),
 			StartCorner = Enum.StartCorner.TopLeft,
 			SortOrder = Enum.SortOrder.LayoutOrder,
+		}),
+	}, props.children)
+end
+
+export type OfferProps = {
+	Name: string,
+	Image: string,
+	ProductId: number,
+	GiftId: number?,
+	native: { [any]: any }?,
+	children: { [any]: any }?,
+}
+
+local function CreateOffer(props: OfferProps)
+	local BuyClick = React.useCallback(function()
+		MarketplaceService:PromptProductPurchase(Player, props.ProductId)
+	end, { props.ProductId })
+
+	local GiftClick = React.useCallback(function()
+		if props.GiftId then
+			MarketplaceService:PromptProductPurchase(Player, props.GiftId)
+		else
+			warn("No GiftId found for offer: " .. props.Name)
+		end
+	end, { props.GiftId })
+
+	return e(Main.Frame, {
+		native = {
+			Size = UDim2.fromScale(1, 0.4),
+		},
+	}, {
+		Container = e(Main.ImageLabel, {
+			native = {
+				Image = props.Image,
+				ImageTransparency = 0.2,
+				Size = UDim2.fromScale(0.9, 0.9),
+			},
+		}, {
+			OfferLabel = e(Main.TextLabel, {
+				native = {
+					Text = props.Name,
+					Size = UDim2.fromScale(0.5, 0.25),
+					Position = UDim2.fromScale(0.3, 0.175),
+					TextXAlignment = Enum.TextXAlignment.Left,
+				},
+			}, {}),
+			BuyButton = e(Main.Animateables.TextButton, {
+				native = {
+					BackgroundColor3 = Color3.fromRGB(10, 229, 17),
+					BackgroundTransparency = 0,
+					Position = UDim2.fromScale(0.65, 0.775),
+					Size = UDim2.fromScale(0.3, 0.3),
+					Text = "",
+					[React.Event.MouseButton1Click] = BuyClick,
+				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.02,
+					Color = Color3.fromRGB(6, 106, 10),
+					native = {
+						ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+						LineJoinMode = Enum.LineJoinMode.Round,
+					},
+				}),
+				UICorner = e("UICorner", {
+					CornerRadius = UDim.new(0.3, 0),
+				}),
+				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+					AspectRatio = 3,
+				}),
+				Label = e(Main.TextLabel, {
+					native = {
+						Text = "Buy",
+						Size = UDim2.fromScale(0.9, 0.7),
+					},
+				}, {
+					UIStroke = e(UIStroke.UIStrokeAdvanced, {
+						Stroke = 0.03,
+					}),
+				}),
+			}),
+			GiftButton = e(Main.Animateables.TextButton, {
+				native = {
+					BackgroundColor3 = Color3.fromRGB(10, 36, 238),
+					BackgroundTransparency = 0,
+					Position = UDim2.fromScale(0.875, 0.775),
+					Size = UDim2.fromScale(0.3, 0.3),
+					Text = "",
+					[React.Event.MouseButton1Click] = GiftClick,
+				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.02,
+					Color = Color3.fromRGB(5, 18, 115),
+					native = {
+						ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+						LineJoinMode = Enum.LineJoinMode.Round,
+					},
+				}),
+				UICorner = e("UICorner", {
+					CornerRadius = UDim.new(0.3, 0),
+				}),
+				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+					AspectRatio = 3,
+				}),
+				Label = e(Main.TextLabel, {
+					native = {
+						Text = "Gift",
+						Size = UDim2.fromScale(0.9, 0.7),
+					},
+				}, {
+					UIStroke = e(UIStroke.UIStrokeAdvanced, {
+						Stroke = 0.03,
+					}),
+				}),
+			}),
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.1, 0),
+			}),
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.005,
+				Color = Color3.fromRGB(255, 255, 255),
+				native = {
+					LineJoinMode = Enum.LineJoinMode.Round,
+				},
+			}),
 		}),
 	}, props.children)
 end
@@ -90,8 +217,22 @@ local function CreateStoreFrame(Properties: Properties)
 
 		local Frames: { [string]: React.Node } = {}
 
+		local IsOffer = OpenFrame == "Offers"
+
 		if OpenFrame == "Offers" then
-			return Frames
+			for _, Id in ipairs(PurchaseData.Offers) do
+				local ProductData = PurchaseData.ProductData[Id]
+
+				if ProductData then
+					local GiftId = Info.GetProductIdFromGiftId(Id)
+					Frames["Offer" .. Id] = e(CreateOffer, {
+						Name = ProductData.ProductInfo.Name,
+						Image = "rbxassetid://" .. ProductData.ProductInfo.IconImageAssetId,
+						ProductId = Id,
+						GiftId = GiftId,
+					})
+				end
+			end
 		elseif OpenFrame == "Gamepasses" then
 			for Id, Data in pairs(PurchaseData.GamepassData) do
 				Frames["Gamepass" .. Id] = e(ProductFrame, {
@@ -122,7 +263,17 @@ local function CreateStoreFrame(Properties: Properties)
 		end
 
 		return {
-			ProductTable = e(CreateBasicTable, {}, Frames),
+			ProductTable = e(CreateBasicTable, {
+				Grid = not IsOffer,
+				Position = IsOffer and UDim2.fromScale(0.5, 0.6) or UDim2.fromScale(0.375, 0.575),
+				Size = IsOffer and UDim2.fromScale(0.9, 0.75) or UDim2.fromScale(0.6, 0.7),
+			}, {
+				UIListLayout = IsOffer and e("UIListLayout", {
+					FillDirection = Enum.FillDirection.Vertical,
+					HorizontalAlignment = Enum.HorizontalAlignment.Center,
+					VerticalAlignment = Enum.VerticalAlignment.Top,
+				}),
+			}, Frames),
 		}
 	end, { OpenFrame, PurchaseData.Loaded, HoveredProduct } :: { unknown })
 

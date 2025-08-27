@@ -3,7 +3,6 @@
 -- By Wa1er_God --
 
 -- Services --
-
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -81,6 +80,7 @@ local Module: {
 		Owned: boolean,
 		Rarity: string,
 	} },
+	Offers: { number },
 	GiftIds: { [number]: number },
 	GamepassSynced: Signal.Signal<{ number }>,
 	Loaded: Signal.Signal<>,
@@ -95,6 +95,7 @@ local Module: {
 		Purchased = Signal.new(),
 		ProductData = {},
 		GamepassData = {},
+		Offers = ProductInfo.Offers,
 		GiftIds = ProductInfo.GiftIds,
 		GamepassSynced = Signal.new(),
 		Loaded = Signal.new(),

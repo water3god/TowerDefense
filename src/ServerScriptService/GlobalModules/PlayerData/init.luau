@@ -358,10 +358,6 @@ function PlayerData.new(Player: Player)
 		}) :: any
 	end
 
-	if IsStudio then
-		print("Loaded Profile " .. Player.UserId)
-	end
-
 	if self.Profile then
 		self.Profile:AddUserId(Player.UserId)
 		self.Profile:Reconcile()
@@ -418,6 +414,11 @@ function PlayerData.new(Player: Player)
 		self:Delete()
 		Player:Kick("Error Loading Profile: Player not in game.")
 		return
+	end
+
+	if IsStudio then
+		print(self.Profile.Data)
+		print("Loaded Profile " .. Player.UserId)
 	end
 
 	self._Trove:Connect(self.Destroying, function()

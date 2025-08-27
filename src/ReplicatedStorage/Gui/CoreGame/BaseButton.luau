@@ -18,6 +18,7 @@ local JoinDicts = HelperFunctions.joinDicts
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
+local UIStroke = require(CoreGame.UIStroke)
 
 local function CreateBaseButton(Properties: {
 	Text: string,
@@ -46,6 +47,10 @@ local function CreateBaseButton(Properties: {
 				Position = UDim2.fromScale(0.5, 0.5),
 				Size = UDim2.fromScale(0.9, 0.6),
 			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.02,
+			}),
 		}),
 	})
 end

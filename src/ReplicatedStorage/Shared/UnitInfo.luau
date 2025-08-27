@@ -383,7 +383,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 				MinimumLevel = 0,
 				BackgroundColor = ColorSequence.new(Color3.new(0.803922, 0.133333, 0.133333)),
 				Cooldown = 30,
-				Icon = "",
+				Icon = "rbxassetid://103266364834335",
 				Length = 10,
 				Name = "Rage",
 			},
