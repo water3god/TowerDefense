@@ -26,13 +26,20 @@ local CloseButton = require(CoreGame.CloseButton)
 local UIStroke = require(CoreGame.UIStroke)
 local Title = require(CoreGame.Title)
 local BaseButton = require(CoreGame.BaseButton)
-local ProductFrame = require(Gui.Inventory.ProductFrame)
+local Hooks = require(CoreGame.Hooks)
+
+local Inventory = Gui.Inventory
+local ProductFrame = require(Inventory.ProductFrame)
+local ResourceFrame = require(Inventory.ResourceFrame)
 
 local StoreFolder = Gui.Store
 local PurchaseContext = require(StoreFolder.PurchaseContext)
 
+local Components = Gui.Components
+local UnitLabel = require(Components.UnitLabel)
+
 local Shared = ReplicatedStorage.Shared
-local Info = require(Shared.ProductInfo)
+local ProductInfo = require(Shared.ProductInfo)
 local RarityInfo = require(Shared.RarityInfo)
 
 export type Properties = {
@@ -73,8 +80,10 @@ end
 export type OfferProps = {
 	Name: string,
 	Image: string,
+	Rewards: { { Type: string, Name: string, Amount: number } },
 	ProductId: number,
 	GiftId: number?,
+	Cost: number,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
@@ -92,6 +101,50 @@ local function CreateOffer(props: OfferProps)
 		end
 	end, { props.GiftId })
 
+	local Rewards = React.useMemo(function()
+		local Frames: { [string]: React.Node } = {}
+
+		local LayoutOrder = Hooks.LayoutOrder()
+
+		for _, Reward in ipairs(props.Rewards) do
+			if Reward.Type == "Unit" then
+				for i = 1, Reward.Amount, 1 do
+					Frames[Reward.Name .. i] = e(UnitLabel, {
+						Unit = Reward.Name,
+						native = {
+							Size = UDim2.fromScale(0.3, 0.6),
+							LayoutOrder = LayoutOrder(),
+						},
+					})
+				end
+			elseif Reward.Type == "Product" then
+				local ProductData, ProductId, IsGamepass = ProductInfo.GetProductFromNameOnly(Reward.Name)
+				if ProductData and ProductId and typeof(IsGamepass) == "boolean" then
+					Frames[Reward.Name] = e(ProductFrame, {
+						ProductId = ProductId,
+						IsGamepass = IsGamepass,
+						Count = Reward.Amount,
+						native = {
+							Size = UDim2.fromScale(0.3, 0.6),
+							LayoutOrder = LayoutOrder(),
+						},
+					})
+				end
+			elseif Reward.Type == "Resource" then
+				Frames[Reward.Name] = e(ResourceFrame, {
+					Name = Reward.Name,
+					Value = Reward.Amount,
+					native = {
+						Size = UDim2.fromScale(0.3, 0.6),
+						LayoutOrder = LayoutOrder(),
+					},
+				})
+			end
+		end
+
+		return Frames
+	end, { props.Rewards })
+
 	return e(Main.Frame, {
 		native = {
 			Size = UDim2.fromScale(1, 0.4),
@@ -104,6 +157,17 @@ local function CreateOffer(props: OfferProps)
 				Size = UDim2.fromScale(0.9, 0.9),
 			},
 		}, {
+			Rewards = e(Main.Frame, {
+				native = {
+					Size = UDim2.fromScale(0.9, 0.9),
+				},
+			}, {
+				UIListLayout = e(Main.UIListLayout, {
+					native = {
+						FillDirection = Enum.FillDirection.Horizontal,
+					},
+				}, Rewards),
+			}),
 			OfferLabel = e(Main.TextLabel, {
 				native = {
 					Text = props.Name,
@@ -111,7 +175,12 @@ local function CreateOffer(props: OfferProps)
 					Position = UDim2.fromScale(0.3, 0.175),
 					TextXAlignment = Enum.TextXAlignment.Left,
 				},
-			}, {}),
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.02,
+					Color = Color3.fromRGB(6, 106, 10),
+				}),
+			}),
 			BuyButton = e(Main.Animateables.TextButton, {
 				native = {
 					BackgroundColor3 = Color3.fromRGB(10, 229, 17),
@@ -138,7 +207,7 @@ local function CreateOffer(props: OfferProps)
 				}),
 				Label = e(Main.TextLabel, {
 					native = {
-						Text = "Buy",
+						Text = string.format("\u{E002}%d", props.Cost),
 						Size = UDim2.fromScale(0.9, 0.7),
 					},
 				}, {
@@ -220,16 +289,18 @@ local function CreateStoreFrame(Properties: Properties)
 		local IsOffer = OpenFrame == "Offers"
 
 		if OpenFrame == "Offers" then
-			for _, Id in ipairs(PurchaseData.Offers) do
+			for Id, Data in pairs(PurchaseData.Offers) do
 				local ProductData = PurchaseData.ProductData[Id]
 
 				if ProductData then
-					local GiftId = Info.GetProductIdFromGiftId(Id)
+					local GiftId = ProductInfo.GetProductIdFromGiftId(Id)
 					Frames["Offer" .. Id] = e(CreateOffer, {
 						Name = ProductData.ProductInfo.Name,
 						Image = "rbxassetid://" .. ProductData.ProductInfo.IconImageAssetId,
 						ProductId = Id,
 						GiftId = GiftId,
+						Cost = ProductData.ProductInfo.PriceInRobux,
+						Rewards = Data,
 					})
 				end
 			end
@@ -324,20 +395,20 @@ local function CreateStoreFrame(Properties: Properties)
 			return Default
 		end
 		if OpenFrame == "Products" then
-			local ProductInfo = PurchaseData.ProductData[HoveredProduct]
+			local Data = PurchaseData.ProductData[HoveredProduct]
 			return {
-				Name = ProductInfo.ProductInfo.Name,
-				Rarity = ProductInfo.Rarity,
-				RarityInfo = RarityInfo[ProductInfo.Rarity :: any],
-				Image = ProductInfo.ProductInfo.IconImageAssetId,
+				Name = Data.ProductInfo.Name,
+				Rarity = Data.Rarity,
+				RarityInfo = RarityInfo[Data.Rarity :: any],
+				Image = Data.ProductInfo.IconImageAssetId,
 			}
 		elseif OpenFrame == "Gamepasses" then
-			local ProductInfo = PurchaseData.GamepassData[HoveredProduct]
+			local Data = PurchaseData.GamepassData[HoveredProduct]
 			return {
-				Name = ProductInfo.ProductInfo.Name,
-				Rarity = ProductInfo.Rarity,
-				RarityInfo = RarityInfo[ProductInfo.Rarity :: any],
-				Image = ProductInfo.ProductInfo.IconImageAssetId,
+				Name = Data.ProductInfo.Name,
+				Rarity = Data.Rarity,
+				RarityInfo = RarityInfo[Data.Rarity :: any],
+				Image = Data.ProductInfo.IconImageAssetId,
 			}
 		elseif OpenFrame == "Offers" then
 			return Default

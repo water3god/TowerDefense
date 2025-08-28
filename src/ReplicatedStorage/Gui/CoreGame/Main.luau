@@ -111,6 +111,19 @@ function DefaultGui.ViewportFrame(Properties: Properties)
 	return e("ViewportFrame", JoinDicts(DefaultProps, Properties.native), Properties.children)
 end
 
+function DefaultGui.UIListLayout(Properties: Properties)
+	return e(
+		"UIListLayout",
+		JoinDicts({
+			Padding = UDim.new(0, 0),
+			SortOrder = Enum.SortOrder.LayoutOrder,
+			VerticalAlignment = Enum.VerticalAlignment.Center,
+			HorizontalAlignment = Enum.HorizontalAlignment.Center,
+		}, Properties.native),
+		Properties.children
+	)
+end
+
 local Animateables = {}
 DefaultGui.Animateables = Animateables
 

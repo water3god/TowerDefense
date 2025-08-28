@@ -36,7 +36,7 @@ type Default = {
 		Owned: boolean,
 		Rarity: string,
 	} },
-	Offers: { number },
+	Offers: { [number]: { PurchaseService.Offer } },
 	GiftIds: { [number]: number },
 	Loaded: boolean,
 }
@@ -50,15 +50,6 @@ local Default: Default = {
 }
 
 local PurchaseContext = React.createContext(Default)
-
-local function SetPurchasesNative(SetPurchases: (any) -> ())
-	SetPurchases({
-		ProductData = PurchaseService.ProductData,
-		GamepassData = PurchaseService.GamepassData,
-		GiftIds = PurchaseService.GiftIds,
-		Loaded = PurchaseService.IsLoaded,
-	})
-end
 
 local function PurchaseProvider(Props)
 	local Purchases, SetPurchases = React.useState(Default)

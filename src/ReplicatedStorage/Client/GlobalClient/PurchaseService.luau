@@ -21,6 +21,8 @@ local OwnedGamepasses = Network.OwnedGamepasses
 local Shared = ReplicatedStorage.Shared
 local ProductInfo = require(Shared.ProductInfo)
 
+export type Offer = ProductInfo.Offer
+
 export type ProductInfo = {
 	Name: string,
 	Description: string,
@@ -80,7 +82,7 @@ local Module: {
 		Owned: boolean,
 		Rarity: string,
 	} },
-	Offers: { number },
+	Offers: { [number]: { ProductInfo.Offer } },
 	GiftIds: { [number]: number },
 	GamepassSynced: Signal.Signal<{ number }>,
 	Loaded: Signal.Signal<>,

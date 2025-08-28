@@ -277,6 +277,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 3.555,
 		}),
+
 		GoldFrame = e(Main.Frame, {
 			native = {
 				Position = UDim2.fromScale(0.5, -0.1),
@@ -285,36 +286,62 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 				end),
 			},
 		}, {
-			UIListLayout = e("UIListLayout", {
-				SortOrder = Enum.SortOrder.LayoutOrder,
-				FillDirection = Enum.FillDirection.Horizontal,
-				HorizontalAlignment = Enum.HorizontalAlignment.Center,
-				Padding = UDim.new(0, 0),
-			}),
-			Icon = e(Main.ImageLabel, {
+			Back = e(Main.Frame, {
 				native = {
+					Size = UDim2.fromScale(0.6, 1),
 					Position = UDim2.fromScale(0.5, 0.5),
-					Image = CurrencyContext.Icon,
+					BackgroundTransparency = 0,
+					ZIndex = 0,
 				},
 			}, {
-				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-					AspectRatio = 1,
+				UIGradient = e("UIGradient", {
+					Color = ColorSequence.new({
+						ColorSequenceKeypoint.new(0, Color3.fromRGB(225, 228, 12)),
+						ColorSequenceKeypoint.new(1, Color3.fromRGB(228, 224, 20)),
+					}),
+					Transparency = NumberSequence.new({
+						NumberSequenceKeypoint.new(0, 1),
+						NumberSequenceKeypoint.new(0.4, 0.5),
+						NumberSequenceKeypoint.new(0.6, 0.5),
+						NumberSequenceKeypoint.new(1, 1),
+					}),
+				}),
+				UICorner = e("UICorner", {
+					CornerRadius = UDim.new(0.1, 0),
 				}),
 			}),
-			Label = e(Main.TextLabel, {
-				native = {
-					Text = CurrencyValue,
-					AutomaticSize = Enum.AutomaticSize.X,
-					AutoLocalize = false,
-					TextXAlignment = Enum.TextXAlignment.Left,
-					Size = UDim2.fromScale(0.1, 1),
-				},
-			}, {
-				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.0015,
+			Container = e(Main.Frame, {}, {
+				UIListLayout = e("UIListLayout", {
+					SortOrder = Enum.SortOrder.LayoutOrder,
+					FillDirection = Enum.FillDirection.Horizontal,
+					HorizontalAlignment = Enum.HorizontalAlignment.Center,
+					Padding = UDim.new(0, 0),
 				}),
-				UIPadding = e("UIPadding", {
-					PaddingLeft = UDim.new(0.05, 0),
+				Icon = e(Main.ImageLabel, {
+					native = {
+						Position = UDim2.fromScale(0.5, 0.5),
+						Image = CurrencyContext.Icon,
+					},
+				}, {
+					UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+						AspectRatio = 1,
+					}),
+				}),
+				Label = e(Main.TextLabel, {
+					native = {
+						Text = CurrencyValue,
+						AutomaticSize = Enum.AutomaticSize.X,
+						AutoLocalize = false,
+						TextXAlignment = Enum.TextXAlignment.Left,
+						Size = UDim2.fromScale(0.1, 1),
+					},
+				}, {
+					UIStroke = e(UIStroke.UIStrokeBasic, {
+						Stroke = 0.0015,
+					}),
+					UIPadding = e("UIPadding", {
+						PaddingLeft = UDim.new(0.05, 0),
+					}),
 				}),
 			}),
 		}),

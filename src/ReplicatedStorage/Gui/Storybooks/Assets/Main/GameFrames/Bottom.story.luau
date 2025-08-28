@@ -59,7 +59,7 @@ local Story = {
 					native = {
 						AnchorPoint = Vector2.new(0.5, 1),
 						Position = UDim2.fromScale(0.5, 1),
-						--Size = UDim2.fromScale(0.8, 0.8),
+						Size = UDim2.fromScale(0.8, 0.8),
 					},
 				}),
 			}),
