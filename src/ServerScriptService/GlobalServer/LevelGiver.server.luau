@@ -2,13 +2,19 @@
 
 -- By Wa1er_God --
 
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
-local Network = require(ReplicatedStorage.Network.Server)
+local NetworkFolder = ReplicatedStorage.Network
+local Network = require(NetworkFolder.Server)
+local ServerOnly = require(NetworkFolder.ServerOnly)
+local SendWarning = Network.SendWarning
 
 local GlobalModules = ServerScriptService.GlobalModules
 local PlayerData = require(GlobalModules.PlayerData)
+
+local PlayerLoaded = require(GlobalModules.Short.PlayerLoaded)
 
 local Units = {
 	[50] = "Cao Cao",
@@ -17,6 +23,15 @@ local Units = {
 
 local function OnDataAdded(PData: PlayerData.PlayerData)
 	local Data = PData.Profile.Data
+
+	local PlayerLoadedSignal = PlayerLoaded(PData.Player)
+
+	PlayerLoadedSignal:Wait()
+
+	if not PData.Player:IsDescendantOf(Players) then
+		return
+	end
+
 	local function HandleLevel(Level: number)
 		for UnitLevel, Unit in pairs(Units) do
 			if Level < UnitLevel then
@@ -29,7 +44,7 @@ local function OnDataAdded(PData: PlayerData.PlayerData)
 
 			if Unit then
 				PData:AddUnit(Unit)
-				Network.SendWarning.Fire(PData.Player, string.format("Level %u: Gained %s", UnitLevel, Unit))
+				SendWarning.Fire(PData.Player, string.format("Level %u: Gained %s", UnitLevel, Unit))
 				table.insert(Data.RedeemedLevels, UnitLevel)
 			end
 		end
