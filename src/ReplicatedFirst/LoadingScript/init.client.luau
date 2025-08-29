@@ -13,6 +13,7 @@ local TeleportService = game:GetService("TeleportService")
 local ContentProvider = game:GetService("ContentProvider")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
 
 local Player = Players.LocalPlayer
 local PlayerGui: PlayerGui = Player:WaitForChild("PlayerGui")
@@ -143,6 +144,16 @@ local function HandleNewGui(Gui: typeof(script.LoadingGui))
 
 	Main.MapImage.Image = Id
 	Main.MapInfoLabel.Text = MapName
+
+	local LoadImage = Main.LoadImage
+
+	local Connection = RunService.PostSimulation:Connect(function(Delta: number)
+		LoadImage.Rotation += Delta * 100
+	end)
+
+	LoadImage.Destroying:Once(function()
+		Connection:Disconnect()
+	end)
 end
 
 local Gui: typeof(script.LoadingGui) = nil
