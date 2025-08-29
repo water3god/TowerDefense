@@ -46,6 +46,7 @@ local GlobalClient = Client.GlobalClient
 local WaveService = require(GlobalClient.WaveService)
 
 local Shared = ReplicatedStorage.Shared
+local Constants = require(Shared.Constants)
 local GameInfo = require(Shared.GameInfo)
 local XPData = GameInfo.XPData
 
@@ -364,7 +365,7 @@ local function CreateVoteFrame(Props: Props)
 	end, {})
 
 	local ReturnClick = React.useCallback(function()
-		TPGuiSet:Fire({ MapName = "Lobby", ImageId = "rbxasseid://1" })
+		TPGuiSet:Fire({ MapName = "Lobby", ImageId = Constants.LOBBYICON })
 		Promise.delay(3):andThen(function()
 			TeleportBack.Fire(true)
 		end)

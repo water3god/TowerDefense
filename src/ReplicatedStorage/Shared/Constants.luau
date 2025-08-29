@@ -19,6 +19,8 @@ local Constants = {
 	RobuxSpentStore = "RobuxSpentStorev0.01",
 	DamageStore = "DamageStorev0.01",
 
+	LOBBYICON = "rbxassetid://82602981298420",
+
 	WarningTime = 3,
 	CostDivider = 2,
 	MaxUnitCount = 15,

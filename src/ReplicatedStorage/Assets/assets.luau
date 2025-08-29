@@ -21,6 +21,7 @@ local assets = {
 	images = {
 		["Cao_Cao.png"] = "rbxassetid://73915227461302",
 		["GreecePhoto.png"] = "rbxassetid://140359005328317",
+		["Lobby.png"] = "rbxassetid://82602981298420",
 		["Qin_Shi_Huang.png"] = "rbxassetid://72049353436342",
 		["aura.png"] = "rbxassetid://133330282088551",
 		["calendar.png"] = "rbxassetid://118717037434015",

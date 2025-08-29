@@ -66,6 +66,13 @@ local Products: { [number]: (Data: PlayerData.PlayerData) -> boolean } = {
 		Data:AddResource("Omen Coins", 1000)
 		return true
 	end,
+	[3385224877] = function(Data: PlayerData.PlayerData): boolean
+		Data:AddUnit("Trajan")
+		Data:AddUnit("Augustus")
+		Data:AddGold(10000)
+		Data:AddResource("Omen Coins", 10)
+		return true
+	end,
 }
 
 local Gamepasses: { [number]: (Data: PlayerData.PlayerData) -> () } = {
