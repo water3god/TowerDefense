@@ -22,6 +22,7 @@ local Shared = ReplicatedStorage.Shared
 local ProductInfo = require(Shared.ProductInfo)
 
 export type Offer = ProductInfo.Offer
+export type Offers = ProductInfo.Offers
 
 export type ProductInfo = {
 	Name: string,
@@ -82,7 +83,7 @@ local Module: {
 		Owned: boolean,
 		Rarity: string,
 	} },
-	Offers: { [number]: { ProductInfo.Offer } },
+	Offers: Offers,
 	GiftIds: { [number]: number },
 	GamepassSynced: Signal.Signal<{ number }>,
 	Loaded: Signal.Signal<>,

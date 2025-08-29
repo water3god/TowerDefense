@@ -46,6 +46,9 @@ local function CreateUnitLabel(props: Properties)
 	return e(Main.Frame, {
 		native = Join({}, props.native),
 	}, {
+		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+			AspectRatio = 1,
+		}),
 		UnitView = e(UnitView, {
 			UnitName = props.Unit,
 			Level = 1,
@@ -55,13 +58,14 @@ local function CreateUnitLabel(props: Properties)
 			native = {
 				Position = UDim2.fromScale(0.5, 0.5),
 				Size = UDim2.fromScale(0.9, 0.9),
+				ZIndex = 0,
 			},
 		}),
 		UnitLabel = e(Main.TextLabel, {
 			native = {
 				Text = props.Unit,
 				Position = UDim2.fromScale(0.5, 0.6),
-				Size = UDim2.fromScale(0.9, 0.2),
+				Size = UDim2.fromScale(1, 0.2),
 			},
 		}, {
 			UIGradient = e(AnimatedGradient, {
@@ -75,8 +79,8 @@ local function CreateUnitLabel(props: Properties)
 		RarityLabel = e(Main.TextLabel, {
 			native = {
 				Text = Rarity,
-				Position = UDim2.fromScale(0.5, 0.9),
-				Size = UDim2.fromScale(0.9, 0.2),
+				Position = UDim2.fromScale(0.5, 0.8),
+				Size = UDim2.fromScale(1, 0.2),
 			},
 		}, {
 			UIGradient = e(AnimatedGradient, {

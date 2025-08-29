@@ -80,6 +80,7 @@ end
 export type OfferProps = {
 	Name: string,
 	Image: string,
+	Color: Color3,
 	Rewards: { { Type: string, Name: string, Amount: number } },
 	ProductId: number,
 	GiftId: number?,
@@ -112,7 +113,7 @@ local function CreateOffer(props: OfferProps)
 					Frames[Reward.Name .. i] = e(UnitLabel, {
 						Unit = Reward.Name,
 						native = {
-							Size = UDim2.fromScale(0.3, 0.6),
+							Size = UDim2.fromScale(0.3, 0.8),
 							LayoutOrder = LayoutOrder(),
 						},
 					})
@@ -147,11 +148,13 @@ local function CreateOffer(props: OfferProps)
 
 	return e(Main.Frame, {
 		native = {
-			Size = UDim2.fromScale(1, 0.4),
+			Size = UDim2.fromScale(1, 0.5),
 		},
 	}, {
 		Container = e(Main.ImageLabel, {
 			native = {
+				BackgroundTransparency = 0,
+				BackgroundColor3 = props.Color,
 				Image = props.Image,
 				ImageTransparency = 0.2,
 				Size = UDim2.fromScale(0.9, 0.9),
@@ -160,39 +163,40 @@ local function CreateOffer(props: OfferProps)
 			Rewards = e(Main.Frame, {
 				native = {
 					Size = UDim2.fromScale(0.9, 0.9),
+					Position = UDim2.fromScale(0.5, 0.375),
 				},
 			}, {
 				UIListLayout = e(Main.UIListLayout, {
 					native = {
 						FillDirection = Enum.FillDirection.Horizontal,
 					},
-				}, Rewards),
-			}),
+				}),
+			}, Rewards),
 			OfferLabel = e(Main.TextLabel, {
 				native = {
 					Text = props.Name,
-					Size = UDim2.fromScale(0.5, 0.25),
-					Position = UDim2.fromScale(0.3, 0.175),
+					Size = UDim2.fromScale(0.5, 0.2),
+					Position = UDim2.fromScale(0.275, 0.825),
 					TextXAlignment = Enum.TextXAlignment.Left,
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.02,
-					Color = Color3.fromRGB(6, 106, 10),
+					Stroke = 0.01,
+					Color = Color3.fromRGB(0, 0, 0),
 				}),
 			}),
 			BuyButton = e(Main.Animateables.TextButton, {
 				native = {
 					BackgroundColor3 = Color3.fromRGB(10, 229, 17),
 					BackgroundTransparency = 0,
-					Position = UDim2.fromScale(0.65, 0.775),
-					Size = UDim2.fromScale(0.3, 0.3),
+					Position = UDim2.fromScale(0.7, 0.825),
+					Size = UDim2.fromScale(0.3, 0.2),
 					Text = "",
 					[React.Event.MouseButton1Click] = BuyClick,
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.02,
+					Stroke = 0.03,
 					Color = Color3.fromRGB(6, 106, 10),
 					native = {
 						ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
@@ -200,7 +204,7 @@ local function CreateOffer(props: OfferProps)
 					},
 				}),
 				UICorner = e("UICorner", {
-					CornerRadius = UDim.new(0.3, 0),
+					CornerRadius = UDim.new(0.4, 0),
 				}),
 				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 					AspectRatio = 3,
@@ -220,14 +224,14 @@ local function CreateOffer(props: OfferProps)
 				native = {
 					BackgroundColor3 = Color3.fromRGB(10, 36, 238),
 					BackgroundTransparency = 0,
-					Position = UDim2.fromScale(0.875, 0.775),
-					Size = UDim2.fromScale(0.3, 0.3),
+					Position = UDim2.fromScale(0.89, 0.825),
+					Size = UDim2.fromScale(0.3, 0.2),
 					Text = "",
 					[React.Event.MouseButton1Click] = GiftClick,
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.02,
+					Stroke = 0.03,
 					Color = Color3.fromRGB(5, 18, 115),
 					native = {
 						ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
@@ -235,7 +239,7 @@ local function CreateOffer(props: OfferProps)
 					},
 				}),
 				UICorner = e("UICorner", {
-					CornerRadius = UDim.new(0.3, 0),
+					CornerRadius = UDim.new(0.4, 0),
 				}),
 				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 					AspectRatio = 3,
@@ -252,7 +256,7 @@ local function CreateOffer(props: OfferProps)
 				}),
 			}),
 			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.1, 0),
+				CornerRadius = UDim.new(0.05, 0),
 			}),
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
 				Stroke = 0.005,
@@ -300,12 +304,17 @@ local function CreateStoreFrame(Properties: Properties)
 						ProductId = Id,
 						GiftId = GiftId,
 						Cost = ProductData.ProductInfo.PriceInRobux,
-						Rewards = Data,
+						Rewards = Data.Rewards,
+						Color = Data.Color,
 					})
 				end
 			end
 		elseif OpenFrame == "Gamepasses" then
 			for Id, Data in pairs(PurchaseData.GamepassData) do
+				if PurchaseData.Offers[Id] then
+					continue
+				end
+
 				Frames["Gamepass" .. Id] = e(ProductFrame, {
 					IsGamepass = true,
 					ProductId = Id,
@@ -320,6 +329,10 @@ local function CreateStoreFrame(Properties: Properties)
 			end
 		elseif OpenFrame == "Products" then
 			for Id, _ in pairs(PurchaseData.ProductData) do
+				if PurchaseData.Offers[Id] then
+					continue
+				end
+
 				Frames["Product" .. Id] = e(ProductFrame, {
 					IsGamepass = false,
 					ProductId = Id,
@@ -336,7 +349,7 @@ local function CreateStoreFrame(Properties: Properties)
 		return {
 			ProductTable = e(CreateBasicTable, {
 				Grid = not IsOffer,
-				Position = IsOffer and UDim2.fromScale(0.5, 0.6) or UDim2.fromScale(0.375, 0.575),
+				Position = IsOffer and UDim2.fromScale(0.5, 0.575) or UDim2.fromScale(0.375, 0.575),
 				Size = IsOffer and UDim2.fromScale(0.9, 0.75) or UDim2.fromScale(0.6, 0.7),
 			}, {
 				UIListLayout = IsOffer and e("UIListLayout", {

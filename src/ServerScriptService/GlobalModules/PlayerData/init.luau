@@ -1011,7 +1011,7 @@ function PlayerData:RedeemDaily()
 			self:AddResource(RewardData.Name, RewardData.Count)
 		end
 	elseif RewardData.Type == "Product" then
-		local _, ProductId = ProductInfo.GetProductFromName({ Name = RewardData.Name, IsGamepass = true })
+		local _, ProductId = ProductInfo.GetProductFromNameOnly(RewardData.Name)
 		if ProductId then
 			self:AddProduct(ProductId, RewardData.Count)
 		else

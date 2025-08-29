@@ -12,13 +12,17 @@ local RarityInfo = require(Shared.RarityInfo)
 export type ProductData = { Name: string, Rarity: RarityInfo.Rarity | string, Priority: number, Func: () -> ()? }
 
 export type Offer = { Type: string, Name: string, Amount: number }
+export type Offers = { [number]: { Rewards: { Offer }, Color: Color3 } }
 
-local Offers: { [number]: { Offer } } = {
+local Offers: Offers = {
 	[3385224877] = {
-		{ Type = "Unit", Name = "Trajan", Amount = 1 },
-		{ Type = "Unit", Name = "Augustus", Amount = 1 },
-		{ Type = "Resource", Name = "Gold", Amount = 10000 },
-		{ Type = "Resource", Name = "Omen Coins", Amount = 10 },
+		Rewards = {
+			{ Type = "Unit", Name = "Trajan", Amount = 1 },
+			{ Type = "Unit", Name = "Augustus", Amount = 1 },
+			{ Type = "Resource", Name = "Gold", Amount = 10000 },
+			{ Type = "Resource", Name = "Omen Coins", Amount = 10 },
+		},
+		Color = Color3.new(0.647059, 0.462745, 0),
 	},
 }
 

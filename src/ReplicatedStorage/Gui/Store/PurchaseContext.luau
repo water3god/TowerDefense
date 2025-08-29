@@ -36,7 +36,7 @@ type Default = {
 		Owned: boolean,
 		Rarity: string,
 	} },
-	Offers: { [number]: { PurchaseService.Offer } },
+	Offers: PurchaseService.Offers,
 	GiftIds: { [number]: number },
 	Loaded: boolean,
 }
