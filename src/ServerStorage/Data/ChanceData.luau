@@ -12,8 +12,18 @@ local Units = {
 	Rare = { "Socrates", "Spartacus", "Leif Erikson", "Cleopatra" },
 	Epic = { "Pericles", "Cicero", "Charlemagne", "Narmer" },
 	Legendary = { "Themistocles", "Julius Caesar", "Joan of Arc", "Akhenaten" },
-	Mythic = { "Alexander The Great", "Augustus", "William the Conqueror", "Ramesses II", "Cao Cao" },
-	Godly = { "Leonidas", "Trajan", "Richard the Lionheart", "Tutankhamun", "Qin Shi Huang" },
+	Mythic = {
+		"Alexander The Great",
+		"Augustus",
+		"William the Conqueror",
+		"Ramesses II", --[["Cao Cao"]]
+	},
+	Godly = {
+		"Leonidas",
+		"Trajan",
+		"Richard the Lionheart",
+		"Tutankhamun", --[["Qin Shi Huang"]]
+	},
 }
 
 local Chances: { [string]: number } = {

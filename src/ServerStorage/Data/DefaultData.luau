@@ -73,6 +73,7 @@ export type Data = {
 	QuestData: Quests.TotalPlayerData,
 	StarterChosen: boolean,
 	Boosts: { [string]: number }, -- BoostName, EndTime
+	RedeemedLevels: { number },
 }
 
 local Data: Data = {
@@ -104,6 +105,7 @@ local Data: Data = {
 	QuestData = Quests.QuestPlayerData,
 	StarterChosen = false,
 	Boosts = {},
+	RedeemedLevels = {},
 }
 
 return Data

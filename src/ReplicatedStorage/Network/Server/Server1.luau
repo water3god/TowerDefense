@@ -163,6 +163,9 @@ if not RunService:IsRunning() then
 			FireList = noop,
 			FireSet = noop
 		}),
+		GameLoaded = table.freeze({
+			SetCallback = noop
+		}),
 		EquipUnit = table.freeze({
 			SetCallback = noop
 		}),
@@ -275,12 +278,59 @@ Players.PlayerRemoving:Connect(function(player)
 	player_map[player] = nil
 end)
 export type XP = (number)
+export type InfiniteStageData = ({
+	["Wave"]: (number),
+	["Damage"]: (number),
+})
+export type VisualUnitData = ({
+	["Unit"]: (string),
+	["Level"]: (number),
+	["Trait"]: ((string)?),
+	["UniqueId"]: (string),
+	["XP"]: (number),
+	["NeededXP"]: (number),
+})
+export type ProductData = ({
+	["ProductId"]: (number),
+	["IsGamepass"]: (boolean),
+	["Count"]: (number),
+	["UniqueId"]: (string),
+})
 export type ProductId = (number)
-export type Level = (number)
-export type Time = (number)
+export type ResourceData = ({
+	["Resource"]: (string),
+	["Count"]: (number),
+	["UniqueId"]: (string),
+	["PartialOneLose"]: ((boolean)?),
+})
+export type LevelData = ({
+	["Level"]: (number),
+	["XP"]: (number),
+	["NeededXP"]: (number),
+})
 export type StageData = ({
 	["FastestTime"]: (number),
 	["FinishedCount"]: (number),
+})
+export type EnemyInput = ({
+	["UniqueId"]: (string),
+	["ModelName"]: (string),
+	["Health"]: (number),
+	["MaxHealth"]: (number),
+	["Speed"]: (number),
+	["IsBoss"]: (boolean),
+	["Ally"]: (boolean),
+	["OriginalSpeed"]: (number),
+	["VectorOffset"]: (Vector3),
+	["BezierId"]: (string),
+	["TimePosition"]: (number),
+	["Time"]: (number),
+	["AdornmentName"]: ((string)?),
+	["SpeedChanges"]: ({ ({
+		["TimeStart"]: (number),
+		["Speed"]: (number),
+		["TimeEnd"]: ((number)?),
+	}) }),
 })
 export type Inventory = ({
 	["Units"]: ({ [(string)]: ({
@@ -304,30 +354,12 @@ export type Inventory = ({
 		["PartialOneLose"]: ((boolean)?),
 	}) }),
 })
-export type InfiniteStageData = ({
-	["Wave"]: (number),
-	["Damage"]: (number),
-})
-export type EnemyInput = ({
-	["UniqueId"]: (string),
-	["ModelName"]: (string),
-	["Health"]: (number),
-	["MaxHealth"]: (number),
+export type SpeedChangeData = ({
+	["TimeStart"]: (number),
 	["Speed"]: (number),
-	["IsBoss"]: (boolean),
-	["Ally"]: (boolean),
-	["OriginalSpeed"]: (number),
-	["VectorOffset"]: (Vector3),
-	["BezierId"]: (string),
-	["TimePosition"]: (number),
-	["Time"]: (number),
-	["AdornmentName"]: ((string)?),
-	["SpeedChanges"]: ({ ({
-		["TimeStart"]: (number),
-		["Speed"]: (number),
-		["TimeEnd"]: ((number)?),
-	}) }),
+	["TimeEnd"]: ((number)?),
 })
+export type Item = ("Units" | "Products" | "Resources")
 export type BoothData = ({
 	["OwnerId"]: (number),
 	["MapId"]: (string),
@@ -337,47 +369,18 @@ export type BoothData = ({
 	["StartTime"]: (number),
 	["EndTime"]: (number),
 })
-export type ResourceData = ({
-	["Resource"]: (string),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-	["PartialOneLose"]: ((boolean)?),
-})
-export type SpeedChangeData = ({
-	["TimeStart"]: (number),
-	["Speed"]: (number),
-	["TimeEnd"]: ((number)?),
-})
 export type SpeedChange = ({
 	["UniqueId"]: (string),
 	["Speed"]: (number),
 	["Time"]: (number),
 })
-export type VisualUnitData = ({
-	["Unit"]: (string),
-	["Level"]: (number),
-	["Trait"]: ((string)?),
-	["UniqueId"]: (string),
-	["XP"]: (number),
-	["NeededXP"]: (number),
-})
+export type Level = (number)
+export type Time = (number)
 export type Health = (number)
-export type ProductData = ({
-	["ProductId"]: (number),
-	["IsGamepass"]: (boolean),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-})
 export type TimeData = ({
 	["StartTime"]: (number),
 	["EndTime"]: (number),
 })
-export type LevelData = ({
-	["Level"]: (number),
-	["XP"]: (number),
-	["NeededXP"]: (number),
-})
-export type Item = ("Units" | "Products" | "Resources")
 
 local function SendEvents()
 	for player, outgoing in player_map do
@@ -397,7 +400,7 @@ end
 
 RunService.Heartbeat:Connect(SendEvents)
 
-local reliable_events = table.create(5)
+local reliable_events = table.create(6)
 reliable.OnServerEvent:Connect(function(player, buff, inst)
 	incoming_buff = buff
 	incoming_inst = inst
@@ -406,17 +409,17 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 	local len = buffer.len(buff)
 	while incoming_read < len do
 		local id = buffer.readu8(buff, read(1))
-		if id == 2 then
+		if id == 3 then
+			local value
+			if reliable_events[3] then
+				task.spawn(reliable_events[3], player, value)
+			end
+		elseif id == 2 then
 			local value
 			if reliable_events[2] then
 				task.spawn(reliable_events[2], player, value)
 			end
-		elseif id == 1 then
-			local value
-			if reliable_events[1] then
-				task.spawn(reliable_events[1], player, value)
-			end
-		elseif id == 4 then
+		elseif id == 5 then
 			local value, value2
 			local len_1 = buffer.readu16(incoming_buff, read(2))
 			value = buffer.readstring(incoming_buff, read(len_1), len_1)
@@ -428,20 +431,25 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 				val_1 = buffer.readstring(incoming_buff, read(len_3), len_3)
 				value2[i_1] = val_1
 			end
-			if reliable_events[4] then
-				task.spawn(reliable_events[4], player, value, value2)
+			if reliable_events[5] then
+				task.spawn(reliable_events[5], player, value, value2)
 			end
-		elseif id == 3 then
+		elseif id == 0 then
+			local value
+			if reliable_events[0] then
+				task.spawn(reliable_events[0], player, value)
+			end
+		elseif id == 4 then
 			local value
 			local bool_1 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
 			local len_4 = buffer.readu16(incoming_buff, read(2))
 			value["UniqueId"] = buffer.readstring(incoming_buff, read(len_4), len_4)
 			value["Equip"] = bit32.btest(bool_1, 0b0000000000000001)
-			if reliable_events[3] then
-				task.spawn(reliable_events[3], player, value)
+			if reliable_events[4] then
+				task.spawn(reliable_events[4], player, value)
 			end
-		elseif id == 0 then
+		elseif id == 1 then
 			local value
 			value = {  }
 			local len_5 = buffer.readu16(incoming_buff, read(2))
@@ -450,8 +458,8 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 			value["LevelId"] = buffer.readstring(incoming_buff, read(len_6), len_6)
 			local len_7 = buffer.readu16(incoming_buff, read(2))
 			value["Difficulty"] = buffer.readstring(incoming_buff, read(len_7), len_7)
-			if reliable_events[0] then
-				task.spawn(reliable_events[0], player, value)
+			if reliable_events[1] then
+				task.spawn(reliable_events[1], player, value)
 			end
 		else
 			error("Unknown event id")
@@ -1456,25 +1464,25 @@ local returns = {
 	},
 	OwnerStart = {
 		SetCallback = function(Callback: (Player: Player) -> ()): () -> ()
+			reliable_events[3] = Callback
+			return function()
+				reliable_events[3] = nil
+			end
+		end,
+	},
+	LeaveBooth = {
+		SetCallback = function(Callback: (Player: Player) -> ()): () -> ()
 			reliable_events[2] = Callback
 			return function()
 				reliable_events[2] = nil
 			end
 		end,
 	},
-	LeaveBooth = {
-		SetCallback = function(Callback: (Player: Player) -> ()): () -> ()
-			reliable_events[1] = Callback
-			return function()
-				reliable_events[1] = nil
-			end
-		end,
-	},
 	ItemSell = {
 		SetCallback = function(Callback: (Player: Player, Value: (string), Value2: ({ (string) })) -> ()): () -> ()
-			reliable_events[4] = Callback
+			reliable_events[5] = Callback
 			return function()
-				reliable_events[4] = nil
+				reliable_events[5] = nil
 			end
 		end,
 	},
@@ -2652,14 +2660,22 @@ local returns = {
 			end
 		end,
 	},
+	GameLoaded = {
+		SetCallback = function(Callback: (Player: Player) -> ()): () -> ()
+			reliable_events[0] = Callback
+			return function()
+				reliable_events[0] = nil
+			end
+		end,
+	},
 	EquipUnit = {
 		SetCallback = function(Callback: (Player: Player, Value: ({
 			["UniqueId"]: (string),
 			["Equip"]: (boolean),
 		})) -> ()): () -> ()
-			reliable_events[3] = Callback
+			reliable_events[4] = Callback
 			return function()
-				reliable_events[3] = nil
+				reliable_events[4] = nil
 			end
 		end,
 	},
@@ -3844,9 +3860,9 @@ local returns = {
 			["LevelId"]: (string),
 			["Difficulty"]: (string),
 		})) -> ()): () -> ()
-			reliable_events[0] = Callback
+			reliable_events[1] = Callback
 			return function()
-				reliable_events[0] = nil
+				reliable_events[1] = nil
 			end
 		end,
 	},

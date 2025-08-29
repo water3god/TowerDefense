@@ -528,17 +528,12 @@ function UnitModule:LoadCharacter(Character)
 	self.RangePart.CFrame = self.CFrame
 	self.Trove:Add(RangeTrove)
 
-	local Highlight = self.CharacterTrove:Add(Instance.new("Highlight"))
-	Highlight.Enabled = false
-	Highlight.Parent = self.Character
-
 	local function OnClick()
 		local Range = self:GetProperties()["Range" :: "Range"]
 		Animate(Range, true)
 
 		self:AddPromise(
 			Promise.delay(0.01):andThen(function()
-				Highlight.Enabled = true
 				self.RangePart.Parent = self.Character
 			end),
 			"RangeAnimatePromise"
@@ -560,7 +555,6 @@ function UnitModule:LoadCharacter(Character)
 			end),
 			"ClickClosePromise"
 		)
-		Highlight.Enabled = false
 		RangePart.Parent = nil
 	end
 

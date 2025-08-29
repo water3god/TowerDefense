@@ -137,6 +137,15 @@ local function PreloadAsync()
 		InventoryService.Synced:Wait()
 	end
 	task.wait(1)
+	local Variables = require(ReplicatedStorage.Shared.Variables)
+	local Network = ReplicatedStorage.Network
+	local Client = require(Network.Client)
+	local ClientOnly = require(Network.ClientOnly)
+	task.defer(function()
+		Variables.Loaded = true
+		ClientOnly.Loaded:Fire()
+		Client.GameLoaded.Fire()
+	end)
 end
 
 local function HandleNewGui(Gui: typeof(script.LoadingGui))

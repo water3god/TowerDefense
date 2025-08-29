@@ -75,14 +75,14 @@ local Data: {
 			"Trajan",
 		},
 	},
-	China = {
+	--[[China = {
 		Color = Color3.new(0.572549, 0.109804, 0.109804),
 		Index = 3,
 		Units = {
 			"Qin Shi Huang",
 			"Cao Cao",
 		},
-	},
+	},]]
 	Medieval = {
 		Color = Color3.new(0.160784, 0.141176, 0.305882),
 		Index = 4,

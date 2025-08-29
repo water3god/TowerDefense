@@ -15,6 +15,8 @@ local RedeemDailyReward = Network.RedeemDailyReward
 local DailySync = Network.DailySync
 local DailyRedeemed = Network.DailyRedeemed
 
+local SendWarning = Network.SendWarning
+
 local Shared = ReplicatedStorage.Shared
 local IsLobby = require(Shared.IsLobby)
 
@@ -38,6 +40,7 @@ local function HandleData(Data: PlayerData.PlayerData)
 			Day = Day,
 			LastRedeemed = LastRedeemed,
 		})
+		SendWarning.Fire(Data.Player, string.format("Daily Reward Redeemed: Day %u", Day))
 	end)
 end
 for _, Data in pairs(PlayerData.GetDatas()) do
