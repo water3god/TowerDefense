@@ -22,16 +22,30 @@ local Offers: Offers = {
 			{ Type = "Resource", Name = "Gold", Amount = 10000 },
 			{ Type = "Resource", Name = "Omen Coins", Amount = 10 },
 		},
-		Color = Color3.new(0.647059, 0.462745, 0),
+		Color = Color3.new(0.862745, 0.654902, 0.121569),
+	},
+	[3387895527] = {
+		Rewards = {
+			{ Type = "Unit", Name = "Tutankhamun", Amount = 1 },
+			{ Type = "Unit", Name = "Ramesses II", Amount = 1 },
+			{ Type = "Resource", Name = "Gold", Amount = 10000 },
+			{ Type = "Resource", Name = "Omen Coins", Amount = 10 },
+		},
+		Color = Color3.new(0.827451, 0.862745, 0.141176),
 	},
 }
 
 local ProductInfo: { [number]: ProductData } = {
 	-- Offers --
+	[3387895527] = {
+		Name = "Egypt Pack",
+		Rarity = "Legendary",
+		Priority = 1001,
+	},
 	[3385224877] = {
 		Name = "Rome Pack",
 		Rarity = "Legendary",
-		Priority = 1001,
+		Priority = 1003,
 	},
 
 	-- Products --
@@ -134,7 +148,8 @@ local GiftIds: { [number]: number } = {
 
 	-- Offers --
 
-	[3385226960] = 3385224877, -- Trajan's Offer --
+	[3385226960] = 3385224877, -- Rome Pack --
+	[3387896408] = 3387895527, -- Egypt Pack --
 }
 
 local function GetProductFromName(Data: { Name: string, IsGamepass: boolean }): (ProductData?, number?)
