@@ -72,6 +72,9 @@ export type QuestProps = {
 
 local function CreateQuest(props: QuestProps)
 	local RedeemColor, RedeemText = React.useMemo(function()
+		if props.QuestData.Id == "Daily_Kills_1" then
+			print(props.QuestData)
+		end
 		if props.QuestData.Redeemed then
 			return Color3.new(0.564706, 0.564706, 0.564706), "Redeemed"
 		else

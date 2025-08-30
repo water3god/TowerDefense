@@ -74,8 +74,6 @@ local function Roll(Data: PlayerData.PlayerData, Count: number, Auto: boolean)
 
 	local GeneratedChances = ChanceData.CalculateChanceOnLuck(Chance, Variables.Banner)
 
-	print(GeneratedChances)
-
 	for _ = 1, Count, 1 do
 		local UnitName = RandomGenerate(GeneratedChances) :: string
 		local UnitData = Data:AddUnit(UnitName)

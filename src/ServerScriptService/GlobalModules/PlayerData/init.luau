@@ -398,6 +398,10 @@ function PlayerData.new(Player: Player)
 			Data.Quests.EventQuests = TableUtil.Copy(QuestData.Quests.EventQuests)
 		end
 
+		for _, Quest in pairs(Data.Quests.DailyQuests) do
+			Quest.Redeemed = false
+		end
+
 		self.Profile.OnSessionEnd:Connect(function()
 			self:Delete()
 			Player:Kick("Error Loading Profile: Player not in game.")

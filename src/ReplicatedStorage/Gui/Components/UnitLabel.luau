@@ -51,7 +51,7 @@ local function CreateUnitLabel(props: Properties)
 		}),
 		UnitView = e(UnitView, {
 			UnitName = props.Unit,
-			Level = 1,
+			Level = 0,
 			Distance = 4,
 			RotationCFrame = RotationCFrame,
 			Offset = Vector3.new(0, -1, 0),

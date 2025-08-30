@@ -192,7 +192,7 @@ local Quests: Quests = {
 		},
 		{
 			Type = "Kills",
-			Id = "Daily_Kills_1",
+			Id = "Daily_Kills_2",
 			Name = "Eliminate 50",
 			Description = "Eliminate 50 enemies for rewards.",
 			Data = { Type = "Hours" } :: any,
@@ -203,7 +203,7 @@ local Quests: Quests = {
 		},
 		{
 			Type = "Kills",
-			Id = "Daily_Kills_1",
+			Id = "Daily_Kills_3",
 			Name = "Eliminate 100",
 			Description = "Eliminate 100 enemies for rewards.",
 			Data = { Type = "Hours" } :: any,

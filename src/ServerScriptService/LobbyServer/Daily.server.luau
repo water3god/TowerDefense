@@ -40,7 +40,7 @@ local function HandleData(Data: PlayerData.PlayerData)
 			Day = Day,
 			LastRedeemed = LastRedeemed,
 		})
-		SendWarning.Fire(Data.Player, string.format("Daily Reward Redeemed: Day %u", Day))
+		SendWarning.Fire(Data.Player, string.format("Daily Reward Redeemed: Day %u", Day), Color3.new(0, 1, 0))
 	end)
 end
 for _, Data in pairs(PlayerData.GetDatas()) do
