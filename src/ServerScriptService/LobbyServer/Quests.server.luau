@@ -11,6 +11,8 @@ local QuestSync = Network.QuestSync
 local QuestChanged = Network.QuestChanged
 local RedeemQuest = Network.RedeemQuest
 
+local SendWarning = Network.SendWarning
+
 local Shared = ReplicatedStorage.Shared
 local QuestData = require(Shared.Quests)
 local IsLobby = require(Shared.IsLobby)
@@ -76,6 +78,7 @@ local function HandlePlayerData(PData: PlayerData.PlayerData)
 				Data = Quest.Data,
 			},
 		})
+		SendWarning.Fire(PData.Player, "Quest Redeemed: " .. Quest.Name, Color3.new(0, 1, 0))
 	end
 
 	PData.QuestProgressed:Connect(OnProgressed)
