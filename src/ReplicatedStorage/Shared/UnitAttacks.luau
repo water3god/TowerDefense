@@ -555,23 +555,8 @@ local UnitAttacks: {
 				function(Unit, AttackInput, Enemy, Delay)
 					DefaultAttack(Unit, AttackInput, Enemy, Delay)
 
-					local DelayTime = CalculateDelay(0.3, AttackInput.SpeedRatio, Delay)
-
-					local DelProm = Promise.delay(DelayTime):andThen(function()
-						EmitOnPart(
-							Unit,
-							{ Emitters.pierce },
-							{ Unit.Character.LeonidasArmor.RightHand.Spear.MainPole.Pole },
-							true,
-							true,
-							30
-						)
-					end)
-
 					DelayedAttackHit(Unit, AttackInput, Enemy, 0.3, Delay)
 					DelayedSound(Unit, { Sounds.LightSwing }, AttackInput, Enemy, 0.2, Delay)
-
-					Unit:AddAttackPromise(DelProm, "LeonidasAttackEmit")
 				end,
 			},
 		},
