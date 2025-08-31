@@ -6,6 +6,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local SoundService = game:GetService("SoundService")
 
 local Packages = ReplicatedStorage.Packages
 local ReactRoblox = require(Packages.ReactRoblox)
@@ -18,6 +19,7 @@ local SendWarning = ClientOnly.Warning
 local Client = ReplicatedStorage.Client
 local GlobalClient = Client.GlobalClient
 local PurchaseService = require(GlobalClient.PurchaseService)
+local SFXService = require(GlobalClient.SFXService)
 
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
@@ -28,6 +30,9 @@ local ProductInfo = require(Shared.ProductInfo)
 
 local Player = Players.LocalPlayer
 local PlayerGui = Player.PlayerGui
+
+local SoundEffects = SoundService.SoundEffects
+local ConfettiSound = SoundEffects.Sounds.Purchase
 
 local ConfettiGui = Instance.new("ScreenGui")
 ConfettiGui.Name = "ConfettiGui"
@@ -91,6 +96,7 @@ end
 local function OnPurchase(RobuxSpent: number)
 	local Root = ReactRoblox.createRoot(Instance.new("Folder"))
 	Root:render(ReactRoblox.createPortal(e(Confetti, { RobuxSpent = RobuxSpent }), ConfettiGui))
+	SFXService.PlaySoundGlobal(ConfettiSound)
 
 	task.delay(5, function()
 		Root:unmount()
