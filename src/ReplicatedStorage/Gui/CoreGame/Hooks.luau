@@ -6,6 +6,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalizationService = game:GetService("LocalizationService")
+local PolicyService = game:GetService("PolicyService")
 
 local Packages = ReplicatedStorage.Packages
 local Signal = require(Packages.Signal)
@@ -282,6 +283,38 @@ function Hooks.useRaycastParams()
 	local raycastParams = React.useState(RaycastParams.new())
 
 	return raycastParams
+end
+
+export type PolicyInfo = {
+	AreAdsAllowed: boolean,
+	ArePaidRandomItemsRestricted: boolean,
+	AllowedExternalLinkReferences: { string },
+	IsContentSharingAllowed: boolean,
+	IsEligibleToPurchaseCommerceProduct: boolean,
+	IsEligibleToPurchaseSubscription: boolean,
+	IsPaidItemTradingAllowed: boolean,
+	IsSubjectToChinaPolicies: boolean,
+}
+
+function Hooks.usePolicyInfo()
+	local PolicyInfo: PolicyInfo, SetPolicyInfo = React.useState({
+		AreAdsAllowed = true,
+		ArePaidRandomItemsRestricted = false,
+		AllowedExternalLinkReferences = {},
+		IsContentSharingAllowed = true,
+		IsEligibleToPurchaseCommerceProduct = true,
+		IsEligibleToPurchaseSubscription = true,
+		IsPaidItemTradingAllowed = true,
+		IsSubjectToChinaPolicies = false,
+	} :: PolicyInfo)
+
+	React.useEffect(function()
+		local Policy = PolicyService:GetPolicyInfoForPlayerAsync(Players.LocalPlayer)
+
+		SetPolicyInfo(Policy)
+	end, {})
+
+	return PolicyInfo
 end
 
 local useState = React.useState

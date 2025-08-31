@@ -17,6 +17,9 @@ local Hooks = require(CoreGame.Hooks)
 local Trade = Gui.Trade
 local TradeContext = require(Trade.TradeContext)
 
+local SettingsFolder = Gui.Settings
+local SettingsContext = require(SettingsFolder.SettingsContext)
+
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
@@ -170,6 +173,9 @@ end
 
 local function CreateTradeMenu(Properties: Properties)
 	local TradeStatuses = React.useContext(TradeContext.Context)
+	local Settings = React.useContext(SettingsContext.Context)
+
+	local PolicyInfo = Hooks.usePolicyInfo()
 
 	local TradeFrames = React.useMemo(function()
 		local Frames: { [string]: React.Node } = {}
@@ -183,6 +189,12 @@ local function CreateTradeMenu(Properties: Properties)
 		return Frames
 	end, { TradeStatuses })
 
+	local Enabled, SetEnabled = React.useState(false)
+
+	React.useEffect(function()
+		SetEnabled(PolicyInfo.IsPaidItemTradingAllowed and Settings.CanTrade)
+	end, { PolicyInfo, Settings } :: { unknown })
+
 	return e(Main.ImageLabel, {
 		native = Join({
 			Size = UDim2.fromScale(0.6, 0.65),
@@ -192,7 +204,7 @@ local function CreateTradeMenu(Properties: Properties)
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 1.355,
 		}),
-		MainFrame = e(Main.ScrollingFrame, {
+		MainFrame = Enabled and e(Main.ScrollingFrame, {
 			BarSize = 0.002,
 			native = {
 				Position = UDim2.fromScale(0.52, 0.525),
@@ -207,7 +219,7 @@ local function CreateTradeMenu(Properties: Properties)
 				PaddingRight = UDim.new(0.04, 0),
 			}),
 		}, TradeFrames),
-		NoPlayers = e(Main.Frame, {
+		NoPlayers = Enabled and e(Main.Frame, {
 			native = {
 				Visible = HelperFunctions.Len(TradeStatuses) == 0,
 				Size = UDim2.fromScale(0.4, 0.15),
@@ -217,6 +229,18 @@ local function CreateTradeMenu(Properties: Properties)
 				native = {
 					Size = UDim2.fromScale(1, 0.8),
 					Text = "No Players",
+				},
+			}),
+		}),
+		Disabled = not Enabled and e(Main.Frame, {
+			native = {
+				Size = UDim2.fromScale(0.4, 0.15),
+			},
+		}, {
+			NoPlayersLabel = e(Main.TextLabel, {
+				native = {
+					Size = UDim2.fromScale(1, 0.8),
+					Text = "Trading Disabled",
 				},
 			}),
 		}),
