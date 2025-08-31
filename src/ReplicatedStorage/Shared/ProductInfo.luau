@@ -246,7 +246,7 @@ local function GetProductIdFromGiftId(GiftId: number)
 	return nil
 end
 
-return {
+return table.freeze({
 	Offers = Offers,
 	GiftIds = GiftIds,
 	ProductInfo = ProductInfo,
@@ -258,4 +258,4 @@ return {
 	GetProductFromNameOnly = GetProductFromNameOnly,
 	GetProductFromGiftId = GetProductFromGiftId,
 	GetProductIdFromGiftId = GetProductIdFromGiftId,
-}
+})

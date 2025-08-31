@@ -74,4 +74,4 @@ Settings.SettingTypes = {
 	CanTrade = "boolean",
 }
 
-return Settings
+return table.freeze(Settings)

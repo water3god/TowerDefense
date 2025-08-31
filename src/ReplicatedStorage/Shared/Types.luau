@@ -351,4 +351,4 @@ export type RecieveData = {
 	Difficulty: string,
 }
 
-return {}
+return table.freeze({})

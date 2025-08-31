@@ -46,4 +46,4 @@ local NPCTalks = {
 	},
 }
 
-return NPCTalks
+return table.freeze(NPCTalks)

@@ -15,4 +15,4 @@ local Boosts = {
 	},
 }
 
-return Boosts
+return table.freeze(Boosts)

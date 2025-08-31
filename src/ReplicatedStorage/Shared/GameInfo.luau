@@ -1190,4 +1190,4 @@ function Data.GetDifficultyString(DifficultyInput: string)
 	return string.format('Difficulty: <font color = "#%s">%s</font>', Color:ToHex(), DifficultyInput)
 end
 
-return Data
+return table.freeze(Data)

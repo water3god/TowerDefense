@@ -106,4 +106,4 @@ local RarityInfo: { [Rarity]: RarityInfo } = {
 	},
 }
 
-return RarityInfo
+return table.freeze(RarityInfo)

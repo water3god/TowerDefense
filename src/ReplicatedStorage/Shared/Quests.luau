@@ -479,7 +479,7 @@ local ValidFunctions: { [string]: (QuestData: QuestData<any>, ExtraData: { [any]
 	end,
 }
 
-return {
+return table.freeze({
 	Quests = Quests,
 	QuestsOnly = {
 		DailyQuests = Quests.DailyQuests,
@@ -494,4 +494,4 @@ return {
 		GlobalQuests = DefaultQuestPlayerData,
 	} :: TotalPlayerData,
 	ValidFunctions = ValidFunctions,
-}
+})

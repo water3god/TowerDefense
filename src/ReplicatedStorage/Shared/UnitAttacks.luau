@@ -929,8 +929,8 @@ local Abilities: {
 		},
 	}
 
-return {
+return table.freeze({
 	UnitAttacks = UnitAttacks,
 	DefaultRuns = DefaultRuns,
 	Abilities = Abilities,
-}
+})

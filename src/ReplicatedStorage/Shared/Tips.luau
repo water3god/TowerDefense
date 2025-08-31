@@ -10,4 +10,4 @@ local Tips = {
 	"Don't forget to check your resources! You need enough currency to build and upgrade towers.",
 }
 
-return Tips
+return table.freeze(Tips)

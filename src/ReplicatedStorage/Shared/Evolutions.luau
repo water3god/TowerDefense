@@ -12,4 +12,4 @@ local Evolutions: { [string]: {
 	Resources: { EvolutionResource },
 } } = {}
 
-return Evolutions
+return table.freeze(Evolutions)

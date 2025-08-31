@@ -35,4 +35,4 @@ local Constants = {
 	GroupId = 34745901,
 }
 
-return Constants
+return table.freeze(Constants)

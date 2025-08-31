@@ -1018,4 +1018,4 @@ Data.UnitInfo = UnitInfo
 Data.LevelInfo = LevelInfo
 Data.CalculateTotalCost = CalculateTotalCost
 
-return Data
+return table.freeze(Data)

@@ -138,4 +138,4 @@ local Titles: {
 	},
 }
 
-return Titles
+return table.freeze(Titles)

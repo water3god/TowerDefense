@@ -72,4 +72,4 @@ local DailyRewards: {
 	},
 }
 
-return DailyRewards
+return table.freeze(DailyRewards)
