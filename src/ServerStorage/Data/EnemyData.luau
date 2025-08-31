@@ -78,56 +78,56 @@ local Data: { [string]: Enemy.EnemyInfo } = {
 	["Peltast"] = {
 		ModelName = "Peltast",
 		Health = 15,
-		Speed = 1.8, -- Match Egyptian Scout tier speed
+		Speed = 1.8,
 		IsBoss = false,
 		Ally = false,
 	},
 	["Hoplite"] = {
 		ModelName = "Hoplite",
 		Health = 25,
-		Speed = 1.6, -- Match Egyptian Archer tier speed
+		Speed = 1.6,
 		IsBoss = false,
 		Ally = false,
 	},
 	["Greek Calvaryman"] = {
 		ModelName = "Greek Cavalryman",
 		Health = 40,
-		Speed = 1.2, -- Match Egyptian Spearman tier speed
+		Speed = 1.2,
 		IsBoss = false,
 		Ally = false,
 	},
 	["Greek Slinger"] = {
 		ModelName = "Greek Slinger",
 		Health = 20,
-		Speed = 1.0, -- Match Egyptian Charioteer tier speed
+		Speed = 1.0,
 		IsBoss = false,
 		Ally = false,
 	},
 	["Strategos"] = {
 		ModelName = "Strategos",
 		Health = 75,
-		Speed = 0.8, -- Match Egyptian War Priest tier speed
+		Speed = 0.8,
 		IsBoss = false,
 		Ally = false,
 	},
 	["Polemarch"] = {
 		ModelName = "Polemarch",
 		Health = 100,
-		Speed = 0.6, -- Match Egyptian Commander tier speed
+		Speed = 0.6,
 		IsBoss = false,
 		Ally = false,
 	},
 	["Palace Guard"] = {
 		ModelName = "Palace Guard",
 		Health = 150,
-		Speed = 0.3, -- Match Egyptian Royal Guard tier speed
+		Speed = 0.3,
 		IsBoss = false,
 		Ally = false,
 	},
 	["Pyrrhus"] = {
 		ModelName = "Pyrrhus",
 		Health = 1000,
-		Speed = 0.2, -- Match Ramesses II boss speed
+		Speed = 0.2,
 		IsBoss = true,
 		Ally = false,
 	},
