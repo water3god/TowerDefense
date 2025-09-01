@@ -158,6 +158,7 @@ type PlayerDataImpl = {
 	SubtractGold: (self: PlayerData, Gold: number) -> (),
 
 	CalculateGoldMultiplier: (self: PlayerData) -> number,
+	CalculateXPMultiplier: (self: PlayerData) -> number,
 
 	AddDamageDone: (self: PlayerData, Damage: number) -> (),
 	AddRobuxSpent: (self: PlayerData, Robux: number) -> (),
@@ -876,6 +877,22 @@ function PlayerData:CalculateGoldMultiplier()
 	local Multiplier = 1
 
 	if self:OwnsGamepass(1382164818) then
+		Multiplier += 0.2
+	end
+
+	if self.Player.MembershipType == Enum.MembershipType.Premium then
+		Multiplier += 0.1
+	end
+	return Multiplier
+end
+
+function PlayerData:CalculateXPMultiplier()
+	local Multiplier = 1
+
+	if self:OwnsGamepass(1382164818) then
+		Multiplier += 0.2
+	end
+	if self:OwnsGamepass(1403365727) then
 		Multiplier += 0.2
 	end
 

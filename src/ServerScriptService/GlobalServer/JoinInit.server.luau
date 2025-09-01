@@ -9,6 +9,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local MemoryStoreService = game:GetService("MemoryStoreService")
 local Lighting = game:GetService("Lighting")
 local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
 
 if require(ReplicatedStorage.Shared.IsLobby) then
 	return
@@ -174,13 +175,14 @@ end
 
 StartGame:Connect(Init)
 
-if game["Run Service"]:IsStudio() then
+if RunService:IsStudio() then
 	local Ids = { 343804839 }
 	Init({
 		PlayerIds = Ids,
 		MapId = "Rome",
 		LevelId = "Rome_LegionsMarch",
 		Difficulty = "Insane",
+		AccessCode = "",
 	})
 	return
 end
@@ -201,23 +203,26 @@ local Success, Value = xpcall(function()
 	return MapStore:GetAsync(tostring(game.PrivateServerId))
 end, OnError)
 
+local function Check()
+	game:BindToClose(function()
+		if Map then
+			for _, Data in pairs(PlayerData.GetDatas()) do
+				if Data.Profile:IsActive() then
+					Data.Profile.Data.MostRecentGameId = nil
+				end
+			end
+
+			pcall(MapStore.SetAsync, MapStore, tostring(game.PrivateServerId), nil)
+		end
+	end)
+end
+
 if Success then
 	if Value then
 		Init(Value)
+		Check()
 		return
 	end
 end
-
-game:BindToClose(function()
-	if Map then
-		for _, Data in pairs(PlayerData.GetDatas()) do
-			if Data.Profile:IsActive() then
-				Data.Profile.Data.MostRecentGameId = nil
-			end
-		end
-
-		pcall(MapStore.SetAsync, MapStore, tostring(game.PrivateServerId), nil)
-	end
-end)
 
 OnError()

@@ -32,7 +32,7 @@ local function MultiplierProvider(props)
 
 		for Id, Gamepass in ipairs(PurchaseData.GamepassData) do
 			if Gamepass.Owned then
-				if Id == 1382164818 then
+				if Id == 1382164818 or Id == 1403365727 then
 					Multiplier += 0.2
 				end
 			end

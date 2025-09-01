@@ -99,7 +99,8 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 			local OtherSendData = {}
 
 			if PlayerDataModule then
-				local Multiplier = PlayerDataModule:CalculateGoldMultiplier()
+				local GoldMultiplier = PlayerDataModule:CalculateGoldMultiplier()
+				local XPMultiplier = PlayerDataModule:CalculateXPMultiplier()
 
 				if Win then
 					for _, Unit in ipairs(Wave.RewardInfo.Units) do
@@ -115,7 +116,7 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 				for _, Resource in ipairs(Wave.RewardInfo.Resources) do
 					if Resource.Resource == "Gold" then
 						if Win then
-							local Amount = math.floor(Resource.Count * Multiplier)
+							local Amount = math.floor(Resource.Count * GoldMultiplier)
 							PlayerDataModule:AddGold(Amount)
 
 							local NewResource = table.clone(Resource)
@@ -124,7 +125,7 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 							table.insert(SendData.Resources, NewResource)
 						else
 							if not Wave.IsInfinite then
-								local Amount = math.floor((Resource.Count * Multiplier) / WavePercentage / 2)
+								local Amount = math.floor((Resource.Count * GoldMultiplier) / WavePercentage / 2)
 								if Amount > 0 then
 									PlayerDataModule:AddGold(Amount)
 									local NewResource = table.clone(Resource)
@@ -150,7 +151,7 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 						OldLevel = OldData.Level,
 						OldXP = OldData.XP,
 					}
-					PlayerDataModule:AddUnitXP(EquippedUnit, TotalXP * 30)
+					PlayerDataModule:AddUnitXP(EquippedUnit, math.floor(TotalXP * 30 * XPMultiplier))
 					Data.NewLevel = OldData.Level
 					Data.NewXP = OldData.XP
 					table.insert(SendData.ExistingUnits, Data)
@@ -159,7 +160,7 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 				OtherSendData.OldXP = PlayerDataModule.Profile.Data.XP
 				OtherSendData.OldLevel = PlayerDataModule.Profile.Data.Level
 
-				PlayerDataModule:AddXP(TotalXP * 10)
+				PlayerDataModule:AddXP(math.floor(TotalXP * 10 * XPMultiplier))
 
 				OtherSendData.NewXP = PlayerDataModule.Profile.Data.XP
 				OtherSendData.NewLevel = PlayerDataModule.Profile.Data.Level
