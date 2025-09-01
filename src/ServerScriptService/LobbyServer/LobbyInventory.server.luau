@@ -151,5 +151,6 @@ EquipTitle.SetCallback(function(Player: Player, Title: string)
 		end
 
 		PData:ChangeTitle(Title)
+		SendWarning.Fire(Player, string.format("You have equipped the title: %s", Title), Color3.fromRGB(0, 255, 0))
 	end
 end)
