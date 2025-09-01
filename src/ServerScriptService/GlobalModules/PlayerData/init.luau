@@ -402,6 +402,14 @@ function PlayerData.new(Player: Player)
 			Quest.Redeemed = false
 		end
 
+		do
+			local Day = (DateTime.now():ToUniversalTime() :: any).Day
+			if Day ~= Data.ReferredDate then
+				Data.ReferredDate = Day
+				Data.Referrals = {}
+			end
+		end
+
 		self.Profile.OnSessionEnd:Connect(function()
 			self:Delete()
 			Player:Kick("Error Loading Profile: Player not in game.")

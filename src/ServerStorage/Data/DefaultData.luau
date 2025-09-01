@@ -74,6 +74,8 @@ export type Data = {
 	StarterChosen: boolean,
 	Boosts: { [string]: number }, -- BoostName, EndTime
 	RedeemedLevels: { number },
+	Referrals: { number },
+	ReferredDate: number,
 }
 
 local Data: Data = {
@@ -106,6 +108,8 @@ local Data: Data = {
 	StarterChosen = false,
 	Boosts = {},
 	RedeemedLevels = {},
+	Referrals = {},
+	ReferredDate = 0,
 }
 
 return Data
