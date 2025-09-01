@@ -349,6 +349,7 @@ export type RecieveData = {
 	MapId: string,
 	LevelId: string,
 	Difficulty: string,
+	AccessCode: string,
 }
 
 return table.freeze({})

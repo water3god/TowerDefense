@@ -137,6 +137,12 @@ if not RunService:IsRunning() then
 		RollTrait = table.freeze({
 			Fire = noop
 		}),
+		RejoinPrompted = table.freeze({
+			SetCallback = noop
+		}),
+		Rejoin = table.freeze({
+			Fire = noop
+		}),
 		RedeemQuest = table.freeze({
 			Fire = noop
 		}),
@@ -174,13 +180,13 @@ local remotes = ReplicatedStorage:WaitForChild("Zap4")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
+export type Level = (number)
 export type QuestRemoteInfo = ({
 	["Id"]: (string),
 	["CurrentValue"]: (number),
 	["Redeemed"]: (boolean),
 	["Data"]: ((unknown)),
 })
-export type Level = (number)
 
 local function SendEvents()
 	if outgoing_used ~= 0 then
@@ -198,12 +204,13 @@ end
 
 RunService.Heartbeat:Connect(SendEvents)
 
-local reliable_events = table.create(9)
-local reliable_event_queue: { [number]: { any } } = table.create(9)
+local reliable_events = table.create(10)
+local reliable_event_queue: { [number]: { any } } = table.create(10)
 reliable_event_queue[6] = {}
 reliable_event_queue[7] = {}
 reliable_event_queue[0] = {}
 reliable_event_queue[1] = {}
+reliable_event_queue[9] = 0
 reliable_event_queue[3] = {}
 reliable_event_queue[4] = {}
 reliable_event_queue[5] = 0
@@ -267,6 +274,16 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 				table.insert(reliable_event_queue[1], value)
 				if #reliable_event_queue[1] > 64 then
 					warn(`[ZAP] {#reliable_event_queue[1]} events in queue for TitleAdded. Did you forget to attach a listener?`)
+				end
+			end
+		elseif id == 9 then
+			local value
+			if reliable_events[9] then
+				task.spawn(reliable_events[9], value)
+			else
+				reliable_event_queue[9] += 1
+				if reliable_event_queue[9] > 16 then
+					warn(`[ZAP] {reliable_event_queue[9]} events in queue for RejoinPrompted. Did you forget to attach a listener?`)
 				end
 			end
 		elseif id == 3 then
@@ -542,6 +559,24 @@ local returns = {
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_21)
 			alloc(len_21)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_21)
+		end,
+	},
+	RejoinPrompted = {
+		SetCallback = function(Callback: () -> ()): () -> ()
+			reliable_events[9] = Callback
+			for _ = 1, reliable_event_queue[9] do
+				task.spawn(Callback)
+			end
+			reliable_event_queue[9] = 0
+			return function()
+				reliable_events[9] = nil
+			end
+		end,
+	},
+	Rejoin = {
+		Fire = function()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
 		end,
 	},
 	RedeemQuest = {

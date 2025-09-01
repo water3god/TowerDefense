@@ -208,4 +208,16 @@ if Success then
 	end
 end
 
+game:BindToClose(function()
+	if Map then
+		for _, Data in pairs(PlayerData.GetDatas()) do
+			if Data.Profile:IsActive() then
+				Data.Profile.Data.MostRecentGameId = nil
+			end
+		end
+
+		pcall(MapStore.SetAsync, MapStore, tostring(game.PrivateServerId), nil)
+	end
+end)
+
 OnError()

@@ -151,3 +151,17 @@ event BoostsSync = {
 	call: SingleAsync,
 	data: map { [string.binary]: f64 },
 }
+
+-- Rejoin --
+
+event RejoinPrompted = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+}
+
+event Rejoin = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+}

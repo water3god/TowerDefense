@@ -76,6 +76,7 @@ export type Data = {
 	RedeemedLevels: { number },
 	Referrals: { number },
 	ReferredDate: number,
+	MostRecentGameId: number?,
 }
 
 local Data: Data = {

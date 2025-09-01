@@ -153,6 +153,16 @@ if not RunService:IsRunning() then
 		RollTrait = table.freeze({
 			SetCallback = noop
 		}),
+		RejoinPrompted = table.freeze({
+			Fire = noop,
+			FireAll = noop,
+			FireExcept = noop,
+			FireList = noop,
+			FireSet = noop
+		}),
+		Rejoin = table.freeze({
+			SetCallback = noop
+		}),
 		RedeemQuest = table.freeze({
 			SetCallback = noop
 		}),
@@ -235,13 +245,13 @@ end
 Players.PlayerRemoving:Connect(function(player)
 	player_map[player] = nil
 end)
+export type Level = (number)
 export type QuestRemoteInfo = ({
 	["Id"]: (string),
 	["CurrentValue"]: (number),
 	["Redeemed"]: (boolean),
 	["Data"]: ((unknown)),
 })
-export type Level = (number)
 
 local function SendEvents()
 	for player, outgoing in player_map do
@@ -261,7 +271,7 @@ end
 
 RunService.Heartbeat:Connect(SendEvents)
 
-local reliable_events = table.create(6)
+local reliable_events = table.create(7)
 reliable.OnServerEvent:Connect(function(player, buff, inst)
 	incoming_buff = buff
 	incoming_inst = inst
@@ -284,6 +294,11 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 			value["UniqueId"] = buffer.readstring(incoming_buff, read(len_1), len_1)
 			if reliable_events[5] then
 				task.spawn(reliable_events[5], player, value)
+			end
+		elseif id == 6 then
+			local value
+			if reliable_events[6] then
+				task.spawn(reliable_events[6], player, value)
 			end
 		elseif id == 2 then
 			local value
@@ -737,6 +752,76 @@ local returns = {
 			reliable_events[5] = Callback
 			return function()
 				reliable_events[5] = nil
+			end
+		end,
+	},
+	RejoinPrompted = {
+		Fire = function(Player: Player)
+			load_player(Player)
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
+			player_map[Player] = save()
+		end,
+		FireAll = function()
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in Players:GetPlayers() do
+				load_player(player)
+				alloc(used)
+				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+				player_map[player] = save()
+			end
+		end,
+		FireExcept = function(Except: Player)
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in Players:GetPlayers() do
+				if player ~= Except then
+					load_player(player)
+					alloc(used)
+					buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+					table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+					player_map[player] = save()
+				end
+			end
+		end,
+		FireList = function(List: { [unknown]: Player })
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in List do
+				load_player(player)
+				alloc(used)
+				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+				player_map[player] = save()
+			end
+		end,
+		FireSet = function(Set: { [Player]: any })
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for player in Set do
+				load_player(player)
+				alloc(used)
+				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+				player_map[player] = save()
+			end
+		end,
+	},
+	Rejoin = {
+		SetCallback = function(Callback: (Player: Player) -> ()): () -> ()
+			reliable_events[6] = Callback
+			return function()
+				reliable_events[6] = nil
 			end
 		end,
 	},

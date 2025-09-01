@@ -50,6 +50,7 @@ local UpgradeFrame = require(GameFrames.UpgradeFrame)
 local UnitToolTip = require(GameFrames.UnitToolTip)
 local EnemyToolTip = require(GameFrames.EnemyToolTip)
 local StarterChoose = require(GameFrames.StarterChoose)
+local RejoinFrame = require(GameFrames.RejoinFrame)
 
 local Inventory = Gui.Inventory
 local InventoryMain = require(Inventory.InventoryMain)
@@ -1014,6 +1015,7 @@ local function Render()
 					}),
 					TipsGui = e(TipsGui),
 					ClickedInventory = e(ClickedInventory.Connected),
+					RejoinFrame = e(RejoinFrame.Connected),
 				}),
 
 				BottomFrame = e(Bottom, {

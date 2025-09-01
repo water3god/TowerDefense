@@ -84,17 +84,28 @@ local function TpToMap(Data: Types.SentData)
 		table.insert(PlayerIds, Player.UserId)
 	end
 
+	local AccessCode, ServerId = TeleportService:ReserveServer(MapId)
+
 	local NewData: Types.RecieveData = {
 		PlayerIds = PlayerIds,
 		MapId = Data.MapId,
 		LevelId = Data.LevelId,
 		Difficulty = Data.Difficulty,
+		AccessCode = AccessCode,
 	}
 
-	local AccessCode, ServerId = TeleportService:ReserveServer(MapId)
+	for _, Player in ipairs(Data.Players) do
+		task.spawn(function()
+			local PData = PlayerData.GetPlayerData(Player)
+
+			if PData then
+				PData.Profile.Data.MostRecentGameId = ServerId
+			end
+		end)
+	end
 
 	local Success = pcall(function()
-		MapStore:SetAsync(tostring(ServerId), NewData, 60)
+		MapStore:SetAsync(tostring(ServerId), NewData, 172800)
 	end)
 
 	local MapInfo, LevelInfo = GameInfo.GetDataFromInfo(Data.MapId, Data.LevelId)
