@@ -298,3 +298,10 @@ event UnitEquipped = {
 		Equip: boolean,
 	},
 }
+
+event InventorySpaceChanged = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: u32,
+}

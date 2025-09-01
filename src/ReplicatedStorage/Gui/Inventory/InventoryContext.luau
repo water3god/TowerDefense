@@ -58,6 +58,7 @@ local function ContextProvider(props)
 		InvTrove:Connect(InventoryService.ResourceAdded, Update)
 		InvTrove:Connect(InventoryService.ResourceChanged, Update)
 		InvTrove:Connect(InventoryService.ResourceRemoved, Update)
+		InvTrove:Connect(InventoryService.InventorySpaceChanged, Update)
 
 		return InvTrove:WrapClean()
 	end, {})

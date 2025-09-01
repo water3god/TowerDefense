@@ -163,6 +163,13 @@ if not RunService:IsRunning() then
 			FireList = noop,
 			FireSet = noop
 		}),
+		InventorySpaceChanged = table.freeze({
+			Fire = noop,
+			FireAll = noop,
+			FireExcept = noop,
+			FireList = noop,
+			FireSet = noop
+		}),
 		GameLoaded = table.freeze({
 			SetCallback = noop
 		}),
@@ -277,10 +284,26 @@ end
 Players.PlayerRemoving:Connect(function(player)
 	player_map[player] = nil
 end)
-export type XP = (number)
+export type Health = (number)
+export type Level = (number)
 export type InfiniteStageData = ({
 	["Wave"]: (number),
 	["Damage"]: (number),
+})
+export type BoothData = ({
+	["OwnerId"]: (number),
+	["MapId"]: (string),
+	["LevelId"]: (string),
+	["Difficulty"]: (string),
+	["Players"]: ({ (Player) }),
+	["StartTime"]: (number),
+	["EndTime"]: (number),
+})
+export type ResourceData = ({
+	["Resource"]: (string),
+	["Count"]: (number),
+	["UniqueId"]: (string),
+	["PartialOneLose"]: ((boolean)?),
 })
 export type VisualUnitData = ({
 	["Unit"]: (string),
@@ -290,48 +313,7 @@ export type VisualUnitData = ({
 	["XP"]: (number),
 	["NeededXP"]: (number),
 })
-export type ProductData = ({
-	["ProductId"]: (number),
-	["IsGamepass"]: (boolean),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-})
-export type ProductId = (number)
-export type ResourceData = ({
-	["Resource"]: (string),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-	["PartialOneLose"]: ((boolean)?),
-})
-export type LevelData = ({
-	["Level"]: (number),
-	["XP"]: (number),
-	["NeededXP"]: (number),
-})
-export type StageData = ({
-	["FastestTime"]: (number),
-	["FinishedCount"]: (number),
-})
-export type EnemyInput = ({
-	["UniqueId"]: (string),
-	["ModelName"]: (string),
-	["Health"]: (number),
-	["MaxHealth"]: (number),
-	["Speed"]: (number),
-	["IsBoss"]: (boolean),
-	["Ally"]: (boolean),
-	["OriginalSpeed"]: (number),
-	["VectorOffset"]: (Vector3),
-	["BezierId"]: (string),
-	["TimePosition"]: (number),
-	["Time"]: (number),
-	["AdornmentName"]: ((string)?),
-	["SpeedChanges"]: ({ ({
-		["TimeStart"]: (number),
-		["Speed"]: (number),
-		["TimeEnd"]: ((number)?),
-	}) }),
-})
+export type Time = (number)
 export type Inventory = ({
 	["Units"]: ({ [(string)]: ({
 		["Unit"]: (string),
@@ -354,29 +336,54 @@ export type Inventory = ({
 		["PartialOneLose"]: ((boolean)?),
 	}) }),
 })
-export type SpeedChangeData = ({
-	["TimeStart"]: (number),
-	["Speed"]: (number),
-	["TimeEnd"]: ((number)?),
+export type StageData = ({
+	["FastestTime"]: (number),
+	["FinishedCount"]: (number),
 })
-export type Item = ("Units" | "Products" | "Resources")
-export type BoothData = ({
-	["OwnerId"]: (number),
-	["MapId"]: (string),
-	["LevelId"]: (string),
-	["Difficulty"]: (string),
-	["Players"]: ({ (Player) }),
-	["StartTime"]: (number),
-	["EndTime"]: (number),
+export type XP = (number)
+export type EnemyInput = ({
+	["UniqueId"]: (string),
+	["ModelName"]: (string),
+	["Health"]: (number),
+	["MaxHealth"]: (number),
+	["Speed"]: (number),
+	["IsBoss"]: (boolean),
+	["Ally"]: (boolean),
+	["OriginalSpeed"]: (number),
+	["VectorOffset"]: (Vector3),
+	["BezierId"]: (string),
+	["TimePosition"]: (number),
+	["Time"]: (number),
+	["AdornmentName"]: ((string)?),
+	["SpeedChanges"]: ({ ({
+		["TimeStart"]: (number),
+		["Speed"]: (number),
+		["TimeEnd"]: ((number)?),
+	}) }),
 })
 export type SpeedChange = ({
 	["UniqueId"]: (string),
 	["Speed"]: (number),
 	["Time"]: (number),
 })
-export type Level = (number)
-export type Time = (number)
-export type Health = (number)
+export type ProductData = ({
+	["ProductId"]: (number),
+	["IsGamepass"]: (boolean),
+	["Count"]: (number),
+	["UniqueId"]: (string),
+})
+export type SpeedChangeData = ({
+	["TimeStart"]: (number),
+	["Speed"]: (number),
+	["TimeEnd"]: ((number)?),
+})
+export type LevelData = ({
+	["Level"]: (number),
+	["XP"]: (number),
+	["NeededXP"]: (number),
+})
+export type Item = ("Units" | "Products" | "Resources")
+export type ProductId = (number)
 export type TimeData = ({
 	["StartTime"]: (number),
 	["EndTime"]: (number),
@@ -2650,6 +2657,78 @@ local returns = {
 				buffer.writestring(outgoing_buff, outgoing_apos, val_11, len_162)
 			end
 			buffer.writeu8(outgoing_buff, bool_57_pos_1, bool_57)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for player in Set do
+				load_player(player)
+				alloc(used)
+				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+				player_map[player] = save()
+			end
+		end,
+	},
+	InventorySpaceChanged = {
+		Fire = function(Player: Player, Value: (number))
+			load_player(Player)
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
+			alloc(4)
+			buffer.writeu32(outgoing_buff, outgoing_apos, Value)
+			player_map[Player] = save()
+		end,
+		FireAll = function(Value: (number))
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
+			alloc(4)
+			buffer.writeu32(outgoing_buff, outgoing_apos, Value)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in Players:GetPlayers() do
+				load_player(player)
+				alloc(used)
+				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+				player_map[player] = save()
+			end
+		end,
+		FireExcept = function(Except: Player, Value: (number))
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
+			alloc(4)
+			buffer.writeu32(outgoing_buff, outgoing_apos, Value)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in Players:GetPlayers() do
+				if player ~= Except then
+					load_player(player)
+					alloc(used)
+					buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+					table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+					player_map[player] = save()
+				end
+			end
+		end,
+		FireList = function(List: { [unknown]: Player }, Value: (number))
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
+			alloc(4)
+			buffer.writeu32(outgoing_buff, outgoing_apos, Value)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in List do
+				load_player(player)
+				alloc(used)
+				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+				player_map[player] = save()
+			end
+		end,
+		FireSet = function(Set: { [Player]: any }, Value: (number))
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
+			alloc(4)
+			buffer.writeu32(outgoing_buff, outgoing_apos, Value)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)

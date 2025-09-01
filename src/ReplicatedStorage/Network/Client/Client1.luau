@@ -143,6 +143,9 @@ if not RunService:IsRunning() then
 		InventorySync = table.freeze({
 			SetCallback = noop
 		}),
+		InventorySpaceChanged = table.freeze({
+			SetCallback = noop
+		}),
 		GameLoaded = table.freeze({
 			Fire = noop
 		}),
@@ -192,10 +195,26 @@ local remotes = ReplicatedStorage:WaitForChild("Zap1")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
-export type XP = (number)
+export type Health = (number)
+export type Level = (number)
 export type InfiniteStageData = ({
 	["Wave"]: (number),
 	["Damage"]: (number),
+})
+export type BoothData = ({
+	["OwnerId"]: (number),
+	["MapId"]: (string),
+	["LevelId"]: (string),
+	["Difficulty"]: (string),
+	["Players"]: ({ (Player) }),
+	["StartTime"]: (number),
+	["EndTime"]: (number),
+})
+export type ResourceData = ({
+	["Resource"]: (string),
+	["Count"]: (number),
+	["UniqueId"]: (string),
+	["PartialOneLose"]: ((boolean)?),
 })
 export type VisualUnitData = ({
 	["Unit"]: (string),
@@ -205,48 +224,7 @@ export type VisualUnitData = ({
 	["XP"]: (number),
 	["NeededXP"]: (number),
 })
-export type ProductData = ({
-	["ProductId"]: (number),
-	["IsGamepass"]: (boolean),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-})
-export type ProductId = (number)
-export type ResourceData = ({
-	["Resource"]: (string),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-	["PartialOneLose"]: ((boolean)?),
-})
-export type LevelData = ({
-	["Level"]: (number),
-	["XP"]: (number),
-	["NeededXP"]: (number),
-})
-export type StageData = ({
-	["FastestTime"]: (number),
-	["FinishedCount"]: (number),
-})
-export type EnemyInput = ({
-	["UniqueId"]: (string),
-	["ModelName"]: (string),
-	["Health"]: (number),
-	["MaxHealth"]: (number),
-	["Speed"]: (number),
-	["IsBoss"]: (boolean),
-	["Ally"]: (boolean),
-	["OriginalSpeed"]: (number),
-	["VectorOffset"]: (Vector3),
-	["BezierId"]: (string),
-	["TimePosition"]: (number),
-	["Time"]: (number),
-	["AdornmentName"]: ((string)?),
-	["SpeedChanges"]: ({ ({
-		["TimeStart"]: (number),
-		["Speed"]: (number),
-		["TimeEnd"]: ((number)?),
-	}) }),
-})
+export type Time = (number)
 export type Inventory = ({
 	["Units"]: ({ [(string)]: ({
 		["Unit"]: (string),
@@ -269,29 +247,54 @@ export type Inventory = ({
 		["PartialOneLose"]: ((boolean)?),
 	}) }),
 })
-export type SpeedChangeData = ({
-	["TimeStart"]: (number),
-	["Speed"]: (number),
-	["TimeEnd"]: ((number)?),
+export type StageData = ({
+	["FastestTime"]: (number),
+	["FinishedCount"]: (number),
 })
-export type Item = ("Units" | "Products" | "Resources")
-export type BoothData = ({
-	["OwnerId"]: (number),
-	["MapId"]: (string),
-	["LevelId"]: (string),
-	["Difficulty"]: (string),
-	["Players"]: ({ (Player) }),
-	["StartTime"]: (number),
-	["EndTime"]: (number),
+export type XP = (number)
+export type EnemyInput = ({
+	["UniqueId"]: (string),
+	["ModelName"]: (string),
+	["Health"]: (number),
+	["MaxHealth"]: (number),
+	["Speed"]: (number),
+	["IsBoss"]: (boolean),
+	["Ally"]: (boolean),
+	["OriginalSpeed"]: (number),
+	["VectorOffset"]: (Vector3),
+	["BezierId"]: (string),
+	["TimePosition"]: (number),
+	["Time"]: (number),
+	["AdornmentName"]: ((string)?),
+	["SpeedChanges"]: ({ ({
+		["TimeStart"]: (number),
+		["Speed"]: (number),
+		["TimeEnd"]: ((number)?),
+	}) }),
 })
 export type SpeedChange = ({
 	["UniqueId"]: (string),
 	["Speed"]: (number),
 	["Time"]: (number),
 })
-export type Level = (number)
-export type Time = (number)
-export type Health = (number)
+export type ProductData = ({
+	["ProductId"]: (number),
+	["IsGamepass"]: (boolean),
+	["Count"]: (number),
+	["UniqueId"]: (string),
+})
+export type SpeedChangeData = ({
+	["TimeStart"]: (number),
+	["Speed"]: (number),
+	["TimeEnd"]: ((number)?),
+})
+export type LevelData = ({
+	["Level"]: (number),
+	["XP"]: (number),
+	["NeededXP"]: (number),
+})
+export type Item = ("Units" | "Products" | "Resources")
+export type ProductId = (number)
 export type TimeData = ({
 	["StartTime"]: (number),
 	["EndTime"]: (number),
@@ -313,13 +316,14 @@ end
 
 RunService.Heartbeat:Connect(SendEvents)
 
-local reliable_events = table.create(15)
-local reliable_event_queue: { [number]: { any } } = table.create(15)
+local reliable_events = table.create(16)
+local reliable_event_queue: { [number]: { any } } = table.create(16)
 reliable_event_queue[14] = {}
 reliable_event_queue[0] = {}
 reliable_event_queue[1] = {}
 reliable_event_queue[13] = {}
 reliable_event_queue[12] = {}
+reliable_event_queue[15] = {}
 reliable_event_queue[11] = {}
 reliable_event_queue[10] = {}
 reliable_event_queue[9] = {}
@@ -577,6 +581,17 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 				table.insert(reliable_event_queue[12], { value, value2, value3, value4, value5 })
 				if #reliable_event_queue[12] > 64 then
 					warn(`[ZAP] {#reliable_event_queue[12]} events in queue for InventorySync. Did you forget to attach a listener?`)
+				end
+			end
+		elseif id == 15 then
+			local value
+			value = buffer.readu32(incoming_buff, read(4))
+			if reliable_events[15] then
+				task.spawn(reliable_events[15], value)
+			else
+				table.insert(reliable_event_queue[15], value)
+				if #reliable_event_queue[15] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[15]} events in queue for InventorySpaceChanged. Did you forget to attach a listener?`)
 				end
 			end
 		elseif id == 11 then
@@ -930,6 +945,18 @@ local returns = {
 			reliable_event_queue[12] = {}
 			return function()
 				reliable_events[12] = nil
+			end
+		end,
+	},
+	InventorySpaceChanged = {
+		SetCallback = function(Callback: (Value: (number)) -> ()): () -> ()
+			reliable_events[15] = Callback
+			for _, value in reliable_event_queue[15] do
+				task.spawn(Callback, value)
+			end
+			reliable_event_queue[15] = {}
+			return function()
+				reliable_events[15] = nil
 			end
 		end,
 	},

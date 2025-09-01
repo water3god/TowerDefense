@@ -13,6 +13,7 @@ local Network = require(ReplicatedStorage.Network.Server)
 local ItemChanged = Network.ItemChanged
 local InventorySync = Network.InventorySync
 local UnitEquipped = Network.UnitEquipped
+local InventorySpaceChanged = Network.InventorySpaceChanged
 
 local LevelChangedEvent = Network.LevelChanged
 local XPChangedEvent = Network.LevelXPChanged
@@ -84,6 +85,10 @@ local function OnDataAdded(Data: PlayerData.PlayerData)
 
 	Data.TitleAdded:Connect(function(Title: string)
 		TitleAddedEvent.Fire(Player, Title)
+	end)
+
+	Data.InventorySpaceChanged:Connect(function(InventorySpace: number)
+		InventorySpaceChanged.Fire(Player, InventorySpace)
 	end)
 end
 

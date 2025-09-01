@@ -113,6 +113,7 @@ type PlayerDataData<T> = {
 	QuestRedeemed: Signal.Signal<QuestData.DefaultQuestData>,
 
 	BoostChanged: Signal.Signal<string, number>,
+	InventorySpaceChanged: Signal.Signal<number>,
 
 	Destroying: Signal.Signal<>,
 }
@@ -340,6 +341,7 @@ function PlayerData.new(Player: Player)
 	self.QuestRedeemed = self._Trove:Construct(Signal)
 
 	self.BoostChanged = self._Trove:Construct(Signal)
+	self.InventorySpaceChanged = self._Trove:Construct(Signal)
 
 	self.Destroying = self._Trove:Construct(Signal)
 
@@ -1268,7 +1270,13 @@ function PlayerData:CalculateInventorySpace()
 		InventorySpace += 100
 	end
 
+	local Old = Data.MaxUnitCount
+
 	Data.MaxUnitCount = InventorySpace
+
+	if Old ~= InventorySpace then
+		self.InventorySpaceChanged:Fire(InventorySpace)
+	end
 
 	return InventorySpace
 end

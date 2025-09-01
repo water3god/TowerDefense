@@ -21,6 +21,8 @@ local TitleChangedEvent = Network.TitleChanged
 local TitleAddedEvent = Network.TitleAdded
 local EquipTitle = Network.EquipTitle
 
+local InventorySpaceChanged = Network.InventorySpaceChanged
+
 local Shared = ReplicatedStorage.Shared
 local Types = require(Shared.Types)
 local GameInfo = require(Shared.GameInfo)
@@ -118,6 +120,8 @@ Data.XPChanged = XPChanged
 Data.TitleChanged = Signal.new()
 Data.TitleAdded = Signal.new()
 
+Data.InventorySpaceChanged = Signal.new()
+
 Data.GetItemRequest = Signal.new()
 
 Data.IsSynced = IsSynced
@@ -176,6 +180,11 @@ TitleChangedEvent.SetCallback(function(Title: string)
 		Data.TitleData.EquippedTitle = Title
 		Data.TitleChanged:Fire(Title)
 	end
+end)
+
+InventorySpaceChanged.SetCallback(function(Space: number)
+	Data.MaxUnitCount = Space
+	Data.InventorySpaceChanged:Fire(Space)
 end)
 
 function Data:GetInventory()
