@@ -193,6 +193,8 @@ type PlayerDataImpl = {
 	AddTitle: (self: PlayerData, Title: string) -> (),
 	ChangeTitle: (self: PlayerData, Title: string) -> (),
 
+	CalculateInventorySpace: (self: PlayerData) -> number,
+
 	ChangeLeaderboardPosition: (self: PlayerData, LeaderboardName: string, Position: number) -> (),
 
 	AddRoll: (self: PlayerData, Count: number) -> (),
@@ -402,6 +404,8 @@ function PlayerData.new(Player: Player)
 			Quest.Redeemed = false
 		end
 
+		self:CalculateInventorySpace()
+
 		do
 			local Day = (DateTime.now():ToUniversalTime() :: any).Day
 			if Day ~= Data.ReferredDate then
@@ -513,6 +517,12 @@ function PlayerData.new(Player: Player)
 
 		self.BoostChanged:Connect(HandleBoostChange)
 	end
+
+	self.ProductRedeemed:Connect(function(_, IsGamepass: boolean)
+		if IsGamepass then
+			self:CalculateInventorySpace()
+		end
+	end)
 
 	if self.Profile.Data.Gold < 20 then
 		self:AddGold(1000000)
@@ -1246,6 +1256,21 @@ function PlayerData:ChangeTitle(Title: string)
 
 	Data.EquippedTitle = Title
 	self.TitleChanged:Fire(Title)
+end
+
+function PlayerData:CalculateInventorySpace()
+	local Data = self.Profile.Data
+	local InventorySpace = Constants.BASEINVENTORYUNITSPACE
+
+	if self:OwnsGamepass(1435928862) then
+		InventorySpace += 50
+	elseif self:OwnsGamepass(1435582002) then
+		InventorySpace += 100
+	end
+
+	Data.MaxUnitCount = InventorySpace
+
+	return InventorySpace
 end
 
 function PlayerData:ChangeLeaderboardPosition(LeaderboardName: string, Position: number)

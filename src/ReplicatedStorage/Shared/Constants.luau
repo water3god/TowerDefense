@@ -12,6 +12,8 @@ local Constants = {
 
 	INFORMATIONHASHMAP = "TOWERDEFENCEHASHMAP",
 
+	BASEINVENTORYUNITSPACE = 100,
+
 	UpdateDelay = 100,
 	MainDataStore = "MainDataStorev0.03",
 	LevelXPStore = "LevelXPStorev0.01",

@@ -123,6 +123,16 @@ local GamepassInfo: { [number]: ProductData } = {
 		Rarity = "Legendary",
 		Priority = 3,
 	},
+	[1435928862] = {
+		Name = "+50 Inventory Space",
+		Rarity = "Epic",
+		Priority = 4,
+	},
+	[1435582002] = {
+		Name = "+100 Inventory Space",
+		Rarity = "Epic",
+		Priority = 5,
+	},
 }
 
 -- GiftId = ProductId --
@@ -131,6 +141,10 @@ local GiftIds: { [number]: number } = {
 	[3360124700] = 1382164818, -- VIP --
 	[3371898460] = 1403443463, -- Ultra VIP --
 	[3371892823] = 1403365727, -- 20% XP Boost --
+
+	[3391015063] = 1435928862, -- +50 Inventory Space --
+	[3391015167] = 1435582002, -- +100 Inventory Space --
+
 	-- Products --
 	[3370830163] = 3359654911, -- 10 Omen Coins --
 	[3370847071] = 3359655092, -- 50 Omen Coins --
