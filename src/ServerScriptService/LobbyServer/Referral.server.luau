@@ -18,6 +18,12 @@ local PlayerData = require(GlobalModules.PlayerData)
 
 local SafePlayerAdded = require(ServerScriptService.Utility.SafePlayer.SafePlayerAdded)
 
+local IsLobby = require(Shared.IsLobby)
+
+if not IsLobby then
+	return
+end
+
 type JoinData = {
 	SourceGameId: number,
 	SourcePlaceId: number,
@@ -37,14 +43,18 @@ type JoinData = {
 local function AddReferral(PData: PlayerData.PlayerData, RefferedPlayer: Player)
 	local Data = PData.Profile.Data
 
-	if #Data.Referrals < 5 then
+	if #Data.Referrals < Constants.MaxReferrals then
 		table.insert(Data.Referrals, RefferedPlayer.UserId)
-		PData:AddGold(100)
-		SendWarning.Fire(PData.Player, "You have gained 100 gold for referring a friend!", Color3.fromRGB(0, 255, 0))
+		PData:AddGold(Constants.GoldReferral)
+		SendWarning.Fire(
+			PData.Player,
+			string.format("You have gained %d gold for referring a friend!", Constants.GoldReferral),
+			Color3.fromRGB(0, 255, 0)
+		)
 	else
 		SendWarning.Fire(
 			PData.Player,
-			"You have reached the maximum number of referrals for today.",
+			string.format("You have reached the maximum number (%d) of referrals for today.", Constants.MaxReferrals),
 			Color3.fromRGB(255, 0, 0)
 		)
 	end

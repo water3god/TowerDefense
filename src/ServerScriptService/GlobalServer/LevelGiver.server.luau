@@ -11,6 +11,13 @@ local Network = require(NetworkFolder.Server)
 local ServerOnly = require(NetworkFolder.ServerOnly)
 local SendWarning = Network.SendWarning
 
+local Shared = ReplicatedStorage.Shared
+local IsLobby = require(Shared.IsLobby)
+
+if not IsLobby then
+	return
+end
+
 local GlobalModules = ServerScriptService.GlobalModules
 local PlayerData = require(GlobalModules.PlayerData)
 

@@ -33,6 +33,9 @@ local Constants = {
 	ROLLCOSTS = { MAIN = 40 },
 	ROLLPERCENT = 1,
 	GroupId = 34745901,
+
+	GoldReferral = 100,
+	MaxReferrals = 5,
 }
 
 return table.freeze(Constants)

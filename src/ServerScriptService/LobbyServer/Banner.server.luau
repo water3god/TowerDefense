@@ -4,14 +4,12 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
-local ServerStorage = game:GetService("ServerStorage")
 
 local Packages = ReplicatedStorage.Packages
 local Promise = require(Packages.Promise)
 
 local Modules = ReplicatedStorage.Modules
 local RandomGenerate = require(Modules.RandomGenerate)
-local HelperFunctions = require(Modules.HelperFunctions)
 
 local Network = require(ReplicatedStorage.Network.Server)
 
@@ -24,7 +22,6 @@ local Variables = require(Shared.Variables)
 local Utility = ServerScriptService.Utility
 local SafePlayer = Utility.SafePlayer
 local SafePlayerAdded = require(SafePlayer.SafePlayerAdded)
-local SafePlayerRemoving = require(SafePlayer.SafePlayerRemoving)
 
 if not IsLobby then
 	return
