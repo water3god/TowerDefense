@@ -34,6 +34,7 @@ local function HandlePlayerData(PData: PlayerData.PlayerData)
 		local Success, GameData = pcall(function()
 			return MapStore:GetAsync(tostring(Data.MostRecentGameId))
 		end)
+
 		if Success and GameData then
 			RejoinPrompted.Fire(PData.Player)
 		end
@@ -51,6 +52,7 @@ Rejoin.SetCallback(function(Player: Player)
 
 	if PData then
 		local GameId = PData.Profile.Data.MostRecentGameId
+
 		if GameId then
 			local Success, GameData: Types.RecieveData = pcall(function()
 				return MapStore:GetAsync(tostring(GameId))

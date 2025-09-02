@@ -205,15 +205,17 @@ end, OnError)
 
 local function Check()
 	game:BindToClose(function()
-		if Map then
-			for _, Data in pairs(PlayerData.GetDatas()) do
-				if Data.Profile:IsActive() then
-					Data.Profile.Data.MostRecentGameId = nil
-				end
+		for _, Data in pairs(PlayerData.GetDatas()) do
+			if Data.Profile:IsActive() then
+				Data.Profile.Data.MostRecentGameId = nil
 			end
-
-			pcall(MapStore.SetAsync, MapStore, tostring(game.PrivateServerId), nil)
 		end
+
+		local Success, Error = pcall(function()
+			MapStore:SetAsync(tostring(game.PrivateServerId), nil)
+		end)
+
+		warn(Success)
 	end)
 end
 
