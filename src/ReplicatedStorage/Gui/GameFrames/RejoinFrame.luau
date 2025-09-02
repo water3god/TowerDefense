@@ -155,7 +155,12 @@ local function RejoinConnected(props)
 		end
 	end, { Active })
 
+	local CloseClick = React.useCallback(function()
+		SetActive(false)
+	end, {})
+
 	return e(CreateRejoinFrame, {
+		CloseClick = CloseClick,
 		native = Join({
 			Visible = Styles.size:map(function(size)
 				return size > 0.8
