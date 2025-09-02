@@ -214,11 +214,15 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 					if Units[Key] then
 						GameClick(Units[Key].UniqueId)
 					end
+				elseif KeyCode == Enum.KeyCode.Q then
+					if PlacementData then
+						SetPlacement(nil)
+					end
 				end
 			end)
 
 			return InputTrove:WrapClean()
-		end, { Units, PlacementData :: any })
+		end, { Units, GameClick, PlacementData } :: { unknown })
 	end
 
 	local Click = IsLobby and LobbyClick or GameClick
