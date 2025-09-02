@@ -441,7 +441,7 @@ function GlobalWave:GetCoinsChangedSignal(UserId: number)
 end
 
 function GlobalWave:AddUnit(UnitInput: Unit.Unit)
-	self.Units[UnitInput.UnitName] = UnitInput
+	self.Units[UnitInput.UniqueId] = UnitInput
 
 	UnitInput.CoinsAdded:Connect(function(Coins: number)
 		if UnitInput.OwnerId then
@@ -457,7 +457,7 @@ function GlobalWave:AddUnit(UnitInput: Unit.Unit)
 	end)
 
 	UnitInput.Destroying:Once(function()
-		self.Units[UnitInput.UnitName] = nil
+		self.Units[UnitInput.UniqueId] = nil
 	end)
 
 	self.UnitAdded:Fire(UnitInput)
