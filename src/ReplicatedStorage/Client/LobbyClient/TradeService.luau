@@ -156,7 +156,7 @@ TradeSync.SetCallback(function(SentData: { [number]: { Status: Types.TradeStatus
 
 		local NewPlayer = Players:GetPlayerByUserId(UserId)
 		local OldValue = TradeStatuses[NewPlayer]
-		if Player then
+		if NewPlayer then
 			TradeStatuses[NewPlayer] = DataSent.Status
 		end
 

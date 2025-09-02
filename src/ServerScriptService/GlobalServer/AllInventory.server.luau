@@ -3,6 +3,7 @@
 -- By Wa1er_God --
 
 -- Services --
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
@@ -12,9 +13,18 @@ local PlayerData = require(GlobalModules.PlayerData)
 local Network = require(ReplicatedStorage.Network.Server)
 local AllEquippedSync = Network.AllEquippedSync
 
-local CurrentData = {}
+local CurrentData: { [Player]: any } = {}
+
+local function Check()
+	for Player, _ in pairs(CurrentData) do
+		if not Player:IsDescendantOf(Players) then
+			CurrentData[Player] = nil
+		end
+	end
+end
 
 local function Update(Data: PlayerData.PlayerData)
+	Check()
 	local SendData = {}
 
 	for Index, Id in pairs(Data.Profile.Data.EquippedUnits) do
@@ -44,6 +54,7 @@ local function Update(Data: PlayerData.PlayerData)
 end
 
 local function HandleData(Data: PlayerData.PlayerData)
+	Check()
 	AllEquippedSync.Fire(Data.Player, CurrentData)
 	Update(Data)
 	Data.UnitEquipped:Connect(function()
