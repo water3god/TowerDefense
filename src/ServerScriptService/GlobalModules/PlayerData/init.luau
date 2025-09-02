@@ -1305,10 +1305,8 @@ function PlayerData:ChangeLeaderboardPosition(LeaderboardName: string, Position:
 		return
 	end
 
-	if Data.LeaderboardData[LeaderboardName] ~= Position then
-		Data.LeaderboardData[LeaderboardName] = Position
-		self.LeaderboardChanged:Fire(LeaderboardName, Position)
-	end
+	Data.LeaderboardData[LeaderboardName] = Position
+	self.LeaderboardChanged:Fire(LeaderboardName, Position)
 end
 
 function PlayerData:AddRoll(Count: number)

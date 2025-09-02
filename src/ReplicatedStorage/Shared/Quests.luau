@@ -445,7 +445,7 @@ local Quests: Quests = {
 			Description = "Reach Top 100 in the Damage Leaderboard.",
 			Data = { LeaderboardName = Constants.DamageStore, Position = 100 } :: any,
 			CurrentValue = 0,
-			NeededValue = 100,
+			NeededValue = 1,
 			Redeemed = false,
 			QuestReward = { Type = "Title", Value = "TOP 100", Count = 1 },
 		},
