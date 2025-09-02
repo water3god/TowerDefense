@@ -43,8 +43,13 @@ local Titles: {
 	},
 	VIP = {
 		Color = ColorSequence.new(Color3.fromRGB(255, 215, 0), Color3.fromRGB(255, 230, 150)),
-		Description = "A Rich Person.",
+		Description = "A player who has achieved VIP status.",
 		Priority = 7,
+	},
+	["Ultra VIP"] = {
+		Color = ColorSequence.new(Color3.fromRGB(185, 244, 38), Color3.fromRGB(185, 244, 38)),
+		Description = "A player who has achieved Ultra VIP status.",
+		Priority = 8,
 	},
 	["TOP 100"] = {
 		Color = ColorSequence.new(Color3.fromRGB(255, 0, 255), Color3.fromRGB(255, 100, 200)),

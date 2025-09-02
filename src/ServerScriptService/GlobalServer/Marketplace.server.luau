@@ -87,6 +87,10 @@ local Gamepasses: { [number]: (Data: PlayerData.PlayerData) -> () } = {
 	[1382164818] = function(Data: PlayerData.PlayerData)
 		Data:AddTitle("VIP")
 	end,
+	-- Ultra VIP --
+	[1403443463] = function(Data: PlayerData.PlayerData)
+		Data:AddTitle("Ultra VIP")
+	end,
 }
 
 type ReceiptInfo = {
