@@ -19,6 +19,7 @@ local Join = HelperFunctions.joinDicts
 
 local Client = ReplicatedStorage.Client
 local WaveService = require(Client.GlobalClient.WaveService)
+local SettingsService = require(Client.GlobalClient.SettingsService)
 
 -- Reference UI --
 local Gui = ReplicatedStorage.Gui
@@ -27,12 +28,17 @@ local Main = require(CoreGame.Main)
 local UIStroke = require(CoreGame.UIStroke)
 local Hooks = require(CoreGame.Hooks)
 
+local SettingsFolder = Gui.Settings
+local SettingsContext = require(SettingsFolder.SettingsContext)
+
 export type Props = {
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
 
 local function CreateVoteFrame(Props: Props)
+	local SettingsData = React.useContext(SettingsContext.Context)
+
 	local IsVisible, SetVisible = React.useState(false)
 	local Styles, API = ReactSpring.useSpring(function()
 		return {
@@ -52,25 +58,56 @@ local function CreateVoteFrame(Props: Props)
 	})
 
 	React.useEffect(function()
-		local Data = WaveService.GetVoteData()
-		if Data then
+		if SettingsService.IsSynced and SettingsData.WaveAutoSkip then
+			local Data = WaveService.GetVoteData()
+			if Data then
+				SetData({
+					Votes = Data.CurrentCount,
+					Total = Data.NeededCount,
+				})
+				SetTime(Data.Time, Data.StartTime)
+				SetVisible(true)
+			end
+		end
+	end, {})
+
+	React.useEffect(function()
+		local Connection = SettingsService.GetSettingChangedSignal("WaveAutoSkip"):Connect(function()
+			SetVisible(false)
+		end)
+
+		return function()
+			Connection:Disconnect()
+		end
+	end, {})
+
+	Hooks.useEventConnection(SettingsService.Synced, function()
+		if SettingsData.WaveAutoSkip then
+			local Data = WaveService.GetVoteData()
+			if Data then
+				SetData({
+					Votes = Data.CurrentCount,
+					Total = Data.NeededCount,
+				})
+				SetTime(Data.Time, Data.StartTime)
+				SetVisible(true)
+			end
+		end
+	end, { SettingsData })
+
+	Hooks.useEventConnection(WaveService.VoteData.VoteStarted, function(Data)
+		if SettingsData.WaveAutoSkip then
 			SetData({
 				Votes = Data.CurrentCount,
 				Total = Data.NeededCount,
 			})
 			SetTime(Data.Time, Data.StartTime)
 			SetVisible(true)
+		else
+			SetVisible(false)
+			WaveService.Vote()
 		end
-	end, {})
-
-	Hooks.useEventConnection(WaveService.VoteData.VoteStarted, function(Data)
-		SetData({
-			Votes = Data.CurrentCount,
-			Total = Data.NeededCount,
-		})
-		SetTime(Data.Time, Data.StartTime)
-		SetVisible(true)
-	end, {})
+	end, { SettingsData })
 
 	Hooks.useEventConnection(WaveService.VoteData.VoteChanged, function(CurrentCount, NeededCount)
 		SetData({

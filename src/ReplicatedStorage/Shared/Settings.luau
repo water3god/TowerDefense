@@ -19,6 +19,7 @@ Settings.PreSync = {
 	LegendarySkip = false,
 	MythicSkip = false,
 	CanTrade = false,
+	WaveAutoSkip = false,
 }
 
 Settings.Default = {
@@ -32,6 +33,7 @@ Settings.Default = {
 	LegendarySkip = false,
 	MythicSkip = false,
 	CanTrade = true,
+	WaveAutoSkip = false,
 }
 
 Settings.NotVisible = {
@@ -49,6 +51,7 @@ Settings.SettingIndexes = {
 	"LegendarySkip",
 	"MythicSkip",
 	"CanTrade",
+	"WaveAutoSkip",
 }
 
 Settings.Displays = {
@@ -59,6 +62,7 @@ Settings.Displays = {
 	EpicSkip = "Epic AutoSell",
 	LegendarySkip = "Legendary AutoSell",
 	MythicSkip = "Mythic AutoSell",
+	WaveAutoSkip = "AutoSkip",
 }
 
 Settings.SettingTypes = {
@@ -72,6 +76,7 @@ Settings.SettingTypes = {
 	LegendarySkip = "boolean",
 	MythicSkip = "boolean",
 	CanTrade = "boolean",
+	WaveAutoSkip = "boolean",
 }
 
 return table.freeze(Settings)
