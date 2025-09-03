@@ -215,7 +215,7 @@ local function Check()
 			MapStore:SetAsync(tostring(game.PrivateServerId), nil)
 		end)
 
-		warn(Success)
+		warn(Success, Error)
 	end)
 end
 

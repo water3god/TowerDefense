@@ -417,6 +417,10 @@ function PlayerData.new(Player: Player)
 			end
 		end
 
+		self._Trove:Connect(self.Destroying, function()
+			self.Profile:EndSession()
+		end)
+
 		self.Profile.OnSessionEnd:Connect(function()
 			self:Delete()
 			Player:Kick("Error Loading Profile: Player not in game.")
@@ -439,10 +443,6 @@ function PlayerData.new(Player: Player)
 		print(self.Profile.Data)
 		print("Loaded Profile " .. Player.UserId)
 	end
-
-	self._Trove:Connect(self.Destroying, function()
-		self.Profile:EndSession()
-	end)
 
 	self.NeededXP = CalculatePlayerXP(self.Profile.Data.Level)
 
