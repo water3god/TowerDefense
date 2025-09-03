@@ -153,9 +153,11 @@ local function HandleNewGui(Gui: typeof(script.LoadingGui))
 
 	Main.MapImage.Image = Id
 	Main.MapInfoLabel.Text = MapName
+end
 
+local function AnimateGui(Gui: typeof(script.LoadingGui))
+	local Main = Gui.Main
 	local LoadImage = Main.LoadImage
-
 	local Connection = RunService.PostSimulation:Connect(function(Delta: number)
 		LoadImage.Rotation += Delta * 100
 	end)
@@ -168,11 +170,14 @@ end
 local Gui: typeof(script.LoadingGui) = nil
 
 if ArrivingGui then
+	AnimateGui(Gui)
 	ArrivingGui.Parent = PlayerGui
+
 	Gui = ArrivingGui
 else
 	local LoadingGui = script:WaitForChild("LoadingGui"):Clone()
 	HandleNewGui(LoadingGui)
+	AnimateGui(LoadingGui)
 	LoadingGui.Parent = PlayerGui
 	Gui = LoadingGui
 end
