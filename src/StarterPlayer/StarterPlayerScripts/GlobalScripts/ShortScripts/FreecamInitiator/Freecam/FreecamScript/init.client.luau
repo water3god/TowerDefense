@@ -1,4 +1,5 @@
 --!nonstrict
+--#selene: allow(unused_variable)
 ------------------------------------------------------------------------
 -- Freecam
 -- Cinematic free camera for spectating and video production.

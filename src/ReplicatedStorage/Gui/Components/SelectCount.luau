@@ -19,7 +19,6 @@ local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
 local UIStroke = require(CoreGame.UIStroke)
-local Title = require(CoreGame.Title)
 local CloseButton = require(CoreGame.CloseButton)
 
 local WarningFolder = Gui.Warning

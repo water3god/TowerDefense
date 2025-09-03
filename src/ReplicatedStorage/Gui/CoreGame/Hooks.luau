@@ -14,7 +14,6 @@ local React = require(Packages.React)
 local e = React.createElement
 
 local Modules = ReplicatedStorage.Modules
-local HelperFunctions = require(Modules.HelperFunctions)
 local FindAncestor = require(Modules.FindAncestor)
 
 local Player = Players.LocalPlayer
@@ -63,7 +62,6 @@ function Hooks.UseVisible(Props: { ref: React.Ref<GuiObject?> })
 			local GuiObject = Props.ref.current :: GuiObject
 
 			local function Update()
-				local Table = {}
 				if not GuiObject:IsDescendantOf(game) then
 					SetVisible(false)
 					return
@@ -98,7 +96,7 @@ function Hooks.UseVisible(Props: { ref: React.Ref<GuiObject?> })
 				SetVisible(true)
 			end
 
-			local Connection = GuiObject.AncestryChanged:Connect(function(Child: Instance, Parent: Instance?) end)
+			--local Connection = GuiObject.AncestryChanged:Connect(function(Child: Instance, Parent: Instance?) end)
 		end
 	end, { Props.ref })
 

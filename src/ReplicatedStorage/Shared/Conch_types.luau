@@ -2,22 +2,16 @@
 
 -- By Wa1er_God --
 
-local ADMIN = { 343804839 }
-
 -- Services --
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Packages = ReplicatedStorage.Packages
-local Promise = require(Packages.Promise)
 local Conch = require(Packages.Conch)
 
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
 local GameInfo = require(Shared.GameInfo)
-local ProductInfo = require(Shared.ProductInfo)
 local Traits = require(Shared.Traits)
-local Constants = require(Shared.Constants)
 
 local EnemyData = {}
 

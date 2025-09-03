@@ -3,11 +3,7 @@
 -- By Wa1er_God --
 
 -- Services --
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local Player = Players.LocalPlayer
-local PlayerGui = Player.PlayerGui
 
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)

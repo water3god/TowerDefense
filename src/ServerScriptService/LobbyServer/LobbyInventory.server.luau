@@ -22,7 +22,6 @@ local SendWarning = Network.SendWarning
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
 local ProductInfo = require(Shared.ProductInfo)
-local GameInfo = require(Shared.GameInfo)
 local RarityInfo = require(Shared.RarityInfo)
 
 EquipUnit.SetCallback(function(Player: Player, Data: { UniqueId: string, Equip: boolean })
