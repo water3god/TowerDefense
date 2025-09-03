@@ -8,7 +8,6 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local NetworkFolder = ReplicatedStorage.Network
 local Network = require(NetworkFolder.Server)
-local ServerOnly = require(NetworkFolder.ServerOnly)
 local SendWarning = Network.SendWarning
 
 local Shared = ReplicatedStorage.Shared

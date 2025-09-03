@@ -334,6 +334,17 @@ local function CreateInRoll(props: Properties)
 				Mouse.LeftUp:Connect(function()
 					CloseClick()
 				end)
+			elseif Preferred == "Gamepad" then
+				local Gamepad = InputTrove:Construct(Input.Gamepad)
+
+				Gamepad.ButtonPressed:Connect(function(Button: Enum.KeyCode, Processed: boolean)
+					if Processed then
+						return
+					end
+					if Button == Enum.KeyCode.ButtonA then
+						CloseClick()
+					end
+				end)
 			elseif Preferred == "Touch" then
 				local Touch = InputTrove:Construct(Input.Touch)
 
@@ -343,8 +354,6 @@ local function CreateInRoll(props: Properties)
 					end
 					CloseClick()
 				end)
-			elseif Preferred == "Gamepad" then
-				return
 			end
 		end)
 

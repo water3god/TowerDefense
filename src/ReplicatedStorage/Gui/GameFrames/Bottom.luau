@@ -14,6 +14,7 @@ local e = React.createElement
 local Trove = require(Packages.Trove)
 local Input = require(Packages.Input)
 local Keyboard = Input.Keyboard
+local Gamepad = Input.Gamepad
 
 local Modules = ReplicatedStorage.Modules
 local DelayHandler = require(Modules.DelayHandler)
@@ -163,7 +164,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 				Properties.SetVisible(true)
 			end
 		end
-	end, { Properties.SetHovered :: any, Properties.SetVisible :: any, Properties.GetHovered :: any })
+	end, { Properties.SetHovered, Properties.SetVisible, Properties.GetHovered } :: { unknown })
 
 	local PlacementData: PlacementData?, SetPlacement = React.useState(nil :: PlacementData?)
 
@@ -205,23 +206,45 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 	if not IsLobby then
 		React.useEffect(function()
 			local InputTrove = Trove.new()
-			local NewKeyboard = InputTrove:Construct(Keyboard)
 
-			NewKeyboard.KeyDown:Connect(function(KeyCode: Enum.KeyCode)
-				if KeyCode.Value >= 49 and KeyCode.Value <= 53 then
-					local Key = KeyCode.Value - 48
+			local Cancel = Input.PreferredInput.Observe(function(Preferred)
+				InputTrove:Destroy()
+				if Preferred == "MouseKeyboard" then
+					local NewKeyboard = InputTrove:Construct(Keyboard)
 
-					if Units[Key] then
-						GameClick(Units[Key].UniqueId)
-					end
-				elseif KeyCode == Enum.KeyCode.Q then
-					if PlacementData then
-						SetPlacement(nil)
-					end
+					NewKeyboard.KeyDown:Connect(function(KeyCode: Enum.KeyCode)
+						if KeyCode.Value >= 49 and KeyCode.Value <= 53 then
+							local Key = KeyCode.Value - 48
+
+							if Units[Key] then
+								GameClick(Units[Key].UniqueId)
+							end
+						elseif KeyCode == Enum.KeyCode.Q then
+							if PlacementData then
+								SetPlacement(nil)
+							end
+						end
+					end)
+				elseif Preferred == "Gamepad" then
+					local NewGamepad = InputTrove:Construct(Gamepad)
+
+					NewGamepad.ButtonPressed:Connect(function(Button: Enum.KeyCode, Processed: boolean)
+						if Processed then
+							return
+						end
+						if Button == Enum.KeyCode.ButtonA then
+							if PlacementData then
+								SetPlacement(nil)
+							end
+						end
+					end)
 				end
 			end)
 
-			return InputTrove:WrapClean()
+			return function()
+				InputTrove:Destroy()
+				Cancel()
+			end
 		end, { Units, GameClick, PlacementData } :: { unknown })
 	end
 

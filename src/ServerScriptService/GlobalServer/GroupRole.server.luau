@@ -4,7 +4,6 @@
 
 -- Services --
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Players = game:GetService("Players")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 local Packages = ReplicatedStorage.Packages

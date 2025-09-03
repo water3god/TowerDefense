@@ -536,10 +536,13 @@ local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (strin
 					end)
 				elseif Preferred == "Gamepad" then
 					local NewGamepad = InputTrove:Construct(Gamepad)
-					--[[NewGamepad.ButtonDown:Connect(function(button)
-						
+					NewGamepad.ButtonDown:Connect(function(_: Enum.KeyCode, processed: boolean)
+						if processed then
+							return
+						end
+
 						OnPress(NewGamepad:GetPosition())
-					end)]]
+					end)
 				elseif Preferred == "Touch" then
 					local NewTouch = InputTrove:Construct(Touch)
 
