@@ -199,32 +199,38 @@ local function OnError()
 	Players.PlayerAdded:Connect(KickPlayer)
 end
 
-local Success, Value = xpcall(function()
-	return MapStore:GetAsync(tostring(game.PrivateServerId))
-end, OnError)
-
 local function Check()
 	game:BindToClose(function()
+		Promise.retryWithDelay(function()
+			return Promise.new(function(resolve)
+				MapStore:RemoveAsync(tostring(game.PrivateServerId))
+				resolve()
+			end)
+		end, 5, 0.01)
+
 		for _, Data in pairs(PlayerData.GetDatas()) do
 			if Data.Profile:IsActive() then
 				Data.Profile.Data.MostRecentGameId = nil
 			end
 		end
-
-		local Success, Error = pcall(function()
-			MapStore:SetAsync(tostring(game.PrivateServerId), nil)
-		end)
-
-		warn(Success, Error)
 	end)
 end
 
-if Success then
-	if Value then
-		Init(Value)
-		Check()
-		return
-	end
-end
+Check()
 
-OnError()
+Promise.retryWithDelay(function()
+	return Promise.new(function(resolve, reject)
+		local Value = MapStore:GetAsync(tostring(game.PrivateServerId))
+		if Value then
+			resolve(Value)
+		else
+			reject("No value found")
+		end
+	end)
+end, 5, 1)
+	:andThen(function(Value)
+		Init(Value)
+	end)
+	:catch(function()
+		OnError()
+	end)

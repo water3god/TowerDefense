@@ -11,7 +11,7 @@ local Connections: { [string]: RBXScriptConnection } = {}
 function SafePlayerAdded:Connect(Callback: (Player: Player) -> (), RunBefore: boolean?, Name: string?)
 	if RunBefore then
 		for _, Player in ipairs(Players:GetPlayers()) do
-			Callback(Player)
+			task.spawn(Callback, Player)
 		end
 	end
 

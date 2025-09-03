@@ -10,6 +10,9 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local MemoryStoreService = game:GetService("MemoryStoreService")
 local TeleportService = game:GetService("TeleportService")
 
+local Packages = ReplicatedStorage.Packages
+local Promise = require(Packages.Promise)
+
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 
@@ -31,13 +34,15 @@ local function HandlePlayerData(PData: PlayerData.PlayerData)
 	local Data = PData.Profile.Data
 
 	if Data.MostRecentGameId then
-		local Success, GameData = pcall(function()
-			return MapStore:GetAsync(tostring(Data.MostRecentGameId))
+		Promise.retryWithDelay(function()
+			return Promise.new(function(resolve)
+				resolve(MapStore:GetAsync(tostring(Data.MostRecentGameId)))
+			end)
+		end, 5, 1):andThen(function(GameData)
+			if GameData then
+				RejoinPrompted.Fire(PData.Player)
+			end
 		end)
-
-		if Success and GameData then
-			RejoinPrompted.Fire(PData.Player)
-		end
 	end
 end
 

@@ -435,7 +435,7 @@ function PlayerData.new(Player: Player)
 		end
 	else
 		self:Delete()
-		Player:Kick("Error Loading Profile: Player not in game.")
+		Player:Kick("Failed to load profile. Please rejoin.")
 		return
 	end
 
