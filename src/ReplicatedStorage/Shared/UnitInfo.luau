@@ -50,7 +50,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Alexander The Great"] = {
 		Rarity = "Mythic",
 		Description = "A fearless conqueror who united empires with unmatched strategy and ambition. His legacy shaped the ancient world—and your battlefield.",
-		Image = "rbxassetid://123087615935684",
+		Image = "rbxassetid://88336644068695",
 
 		UnitData = {
 			[0] = {
@@ -84,7 +84,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Leonidas"] = {
 		Rarity = "Godly",
 		Description = "Spartan king who defied fate with 300 warriors. A wall of muscle, honor, and pure determination. Enemies fear his final stand.",
-		Image = "rbxassetid://121547000533197",
+		Image = "rbxassetid://90542218956315",
 
 		UnitData = {
 			[0] = {
@@ -153,7 +153,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Pyrrhus"] = {
 		Rarity = "Common",
 		Description = "A brilliant tactician whose costly victories coined the phrase “Pyrrhic victory.” He wins—but at what price?",
-		Image = "rbxassetid://122873675701138",
+		Image = "rbxassetid://112207752049885",
 
 		UnitData = {
 			[0] = {
@@ -254,7 +254,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Julius Caesar"] = {
 		Rarity = "Legendary",
 		Description = "The conqueror of Gaul. Strategic, ruthless, and charismatic. Leads elite troops with cold precision—cross him, and you’ll regret it.",
-		Image = "rbxassetid://123255834687209",
+		Image = "rbxassetid://96743852473893",
 
 		UnitData = {
 			[0] = {
@@ -288,7 +288,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Pompey"] = {
 		Rarity = "Common",
 		Description = "The general who ruled the seas. Commands disciplined legions and swift naval support. His tactics are as sharp as his ambition.",
-		Image = "rbxassetid://117170171575136",
+		Image = "rbxassetid://99439817623832",
 
 		UnitData = {
 			[0] = {
@@ -316,7 +316,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Trajan"] = {
 		Rarity = "Godly",
 		Description = "Rome's greatest builder and conqueror. Expands your base, strengthens structures, and commands with both hammer and sword.",
-		Image = "rbxassetid://129329108626021",
+		Image = "rbxassetid://97945746294799",
 		UnitData = {
 			[0] = {
 				Damage = { 100 },
@@ -392,7 +392,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Cicero"] = {
 		Rarity = "Epic",
 		Description = "Master of rhetoric and reason. Weak in battle but buffs allies with persuasive speeches and cripples foes with sharp logic.",
-		Image = "rbxassetid://73965035363559",
+		Image = "rbxassetid://80438308188618",
 
 		UnitData = {
 			[0] = {
@@ -430,7 +430,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Augustus"] = {
 		Rarity = "Mythic",
 		Description = "The first emperor. Stabilizer of empires and perfectionist of control. Boosts economy, morale, and order across your defenses.",
-		Image = "rbxassetid://117008785997390",
+		Image = "rbxassetid://125386565080263",
 
 		UnitData = {
 			[0] = {
@@ -498,7 +498,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Robert the Bruce"] = {
 		Rarity = "Common",
 		Description = "Scottish king and freedom fighter. Fights with guerrilla tactics, rallying peasants and knights alike in a storm of resistance.",
-		Image = "rbxassetid://118958489112206",
+		Image = "rbxassetid://72392021367991",
 
 		UnitData = {
 			[0] = {
@@ -692,7 +692,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Cleopatra"] = {
 		Rarity = "Rare",
 		Description = "Queen of charm and cunning. Commands loyalty and strikes with political precision. Beauty and brains make her battlefield royalty.",
-		Image = "rbxassetid://137545520172915",
+		Image = "rbxassetid://128569882185944",
 
 		UnitData = {
 			[0] = {
@@ -795,7 +795,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Ramesses II"] = {
 		Rarity = "Mythic",
 		Description = "The living god of war. Leads with overwhelming might and divine authority. His name alone strikes fear into enemy lines.",
-		Image = "rbxassetid://115676624628103",
+		Image = "rbxassetid://84378323969306",
 
 		UnitData = {
 			[0] = {
