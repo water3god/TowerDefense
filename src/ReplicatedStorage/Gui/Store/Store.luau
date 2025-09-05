@@ -156,8 +156,9 @@ local function CreateOffer(props: OfferProps)
 				BackgroundTransparency = 0,
 				BackgroundColor3 = props.Color,
 				Image = props.Image,
-				ImageTransparency = 0.2,
+				ImageTransparency = 0,
 				Size = UDim2.fromScale(0.9, 0.9),
+				ScaleType = Enum.ScaleType.Crop,
 			},
 		}, {
 			Rewards = e(Main.Frame, {
@@ -300,7 +301,7 @@ local function CreateStoreFrame(Properties: Properties)
 					local GiftId = ProductInfo.GetProductIdFromGiftId(Id)
 					Frames["Offer" .. Id] = e(CreateOffer, {
 						Name = ProductData.ProductInfo.Name,
-						Image = "rbxassetid://" .. ProductData.ProductInfo.IconImageAssetId,
+						Image = Data.Icon or "rbxassetid://3385224877",
 						ProductId = Id,
 						GiftId = GiftId,
 						Cost = ProductData.ProductInfo.PriceInRobux,

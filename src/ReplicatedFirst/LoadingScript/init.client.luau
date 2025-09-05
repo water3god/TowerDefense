@@ -170,7 +170,7 @@ end
 local Gui: typeof(script.LoadingGui) = nil
 
 if ArrivingGui then
-	AnimateGui(Gui)
+	AnimateGui(ArrivingGui)
 	ArrivingGui.Parent = PlayerGui
 
 	Gui = ArrivingGui

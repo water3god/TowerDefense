@@ -12,7 +12,7 @@ local RarityInfo = require(Shared.RarityInfo)
 export type ProductData = { Name: string, Rarity: RarityInfo.Rarity | string, Priority: number, Func: () -> ()? }
 
 export type Offer = { Type: string, Name: string, Amount: number }
-export type Offers = { [number]: { Rewards: { Offer }, Color: Color3 } }
+export type Offers = { [number]: { Rewards: { Offer }, Color: Color3, Icon: string? } }
 
 local Offers: Offers = {
 	[3385224877] = {
@@ -23,6 +23,7 @@ local Offers: Offers = {
 			{ Type = "Resource", Name = "Omen Coins", Amount = 10 },
 		},
 		Color = Color3.new(0.862745, 0.654902, 0.121569),
+		Icon = "rbxassetid://3385224877",
 	},
 	[3387895527] = {
 		Rewards = {
