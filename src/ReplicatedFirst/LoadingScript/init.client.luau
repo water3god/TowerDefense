@@ -4,7 +4,7 @@
 
 -- Default Spawn Values
 
-local Id = "rbxassetid://82602981298420"
+local Id = "rbxassetid://72426763128452"
 local MapName = "Lobby"
 
 local Players = game:GetService("Players")

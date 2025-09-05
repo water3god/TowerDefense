@@ -16,7 +16,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Shared = ReplicatedStorage.Shared
 local Types = require(Shared.Types)
 local RarityInfo = require(Shared.RarityInfo)
-local Assets = require(ReplicatedStorage.Assets.assets)
 
 export type Difficulty = "Normal" | "Hard" | "Insane"
 local Difficulty = { "Normal", "Hard", "Insane" }
@@ -51,7 +50,7 @@ local GameInfo: { MapInfo } = {
 	{
 		MapId = "Egypt",
 		Name = "Egypt",
-		Image = Assets.Maps["egypt.png"],
+		Image = "rbxassetid://81730317336118", -- egypt.png
 		LevelInfo = {
 			[0] = {
 				Name = "Infinite",
@@ -258,7 +257,7 @@ local GameInfo: { MapInfo } = {
 	{
 		MapId = "Greece",
 		Name = "Greece",
-		Image = Assets.Maps["greece.png"],
+		Image = "rbxassetid://120734686321148", -- greece.png
 		LevelInfo = {
 			[0] = {
 				Name = "Infinite",
@@ -466,7 +465,7 @@ local GameInfo: { MapInfo } = {
 	{
 		MapId = "Rome",
 		Name = "Rome",
-		Image = Assets.Maps["rome.png"],
+		Image = "rbxassetid://74963095419523", -- rome.png
 		LevelInfo = {
 			[0] = {
 				Name = "Infinite",
@@ -674,7 +673,7 @@ local GameInfo: { MapInfo } = {
 	{
 		MapId = "China",
 		Name = "China",
-		Image = Assets.Maps["china.png"],
+		Image = "rbxassetid://136523529237600", -- china.png
 		LevelInfo = {
 			[0] = {
 				Name = "Infinite",
@@ -882,8 +881,8 @@ local GameInfo: { MapInfo } = {
 	{
 		MapId = "Medieval",
 		Name = "Medieval",
-		-- No dedicated medieval map image present; using placeholder image5.png from assets/Maps.
-		Image = Assets.Maps["image5.png"],
+		-- Placeholder image (image5.png) until a dedicated medieval map image is added.
+		Image = "rbxassetid://80598570223220", -- image5.png
 		LevelInfo = {
 			[0] = {
 				Name = "Infinite",
