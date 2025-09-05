@@ -292,19 +292,19 @@ local UnitInfo: { [string]: UnitInfo } = {
 
 		UnitData = {
 			[0] = {
-				Damage = { 2 },
+				Damage = { 1 },
 				FireRate = 1.5,
 				Range = 40,
 				Cost = 75,
 			},
 			[1] = {
-				Damage = { 5 },
+				Damage = { 3 },
 				FireRate = 1.5,
 				Range = 40,
 				Cost = 150,
 			},
 			[2] = {
-				Damage = { 10 },
+				Damage = { 7 },
 				FireRate = 1.25,
 				Range = 45,
 				Cost = 300,
@@ -668,19 +668,19 @@ local UnitInfo: { [string]: UnitInfo } = {
 
 		UnitData = {
 			[0] = {
-				Damage = { 3 },
+				Damage = { 2 },
 				FireRate = 2,
 				Range = 35,
 				Cost = 75,
 			},
 			[1] = {
-				Damage = { 7 },
+				Damage = { 5 },
 				FireRate = 1.5,
 				Range = 40,
 				Cost = 200,
 			},
 			[2] = {
-				Damage = { 15 },
+				Damage = { 9 },
 				FireRate = 1.2,
 				Range = 50,
 				Cost = 500,
@@ -696,25 +696,25 @@ local UnitInfo: { [string]: UnitInfo } = {
 
 		UnitData = {
 			[0] = {
-				Damage = { 8 },
+				Damage = { 2 },
 				FireRate = 2,
 				Range = 50,
 				Cost = 200,
 			},
 			[1] = {
-				Damage = { 18 },
+				Damage = { 4 },
 				FireRate = 1.75,
 				Range = 60,
 				Cost = 400,
 			},
 			[2] = {
-				Damage = { 30 },
+				Damage = { 7 },
 				FireRate = 1.75,
 				Range = 60,
 				Cost = 650,
 			},
 			[3] = {
-				Damage = { 40 },
+				Damage = { 11 },
 				FireRate = 1.2,
 				Range = 60,
 				Cost = 1000,
