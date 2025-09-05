@@ -14,7 +14,19 @@ local Colors: { [number]: ColorSequence } = {
 	[100] = ColorSequence.new(Color3.fromRGB(255, 50, 50), Color3.fromRGB(180, 0, 0)), -- Red (Vibrant Light Red to Vibrant Dark Red)
 }
 
+local function GetHighestColor(Level: number)
+	local HighestLevel = 1
+	for OtherLevel, _ in pairs(Colors) do
+		if OtherLevel <= Level and OtherLevel > HighestLevel then
+			HighestLevel = OtherLevel
+		end
+	end
+
+	return Colors[HighestLevel] or Colors[5]
+end
+
 return {
 	EquippedFrames = LevelData,
 	Colors = Colors,
+	GetHighestColor = GetHighestColor,
 }

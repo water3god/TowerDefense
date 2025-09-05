@@ -14,14 +14,14 @@ local Timer = require(Packages.Timer)
 local GlobalModules = ServerScriptService.GlobalModules
 local UnitModule = require(GlobalModules.Unit)
 local GlobalWave = require(GlobalModules.GlobalWave)
-
+--[[
 local function HealBase(Health: number)
 	local Wave = GlobalWave.GetWave()
 	if Wave then
 		Wave:Heal(Health)
 	end
 end
-
+]]
 local function HealBasePerWave(Health: number)
 	local Wave = GlobalWave.GetWave()
 	if Wave then

@@ -388,6 +388,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 				if Info then
 					local UnitData = UnitInfo.UnitInfo[Info.Unit]
 					local RarityData = RarityInfo[UnitData.Rarity]
+					SetOpenFrame("Unit")
 					SmallFrameClick({
 						Data = {
 							CurrentUnit = Info,
@@ -402,7 +403,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 				return HoveredId
 			end,
 		}
-	end, { HoveredId, InventoryData } :: { unknown })
+	end, { HoveredId, InventoryData, SmallFrameClick } :: { unknown })
 
 	local OnEquip = React.useCallback(function()
 		if HoveredId then

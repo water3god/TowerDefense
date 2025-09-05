@@ -84,7 +84,7 @@ local function CreateInfoFrame(Properties: Properties)
 				return ""
 			end
 		elseif Properties.Type == "Product" then
-			if Properties.Data then
+			if Properties.Data and Properties.Data.ProductId then
 				if Properties.Data.IsGamepass then
 					return "rbxassetid://"
 						.. PurchaseData.GamepassData[Properties.Data.ProductId].ProductInfo.IconImageAssetId
