@@ -27,6 +27,14 @@ local assets = {
 		["gold-ingot.png"] = "rbxassetid://81695874378087",
 		["loading.png"] = "rbxassetid://100999073202792",
 	},
+	Maps = {
+		["china.png"] = "rbxassetid://136523529237600",
+		["egypt.png"] = "rbxassetid://81730317336118",
+		["greece.png"] = "rbxassetid://120734686321148",
+		["image5.png"] = "rbxassetid://80598570223220",
+		["lobby.png"] = "rbxassetid://72426763128452",
+		["rome.png"] = "rbxassetid://74963095419523",
+	},
 	audio = {
 		["657948__lilmati__family-friendly-inspect-sound-ui-or-in-game-notification.wav"] = "rbxassetid://72255888882620",
 		["explosion.mp3"] = "rbxassetid://133965358324268",
