@@ -220,8 +220,19 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 								GameClick(Units[Key].UniqueId)
 							end
 						elseif KeyCode == Enum.KeyCode.Q then
-							if PlacementData then
-								SetPlacement(nil)
+							if PlacementData and PlacementData.UniqueId then
+								local Index = nil
+
+								for i, Unit in ipairs(Units) do
+									if Unit.UniqueId == PlacementData.UniqueId then
+										Index = i
+										break
+									end
+								end
+
+								if Index then
+									GameClick(Units[Index].UniqueId)
+								end
 							end
 						end
 					end)
@@ -233,8 +244,19 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 							return
 						end
 						if Button == Enum.KeyCode.ButtonA then
-							if PlacementData then
-								SetPlacement(nil)
+							if PlacementData and PlacementData.UniqueId then
+								local Index = nil
+
+								for i, Unit in ipairs(Units) do
+									if Unit.UniqueId == PlacementData.UniqueId then
+										Index = i
+										break
+									end
+								end
+
+								if Index then
+									GameClick(Units[Index].UniqueId)
+								end
 							end
 						end
 					end)
