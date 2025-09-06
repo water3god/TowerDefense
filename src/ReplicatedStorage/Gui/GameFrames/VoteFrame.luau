@@ -58,15 +58,19 @@ local function CreateVoteFrame(Props: Props)
 	})
 
 	React.useEffect(function()
-		if SettingsService.IsSynced and SettingsData.WaveAutoSkip then
-			local Data = WaveService.GetVoteData()
-			if Data then
-				SetData({
-					Votes = Data.CurrentCount,
-					Total = Data.NeededCount,
-				})
-				SetTime(Data.Time, Data.StartTime)
-				SetVisible(true)
+		if SettingsService.IsSynced then
+			if SettingsData.WaveAutoSkip then
+				WaveService.Vote()
+			else
+				local Data = WaveService.GetVoteData()
+				if Data then
+					SetData({
+						Votes = Data.CurrentCount,
+						Total = Data.NeededCount,
+					})
+					SetTime(Data.Time, Data.StartTime)
+					SetVisible(true)
+				end
 			end
 		end
 	end, {})
@@ -83,6 +87,8 @@ local function CreateVoteFrame(Props: Props)
 
 	Hooks.useEventConnection(SettingsService.Synced, function()
 		if SettingsData.WaveAutoSkip then
+			WaveService.Vote()
+		else
 			local Data = WaveService.GetVoteData()
 			if Data then
 				SetData({

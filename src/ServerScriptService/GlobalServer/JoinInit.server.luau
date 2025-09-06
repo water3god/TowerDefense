@@ -123,7 +123,7 @@ local function Init(DataInput: Types.RecieveData?)
 				})
 
 				Wave.Passed:Connect(function(WaveNum: number)
-					if WaveNum == #Wave.Data.Data - 1 then
+					if WaveNum == #Wave.Data.Data then
 						ChangeDay(false)
 					end
 				end)
