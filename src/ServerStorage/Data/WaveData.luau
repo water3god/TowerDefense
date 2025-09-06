@@ -22,27 +22,27 @@ local WaveData: { [string]: WaveData } = {
 		Data = {
 			[1] = {
 				Enemies = {
-					["PCER"] = { 1, 2, 3 },
-					["Water"] = { 5, 6, 7 },
-					["Cheney"] = { 9, 10, 11 },
+					["PCE3R"] = { 1, 2, 3 },
+					["Wa1er_God"] = { 5, 6, 7 },
+					["CheneyC9999"] = { 9, 10, 11 },
 				},
 				Length = 20,
 				CoinBonus = 100,
 			},
 			[2] = {
 				Enemies = {
-					["PCER"] = { 1, 2, 3, 4 },
-					["Water"] = { 6, 7, 8, 9 },
-					["Cheney"] = { 11, 12, 13, 14 },
+					["PCE3R"] = { 1, 2, 3, 4 },
+					["Wa1er_God"] = { 6, 7, 8, 9 },
+					["CheneyC9999"] = { 11, 12, 13, 14 },
 				},
 				Length = 45,
 				CoinBonus = 120,
 			},
 			[3] = {
 				Enemies = {
-					["PCER"] = { 1, 2, 3, 4, 5 },
-					["Water"] = { 7, 8, 9, 10, 11 },
-					["Cheney"] = { 13, 14, 15, 16, 17 },
+					["PCE3R"] = { 1, 2, 3, 4, 5 },
+					["Wa1er_God"] = { 7, 8, 9, 10, 11 },
+					["CheneyC9999"] = { 13, 14, 15, 16, 17 },
 				},
 				Length = 45,
 				CoinBonus = 140,

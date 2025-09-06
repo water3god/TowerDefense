@@ -8,22 +8,22 @@ local GlobalModules = ServerScriptService.GlobalModules
 local Enemy = require(GlobalModules.Enemy)
 
 local Data: { [string]: Enemy.EnemyInfo } = {
-	["PCER"] = {
-		ModelName = "PCER",
+	["PCE3R"] = {
+		ModelName = "PCE3R",
 		Health = 5,
 		Speed = 1.4,
 		IsBoss = false,
 		Ally = false,
 	},
-	["Water"] = {
-		ModelName = "Water",
+	["Wa1er_God"] = {
+		ModelName = "Wa1er_God",
 		Health = 7,
 		Speed = 1.2,
 		IsBoss = false,
 		Ally = false,
 	},
-	["Cheney"] = {
-		ModelName = "Cheney",
+	["CheneyC9999"] = {
+		ModelName = "CheneyC9999",
 		Health = 10,
 		Speed = 1,
 		IsBoss = false,
