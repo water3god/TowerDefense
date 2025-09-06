@@ -433,7 +433,7 @@ local function HandleTutorial()
 				BackgroundColor3 = Color3.fromRGB(22, 229, 11),
 				Text = "",
 				Position = UDim2.fromScale(0.5, 0.2),
-				Size = UDim2.fromScale(0.2, 0.1),
+				Size = UDim2.fromScale(0.1, 0.06),
 				[React.Event.MouseButton1Click] = OpenTutorial,
 			},
 		}, {

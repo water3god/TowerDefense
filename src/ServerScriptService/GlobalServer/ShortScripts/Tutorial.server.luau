@@ -62,7 +62,7 @@ AcceptTutorial.SetCallback(function(Player: Player)
 
 	if PData then
 		local Data = PData.Profile.Data
-		if Data.PassedTutorial then
+		if not Data.PassedTutorial then
 			local AccessCode, ServerId = TeleportService:ReserveServer(MapData.Tutorial)
 
 			Promise.try(function()
@@ -76,10 +76,10 @@ AcceptTutorial.SetCallback(function(Player: Player)
 			end)
 				:andThen(function()
 					local TeleportOptions = Instance.new("TeleportOptions")
-					TeleportOptions.ShouldReserveServer = true
+					TeleportOptions.ReservedServerAccessCode = AccessCode
 
 					HelperFunctions.SafeTeleport(function()
-						return TeleportService:TeleportAsync(ServerId, { Player }, TeleportOptions)
+						return TeleportService:TeleportAsync(MapData.Tutorial, { Player }, TeleportOptions)
 					end, 3)
 				end)
 				:andThen(function()
