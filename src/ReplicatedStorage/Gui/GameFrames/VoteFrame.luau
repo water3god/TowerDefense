@@ -61,6 +61,7 @@ local function CreateVoteFrame(Props: Props)
 		if SettingsService.IsSynced then
 			if SettingsData.WaveAutoSkip then
 				WaveService.Vote()
+				SetVisible(false)
 			else
 				local Data = WaveService.GetVoteData()
 				if Data then
@@ -88,6 +89,7 @@ local function CreateVoteFrame(Props: Props)
 	Hooks.useEventConnection(SettingsService.Synced, function()
 		if SettingsData.WaveAutoSkip then
 			WaveService.Vote()
+			SetVisible(false)
 		else
 			local Data = WaveService.GetVoteData()
 			if Data then
