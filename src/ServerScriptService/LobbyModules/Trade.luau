@@ -317,7 +317,7 @@ function Trade:AddUnit(Player: Player, UniqueId: string)
 		local OwnedUnits = Data:GetOwnedUnits()
 
 		if OwnedUnits[UniqueId] then
-			if self:LowerThanMaxCount(Player) then
+			if not self:LowerThanMaxCount(Player) then
 				return
 			end
 			if Player == self.Player1 then
@@ -368,7 +368,7 @@ function Trade:AddProduct(Player: Player, UniqueId: string, Count: number)
 	if Data and Data:GetProductFromId(UniqueId) then
 		if Player == self.Player1 then
 			if not self.Player1Products[UniqueId] then
-				if self:LowerThanMaxCount(Player) then
+				if not self:LowerThanMaxCount(Player) then
 					return
 				end
 			end
@@ -376,7 +376,7 @@ function Trade:AddProduct(Player: Player, UniqueId: string, Count: number)
 			self.ProductAdded:Fire(UniqueId, self.Player1Products[UniqueId], self.Player1)
 		elseif Player == self.Player2 then
 			if not self.Player2Products[UniqueId] then
-				if self:LowerThanMaxCount(Player) then
+				if not self:LowerThanMaxCount(Player) then
 					return
 				end
 			end
@@ -420,7 +420,7 @@ function Trade:AddResource(Player: Player, UniqueId: string, Count: number)
 	if Data and Data:GetResourceFromId(UniqueId) then
 		if Player == self.Player1 then
 			if not self.Player1Resources[UniqueId] then
-				if self:LowerThanMaxCount(Player) then
+				if not self:LowerThanMaxCount(Player) then
 					return
 				end
 			end
@@ -428,7 +428,7 @@ function Trade:AddResource(Player: Player, UniqueId: string, Count: number)
 			self.ResourceAdded:Fire(UniqueId, self.Player1Resources[UniqueId], self.Player1)
 		elseif Player == self.Player2 then
 			if not self.Player2Resources[UniqueId] then
-				if self:LowerThanMaxCount(Player) then
+				if not self:LowerThanMaxCount(Player) then
 					return
 				end
 			end

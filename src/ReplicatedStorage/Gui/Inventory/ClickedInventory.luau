@@ -289,6 +289,16 @@ local function Connected(props)
 				ClickedTrove:Connect(RunService.Heartbeat, function()
 					UpdatePosition(Mouse:GetPosition())
 				end)
+			elseif PreferredInput == "Gamepad" then
+				local Gamepad = ClickedTrove:Construct(Input.Gamepad)
+
+				Gamepad.ButtonUp:Connect(function()
+					OnClick(Gamepad:GetThumbstick(Enum.KeyCode.Thumbstick2))
+				end)
+
+				ClickedTrove:Connect(RunService.Heartbeat, function()
+					UpdatePosition(Gamepad:GetPosition())
+				end)
 			end
 		end)
 

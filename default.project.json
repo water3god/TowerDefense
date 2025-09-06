@@ -38,6 +38,13 @@
         }
       }
     },
+    "Players": {
+      "$className": "Players",
+      "$ignoreUnknownInstances": true,
+      "$properties": {
+        "RespawnTime": 1
+      }
+    },
     "Lighting": {
       "$className": "Lighting",
       "$properties": {
