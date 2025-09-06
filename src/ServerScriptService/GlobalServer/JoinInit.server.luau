@@ -108,6 +108,8 @@ local function Init(DataInput: Types.RecieveData?)
 				Data = FoundData,
 				Positions = Positions,
 				Difficulty = Data.Difficulty,
+				MapId = Data.MapId,
+				StageId = Data.LevelId,
 			})
 		else
 			local FoundData = WaveData.WaveData[Data.LevelId]
@@ -120,6 +122,8 @@ local function Init(DataInput: Types.RecieveData?)
 					Positions = Positions,
 					Difficulty = Data.Difficulty,
 					IsInfinite = false,
+					MapId = Data.MapId,
+					StageId = Data.LevelId,
 				})
 
 				Wave.Passed:Connect(function(WaveNum: number)

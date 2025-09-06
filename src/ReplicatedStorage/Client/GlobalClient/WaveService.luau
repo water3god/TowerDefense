@@ -28,6 +28,8 @@ export type WaveData = {
 	MaxHealth: number,
 	Time: number,
 	StartTime: number,
+	MapId: string,
+	StageId: string,
 }
 
 local WaveData: WaveData? = nil

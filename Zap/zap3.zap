@@ -205,6 +205,8 @@ type WaveData = struct {
 	MaxHealth: Health,
 	Time: Time,
 	StartTime: Time,
+	MapId: string.binary,
+	StageId: string.binary,
 }
 
 type ResourceData = struct {

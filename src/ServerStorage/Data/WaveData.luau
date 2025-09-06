@@ -36,7 +36,7 @@ local WaveData: { [string]: WaveData } = {
 					["Cheney"] = { 11, 12, 13, 14 },
 				},
 				Length = 45,
-				CoinBonus = 100,
+				CoinBonus = 120,
 			},
 			[3] = {
 				Enemies = {
@@ -45,7 +45,7 @@ local WaveData: { [string]: WaveData } = {
 					["Cheney"] = { 13, 14, 15, 16, 17 },
 				},
 				Length = 45,
-				CoinBonus = 100,
+				CoinBonus = 140,
 			},
 		},
 		EnemyData = {},

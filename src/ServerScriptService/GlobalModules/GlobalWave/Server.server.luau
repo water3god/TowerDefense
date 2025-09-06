@@ -30,6 +30,8 @@ local function SerializeWave(Wave: GlobalWave.GlobalWave)
 		MaxHealth = Wave.MaxHealth,
 		Time = Wave.Time,
 		StartTime = Wave.StartTime,
+		MapId = Wave.MapId,
+		StageId = Wave.StageId,
 	}
 end
 

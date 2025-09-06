@@ -38,6 +38,8 @@ export type Input = {
 	XPMultiplier: number,
 	Positions: { Vector3 },
 	PlayerIds: { number },
+	MapId: string,
+	StageId: string,
 	Difficulty: string,
 }
 
@@ -47,6 +49,8 @@ export type InfiniteInput = {
 	XPMultiplier: number,
 	Positions: { Vector3 },
 	PlayerIds: { number },
+	MapId: string,
+	StageId: string,
 	Difficulty: string,
 }
 
@@ -62,6 +66,9 @@ type Data = {
 	DifficultyData: DifficultyData.Data,
 	IsInfinite: boolean,
 	XPMultiplier: number,
+
+	MapId: string,
+	StageId: string,
 
 	BaseHealth: number,
 	MaxHealth: number,
@@ -194,6 +201,9 @@ function GlobalWave.new(Input: Input)
 	self.Positions = Input.Positions
 	self.Data = Input.Data
 
+	self.MapId = Input.MapId
+	self.StageId = Input.StageId
+
 	self.InitTime = workspace:GetServerTimeNow()
 
 	self.Coins = {}
@@ -262,6 +272,8 @@ function GlobalWave.infinite(InfInput: InfiniteInput)
 		Difficulty = InfInput.Difficulty,
 		PlayerIds = InfInput.PlayerIds,
 		IsInfinite = true,
+		MapId = InfInput.MapId,
+		StageId = InfInput.StageId,
 	}
 
 	local OrderPriority = {}
