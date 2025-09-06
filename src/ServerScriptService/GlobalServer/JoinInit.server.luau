@@ -33,7 +33,9 @@ local IsTutorial = require(Shared.IsTutorial)
 
 local Map = workspace:FindFirstChild("GameMap")
 
-local WaveData = require(ServerStorage.Data.WaveData)
+local DataFolder = ServerStorage.Data
+local WaveData = require(DataFolder.WaveData)
+local MapData = require(DataFolder.MapData)
 
 local GlobalModules = ServerScriptService.GlobalModules
 local GlobalWave = require(GlobalModules.GlobalWave)
@@ -194,13 +196,31 @@ if RunService:IsStudio() then
 		Players.PlayerAdded:Wait()
 	end
 	local Ids = { Players:GetPlayers()[1].UserId }
+
+	local MapId = nil
+	local LevelId = nil
+
+	if MapData[game.PlaceId] then
+		local Data = GameInfo.GetMapFromId(MapData[game.PlaceId])
+		if Data then
+			MapId = Data.MapId
+			LevelId = Data.LevelInfo[1].GameId
+		end
+	end
+
+	if not MapId or not LevelId then
+		MapId = "Rome"
+		LevelId = "Rome_LegionsMarch"
+	end
+
 	Init({
 		PlayerIds = Ids,
-		MapId = "Rome",
-		LevelId = "Rome_LegionsMarch",
-		Difficulty = "Insane",
+		MapId = MapId,
+		LevelId = LevelId,
+		Difficulty = "Normal",
 		AccessCode = "",
 	})
+
 	return
 end
 
