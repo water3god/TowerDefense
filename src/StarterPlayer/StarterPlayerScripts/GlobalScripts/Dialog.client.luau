@@ -38,14 +38,16 @@ local function CreateDialog()
 
 	local HandleWave = React.useCallback(function(Wave: WaveService.WaveData)
 		if Wave then
-			local Dialog = WaveDialog[Wave.MapId][Wave.StageId]
-
-			if Dialog and Dialog[Wave.Wave] then
-				local DialogData = Dialog[Wave.Wave]
-				SetData({
-					SpeakerName = DialogData.Title,
-					Messages = DialogData.Message,
-				})
+			local MapInfo = WaveDialog[Wave.MapId]
+			if MapInfo then
+				local Dialog = MapInfo[Wave.StageId]
+				if Dialog and Dialog[Wave.Wave] then
+					local DialogData = Dialog[Wave.Wave]
+					SetData({
+						SpeakerName = DialogData.Title,
+						Messages = DialogData.Message,
+					})
+				end
 			end
 		end
 	end)
@@ -62,12 +64,16 @@ local function CreateDialog()
 	Hooks.useEventConnection(WaveService.Passed, function(Num: number)
 		local Wave = WaveService.GetWaveData()
 		if Wave then
-			local Dialog = WaveDialog[Wave.MapId][Wave.StageId]
-			if Dialog and Dialog[Num] then
-				SetData({
-					SpeakerName = Dialog[Num].Title,
-					Messages = Dialog[Num].Message,
-				})
+			local MapInfo = WaveDialog[Wave.MapId]
+			if MapInfo then
+				local Dialog = MapInfo[Wave.StageId]
+				if Dialog and Dialog[Num] then
+					local DialogData = Dialog[Num]
+					SetData({
+						SpeakerName = DialogData.Title,
+						Messages = DialogData.Message,
+					})
+				end
 			end
 		end
 	end, {})
