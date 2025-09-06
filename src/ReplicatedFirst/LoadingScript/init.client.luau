@@ -128,11 +128,14 @@ local function PreloadAsync()
 	if not game:IsLoaded() then
 		game.Loaded:Wait()
 	end
+
 	ContentProvider:PreloadAsync(ConvertIdsToDecals(Images))
+
 	if not Player.Character then
 		Player.CharacterAdded:Wait()
 	end
 	local InventoryService = require(ReplicatedStorage.Client.GlobalClient.InventoryService)
+
 	if not InventoryService.IsSynced then
 		InventoryService.Synced:Wait()
 	end

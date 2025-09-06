@@ -29,6 +29,7 @@ local Shared = ReplicatedStorage.Shared
 local Constants = require(Shared.Constants)
 local Types = require(Shared.Types)
 local GameInfo = require(Shared.GameInfo)
+local IsTutorial = require(Shared.IsTutorial)
 
 local Map = workspace:FindFirstChild("GameMap")
 
@@ -130,6 +131,13 @@ local function Init(DataInput: Types.RecieveData?)
 		end
 
 		Wave.Ended:Once(function()
+			if IsTutorial then
+				local _, PData = next(PlayerData.GetDatas())
+
+				if PData and PData.Profile:IsActive() then
+					PData.Profile.Data.PassedTutorial = true
+				end
+			end
 			ChangeDay(true)
 			if Wave.IsInfinite then
 				for PlayerId, _ in pairs(Wave.Coins) do
@@ -173,10 +181,15 @@ local function Init(DataInput: Types.RecieveData?)
 	end
 end
 
-StartGame:Connect(Init)
+if not IsTutorial then
+	StartGame:Connect(Init)
+end
 
 if RunService:IsStudio() then
-	local Ids = { 343804839 }
+	if not Players:GetPlayers()[1] then
+		Players.PlayerAdded:Wait()
+	end
+	local Ids = { Players:GetPlayers()[1].UserId }
 	Init({
 		PlayerIds = Ids,
 		MapId = "Rome",
@@ -187,16 +200,16 @@ if RunService:IsStudio() then
 	return
 end
 
-local function KickPlayer(Player: Player)
-	Player:Kick("Error While Loading Game. Please Rejoin.")
-end
+local Message = "Error While Loading Game. Please Rejoin."
 
 local function OnError()
 	for _, Player in ipairs(Players:GetPlayers()) do
-		KickPlayer(Player)
+		Player:Kick(Message)
 	end
 
-	Players.PlayerAdded:Connect(KickPlayer)
+	Players.PlayerAdded:Connect(function(Player)
+		Player:Kick(Message)
+	end)
 end
 
 local function Check()
@@ -216,7 +229,9 @@ local function Check()
 	end)
 end
 
-Check()
+if not IsTutorial then
+	Check()
+end
 
 Promise.retryWithDelay(function()
 	return Promise.new(function(resolve, reject)

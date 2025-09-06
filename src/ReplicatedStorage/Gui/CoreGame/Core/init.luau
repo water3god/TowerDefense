@@ -24,8 +24,9 @@ local Touch = Input.Touch
 local Mouse = Input.Mouse
 local Gamepad = Input.Gamepad
 
-local Network = ReplicatedStorage.Network
-local ClientOnly = require(Network.ClientOnly)
+local NetworkFolder = ReplicatedStorage.Network
+local Network = require(NetworkFolder.Client)
+local ClientOnly = require(NetworkFolder.ClientOnly)
 
 local Modules = ReplicatedStorage.Modules
 local ContextActionUtility = require(Modules.ContextActionUtility)
@@ -38,7 +39,9 @@ local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
 local MainButtonFrame = require(CoreGame.MainButtonFrame)
+local Confirm = require(CoreGame.Confirm)
 local NewGui = require(CoreGame.NewGui)
+
 local Hooks = require(CoreGame.Hooks)
 
 local GameFrames = Gui.GameFrames
@@ -112,6 +115,7 @@ local TipsContext = require(TipsFolder.TipsContext)
 local DailyContext = require(DailyFolder.DailyContext)
 local QuestsContext = require(QuestsFolder.QuestsContext)
 local MultiplierContext = require(MiscContexts.GoldMultiplier)
+local PassedTutorialContext = require(MiscContexts.PassedTutorial)
 
 local IsRunning = RunService:IsRunning()
 
@@ -396,6 +400,23 @@ local function RenderTraitsFrame(Props)
 			Position = Position,
 			Visible = Visiblity,
 		},
+	})
+end
+
+local function HandleTutorial()
+	local PassedTutorial = React.useContext(PassedTutorialContext.Context)
+
+	local Handler = React.useCallback(function(Enabled: boolean?)
+		if Enabled then
+			Network.AcceptTutorial.Fire()
+		end
+	end, { PassedTutorial })
+
+	return e(Confirm, {
+		Title = "Tutorial",
+		Description = "Would you like to play the tutorial?",
+		Enabled = false,
+		Handler = Handler,
 	})
 end
 
@@ -874,6 +895,7 @@ local function Render()
 				QuestsContext.Provider,
 				PromptContext.Provider,
 				MultiplierContext.Provider,
+				PassedTutorialContext.Provider,
 			},
 		},
 		{
@@ -1019,6 +1041,7 @@ local function Render()
 					TipsGui = e(TipsGui),
 					ClickedInventory = e(ClickedInventory.Connected),
 					RejoinFrame = e(RejoinFrame.Connected),
+					Tutorial = e(HandleTutorial),
 				}),
 
 				BottomFrame = e(Bottom, {

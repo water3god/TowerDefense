@@ -102,6 +102,18 @@ event ChooseStarter = {
 	data: string.binary,
 }
 
+event TutorialSent = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+}
+
+event AcceptTutorial = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+}
+
 -- Evolution --
 
 event EvolveUnit = {

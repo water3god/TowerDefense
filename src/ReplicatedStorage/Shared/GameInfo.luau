@@ -50,7 +50,7 @@ local GameInfo: { MapInfo } = {
 	{
 		MapId = "Egypt",
 		Name = "Egypt",
-		Image = "rbxassetid://81730317336118", -- egypt.png
+		Image = "rbxassetid://81730317336118",
 		LevelInfo = {
 			[0] = {
 				Name = "Infinite",
@@ -257,7 +257,7 @@ local GameInfo: { MapInfo } = {
 	{
 		MapId = "Greece",
 		Name = "Greece",
-		Image = "rbxassetid://120734686321148", -- greece.png
+		Image = "rbxassetid://120734686321148",
 		LevelInfo = {
 			[0] = {
 				Name = "Infinite",
@@ -465,7 +465,7 @@ local GameInfo: { MapInfo } = {
 	{
 		MapId = "Rome",
 		Name = "Rome",
-		Image = "rbxassetid://74963095419523", -- rome.png
+		Image = "rbxassetid://74963095419523",
 		LevelInfo = {
 			[0] = {
 				Name = "Infinite",
@@ -673,7 +673,7 @@ local GameInfo: { MapInfo } = {
 	{
 		MapId = "China",
 		Name = "China",
-		Image = "rbxassetid://136523529237600", -- china.png
+		Image = "rbxassetid://136523529237600",
 		LevelInfo = {
 			[0] = {
 				Name = "Infinite",
@@ -881,7 +881,6 @@ local GameInfo: { MapInfo } = {
 	{
 		MapId = "Medieval",
 		Name = "Medieval",
-		-- Placeholder image (image5.png) until a dedicated medieval map image is added.
 		Image = "rbxassetid://80598570223220", -- image5.png
 		LevelInfo = {
 			[0] = {
@@ -1086,6 +1085,38 @@ local GameInfo: { MapInfo } = {
 			},
 		},
 		Prerequisite = "China",
+	},
+	{
+		Name = "Tutorial",
+		MapId = "Tutorial",
+		Index = 1,
+		XPMultiplier = 1,
+		Image = "rbxassetid://1234567890",
+		LevelInfo = {
+			{
+				Name = "Tutorial",
+				GameId = "Tutorial",
+				Index = 1,
+				XPMultiplier = 1,
+				RewardInfo = {
+					Normal = {
+						Units = {},
+						Resources = {
+							{ Resource = "Gold", Count = 600 },
+							{ Resource = "Omen Coins", Count = 5 },
+						},
+					},
+					Hard = {
+						Units = {},
+						Resources = {},
+					},
+					Insane = {
+						Units = {},
+						Resources = {},
+					},
+				},
+			},
+		},
 	},
 }
 

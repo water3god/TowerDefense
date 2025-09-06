@@ -122,6 +122,9 @@ if not RunService:IsRunning() then
 		UnitEvolved = table.freeze({
 			SetCallback = noop
 		}),
+		TutorialSent = table.freeze({
+			SetCallback = noop
+		}),
 		TraitRolled = table.freeze({
 			SetCallback = noop
 		}),
@@ -170,6 +173,9 @@ if not RunService:IsRunning() then
 		AllEquippedSync = table.freeze({
 			SetCallback = noop
 		}),
+		AcceptTutorial = table.freeze({
+			Fire = noop
+		}),
 	}) :: Events
 end
 if RunService:IsServer() then
@@ -204,17 +210,18 @@ end
 
 RunService.Heartbeat:Connect(SendEvents)
 
-local reliable_events = table.create(10)
-local reliable_event_queue: { [number]: { any } } = table.create(10)
-reliable_event_queue[6] = {}
+local reliable_events = table.create(11)
+local reliable_event_queue: { [number]: { any } } = table.create(11)
 reliable_event_queue[7] = {}
+reliable_event_queue[6] = 0
+reliable_event_queue[8] = {}
 reliable_event_queue[0] = {}
 reliable_event_queue[1] = {}
-reliable_event_queue[9] = 0
+reliable_event_queue[10] = 0
 reliable_event_queue[3] = {}
 reliable_event_queue[4] = {}
 reliable_event_queue[5] = 0
-reliable_event_queue[8] = {}
+reliable_event_queue[9] = {}
 reliable_event_queue[2] = {}
 reliable.OnClientEvent:Connect(function(buff, inst)
 	incoming_buff = buff
@@ -224,32 +231,42 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 	local len = buffer.len(buff)
 	while incoming_read < len do
 		local id = buffer.readu8(buff, read(1))
-		if id == 6 then
+		if id == 7 then
 			local value
 			value = {  }
 			local len_1 = buffer.readu16(incoming_buff, read(2))
 			value["UnitName"] = buffer.readstring(incoming_buff, read(len_1), len_1)
+			if reliable_events[7] then
+				task.spawn(reliable_events[7], value)
+			else
+				table.insert(reliable_event_queue[7], value)
+				if #reliable_event_queue[7] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[7]} events in queue for UnitEvolved. Did you forget to attach a listener?`)
+				end
+			end
+		elseif id == 6 then
+			local value
 			if reliable_events[6] then
 				task.spawn(reliable_events[6], value)
 			else
-				table.insert(reliable_event_queue[6], value)
-				if #reliable_event_queue[6] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[6]} events in queue for UnitEvolved. Did you forget to attach a listener?`)
+				reliable_event_queue[6] += 1
+				if reliable_event_queue[6] > 16 then
+					warn(`[ZAP] {reliable_event_queue[6]} events in queue for TutorialSent. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 7 then
+		elseif id == 8 then
 			local value
 			value = {  }
 			local len_2 = buffer.readu16(incoming_buff, read(2))
 			value["UniqueId"] = buffer.readstring(incoming_buff, read(len_2), len_2)
 			local len_3 = buffer.readu16(incoming_buff, read(2))
 			value["NewTrait"] = buffer.readstring(incoming_buff, read(len_3), len_3)
-			if reliable_events[7] then
-				task.spawn(reliable_events[7], value)
+			if reliable_events[8] then
+				task.spawn(reliable_events[8], value)
 			else
-				table.insert(reliable_event_queue[7], value)
-				if #reliable_event_queue[7] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[7]} events in queue for TraitRolled. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[8], value)
+				if #reliable_event_queue[8] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[8]} events in queue for TraitRolled. Did you forget to attach a listener?`)
 				end
 			end
 		elseif id == 0 then
@@ -276,14 +293,14 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 					warn(`[ZAP] {#reliable_event_queue[1]} events in queue for TitleAdded. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 9 then
+		elseif id == 10 then
 			local value
-			if reliable_events[9] then
-				task.spawn(reliable_events[9], value)
+			if reliable_events[10] then
+				task.spawn(reliable_events[10], value)
 			else
-				reliable_event_queue[9] += 1
-				if reliable_event_queue[9] > 16 then
-					warn(`[ZAP] {reliable_event_queue[9]} events in queue for RejoinPrompted. Did you forget to attach a listener?`)
+				reliable_event_queue[10] += 1
+				if reliable_event_queue[10] > 16 then
+					warn(`[ZAP] {reliable_event_queue[10]} events in queue for RejoinPrompted. Did you forget to attach a listener?`)
 				end
 			end
 		elseif id == 3 then
@@ -407,7 +424,7 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 					warn(`[ZAP] {reliable_event_queue[5]} events in queue for FirstJoin. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 8 then
+		elseif id == 9 then
 			local value
 			local bool_6 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
@@ -421,12 +438,12 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 					value[key_1] = val_6
 				end
 			end
-			if reliable_events[8] then
-				task.spawn(reliable_events[8], value)
+			if reliable_events[9] then
+				task.spawn(reliable_events[9], value)
 			else
-				table.insert(reliable_event_queue[8], value)
-				if #reliable_event_queue[8] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[8]} events in queue for BoostsSync. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[9], value)
+				if #reliable_event_queue[9] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[9]} events in queue for BoostsSync. Did you forget to attach a listener?`)
 				end
 			end
 		elseif id == 2 then
@@ -487,11 +504,23 @@ local returns = {
 		SetCallback = function(Callback: (Value: ({
 			["UnitName"]: (string),
 		})) -> ()): () -> ()
-			reliable_events[6] = Callback
-			for _, value in reliable_event_queue[6] do
+			reliable_events[7] = Callback
+			for _, value in reliable_event_queue[7] do
 				task.spawn(Callback, value)
 			end
-			reliable_event_queue[6] = {}
+			reliable_event_queue[7] = {}
+			return function()
+				reliable_events[7] = nil
+			end
+		end,
+	},
+	TutorialSent = {
+		SetCallback = function(Callback: () -> ()): () -> ()
+			reliable_events[6] = Callback
+			for _ = 1, reliable_event_queue[6] do
+				task.spawn(Callback)
+			end
+			reliable_event_queue[6] = 0
 			return function()
 				reliable_events[6] = nil
 			end
@@ -502,13 +531,13 @@ local returns = {
 			["UniqueId"]: (string),
 			["NewTrait"]: (string),
 		})) -> ()): () -> ()
-			reliable_events[7] = Callback
-			for _, value in reliable_event_queue[7] do
+			reliable_events[8] = Callback
+			for _, value in reliable_event_queue[8] do
 				task.spawn(Callback, value)
 			end
-			reliable_event_queue[7] = {}
+			reliable_event_queue[8] = {}
 			return function()
-				reliable_events[7] = nil
+				reliable_events[8] = nil
 			end
 		end,
 	},
@@ -553,7 +582,7 @@ local returns = {
 			["UniqueId"]: (string),
 		}))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
 			local len_21 = #Value["UniqueId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_21)
@@ -563,20 +592,20 @@ local returns = {
 	},
 	RejoinPrompted = {
 		SetCallback = function(Callback: () -> ()): () -> ()
-			reliable_events[9] = Callback
-			for _ = 1, reliable_event_queue[9] do
+			reliable_events[10] = Callback
+			for _ = 1, reliable_event_queue[10] do
 				task.spawn(Callback)
 			end
-			reliable_event_queue[9] = 0
+			reliable_event_queue[10] = 0
 			return function()
-				reliable_events[9] = nil
+				reliable_events[10] = nil
 			end
 		end,
 	},
 	Rejoin = {
 		Fire = function()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
 		end,
 	},
 	RedeemQuest = {
@@ -661,7 +690,7 @@ local returns = {
 			["UniqueId"]: (string),
 		}))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
 			local len_23 = #Value["UniqueId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_23)
@@ -693,13 +722,13 @@ local returns = {
 	},
 	BoostsSync = {
 		SetCallback = function(Callback: (Value: ({ [(string)]: (number) })) -> ()): () -> ()
-			reliable_events[8] = Callback
-			for _, value in reliable_event_queue[8] do
+			reliable_events[9] = Callback
+			for _, value in reliable_event_queue[9] do
 				task.spawn(Callback, value)
 			end
-			reliable_event_queue[8] = {}
+			reliable_event_queue[9] = {}
 			return function()
-				reliable_events[8] = nil
+				reliable_events[9] = nil
 			end
 		end,
 	},
@@ -721,6 +750,12 @@ local returns = {
 			return function()
 				reliable_events[2] = nil
 			end
+		end,
+	},
+	AcceptTutorial = {
+		Fire = function()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
 		end,
 	},
 }

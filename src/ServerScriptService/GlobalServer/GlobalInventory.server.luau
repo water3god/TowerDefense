@@ -24,6 +24,7 @@ local TitleAddedEvent = Network.TitleAdded
 local function OnDataAdded(Data: PlayerData.PlayerData)
 	local Player = Data.Player
 	local GivenData = Data.Profile.Data
+
 	InventorySync.Fire(
 		Player,
 		{

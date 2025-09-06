@@ -105,7 +105,7 @@ local function TpToMap(Data: Types.SentData)
 	end
 
 	local Success = pcall(function()
-		MapStore:SetAsync(tostring(ServerId), NewData, 172800)
+		MapStore:SetAsync(tostring(ServerId), NewData, Constants.MAPSTORETIME)
 	end)
 
 	local MapInfo, LevelInfo = GameInfo.GetDataFromInfo(Data.MapId, Data.LevelId)

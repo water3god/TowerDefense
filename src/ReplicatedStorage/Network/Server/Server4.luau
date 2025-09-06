@@ -126,6 +126,13 @@ if not RunService:IsRunning() then
 			FireList = noop,
 			FireSet = noop
 		}),
+		TutorialSent = table.freeze({
+			Fire = noop,
+			FireAll = noop,
+			FireExcept = noop,
+			FireList = noop,
+			FireSet = noop
+		}),
 		TraitRolled = table.freeze({
 			Fire = noop,
 			FireAll = noop,
@@ -210,6 +217,9 @@ if not RunService:IsRunning() then
 			FireList = noop,
 			FireSet = noop
 		}),
+		AcceptTutorial = table.freeze({
+			SetCallback = noop
+		}),
 	}) :: Events
 end
 local Players = game:GetService("Players")
@@ -271,7 +281,7 @@ end
 
 RunService.Heartbeat:Connect(SendEvents)
 
-local reliable_events = table.create(7)
+local reliable_events = table.create(8)
 reliable.OnServerEvent:Connect(function(player, buff, inst)
 	incoming_buff = buff
 	incoming_inst = inst
@@ -287,18 +297,18 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 			if reliable_events[1] then
 				task.spawn(reliable_events[1], player, value)
 			end
-		elseif id == 5 then
+		elseif id == 6 then
 			local value
 			value = {  }
 			local len_1 = buffer.readu16(incoming_buff, read(2))
 			value["UniqueId"] = buffer.readstring(incoming_buff, read(len_1), len_1)
-			if reliable_events[5] then
-				task.spawn(reliable_events[5], player, value)
-			end
-		elseif id == 6 then
-			local value
 			if reliable_events[6] then
 				task.spawn(reliable_events[6], player, value)
+			end
+		elseif id == 7 then
+			local value
+			if reliable_events[7] then
+				task.spawn(reliable_events[7], player, value)
 			end
 		elseif id == 2 then
 			local value
@@ -307,13 +317,13 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 			if reliable_events[2] then
 				task.spawn(reliable_events[2], player, value)
 			end
-		elseif id == 4 then
+		elseif id == 5 then
 			local value
 			value = {  }
 			local len_3 = buffer.readu16(incoming_buff, read(2))
 			value["UniqueId"] = buffer.readstring(incoming_buff, read(len_3), len_3)
-			if reliable_events[4] then
-				task.spawn(reliable_events[4], player, value)
+			if reliable_events[5] then
+				task.spawn(reliable_events[5], player, value)
 			end
 		elseif id == 0 then
 			local value
@@ -328,6 +338,11 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 			value = buffer.readstring(incoming_buff, read(len_5), len_5)
 			if reliable_events[3] then
 				task.spawn(reliable_events[3], player, value)
+			end
+		elseif id == 4 then
+			local value
+			if reliable_events[4] then
+				task.spawn(reliable_events[4], player, value)
 			end
 		else
 			error("Unknown event id")
@@ -345,7 +360,7 @@ local returns = {
 		}))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
 			local len_6 = #Value["UnitName"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_6)
@@ -358,7 +373,7 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
 			local len_7 = #Value["UnitName"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_7)
@@ -378,7 +393,7 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
 			local len_8 = #Value["UnitName"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_8)
@@ -400,7 +415,7 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
 			local len_9 = #Value["UnitName"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_9)
@@ -420,12 +435,74 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
 			local len_10 = #Value["UnitName"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_10)
 			alloc(len_10)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value["UnitName"], len_10)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for player in Set do
+				load_player(player)
+				alloc(used)
+				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+				player_map[player] = save()
+			end
+		end,
+	},
+	TutorialSent = {
+		Fire = function(Player: Player)
+			load_player(Player)
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			player_map[Player] = save()
+		end,
+		FireAll = function()
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in Players:GetPlayers() do
+				load_player(player)
+				alloc(used)
+				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+				player_map[player] = save()
+			end
+		end,
+		FireExcept = function(Except: Player)
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in Players:GetPlayers() do
+				if player ~= Except then
+					load_player(player)
+					alloc(used)
+					buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+					table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+					player_map[player] = save()
+				end
+			end
+		end,
+		FireList = function(List: { [unknown]: Player })
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in List do
+				load_player(player)
+				alloc(used)
+				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+				player_map[player] = save()
+			end
+		end,
+		FireSet = function(Set: { [Player]: any })
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -443,7 +520,7 @@ local returns = {
 		}))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
 			local len_11 = #Value["UniqueId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_11)
@@ -462,7 +539,7 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
 			local len_13 = #Value["UniqueId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_13)
@@ -488,7 +565,7 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
 			local len_15 = #Value["UniqueId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_15)
@@ -516,7 +593,7 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
 			local len_17 = #Value["UniqueId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_17)
@@ -542,7 +619,7 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
 			local len_19 = #Value["UniqueId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_19)
@@ -749,9 +826,9 @@ local returns = {
 		SetCallback = function(Callback: (Player: Player, Value: ({
 			["UniqueId"]: (string),
 		})) -> ()): () -> ()
-			reliable_events[5] = Callback
+			reliable_events[6] = Callback
 			return function()
-				reliable_events[5] = nil
+				reliable_events[6] = nil
 			end
 		end,
 	},
@@ -759,13 +836,13 @@ local returns = {
 		Fire = function(Player: Player)
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
 			player_map[Player] = save()
 		end,
 		FireAll = function()
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				load_player(player)
@@ -778,7 +855,7 @@ local returns = {
 		FireExcept = function(Except: Player)
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -793,7 +870,7 @@ local returns = {
 		FireList = function(List: { [unknown]: Player })
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -806,7 +883,7 @@ local returns = {
 		FireSet = function(Set: { [Player]: any })
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -819,9 +896,9 @@ local returns = {
 	},
 	Rejoin = {
 		SetCallback = function(Callback: (Player: Player) -> ()): () -> ()
-			reliable_events[6] = Callback
+			reliable_events[7] = Callback
 			return function()
-				reliable_events[6] = nil
+				reliable_events[7] = nil
 			end
 		end,
 	},
@@ -1748,9 +1825,9 @@ local returns = {
 		SetCallback = function(Callback: (Player: Player, Value: ({
 			["UniqueId"]: (string),
 		})) -> ()): () -> ()
-			reliable_events[4] = Callback
+			reliable_events[5] = Callback
 			return function()
-				reliable_events[4] = nil
+				reliable_events[5] = nil
 			end
 		end,
 	},
@@ -1774,7 +1851,7 @@ local returns = {
 		Fire = function(Player: Player, Value: ({ [(string)]: (number) }))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
 			local bool_27 = 0
 			local bool_27_pos_1 = alloc(1)
 			local len_pos_1
@@ -1803,7 +1880,7 @@ local returns = {
 		FireAll = function(Value: ({ [(string)]: (number) }))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
 			local bool_28 = 0
 			local bool_28_pos_1 = alloc(1)
 			local len_pos_2
@@ -1839,7 +1916,7 @@ local returns = {
 		FireExcept = function(Except: Player, Value: ({ [(string)]: (number) }))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
 			local bool_29 = 0
 			local bool_29_pos_1 = alloc(1)
 			local len_pos_3
@@ -1877,7 +1954,7 @@ local returns = {
 		FireList = function(List: { [unknown]: Player }, Value: ({ [(string)]: (number) }))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
 			local bool_30 = 0
 			local bool_30_pos_1 = alloc(1)
 			local len_pos_4
@@ -1913,7 +1990,7 @@ local returns = {
 		FireSet = function(Set: { [Player]: any }, Value: ({ [(string)]: (number) }))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
 			local bool_31 = 0
 			local bool_31_pos_1 = alloc(1)
 			local len_pos_5
@@ -2291,6 +2368,14 @@ local returns = {
 				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
 				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
 				player_map[player] = save()
+			end
+		end,
+	},
+	AcceptTutorial = {
+		SetCallback = function(Callback: (Player: Player) -> ()): () -> ()
+			reliable_events[4] = Callback
+			return function()
+				reliable_events[4] = nil
 			end
 		end,
 	},

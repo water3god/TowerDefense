@@ -24,6 +24,7 @@ local ClientOnly = require(NetworkFolder.ClientOnly)
 local OnVote = Network.OnEndVote
 local OnEnd = Network.OnEnd
 local Vote = Network.EndVoteAction
+local Warning = ClientOnly.Warning
 
 local TeleportBack = Network.TeleportBack
 
@@ -47,6 +48,7 @@ local WaveService = require(GlobalClient.WaveService)
 
 local Shared = ReplicatedStorage.Shared
 local Constants = require(Shared.Constants)
+local IsTutorial = require(Shared.IsTutorial)
 local GameInfo = require(Shared.GameInfo)
 local XPData = GameInfo.XPData
 
@@ -361,7 +363,11 @@ local function CreateVoteFrame(Props: Props)
 	end, { Props.SetVisible })
 
 	local RestartClick = React.useCallback(function()
-		Vote.Fire()
+		if IsTutorial then
+			Warning:Fire("Cannot restart in tutorial.")
+		else
+			Vote.Fire()
+		end
 	end, {})
 
 	local ReturnClick = React.useCallback(function()

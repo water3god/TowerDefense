@@ -2,7 +2,7 @@
 
 -- By Wa1er_God --
 
-local ADMIN = { 343804839 }
+local ADMIN = { 343804839, 1025769455 }
 
 -- Services --
 local Players = game:GetService("Players")

@@ -415,9 +415,6 @@ function PlayerData.new(Player: Player)
 
 		self._Trove:Connect(self.Destroying, function()
 			self.Profile:EndSession()
-		end)
-
-		self.Profile.OnSessionEnd:Connect(function()
 			self:Delete()
 			Player:Kick("Error Loading Profile: Player not in game.")
 		end)

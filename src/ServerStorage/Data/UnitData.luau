@@ -428,7 +428,13 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 		UnitName = "Leif Erikson",
 
 		AttackFuncs = {},
-		DefaultRuns = {},
+		DefaultRuns = {
+			function(Unit: UnitModule.Unit)
+				local Ratio = Unit:GetPropertyRaw("Damage")
+				local Range = ApplyBuff(Unit, "Range", Ratio, math.huge)
+				return Range
+			end,
+		},
 		Abilities = {},
 	},
 	["Charlemagne"] = {

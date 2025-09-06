@@ -18,11 +18,35 @@ export type WaveData = {
 }
 
 local WaveData: { [string]: WaveData } = {
-	["Hastingsv1"] = {
+	["Tutorial"] = {
 		Data = {
-			[1] = { Enemies = { Zombie = { 1 } }, Length = 45, CoinBonus = 1 },
-			[2] = { Enemies = { Zombie = { 1, 2, 3, 4, 5, 6, 7, 8, 9 } }, Length = 50, CoinBonus = 1 },
-			[3] = { Enemies = { Zombie = { 1, 2, 3, 4, 5, 6, 7, 8, 9 } }, Length = 55, CoinBonus = 1 },
+			[1] = {
+				Enemies = {
+					["PCER"] = { 1, 2, 3 },
+					["Water"] = { 5, 6, 7 },
+					["Cheney"] = { 9, 10, 11 },
+				},
+				Length = 20,
+				CoinBonus = 100,
+			},
+			[2] = {
+				Enemies = {
+					["PCER"] = { 1, 2, 3, 4 },
+					["Water"] = { 6, 7, 8, 9 },
+					["Cheney"] = { 11, 12, 13, 14 },
+				},
+				Length = 45,
+				CoinBonus = 100,
+			},
+			[3] = {
+				Enemies = {
+					["PCER"] = { 1, 2, 3, 4, 5 },
+					["Water"] = { 7, 8, 9, 10, 11 },
+					["Cheney"] = { 13, 14, 15, 16, 17 },
+				},
+				Length = 45,
+				CoinBonus = 100,
+			},
 		},
 		EnemyData = {},
 	},
