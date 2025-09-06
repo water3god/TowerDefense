@@ -154,7 +154,7 @@ local function CreateConfirm(props: props)
 				native = {
 					Text = props.Title,
 					Position = UDim2.fromScale(0.5, 0.2),
-					Size = UDim2.fromScale(0.5, 0.2),
+					Size = UDim2.fromScale(0.5, 0.175),
 					ZIndex = 2,
 				},
 			}),

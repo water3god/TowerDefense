@@ -407,7 +407,7 @@ end
 
 local function HandleTutorial()
 	local PassedTutorial = React.useContext(PassedTutorialContext.Context)
-	local TutorialEnabled, SetTutorialEnabled = React.useState(false)
+	local TutorialEnabled, SetTutorialEnabled = React.useState(true)
 
 	local Handler = React.useCallback(function(Enabled: boolean?)
 		if Enabled then
@@ -424,7 +424,7 @@ local function HandleTutorial()
 		ConfirmGui = e(Confirm, {
 			Title = "Tutorial",
 			Description = "Would you like to play the tutorial?",
-			Enabled = TutorialEnabled,
+			Enabled = not PassedTutorial and TutorialEnabled,
 			Handler = Handler,
 		}),
 		OpenTutorialButton = not PassedTutorial and not TutorialEnabled and e(Main.Animateables.TextButton, {
