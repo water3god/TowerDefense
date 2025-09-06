@@ -44,7 +44,7 @@ end
 local function HandlePlayerData(PData: PlayerData.PlayerData)
 	local Data = PData.Profile.Data
 
-	if Data.PassedTutorial then
+	if not Data.PassedTutorial then
 		TutorialSent.Fire(PData.Player)
 	end
 end

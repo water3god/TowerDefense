@@ -236,6 +236,7 @@ local function RenderTradeFrame(Props: TradeFrameProps)
 	})
 
 	return e(TradeFrame, {
+		Visible = Props.Visible,
 		Toggle = Props.Toggle,
 		native = {
 			Position = Position,
@@ -411,8 +412,8 @@ local function HandleTutorial()
 	local Handler = React.useCallback(function(Enabled: boolean?)
 		if Enabled then
 			Network.AcceptTutorial.Fire()
-			SetTutorialEnabled(false)
 		end
+		SetTutorialEnabled(false)
 	end, { PassedTutorial })
 
 	local OpenTutorial = React.useCallback(function()
@@ -426,15 +427,19 @@ local function HandleTutorial()
 			Enabled = TutorialEnabled,
 			Handler = Handler,
 		}),
-		OpenTutorialButton = not PassedTutorial and e(Main.Animateables.TextButton, {
+		OpenTutorialButton = not PassedTutorial and not TutorialEnabled and e(Main.Animateables.TextButton, {
 			native = {
 				BackgroundTransparency = 0,
 				BackgroundColor3 = Color3.fromRGB(22, 229, 11),
 				Text = "",
-				Position = UDim2.fromScale(0.5, 0.3),
+				Position = UDim2.fromScale(0.5, 0.2),
+				Size = UDim2.fromScale(0.2, 0.1),
 				[React.Event.MouseButton1Click] = OpenTutorial,
 			},
 		}, {
+			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+				AspectRatio = 3,
+			}),
 			Label = e(Main.TextLabel, {
 				native = {
 					Text = "Open Tutorial",
