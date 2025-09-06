@@ -87,6 +87,8 @@ type TradeImpl = {
 
 	TogglePlayerStatus: (self: Trade, Player: Player, Progress: boolean) -> (),
 
+	LowerThanMaxCount: (self: Trade, Player: Player) -> boolean,
+
 	_UpdateStatus: (self: Trade, Player1Old: Types.Status, Player2Old: Types.Status, OldStatus: Types.Status) -> (),
 	_Complete: (self: Trade) -> (),
 
@@ -315,6 +317,9 @@ function Trade:AddUnit(Player: Player, UniqueId: string)
 		local OwnedUnits = Data:GetOwnedUnits()
 
 		if OwnedUnits[UniqueId] then
+			if self:LowerThanMaxCount(Player) then
+				return
+			end
 			if Player == self.Player1 then
 				if table.find(self.Player1Units, UniqueId) then
 					return
@@ -362,9 +367,19 @@ function Trade:AddProduct(Player: Player, UniqueId: string, Count: number)
 
 	if Data and Data:GetProductFromId(UniqueId) then
 		if Player == self.Player1 then
+			if not self.Player1Products[UniqueId] then
+				if self:LowerThanMaxCount(Player) then
+					return
+				end
+			end
 			self.Player1Products[UniqueId] = (self.Player1Products[UniqueId] or 0) + Count
 			self.ProductAdded:Fire(UniqueId, self.Player1Products[UniqueId], self.Player1)
 		elseif Player == self.Player2 then
+			if not self.Player2Products[UniqueId] then
+				if self:LowerThanMaxCount(Player) then
+					return
+				end
+			end
 			self.Player2Products[UniqueId] = (self.Player2Products[UniqueId] or 0) + Count
 			self.ProductAdded:Fire(UniqueId, self.Player2Products[UniqueId], self.Player2)
 		end
@@ -404,9 +419,19 @@ function Trade:AddResource(Player: Player, UniqueId: string, Count: number)
 
 	if Data and Data:GetResourceFromId(UniqueId) then
 		if Player == self.Player1 then
+			if not self.Player1Resources[UniqueId] then
+				if self:LowerThanMaxCount(Player) then
+					return
+				end
+			end
 			self.Player1Resources[UniqueId] = (self.Player1Resources[UniqueId] or 0) + Count
 			self.ResourceAdded:Fire(UniqueId, self.Player1Resources[UniqueId], self.Player1)
 		elseif Player == self.Player2 then
+			if not self.Player2Resources[UniqueId] then
+				if self:LowerThanMaxCount(Player) then
+					return
+				end
+			end
 			self.Player2Resources[UniqueId] = (self.Player2Resources[UniqueId] or 0) + Count
 			self.ResourceAdded:Fire(UniqueId, self.Player2Resources[UniqueId], self.Player2)
 		end
@@ -528,6 +553,31 @@ function Trade:TogglePlayerStatus(Player: Player, Progress: boolean)
 	end
 
 	self:_UpdateStatus(Player1Old, Player2Old, self.Status)
+end
+
+function Trade:LowerThanMaxCount(Player: Player): boolean
+	if Player == self.Player1 then
+		local Count = 0
+		Count += #self.Player1Units
+		for _, _ in pairs(self.Player1Products) do
+			Count += 1
+		end
+		for _, _ in pairs(self.Player1Resources) do
+			Count += 1
+		end
+		return Count < 5
+	elseif Player == self.Player2 then
+		local Count = 0
+		Count += #self.Player2Units
+		for _, _ in pairs(self.Player2Products) do
+			Count += 1
+		end
+		for _, _ in pairs(self.Player2Resources) do
+			Count += 1
+		end
+		return Count < 5
+	end
+	return false
 end
 
 function Trade:_UpdateStatus(Player1Old: Types.Status, Player2Old: Types.Status, OldStatus: Types.Status)

@@ -271,6 +271,10 @@ local function CreateMainStory(Properties: Properties)
 	local MapData = React.useMemo(function()
 		local Data: { [string]: React.Node } = {}
 		for Index, MapInfo in ipairs(GameInfo.GameInfo) do
+			if MapInfo.Name == "Tutorial" then
+				continue
+			end
+
 			local Enabled: boolean = nil
 
 			if MapInfo.Prerequisite then

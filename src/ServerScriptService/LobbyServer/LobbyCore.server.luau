@@ -215,6 +215,9 @@ Network.ChooseMap.SetCallback(
 		then
 			return
 		end
+		if Data.MapId == "Tutorial" then
+			return
+		end
 		if not GameInfo.GetDataFromInfo(Data.MapId, Data.LevelId) then
 			return
 		end

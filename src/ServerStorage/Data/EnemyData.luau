@@ -10,22 +10,22 @@ local Enemy = require(GlobalModules.Enemy)
 local Data: { [string]: Enemy.EnemyInfo } = {
 	["PCER"] = {
 		ModelName = "PCER",
-		Health = 15,
+		Health = 5,
 		Speed = 1.4,
 		IsBoss = false,
 		Ally = false,
 	},
 	["Water"] = {
 		ModelName = "Water",
-		Health = 10,
+		Health = 7,
 		Speed = 1.2,
 		IsBoss = false,
 		Ally = false,
 	},
 	["Cheney"] = {
 		ModelName = "Cheney",
-		Health = 12,
-		Speed = 1.5,
+		Health = 10,
+		Speed = 1,
 		IsBoss = false,
 		Ally = false,
 	},

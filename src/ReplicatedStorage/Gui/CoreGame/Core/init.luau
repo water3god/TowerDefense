@@ -41,6 +41,7 @@ local Main = require(CoreGame.Main)
 local MainButtonFrame = require(CoreGame.MainButtonFrame)
 local Confirm = require(CoreGame.Confirm)
 local NewGui = require(CoreGame.NewGui)
+local UIStroke = require(CoreGame.UIStroke)
 
 local Hooks = require(CoreGame.Hooks)
 
@@ -405,18 +406,57 @@ end
 
 local function HandleTutorial()
 	local PassedTutorial = React.useContext(PassedTutorialContext.Context)
+	local TutorialEnabled, SetTutorialEnabled = React.useState(false)
 
 	local Handler = React.useCallback(function(Enabled: boolean?)
 		if Enabled then
 			Network.AcceptTutorial.Fire()
+			SetTutorialEnabled(false)
 		end
 	end, { PassedTutorial })
 
-	return e(Confirm, {
-		Title = "Tutorial",
-		Description = "Would you like to play the tutorial?",
-		Enabled = false,
-		Handler = Handler,
+	local OpenTutorial = React.useCallback(function()
+		SetTutorialEnabled(true)
+	end, {})
+
+	return e(React.Fragment, nil, {
+		ConfirmGui = e(Confirm, {
+			Title = "Tutorial",
+			Description = "Would you like to play the tutorial?",
+			Enabled = TutorialEnabled,
+			Handler = Handler,
+		}),
+		OpenTutorialButton = not PassedTutorial and e(Main.Animateables.TextButton, {
+			native = {
+				BackgroundTransparency = 0,
+				BackgroundColor3 = Color3.fromRGB(22, 229, 11),
+				Text = "",
+				Position = UDim2.fromScale(0.5, 0.3),
+				[React.Event.MouseButton1Click] = OpenTutorial,
+			},
+		}, {
+			Label = e(Main.TextLabel, {
+				native = {
+					Text = "Open Tutorial",
+					Size = UDim2.fromScale(0.9, 0.6),
+				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.015,
+				}),
+			}),
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0, 8),
+			}),
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.01,
+				native = {
+					Color = Color3.fromRGB(13, 119, 7),
+					LineJoinMode = Enum.LineJoinMode.Round,
+					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+				},
+			}),
+		}),
 	})
 end
 

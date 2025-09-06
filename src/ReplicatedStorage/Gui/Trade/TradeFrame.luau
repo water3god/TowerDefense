@@ -13,6 +13,9 @@ local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
 local e = React.createElement
 
+local Network = require(ReplicatedStorage.Network.ClientOnly)
+local SendWarning = Network.Warning
+
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
@@ -44,6 +47,7 @@ local Types = require(Shared.Types)
 local ProductInfo = require(Shared.ProductInfo)
 
 export type Properties = {
+	Visible: boolean,
 	Toggle: (Visible: boolean) -> (),
 	native: { [any]: any }?,
 	children: { [any]: any }?,
@@ -285,6 +289,18 @@ local function TradeMain(Properties: Properties)
 		if TradeData.Status ~= "InTrade" then
 			return
 		end
+
+		local Count = 0
+
+		Count += #TradeData.YourUnits
+		Count += #TradeData.YourProducts
+		Count += #TradeData.YourResources
+
+		if Count >= 5 then
+			SendWarning:Fire("You can only trade up to 5 items at a time.")
+			return
+		end
+
 		PromptVisible.current = true
 		PromptData.SetVisible(true)
 	end, { TradeData, PromptData } :: { unknown })
@@ -300,6 +316,15 @@ local function TradeMain(Properties: Properties)
 			PromptData.RemoveId(UniqueId)
 		end
 	end, { SelectCountFrame, PromptData } :: { unknown })
+
+	local oldvis = React.useRef(false)
+
+	React.useEffect(function()
+		if not Properties.Visible and oldvis.current then
+			TradeService.EndTrade()
+		end
+		oldvis.current = Properties.Visible
+	end, { Properties.Visible })
 
 	Hooks.useEventConnection(PromptData.Added, function(Id: string, OpenFrame: string)
 		if not PromptVisible.current then

@@ -27,6 +27,7 @@ local CloseButton = require(CoreGame.CloseButton)
 export type Properties = {
 	SpeakerName: string,
 	Messages: { string },
+	SpeakerImage: string?,
 	CloseClick: (() -> ())?,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
@@ -121,6 +122,17 @@ local function CreateMessage(props: Properties)
 				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
 			},
 		}),
+		SpeakerImage = props.SpeakerImage and e(Main.ImageLabel, {
+			native = {
+				Position = UDim2.fromScale(0.2, 0.3),
+				Size = UDim2.fromScale(0.3, 0.5),
+				Image = props.SpeakerImage,
+			},
+		}, {
+			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+				AspectRatio = 1,
+			}),
+		}),
 		SpeakerLabel = e(Main.TextLabel, {
 			native = {
 				Position = UDim2.fromScale(0.5, 0.16),
@@ -158,7 +170,6 @@ local function CreateMessage(props: Properties)
 				TextYAlignment = Enum.TextYAlignment.Top,
 			},
 		}, {
-
 			UITextSizeConstraint = e("UITextSizeConstraint", {
 				MaxTextSize = 16,
 			}),
