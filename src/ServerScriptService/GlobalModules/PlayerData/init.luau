@@ -415,7 +415,6 @@ function PlayerData.new(Player: Player)
 
 		self._Trove:Connect(self.Destroying, function()
 			self.Profile:EndSession()
-			self:Delete()
 			Player:Kick("Error Loading Profile: Player not in game.")
 		end)
 
@@ -431,6 +430,12 @@ function PlayerData.new(Player: Player)
 		Player:Kick("Failed to load profile. Please rejoin.")
 		return
 	end
+
+	self._Trove:Connect(Players.PlayerRemoving, function(Player: Player)
+		if Player == self.Player then
+			self:Delete()
+		end
+	end)
 
 	if IsStudio then
 		print(self.Profile.Data)
