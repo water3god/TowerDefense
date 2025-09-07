@@ -405,7 +405,7 @@ local function RenderTraitsFrame(Props)
 	})
 end
 
-local function HandleTutorial()
+local function HandleTutorial(props: { OpenFrame: string? })
 	local PassedTutorial = React.useContext(PassedTutorialContext.Context)
 	local TutorialEnabled, SetTutorialEnabled = React.useState(true)
 
@@ -424,7 +424,7 @@ local function HandleTutorial()
 		ConfirmGui = e(Confirm, {
 			Title = "Tutorial",
 			Description = "Would you like to play the tutorial?",
-			Enabled = not PassedTutorial and TutorialEnabled,
+			Enabled = props.OpenFrame ~= Constants.STARTER_CHOOSE and not PassedTutorial and TutorialEnabled,
 			Handler = Handler,
 		}),
 		OpenTutorialButton = not PassedTutorial and not TutorialEnabled and e(Main.Animateables.TextButton, {
@@ -1086,7 +1086,9 @@ local function Render()
 					TipsGui = e(TipsGui),
 					ClickedInventory = e(ClickedInventory.Connected),
 					RejoinFrame = e(RejoinFrame.Connected),
-					Tutorial = e(HandleTutorial),
+					Tutorial = e(HandleTutorial, {
+						OpenFrame = VisibleFrame,
+					}),
 				}),
 
 				BottomFrame = e(Bottom, {
