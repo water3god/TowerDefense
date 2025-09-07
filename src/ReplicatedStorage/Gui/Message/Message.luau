@@ -4,8 +4,9 @@
 
 -- Services --
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local SoundService = game:GetService("SoundService")
 
--- Libraries --
+-- Libraries -
 local Packages = ReplicatedStorage.Packages
 local Promise = require(Packages.Promise)
 local Trove = require(Packages.Trove)
@@ -25,6 +26,9 @@ local UIStroke = require(CoreGame.UIStroke)
 local CloseButton = require(CoreGame.CloseButton)
 
 local SFXService = require(ReplicatedStorage.Client.GlobalClient.SFXService)
+
+local SoundEffects = SoundService.SoundEffects
+local NPCBeep = SoundEffects.Sounds.NPCBeep
 
 export type Properties = {
 	SpeakerName: string,
@@ -86,9 +90,9 @@ local function CreateMessage(props: Properties)
 		for i = 1, #CurrentMessage do
 			local MessagePromise = Promise.delay(0.02 * i):andThen(function()
 				SetLerpedMessage(string.sub(CurrentMessage, 1, i))
+				--SFXService.PlaySoundGlobal(NPCBeep)
 			end)
 			MessageTrove:AddPromise(MessagePromise :: any)
-			SFXService.PlaySoundGlobalWithId("rbxassetid://6467449877")
 		end
 		return function()
 			MessageTrove:Destroy()
