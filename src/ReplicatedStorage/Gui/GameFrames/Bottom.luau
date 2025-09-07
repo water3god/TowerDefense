@@ -318,7 +318,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 					Size = UnitFrameSize,
 				},
 			}, {
-				i == 1 and FirstFrameIndicator,
+				Indicator = i == 1 and FirstFrameIndicator,
 			})
 		end
 

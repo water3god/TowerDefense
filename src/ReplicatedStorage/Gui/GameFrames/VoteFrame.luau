@@ -105,15 +105,15 @@ local function CreateVoteFrame(Props: Props)
 
 	Hooks.useEventConnection(WaveService.VoteData.VoteStarted, function(Data)
 		if SettingsData.WaveAutoSkip then
+			SetVisible(false)
+			WaveService.Vote()
+		else
 			SetData({
 				Votes = Data.CurrentCount,
 				Total = Data.NeededCount,
 			})
 			SetTime(Data.Time, Data.StartTime)
 			SetVisible(true)
-		else
-			SetVisible(false)
-			WaveService.Vote()
 		end
 	end, { SettingsData })
 
