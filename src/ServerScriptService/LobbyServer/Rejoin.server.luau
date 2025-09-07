@@ -6,6 +6,7 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
+local ServerStorage = game:GetService("ServerStorage")
 local MemoryStoreService = game:GetService("MemoryStoreService")
 local TeleportService = game:GetService("TeleportService")
 
@@ -21,11 +22,15 @@ local Rejoin = Network.Rejoin
 local SendWarning = Network.SendWarning
 
 local Shared = ReplicatedStorage.Shared
+local GameInfo = require(Shared.GameInfo)
 local Constants = require(Shared.Constants)
 local Types = require(Shared.Types)
 
 local GlobalModules = ServerScriptService.GlobalModules
 local PlayerData = require(GlobalModules.PlayerData)
+
+local DataFolder = ServerStorage.Data
+local MapData = require(DataFolder.MapData)
 
 local MapStore = MemoryStoreService:GetHashMap(Constants.INFORMATIONHASHMAP)
 
@@ -62,17 +67,25 @@ Rejoin.SetCallback(function(Player: Player)
 				return MapStore:GetAsync(tostring(GameId))
 			end)
 			if Success and GameData then
+				local GameMapData = GameInfo.GetMapFromId(GameData.MapId)
 				local TeleportOptions = Instance.new("TeleportOptions")
 				TeleportOptions.ReservedServerAccessCode = GameData.AccessCode
 
-				task.delay(3, function()
-					HelperFunctions.SafeTeleport(function()
-						return TeleportService:TeleportAsync(GameId, { Player }, TeleportOptions)
-					end, 5)
-				end)
-
-				SendWarning.Fire(Player, "Teleporting back to your last game...", Color3.fromRGB(0, 255, 0))
+				if GameMapData then
+					local MapId = MapData[GameMapData.MapId]
+					if MapId then
+						task.delay(3, function()
+							HelperFunctions.SafeTeleport(function()
+								return TeleportService:TeleportAsync(MapId, { Player }, TeleportOptions)
+							end, 5)
+						end)
+						SendWarning.Fire(Player, "Teleporting back to your last game...", Color3.fromRGB(0, 255, 0))
+						return
+					end
+				end
 			end
 		end
 	end
+
+	SendWarning.Fire(Player, "Error rejoining game.", Color3.fromRGB(255, 0, 0))
 end)
