@@ -24,6 +24,8 @@ local Main = require(CoreGame.Main)
 local UIStroke = require(CoreGame.UIStroke)
 local CloseButton = require(CoreGame.CloseButton)
 
+local SFXService = require(ReplicatedStorage.Client.GlobalClient.SFXService)
+
 export type Properties = {
 	SpeakerName: string,
 	Messages: { string },
@@ -86,6 +88,7 @@ local function CreateMessage(props: Properties)
 				SetLerpedMessage(string.sub(CurrentMessage, 1, i))
 			end)
 			MessageTrove:AddPromise(MessagePromise :: any)
+			SFXService.PlaySoundGlobalWithId("rbxassetid://6467449877")
 		end
 		return function()
 			MessageTrove:Destroy()

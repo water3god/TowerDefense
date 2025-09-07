@@ -46,18 +46,20 @@ local function CreateIndicator(props: Properties)
 	local Enabled, SetEnabled = React.useState(false)
 
 	React.useEffect(function()
-		local SizeTimer = Timer.new(3)
+		local SizeTimer = Timer.new(1)
 
 		SizeTimer:Start()
 
 		API.start({
-			size = 1.3,
+			from = { size = 1 },
+			to = { size = 1.3 },
 			reset = true,
 		})
 
 		SizeTimer.Tick:Connect(function()
 			API.start({
-				size = 1.3,
+				from = { size = 1 },
+				to = { size = 1.3 },
 				reset = true,
 			})
 		end)

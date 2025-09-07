@@ -17,8 +17,8 @@ local PlayerData = require(GlobalModules.PlayerData)
 
 local Roles = {
 	[255] = "Owner",
-	[254] = "Admin",
-	[250] = "Developer",
+	[254] = "Developer",
+	[253] = "Admin",
 	[200] = "Tester",
 	[1] = "Group Member",
 }
