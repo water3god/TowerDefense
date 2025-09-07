@@ -2,6 +2,10 @@
 
 -- By Wa1er_God --
 
+if true then
+	return
+end
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
