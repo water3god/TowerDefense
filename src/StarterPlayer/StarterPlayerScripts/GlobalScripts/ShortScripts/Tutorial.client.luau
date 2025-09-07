@@ -30,6 +30,10 @@ local UnitClient = require(GlobalClient.UnitClient)
 
 local IsTutorial = require(ReplicatedStorage.Shared.IsTutorial)
 
+if not IsTutorial then
+	return
+end
+
 local Root = ReactRoblox.createRoot(Instance.new("Folder"))
 
 if not next(UnitClient.GetUnits()) then
@@ -42,13 +46,11 @@ local function Render()
 	local Position, SetPosition = React.useBinding(Vector3.zero)
 	local OnScreen, SetOnScreen = React.useBinding(false)
 
-	if IsTutorial then
-		Hooks.useEventConnection(RunService.PostSimulation, function()
-			local Pos, OnScr = workspace.CurrentCamera:WorldToScreenPoint(Unit.Root.Position)
-			SetPosition(Pos)
-			SetOnScreen(OnScr)
-		end, {})
-	end
+	Hooks.useEventConnection(RunService.PostSimulation, function()
+		local Pos, OnScr = workspace.CurrentCamera:WorldToScreenPoint(Unit.Root.Position)
+		SetPosition(Pos)
+		SetOnScreen(OnScr)
+	end, {})
 
 	return e(Main.Frame, {
 		native = {

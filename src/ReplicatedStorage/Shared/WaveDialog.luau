@@ -16,14 +16,14 @@ local Dialogs: { [string]: { [string]: { Dialog } } } = {
 			{
 				Title = "Trajan",
 				Message = {
-					"Hello, Welcome to Civilization Tower Defense. Ill be guiding you through this tutorial. Place down your first unit next to the path to start",
+					"Hello, Welcome to Civilization Tower Defense. Ill be guiding you through this tutorial. Place down your first unit next to the path to start.",
 				},
 				Image = "rbxassetid://103084517800878",
 			},
 			{
 				Title = "Trajan",
 				Message = {
-					"Every time a new wave starts you earn some gold. You also earn gold by defeating enemies. Use the Gold to upgrade your units. Upgrade your first unit by clicking on the unit and then the upgrade button",
+					"Every time a new wave starts you earn some gold. You also earn gold by defeating enemies. Use the Gold to upgrade your units. Upgrade your first unit by clicking on the unit and then the upgrade button.",
 				},
 				Image = "rbxassetid://103084517800878",
 			},
