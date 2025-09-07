@@ -2,6 +2,8 @@
 
 -- By Wa1er_God --
 
+local Version = 0.99
+
 local Constants = {
 	BOOTHTOUCHDELAY = 0.5,
 	BOOTHMAPCHOSETIME = 15,
@@ -17,11 +19,11 @@ local Constants = {
 	BASEINVENTORYUNITSPACE = 100,
 
 	UpdateDelay = 100,
-	MainDataStore = "MainDataStorev0.03",
-	LevelXPStore = "LevelXPStorev0.01",
-	TotalGoldStore = "TotalGoldv0.01",
-	RobuxSpentStore = "RobuxSpentStorev0.01",
-	DamageStore = "DamageStorev0.01",
+	MainDataStore = "MainDataStorev" .. Version,
+	LevelXPStore = "LevelXPStorev" .. Version,
+	TotalGoldStore = "TotalGoldv" .. Version,
+	RobuxSpentStore = "RobuxSpentStorev" .. Version,
+	DamageStore = "DamageStorev" .. Version,
 
 	LOBBYICON = "rbxassetid://82602981298420",
 
