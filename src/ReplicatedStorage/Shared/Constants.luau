@@ -40,7 +40,7 @@ local Constants = {
 	ROLLPERCENT = 1,
 	GroupId = 34745901,
 
-	GoldReferral = 100,
+	GoldReferral = 200,
 	MaxReferrals = 5,
 }
 

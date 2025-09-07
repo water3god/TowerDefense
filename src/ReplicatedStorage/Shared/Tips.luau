@@ -8,7 +8,7 @@ local Tips = {
 	"You can upgrade your towers by clicking on them and selecting the upgrade option.",
 	"Use the environment to your advantage! Some towers have special effects based on their placement.",
 	"Don't forget to check your resources! You need enough currency to build and upgrade towers.",
-	"You can earn 100 gold by referring a friend!",
+	"You can earn 200 gold by referring a friend!",
 }
 
 return table.freeze(Tips)
