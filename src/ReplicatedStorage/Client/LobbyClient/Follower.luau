@@ -88,8 +88,8 @@ function Follower.new(Data: Input): Follower
 
 	local PlayWalk = FollowerData.PlayWalk
 
-	self.Humanoid = self.Character.Humanoid
-	self.Animator = self.Character.Humanoid.Animator
+	self.Humanoid = self.Character:WaitForChild("Humanoid") :: Humanoid
+	self.Animator = self.Humanoid:WaitForChild("Animator") :: Animator
 
 	self.IdealPart = self.Trove:Add(HelperFunctions.CreateRaw())
 	self.IdealPart.Transparency = 1

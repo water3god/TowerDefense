@@ -8,6 +8,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
+local Timer = require(Packages.Timer)
 local ReactSpring = require(Packages.ReactSpring)
 local e = React.createElement
 
@@ -34,15 +35,33 @@ export type Properties = {
 }
 
 local function CreateIndicator(props: Properties)
-	local styles = ReactSpring.useSpring({
-		from = { size = 1 },
-		to = { size = 1.3 },
-		loop = true,
-	})
+	local styles, API = ReactSpring.useSpring(function()
+		return {
+			size = 1,
+		}
+	end)
 
 	local Parent = React.useRef(nil :: Instance?)
 
 	local Enabled, SetEnabled = React.useState(false)
+
+	React.useEffect(function()
+		local SizeTimer = Timer.new(3)
+
+		SizeTimer:Start()
+
+		API.start({
+			size = 1.3,
+			reset = true,
+		})
+
+		SizeTimer.Tick:Connect(function()
+			API.start({
+				size = 1.3,
+				reset = true,
+			})
+		end)
+	end, {})
 
 	React.useEffect(function()
 		if not IsTutorial then

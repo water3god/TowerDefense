@@ -22,7 +22,6 @@ local HelperFunctions = require(Modules.HelperFunctions)
 
 local Shared = ReplicatedStorage.Shared
 local GameInfo = require(Shared.GameInfo)
-local IsTutorial = require(Shared.IsTutorial)
 local Constants = require(Shared.Constants)
 
 local GlobalModules = ServerScriptService.GlobalModules
@@ -32,10 +31,6 @@ local DataFolder = ServerStorage.Data
 local MapData = require(DataFolder.MapData)
 
 local MapStore = MemoryStoreService:GetHashMap(Constants.INFORMATIONHASHMAP)
-
-if IsTutorial then
-	return
-end
 
 if not require(ReplicatedStorage.Shared.IsLobby) then
 	return

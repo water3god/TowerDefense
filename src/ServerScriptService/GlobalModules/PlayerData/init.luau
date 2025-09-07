@@ -520,10 +520,6 @@ function PlayerData.new(Player: Player)
 		end
 	end)
 
-	if self.Profile.Data.Gold < 20 then
-		self:AddGold(1000000)
-	end
-
 	self.DataAdded:Fire(self)
 
 	return self
