@@ -38,6 +38,9 @@ local EquippedUnitsContext = require(GameFrames.EquippedUnitsContext)
 local Currency = require(GameFrames.Currency)
 local WaveContext = require(GameFrames.WaveContext)
 
+local Message = Gui.Message
+local Indicator = require(Message.Indicator)
+
 local Shared = ReplicatedStorage.Shared
 local LevelRequirements = require(Shared.LevelRequirements)
 local IsLobby = require(Shared.IsLobby)
@@ -292,6 +295,12 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 		return string.format("Level %u (%u/%u)", UnitsContext.GlobalLevel, UnitsContext.XP, UnitsContext.NeededXP)
 	end, { UnitsContext.GlobalLevel, UnitsContext.XP, UnitsContext.NeededXP })
 
+	local FirstFrameIndicator = React.useMemo(function()
+		return e(Indicator, {
+			Wave = 1,
+		})
+	end, {})
+
 	local CoreFrames = React.useMemo(function()
 		local Frames: { [string]: React.Node } = {}
 
@@ -308,6 +317,8 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 					Position = UDim2.fromScale(Positions[i], 0.35),
 					Size = UnitFrameSize,
 				},
+			}, {
+				i == 1 and FirstFrameIndicator,
 			})
 		end
 
@@ -337,7 +348,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 		}, {
 			Back = e(Main.Frame, {
 				native = {
-					Size = UDim2.fromScale(0.6, 1),
+					Size = UDim2.fromScale(0.7, 1),
 					Position = UDim2.fromScale(0.5, 0.5),
 					BackgroundTransparency = 0,
 					ZIndex = 0,

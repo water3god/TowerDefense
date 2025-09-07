@@ -36,6 +36,7 @@ local CurrencyContext = require(GameFrames.Currency)
 local WarningContext = require(Gui.Warning.WarningContext)
 
 local TraitFrame = require(Gui.Components.TraitFrame)
+local Indicator = require(Gui.Message.Indicator)
 
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
@@ -680,6 +681,9 @@ local function CreateUpgradeFrame(Properties: Properties)
 				[React.Event.MouseButton1Click] = UpgradeClick,
 			},
 		}, {
+			Indicator = e(Indicator, {
+				Wave = 2,
+			}),
 			Label = e(Main.TextLabel, {
 				native = {
 					Size = UDim2.fromScale(0.9, 0.7),

@@ -19,9 +19,16 @@ local Join = HelperFunctions.joinDicts
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
-local UIStroke = require(CoreGame.UIStroke)
+
+local Client = ReplicatedStorage.Client
+local GlobalClient = Client.GlobalClient
+local WaveService = require(GlobalClient.WaveService)
+
+local Shared = ReplicatedStorage.Shared
+local IsTutorial = require(Shared.IsTutorial)
 
 export type Properties = {
+	Wave: number,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
@@ -38,9 +45,36 @@ local function CreateIndicator(props: Properties)
 
 	local Parent = React.useRef(nil :: Instance?)
 
+	local Enabled, SetEnabled = React.useState(false)
+
+	React.useEffect(function()
+		if not IsTutorial then
+			return
+		end
+
+		local function HandleWave(Wave: WaveService.WaveData)
+			if Wave.Wave == props.Wave then
+				SetEnabled(true)
+			end
+		end
+
+		local Wave = WaveService.GetWaveData()
+
+		if Wave then
+			HandleWave(Wave)
+		end
+
+		WaveService.Added:Connect(HandleWave)
+		WaveService.Passed:Connect(function(Num: number)
+			if Num == props.Wave then
+				SetEnabled(true)
+			end
+		end)
+	end, {})
+
 	React.useEffect(function()
 		local Par = Parent.current
-		if Par and Par:IsA("GuiObject") then
+		if Enabled and Par and Par:IsA("GuiObject") then
 			SetPosition(Par.AbsolutePosition)
 			SetSize(Par.AbsoluteSize)
 
@@ -59,26 +93,35 @@ local function CreateIndicator(props: Properties)
 		end
 
 		return function() end
+	end, { Enabled })
+
+	local OnClick = React.useCallback(function()
+		SetEnabled(false)
 	end, {})
 
-	return e(Main.Frame, {
-		native = Join({
-			ref = Parent,
-			Position = Position:map(function(pos: Vector2)
-				return UDim2.fromOffset(pos.X, pos.Y)
-			end),
-			Size = React.joinBindings({ styles.size :: any, Size }):map(function(data: any)
-				local s: number = data[1]
-				local sz: Vector2 = data[2]
-				return UDim2.fromOffset(sz.X * s, sz.Y * s)
-			end),
-		}, props.native),
-	}, {
-		UIStroke = e("UIStroke", {
-			Thickness = 5,
-			Color = Color3.new(0, 1, 0),
-		}),
-	}, props.children)
+	return Enabled
+		and e(Main.TextButton, {
+			native = Join({
+				ref = Parent,
+				Active = false,
+				Position = Position:map(function(pos: Vector2)
+					return UDim2.fromOffset(pos.X, pos.Y)
+				end),
+				Size = React.joinBindings({ styles.size :: any, Size }):map(function(data: any)
+					local s: number = data[1]
+					local sz: Vector2 = data[2]
+					return UDim2.fromOffset(sz.X * s, sz.Y * s)
+				end),
+				ZIndex = 1000,
+				[React.Event.MouseButton1Click] = OnClick,
+			}, props.native),
+		}, {
+			UIStroke = e("UIStroke", {
+				Thickness = 5,
+				Color = Color3.new(0, 1, 0),
+				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+			}),
+		}, props.children)
 end
 
 return CreateIndicator

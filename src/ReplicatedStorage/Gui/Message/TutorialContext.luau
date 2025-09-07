@@ -19,6 +19,13 @@ local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
 
+local Client = ReplicatedStorage.Client
+local GlobalClient = Client.GlobalClient
+local WaveService = require(GlobalClient.WaveService)
+
+local Shared = ReplicatedStorage.Shared
+local IsTutorial = require(Shared.IsTutorial)
+
 local TutorialContext = React.createContext("")
 
 export type Properties = {
@@ -27,8 +34,12 @@ export type Properties = {
 }
 
 local function TutorialProvider(props)
+	local CurrentState, SetCurrentState = React.useState("")
+
+	React.useEffect(function() end, {})
+
 	return e(TutorialContext.Provider, {
-		value = {},
+		value = CurrentState,
 	}, props.children)
 end
 
