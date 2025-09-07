@@ -31,9 +31,10 @@ local WaveDialog = require(Shared.WaveDialog)
 local Root = ReactRoblox.createRoot(Instance.new("Folder"))
 
 local function CreateDialog()
-	local Data: { Messages: { string }, SpeakerName: string }?, SetData = React.useState(nil :: {
+	local Data: { Messages: { string }, SpeakerName: string, SpeakerImage: string? }?, SetData = React.useState(nil :: {
 		SpeakerName: string,
 		Messages: { string },
+		SpeakerImage: string?,
 	}?)
 
 	local HandleWave = React.useCallback(function(Wave: WaveService.WaveData)
@@ -46,6 +47,7 @@ local function CreateDialog()
 					SetData({
 						SpeakerName = DialogData.Title,
 						Messages = DialogData.Message,
+						SpeakerImage = DialogData.Image,
 					})
 				end
 			end
@@ -72,6 +74,7 @@ local function CreateDialog()
 					SetData({
 						SpeakerName = DialogData.Title,
 						Messages = DialogData.Message,
+						SpeakerImage = DialogData.Image,
 					})
 				end
 			end
@@ -86,6 +89,7 @@ local function CreateDialog()
 		and e(Message, {
 			SpeakerName = Data.SpeakerName,
 			Messages = Data.Messages,
+			SpeakerImage = Data.SpeakerImage,
 			CloseClick = CloseClick,
 		})
 end

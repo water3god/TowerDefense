@@ -124,8 +124,8 @@ local function CreateMessage(props: Properties)
 		}),
 		SpeakerImage = props.SpeakerImage and e(Main.ImageLabel, {
 			native = {
-				Position = UDim2.fromScale(0.2, 0.3),
-				Size = UDim2.fromScale(0.3, 0.5),
+				Position = UDim2.fromScale(-0.15, 0.4),
+				Size = UDim2.fromScale(0.4, 0.8),
 				Image = props.SpeakerImage,
 			},
 		}, {
