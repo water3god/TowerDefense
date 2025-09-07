@@ -45,7 +45,7 @@ local function CreateRejoinFrame(props: Properties)
 		native = Join({
 			BackgroundTransparency = 0,
 			BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
-			Size = UDim2.fromScale(0.5, 0.3),
+			Size = UDim2.fromScale(0.3, 0.175),
 		}, props.native),
 	}, {
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
