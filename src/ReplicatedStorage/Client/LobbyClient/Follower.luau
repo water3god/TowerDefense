@@ -197,10 +197,10 @@ function Follower.new(Data: Input): Follower
 		end
 	end
 
-	RunService.RenderStepped:Connect(OnStep)
+	self.Trove:Connect(RunService.RenderStepped, OnStep)
 	self.Trove:BindToRenderStep("Follower" .. self.UniqueId, Enum.RenderPriority.Character.Value, OtherStep)
 	local WalkCount = 0
-	RunService.Heartbeat:Connect(function(Delta)
+	self.Trove:Construct(RunService.Heartbeat, function(Delta: number)
 		WalkCount += Delta
 		if WalkCount >= 0.016 then
 			UpdateWalk()

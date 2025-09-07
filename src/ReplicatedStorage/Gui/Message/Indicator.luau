@@ -80,10 +80,15 @@ local function CreateIndicator(props: Properties)
 			HandleWave(Wave)
 		end
 
-		WaveService.Added:Connect(HandleWave)
-		WaveService.Passed:Connect(function(Num: number)
+		local Connection = WaveService.Added:Connect(HandleWave)
+		local Connection2 = WaveService.Passed:Connect(function(Num: number)
 			SetEnabled(Num == props.Wave)
 		end)
+
+		return function()
+			Connection:Disconnect()
+			Connection2:Disconnect()
+		end
 	end, {})
 
 	local OnClick = React.useCallback(function()
