@@ -26,7 +26,7 @@ local WaveData: { [string]: WaveData } = {
 					["Wa1er_God"] = { 5, 6, 7 },
 					["CheneyC9999"] = { 9, 10, 11 },
 				},
-				Length = 20,
+				Length = 50,
 				CoinBonus = 100,
 			},
 			[2] = {
@@ -35,7 +35,7 @@ local WaveData: { [string]: WaveData } = {
 					["Wa1er_God"] = { 6, 7, 8, 9 },
 					["CheneyC9999"] = { 11, 12, 13, 14 },
 				},
-				Length = 45,
+				Length = 55,
 				CoinBonus = 120,
 			},
 			[3] = {
@@ -44,7 +44,7 @@ local WaveData: { [string]: WaveData } = {
 					["Wa1er_God"] = { 7, 8, 9, 10, 11 },
 					["CheneyC9999"] = { 13, 14, 15, 16, 17 },
 				},
-				Length = 45,
+				Length = 500,
 				CoinBonus = 140,
 			},
 		},
