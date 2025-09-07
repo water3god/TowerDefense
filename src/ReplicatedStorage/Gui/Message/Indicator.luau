@@ -34,12 +34,9 @@ export type Properties = {
 }
 
 local function CreateIndicator(props: Properties)
-	local Position, SetPosition = React.useBinding(Vector2.zero)
-	local Size, SetSize = React.useBinding(Vector2.zero)
-
 	local styles = ReactSpring.useSpring({
-		from = { size = 0.5 },
-		to = { size = 1 },
+		from = { size = 1 },
+		to = { size = 1.3 },
 		loop = true,
 	})
 
@@ -66,54 +63,26 @@ local function CreateIndicator(props: Properties)
 
 		WaveService.Added:Connect(HandleWave)
 		WaveService.Passed:Connect(function(Num: number)
-			if Num == props.Wave then
-				SetEnabled(true)
-			end
+			SetEnabled(Num == props.Wave)
 		end)
 	end, {})
-
-	React.useEffect(function()
-		local Par = Parent.current
-		if Enabled and Par and Par:IsA("GuiObject") then
-			SetPosition(Par.AbsolutePosition)
-			SetSize(Par.AbsoluteSize)
-
-			local ChangePosition = Par:GetPropertyChangedSignal("AbsolutePosition"):Connect(function()
-				SetPosition(Par.AbsolutePosition)
-			end)
-
-			local ChangeSize = Par:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
-				SetSize(Par.AbsoluteSize)
-			end)
-
-			return function()
-				ChangePosition:Disconnect()
-				ChangeSize:Disconnect()
-			end
-		end
-
-		return function() end
-	end, { Enabled })
 
 	local OnClick = React.useCallback(function()
 		SetEnabled(false)
 	end, {})
 
 	return Enabled
-		and e(Main.TextButton, {
+		and e(Main.Frame, {
 			native = Join({
 				ref = Parent,
 				Active = false,
-				Position = Position:map(function(pos: Vector2)
-					return UDim2.fromOffset(pos.X, pos.Y)
+				Size = styles.size:map(function(size: number)
+					return UDim2.fromScale(size, size)
 				end),
-				Size = React.joinBindings({ styles.size :: any, Size }):map(function(data: any)
-					local s: number = data[1]
-					local sz: Vector2 = data[2]
-					return UDim2.fromOffset(sz.X * s, sz.Y * s)
-				end),
+
 				ZIndex = 1000,
-				[React.Event.MouseButton1Click] = OnClick,
+
+				[React.Event.InputEnded] = OnClick,
 			}, props.native),
 		}, {
 			UIStroke = e("UIStroke", {
