@@ -443,7 +443,7 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 		AttackFuncs = {
 			[0] = {
 				function(Unit: UnitModule.Unit, Damage: number)
-					DelayAttack(Unit, Damage, 0.6)
+					DelayAttack(Unit, Damage, 0.55)
 				end,
 			},
 		},
@@ -583,7 +583,7 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 		AttackFuncs = {
 			[0] = {
 				function(Unit: UnitModule.Unit, Damage: number)
-					DelayAttack(Unit, Damage, 0.6)
+					DelayAttack(Unit, Damage, 0.55)
 				end,
 			},
 		},
