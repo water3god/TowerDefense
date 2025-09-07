@@ -6,6 +6,7 @@ local assets = {
 		["Augustus.png"] = "rbxassetid://125386565080263",
 		["Cicero.png"] = "rbxassetid://80438308188618",
 		["Cleopatra.png"] = "rbxassetid://128569882185944",
+		["Joan_of_Arc.png"] = "rbxassetid://75620746945992",
 		["Julius_Caesar.png"] = "rbxassetid://96743852473893",
 		["Leonidas.png"] = "rbxassetid://90542218956315",
 		["Pompey.png"] = "rbxassetid://99439817623832",
@@ -50,6 +51,7 @@ local assets = {
 		["calendar.png"] = "rbxassetid://118717037434015",
 		["person.png"] = "rbxassetid://95049959452468",
 		["quest.png"] = "rbxassetid://126483259351802",
+		["tutorial.png"] = "rbxassetid://101287981134771",
 	},
 }
 

@@ -1091,7 +1091,7 @@ local GameInfo: { MapInfo } = {
 		MapId = "Tutorial",
 		Index = 1,
 		XPMultiplier = 1,
-		Image = "rbxassetid://1234567890",
+		Image = "rbxassetid://101287981134771",
 		LevelInfo = {
 			{
 				Name = "Tutorial",

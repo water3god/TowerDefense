@@ -594,7 +594,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Joan of Arc"] = {
 		Rarity = "Legendary",
 		Description = "Divinely inspired warrior-maiden. Fights with faith-fueled fervor and inspires troops with holy conviction and fierce courage.",
-		Image = "rbxassetid://108269486400086",
+		Image = "rbxassetid://75620746945992",
 
 		UnitData = {
 			[0] = {

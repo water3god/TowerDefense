@@ -24,9 +24,16 @@ local Data: { [string]: Enemy.EnemyInfo } = {
 	},
 	["CheneyC9999"] = {
 		ModelName = "CheneyC9999",
-		Health = 10,
+		Health = 14,
 		Speed = 1,
 		IsBoss = false,
+		Ally = false,
+	},
+	["ULTIMATEFORM"] = {
+		ModelName = "ULTIMATEFORM",
+		Health = 30,
+		Speed = 1,
+		IsBoss = true,
 		Ally = false,
 	},
 

@@ -43,6 +43,7 @@ local WaveData: { [string]: WaveData } = {
 					["PCE3R"] = { 1, 2, 3, 4, 5 },
 					["Wa1er_God"] = { 7, 8, 9, 10, 11 },
 					["CheneyC9999"] = { 13, 14, 15, 16, 17 },
+					["ULTIMATEFORM"] = { 20 },
 				},
 				Length = 500,
 				CoinBonus = 140,
