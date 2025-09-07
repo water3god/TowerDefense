@@ -200,8 +200,17 @@ if RunService:IsStudio() then
 	local MapId = nil
 	local LevelId = nil
 
-	if MapData[game.PlaceId] then
-		local Data = GameInfo.GetMapFromId(MapData[game.PlaceId])
+	local MapName = nil
+
+	for Name, Id in pairs(MapData) do
+		if Id == game.PlaceId then
+			MapName = Name
+			break
+		end
+	end
+
+	if MapName then
+		local Data = GameInfo.GetMapFromId(MapName)
 		if Data then
 			MapId = Data.MapId
 			LevelId = Data.LevelInfo[1].GameId

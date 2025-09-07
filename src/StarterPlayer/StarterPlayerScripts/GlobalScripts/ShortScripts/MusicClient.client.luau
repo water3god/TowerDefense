@@ -23,17 +23,22 @@ local Lose = GlobalMusic:WaitForChild("Lose") :: Sound
 local Sounds: { Sound } = Music:GetChildren()
 local OldVolumes: { [Sound]: number } = {}
 
-for _, Sound in ipairs(Sounds) do
-	OldVolumes[Sound] = Sound.Volume
+local AllSounds: { Sound } = {}
+
+for _, Sound in ipairs(GlobalMusic:GetDescendants()) do
+	if Sound:IsA("Sound") then
+		OldVolumes[Sound] = Sound.Volume
+		table.insert(AllSounds, Sound)
+	end
 end
 
 local function HandleMusic(Value: boolean)
 	if Value then
-		for _, Sound in ipairs(Sounds) do
+		for _, Sound in ipairs(AllSounds) do
 			Sound.Volume = OldVolumes[Sound] * SettingsService.GetSetting("MusicVolume")
 		end
 	else
-		for _, Sound in ipairs(Sounds) do
+		for _, Sound in ipairs(AllSounds) do
 			Sound.Volume = 0
 		end
 	end
@@ -47,7 +52,7 @@ end)
 
 SettingsService.GetSettingChangedSignal("MusicVolume"):Connect(function(Volume: number)
 	if SettingsService.GetSetting("Music") then
-		for _, Sound in ipairs(Sounds) do
+		for _, Sound in ipairs(AllSounds) do
 			Sound.Volume = OldVolumes[Sound] * Volume
 		end
 	end

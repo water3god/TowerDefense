@@ -50,7 +50,7 @@ local function CreateDialog()
 				end
 			end
 		end
-	end)
+	end, {})
 
 	React.useEffect(function()
 		local WaveData = WaveService.GetWaveData()
