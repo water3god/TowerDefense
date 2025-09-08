@@ -15,6 +15,7 @@ local Promise = require(Packages.Promise)
 
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
+local DelayHandler = require(Modules.DelayHandler)
 
 local Network = require(ReplicatedStorage.Network.Server)
 local RejoinPrompted = Network.RejoinPrompted
@@ -57,6 +58,10 @@ end
 PlayerData.DataAdded:Connect(HandlePlayerData)
 
 Rejoin.SetCallback(function(Player: Player)
+	if not DelayHandler("RejoinPlayer" .. Player.UserId, 20) then
+		return
+	end
+
 	local PData = PlayerData.GetPlayerData(Player)
 
 	if PData then
