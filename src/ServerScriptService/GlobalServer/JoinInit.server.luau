@@ -262,9 +262,7 @@ local function Check()
 	end)
 end
 
-if not IsTutorial then
-	Check()
-end
+Check()
 
 Promise.retryWithDelay(function()
 	return Promise.new(function(resolve, reject)

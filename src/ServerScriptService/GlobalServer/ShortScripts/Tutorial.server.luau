@@ -58,10 +58,10 @@ AcceptTutorial.SetCallback(function(Player: Player)
 	if PData then
 		local Data = PData.Profile.Data
 		if not Data.PassedTutorial then
-			local AccessCode, ServerId = TeleportService:ReserveServer(MapData.Tutorial)
+			local AccessCode, PrivateServerId = TeleportService:ReserveServer(MapData.Tutorial)
 
 			Promise.try(function()
-				MapStore:SetAsync(tostring(ServerId), {
+				MapStore:SetAsync(tostring(PrivateServerId), {
 					PlayerIds = { Player.UserId },
 					MapId = "Tutorial",
 					LevelId = "Tutorial",

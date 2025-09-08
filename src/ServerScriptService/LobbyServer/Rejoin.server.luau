@@ -65,11 +65,11 @@ Rejoin.SetCallback(function(Player: Player)
 	local PData = PlayerData.GetPlayerData(Player)
 
 	if PData then
-		local GameId = PData.Profile.Data.MostRecentGameId
+		local PrivateServerId = PData.Profile.Data.MostRecentGameId
 
-		if GameId then
+		if PrivateServerId then
 			local Success, GameData: Types.RecieveData = pcall(function()
-				return MapStore:GetAsync(tostring(GameId))
+				return MapStore:GetAsync(tostring(PrivateServerId))
 			end)
 			if Success and GameData then
 				local GameMapData = GameInfo.GetMapFromId(GameData.MapId)
