@@ -21,6 +21,9 @@ local DelayHandler = require(Modules.DelayHandler)
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
 
+local Events = require(ReplicatedStorage.Network.ClientOnly)
+local PlacementFinished = Events.PlacementFinished
+
 local Client = ReplicatedStorage.Client
 local GlobalClient = Client.GlobalClient
 local UnitClient = require(GlobalClient.UnitClient)
@@ -31,6 +34,8 @@ local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
 local UIStroke = require(CoreGame.UIStroke)
+local Hooks = require(CoreGame.Hooks)
+
 local UnitFrame = require(Gui.Inventory.UnitFrame)
 
 local GameFrames = Gui.GameFrames
@@ -207,6 +212,12 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 	end, { PlacementData })
 
 	if not IsLobby then
+		Hooks.useEventConnection(PlacementFinished, function()
+			if PlacementData then
+				GameClick(PlacementData.UniqueId)
+			end
+		end, { GameClick, PlacementData })
+
 		React.useEffect(function()
 			local InputTrove = Trove.new()
 
@@ -336,6 +347,19 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 3.555,
+		}),
+
+		InPlacementLabel = PlacementData and e(Main.TextLabel, {
+			native = {
+				Text = "In Placement",
+				Size = UDim2.fromScale(0.8, 0.2),
+				Position = UDim2.fromScale(0.5, -0.4),
+				TextColor3 = Color3.new(0, 1, 0),
+			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.015,
+			}),
 		}),
 
 		GoldFrame = e(Main.Frame, {

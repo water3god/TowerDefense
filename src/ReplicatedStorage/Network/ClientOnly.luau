@@ -17,6 +17,7 @@ local ClientOnly = {
 
 	Warning = Signal.new() :: Signal.Signal<string, Color3?>,
 	TPGuiSet = Signal.new() :: Signal.Signal<{ MapName: string, ImageId: string }>,
+	PlacementFinished = Signal.new() :: Signal.Signal<>,
 	ChangeWalk = Signal.new() :: Signal.Signal<boolean>,
 	FreecamToggled = Signal.new() :: Signal.Signal<boolean>,
 	EvolutionTouched = Signal.new(),

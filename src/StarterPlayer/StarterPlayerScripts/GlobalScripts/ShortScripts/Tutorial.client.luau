@@ -48,8 +48,13 @@ local function Render()
 
 	Hooks.useEventConnection(RunService.PostSimulation, function()
 		local Pos, OnScr = workspace.CurrentCamera:WorldToScreenPoint(Unit.Root.Position)
-		SetPosition(Pos)
-		SetOnScreen(OnScr)
+
+		if Pos then
+			SetPosition(Pos)
+			SetOnScreen(OnScr)
+		else
+			SetOnScreen(false)
+		end
 	end, {})
 
 	return e(Main.Frame, {

@@ -98,8 +98,9 @@ local Upgrade = Network.UpgradeUnit
 local ChangePriority = Network.ChangeUnitPriority
 local UseAbility = Network.UseUnitAbility
 
-local WarningEvents = require(ReplicatedStorage.Network.ClientOnly)
-local SendWarning = WarningEvents.Warning
+local Events = require(ReplicatedStorage.Network.ClientOnly)
+local PlacementFinished = Events.PlacementFinished
+local SendWarning = Events.Warning
 
 local Sounds = SoundService.SoundEffects.Sounds
 local PlacementSound = Sounds.Placement
@@ -1263,6 +1264,13 @@ function UnitModule.InitPlacement(Unit: string)
 				end
 			end)
 
+			Touch.TouchTapInWorld:Connect(function(_, processed: boolean)
+				if processed then
+					return
+				end
+				OnFrame()
+			end)
+
 			Touch.TouchMoved:Connect(function(_, processed: boolean)
 				if processed then
 					return
@@ -1303,7 +1311,10 @@ function UnitModule.InitPlacement(Unit: string)
 		local ReactRoot = ReactRoblox.createRoot(RootGui)
 		ReactRoot:render(e(MobilePlacementFrame, {
 			Place = Place,
-			Cancel = InitTrove:WrapClean(),
+			Cancel = function()
+				InitTrove:Destroy()
+				PlacementFinished:Fire()
+			end,
 			Rotate = function()
 				RotateIndex()
 			end,

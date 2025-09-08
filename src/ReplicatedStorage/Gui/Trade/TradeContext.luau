@@ -39,7 +39,7 @@ local function TradeContextProvider(props: props)
 	end, {})
 
 	Hooks.useEventConnection(TradeService.SyncedStatus, function(OtherPlayer: Player, Status: string)
-		if Player ~= OtherPlayer then
+		if Player ~= OtherPlayer and OtherPlayer then
 			SetTradeStatuses(Join(TradeStatuses, {
 				[OtherPlayer] = Status,
 			}))

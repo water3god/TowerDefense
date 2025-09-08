@@ -97,6 +97,12 @@ local function CreateEvolution(props: Properties)
 			PromptVisible.current = false
 
 			local CurrentUnitData = InventoryData.Units[Id]
+
+			if not CurrentUnitData then
+				WarningData.Add("Error: Unit not found")
+				return
+			end
+
 			local EvolutionData = Evolutions[CurrentUnitData.Unit]
 
 			if CurrentUnitData and EvolutionData and OpenFrame == "Unit" then
