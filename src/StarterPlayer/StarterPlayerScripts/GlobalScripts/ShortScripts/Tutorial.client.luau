@@ -47,6 +47,9 @@ local function Render()
 	local OnScreen, SetOnScreen = React.useBinding(false)
 
 	Hooks.useEventConnection(RunService.PostSimulation, function()
+		if not Unit.Root then
+			return
+		end
 		local Pos, OnScr = workspace.CurrentCamera:WorldToScreenPoint(Unit.Root.Position)
 
 		if Pos then

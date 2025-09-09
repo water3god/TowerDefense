@@ -253,7 +253,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 				elseif Preferred == "Gamepad" then
 					local NewGamepad = InputTrove:Construct(Gamepad)
 
-					NewGamepad.ButtonPressed:Connect(function(Button: Enum.KeyCode, Processed: boolean)
+					NewGamepad.ButtonDown:Connect(function(Button: Enum.KeyCode, Processed: boolean)
 						if Processed then
 							return
 						end

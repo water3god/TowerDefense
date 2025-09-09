@@ -297,7 +297,7 @@ local function Connected(props)
 				end)
 
 				ClickedTrove:Connect(RunService.Heartbeat, function()
-					UpdatePosition(Gamepad:GetPosition())
+					UpdatePosition(Gamepad:GetThumbstick(Enum.KeyCode.Thumbstick2))
 				end)
 			end
 		end)
