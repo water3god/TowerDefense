@@ -9,6 +9,7 @@ local Players = game:GetService("Players")
 
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
+local Promise = require(Packages.Promise)
 local Timer = require(Packages.Timer)
 local React = require(Packages.React)
 local e = React.createElement
@@ -63,24 +64,36 @@ export type ConnectedProps = {
 local CachedNames: { [number]: string } = {}
 
 local function CreatePlayerFrame(props: PlayerProps)
-	local Name = React.useMemo(function()
+	local Name, SetName = React.useState("")
+
+	React.useEffect(function()
 		if CachedNames[props.UserId] then
-			return CachedNames[props.UserId]
+			SetName(CachedNames[props.UserId])
 		else
 			local Success, Returned = pcall(function()
 				return Players:GetNameFromUserIdAsync(props.UserId)
 			end)
 			if Success then
 				CachedNames[props.UserId] = Returned
-				return CachedNames[props.UserId]
+				SetName(Returned)
 			else
-				return tostring(props.UserId)
+				SetName(tostring(props.UserId))
 			end
 		end
 	end, { props.UserId })
 
-	local Icon = React.useMemo(function()
-		return HelperFunctions.GetThumbnailIdAsync(props.UserId)
+	local Icon, SetIcon = React.useState("")
+
+	React.useEffect(function()
+		Promise.try(function()
+			return HelperFunctions.GetThumbnailIdAsync(props.UserId)
+		end)
+			:andThen(function(ThumbnailId)
+				SetIcon(ThumbnailId)
+			end)
+			:catch(function()
+				SetIcon("")
+			end)
 	end, { props.UserId })
 
 	local Value = React.useMemo(function()

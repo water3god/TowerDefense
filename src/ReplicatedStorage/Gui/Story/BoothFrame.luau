@@ -61,10 +61,12 @@ local function CreateBoothFrame(Props: Properties)
 	React.useEffect(function()
 		local MapData, StageData = GameInfo.GetDataFromInfo(BoothData.MapId, BoothData.LevelId)
 
-		SetGameData({
-			MapData = MapData :: any,
-			StageData = StageData :: any,
-		})
+		if MapData and StageData then
+			SetGameData({
+				MapData = MapData,
+				StageData = StageData,
+			})
+		end
 	end, { BoothData.MapId, BoothData.LevelId })
 
 	local Time, TotalTime, SetTime = Hooks.UseTime()
@@ -73,11 +75,35 @@ local function CreateBoothFrame(Props: Properties)
 		SetTime(BoothData.EndTime - BoothData.StartTime, BoothData.StartTime)
 	end, { BoothData.EndTime, BoothData.StartTime })
 
-	local FullMapName = React.useMemo(function()
-		return GameData
-				and GameInfo.GetFullName(GameData.MapData.Name, GameData.StageData.Index, GameData.StageData.Name)
-			or ""
+	local FullMapName, SetFullMapName = React.useState("")
+
+	React.useEffect(function()
+		if GameData then
+			SetFullMapName(
+				GameInfo.GetFullName(GameData.MapData.Name, GameData.StageData.Index, GameData.StageData.Name)
+			)
+		else
+			SetFullMapName("")
+		end
 	end, { GameData })
+
+	local DifficultyString = React.useMemo(function()
+		return GameInfo.GetDifficultyString(BoothData.Difficulty)
+	end, { BoothData.Difficulty })
+
+	local MiscVisibility = React.useMemo(function()
+		return BoothData.Status == "ChoosingMap" or BoothData.Status == "Idle"
+	end, { BoothData.Status })
+
+	local MiscText = React.useMemo(function()
+		if Loading then
+			return "Loading..."
+		elseif BoothData.Status == "ChoosingMap" then
+			return "Choosing Map..."
+		else
+			return "Empty"
+		end
+	end, { Loading, BoothData.Status } :: { unknown })
 
 	return e(Main.ImageLabel, {
 		native = Join({
@@ -111,7 +137,7 @@ local function CreateBoothFrame(Props: Properties)
 				native = {
 					Position = UDim2.fromScale(0.5, 0.6),
 					Size = UDim2.fromScale(0.8, 0.1),
-					Text = GameInfo.GetDifficultyString(BoothData.Difficulty),
+					Text = DifficultyString,
 					RichText = true,
 				},
 			}, {
@@ -209,12 +235,9 @@ local function CreateBoothFrame(Props: Properties)
 		}),
 		MiscLabel = e(Main.TextLabel, {
 			native = {
-				Visible = BoothData.Status == "ChoosingMap" or BoothData.Status == "Idle",
+				Visible = MiscVisibility,
 				Size = UDim2.fromScale(0.7, 0.3),
-				Text = if Loading
-					then "Loading..."
-					elseif BoothData.Status == "ChoosingMap" then "Choosing Map..."
-					else "Empty",
+				Text = MiscText,
 			},
 		}),
 	}, Props.children)

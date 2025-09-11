@@ -149,7 +149,6 @@ local function InitLoadingBooth(Model: typeof(_BoothsInstance.Booth1))
 
 	local GUI = Model.TouchPart.BoothGui
 
-	-- Render React component immediately - the polling in BoothContext will handle booth availability
 	local Root = ReactRoblox.createRoot(Instance.new("Folder"))
 	Root:render(ReactRoblox.createPortal(
 		e(BoothContext.Provider, {
