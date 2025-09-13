@@ -19,6 +19,7 @@ local DelayHandler = require(Modules.DelayHandler)
 
 local Network = require(ReplicatedStorage.Network.Server)
 local RejoinPrompted = Network.RejoinPrompted
+local TPGuiSet = Network.TPGuiSet
 local Rejoin = Network.Rejoin
 local SendWarning = Network.SendWarning
 
@@ -91,6 +92,15 @@ Rejoin.SetCallback(function(Player: Player)
 				end
 
 				return GameData, GameMapData
+			end)
+			:tap(function(GameData: Types.RecieveData)
+				local MapInfo, LevelInfo = GameInfo.GetDataFromInfo(GameData.MapId, GameData.LevelId)
+				if MapInfo and LevelInfo then
+					local FullName = GameInfo.GetFullName(MapInfo.Name, LevelInfo.Index, LevelInfo.Name)
+					Network.TPGuiSet.Fire(Player, { MapName = FullName, ImageId = MapInfo.Image })
+				else
+					error("MapData is Nil while sending mapdata")
+				end
 			end)
 			:tap(function()
 				task.wait(3)
