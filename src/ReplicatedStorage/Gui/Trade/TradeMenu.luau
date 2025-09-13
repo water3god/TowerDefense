@@ -55,15 +55,33 @@ local function GetMessageFromStatus(Status: TradeService.TradeStatusMessage)
 end
 
 local function CreatePlayerFrame(Properties: PlayerFrameProps)
-	local ThumbnailImage, SetThumbnail = React.useState(nil :: string?)
+	local ThumbnailImage: string?, SetThumbnail = React.useState(nil :: string?)
 	local SentId, SetSentId = React.useState(false)
+
+	React.useEffect(function()
+		if SentId then
+			local SentPromise = Promise.delay(20):andThen(function()
+				SetSentId(false)
+			end)
+
+			return function()
+				SentPromise:cancel()
+			end
+		end
+
+		return function() end
+	end, { SentId })
 
 	React.useEffect(function()
 		local ThumbnailPromise = Promise.try(function()
 			return HelperFunctions.GetThumbnailIdAsync(Properties.Player.UserId)
-		end):andThen(function(ThumbnailId)
-			SetThumbnail(ThumbnailId)
 		end)
+			:andThen(function(ThumbnailId: string)
+				SetThumbnail(ThumbnailId)
+			end)
+			:catch(function()
+				SetThumbnail(nil)
+			end)
 
 		return function()
 			ThumbnailPromise:cancel()
@@ -81,7 +99,7 @@ local function CreatePlayerFrame(Properties: PlayerFrameProps)
 		elseif Properties.Status == "TradeDisabled" then
 			return Color3.fromRGB(255, 0, 0)
 		else
-			return Color3.fromRGB(255, 0, 0) -- Error state
+			return Color3.fromRGB(255, 0, 0)
 		end
 	end, { Properties.Status, SentId } :: { unknown })
 
@@ -99,11 +117,6 @@ local function CreatePlayerFrame(Properties: PlayerFrameProps)
 		SetSentId(true)
 
 		TradeService.SendTradeRequest(Properties.Player.UserId)
-		task.delay(20, function()
-			if SentId then
-				SetSentId(false)
-			end
-		end)
 	end, { Properties.Player, SentId, Properties.Status } :: { unknown })
 
 	return e(Main.Frame, {

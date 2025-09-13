@@ -41,7 +41,7 @@ local function HandlePlayerData(PData: PlayerData.PlayerData)
 	if Data.MostRecentGameId then
 		Promise.retryWithDelay(function()
 			return Promise.new(function(resolve)
-				resolve(MapStore:GetAsync(tostring(Data.MostRecentGameId)))
+				resolve(MapStore:GetAsync(Data.MostRecentGameId))
 			end)
 		end, 5, 1):andThen(function(GameData)
 			if GameData then
@@ -64,33 +64,48 @@ Rejoin.SetCallback(function(Player: Player)
 
 	local PData = PlayerData.GetPlayerData(Player)
 
+	if not PData then
+		return
+	end
+
 	if PData then
 		local PrivateServerId = PData.Profile.Data.MostRecentGameId
 
-		if PrivateServerId then
-			local Success, GameData: Types.RecieveData = pcall(function()
-				return MapStore:GetAsync(tostring(PrivateServerId))
-			end)
-			if Success and GameData then
+		Promise.new(function(resolve, reject)
+			if PrivateServerId then
+				local Data = MapStore:GetAsync(PrivateServerId)
+				if Data then
+					resolve(Data)
+				else
+					reject()
+				end
+			else
+				reject()
+			end
+		end)
+			:andThen(function(GameData: Types.RecieveData)
 				local GameMapData = GameInfo.GetMapFromId(GameData.MapId)
+
+				if not GameMapData then
+					error("No GameMapData for " .. GameData.MapId)
+				end
+
+				return GameData, GameMapData
+			end)
+			:tap(function()
+				task.wait(3)
+			end)
+			:andThen(function(GameData: Types.RecieveData, GameMapData: GameInfo.MapInfo)
 				local TeleportOptions = Instance.new("TeleportOptions")
 				TeleportOptions.ReservedServerAccessCode = GameData.AccessCode
+				local MapId = MapData[GameMapData.MapId]
 
-				if GameMapData then
-					local MapId = MapData[GameMapData.MapId]
-					if MapId then
-						task.delay(3, function()
-							HelperFunctions.SafeTeleport(function()
-								return TeleportService:TeleportAsync(MapId, { Player }, TeleportOptions)
-							end, 5)
-						end)
-						SendWarning.Fire(Player, "Teleporting back to your last game...", Color3.fromRGB(0, 255, 0))
-						return
-					end
-				end
-			end
-		end
+				HelperFunctions.SafeTeleport(function()
+					return TeleportService:TeleportAsync(MapId, { Player }, TeleportOptions)
+				end, 5)
+			end)
+			:catch(function()
+				SendWarning.Fire(Player, "Error rejoining game.", Color3.fromRGB(255, 0, 0))
+			end)
 	end
-
-	SendWarning.Fire(Player, "Error rejoining game.", Color3.fromRGB(255, 0, 0))
 end)

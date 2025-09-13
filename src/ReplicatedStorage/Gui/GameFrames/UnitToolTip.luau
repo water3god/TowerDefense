@@ -131,12 +131,18 @@ local function CreateUnitToolTip(Props: Props)
 
 	React.useEffect(function()
 		if Props.OwnerId then
-			HelperFunctions.GetNameFromIdAsync(Props.OwnerId):andThen(SetOwnerText):catch(function()
+			local NamePromise = HelperFunctions.GetNameFromIdAsync(Props.OwnerId):andThen(SetOwnerText):catch(function()
 				SetOwnerText(nil)
 			end)
+
+			return function()
+				NamePromise:cancel()
+			end
 		else
 			SetOwnerText(nil)
 		end
+
+		return function() end
 	end, { Props.OwnerId })
 
 	return e(Main.ImageLabel, {

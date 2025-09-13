@@ -15,6 +15,7 @@ if not require(ReplicatedStorage.Shared.IsLobby) then
 end
 
 local Packages = ReplicatedStorage.Packages
+local Promise = require(Packages.Promise)
 local React = require(Packages.React)
 local ReactRoblox = require(Packages.ReactRoblox)
 local e = React.createElement
@@ -29,6 +30,7 @@ local HelperFunctions = require(Modules.HelperFunctions)
 local ObserveTag = require(Modules.ObserveTag)
 
 local Network = require(ReplicatedStorage.Network.Server)
+local SendWarning = Network.SendWarning
 
 local Shared = ReplicatedStorage.Shared
 local GameInfo = require(Shared.GameInfo)
@@ -81,51 +83,54 @@ local function TpToMap(Data: Types.SentData)
 		table.insert(PlayerIds, Player.UserId)
 	end
 
-	local AccessCode, PrivateServerId = TeleportService:ReserveServer(MapId)
+	Promise.try(function()
+		local AccessCode, PrivateServerId = TeleportService:ReserveServer(MapId)
+		return AccessCode, PrivateServerId
+	end)
+		:tap(function(AccessCode: string, PrivateServerId: string)
+			local NewData: Types.RecieveData = {
+				PlayerIds = PlayerIds,
+				MapId = Data.MapId,
+				LevelId = Data.LevelId,
+				Difficulty = Data.Difficulty,
+				AccessCode = AccessCode,
+			}
 
-	local NewData: Types.RecieveData = {
-		PlayerIds = PlayerIds,
-		MapId = Data.MapId,
-		LevelId = Data.LevelId,
-		Difficulty = Data.Difficulty,
-		AccessCode = AccessCode,
-	}
+			for _, Player in ipairs(Data.Players) do
+				task.spawn(function()
+					local PData = PlayerData.GetPlayerData(Player)
 
-	for _, Player in ipairs(Data.Players) do
-		task.spawn(function()
-			local PData = PlayerData.GetPlayerData(Player)
+					if PData then
+						PData.Profile.Data.MostRecentGameId = PrivateServerId
+					end
+				end)
+			end
 
-			if PData then
-				PData.Profile.Data.MostRecentGameId = PrivateServerId
+			MapStore:SetAsync(tostring(PrivateServerId), NewData, Constants.MAPSTORETIME)
+		end)
+		:tap(function()
+			local MapInfo, LevelInfo = GameInfo.GetDataFromInfo(Data.MapId, Data.LevelId)
+			if MapInfo and LevelInfo then
+				local FullName = GameInfo.GetFullName(MapInfo.Name, LevelInfo.Index, LevelInfo.Name)
+				Network.TPGuiSet.FireList(Data.Players, { MapName = FullName, ImageId = MapInfo.Image })
+			else
+				error("Is Nil while sending mapdata")
 			end
 		end)
-	end
+		:tap(function()
+			task.wait(3)
+		end)
+		:andThen(function(AccessCode: string)
+			local TeleportOptions = Instance.new("TeleportOptions")
+			TeleportOptions.ReservedServerAccessCode = AccessCode
 
-	local Success = pcall(function()
-		MapStore:SetAsync(tostring(PrivateServerId), NewData, Constants.MAPSTORETIME)
-	end)
-
-	local MapInfo, LevelInfo = GameInfo.GetDataFromInfo(Data.MapId, Data.LevelId)
-	if MapInfo and LevelInfo then
-		local FullName = GameInfo.GetFullName(MapInfo.Name, LevelInfo.Index, LevelInfo.Name)
-		Network.TPGuiSet.FireList(Data.Players, { MapName = FullName, ImageId = MapInfo.Image })
-	else
-		error("Is Nil while sending mapdata")
-	end
-
-	if not Success then
-		error("Error in success")
-		return
-	end
-
-	local TeleportOptions = Instance.new("TeleportOptions")
-	TeleportOptions.ReservedServerAccessCode = AccessCode
-
-	task.delay(3, function()
-		HelperFunctions.SafeTeleport(function()
-			return TeleportService:TeleportAsync(MapId, Data.Players, TeleportOptions)
-		end, 5)
-	end)
+			HelperFunctions.SafeTeleport(function()
+				return TeleportService:TeleportAsync(MapId, Data.Players, TeleportOptions)
+			end, 5)
+		end)
+		:catch(function()
+			SendWarning.FireList(Data.Players, "Error while teleporting.")
+		end)
 end
 
 local function InitLoadingBooth(Model: typeof(_BoothsInstance.Booth1))

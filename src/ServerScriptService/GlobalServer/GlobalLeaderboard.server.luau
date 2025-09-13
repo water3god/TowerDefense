@@ -12,6 +12,7 @@ if game.GameId == 0 then
 end
 
 local Packages = ReplicatedStorage.Packages
+local Promise = require(Packages.Promise)
 local Timer = require(Packages.Timer)
 
 local Shared = ReplicatedStorage.Shared
@@ -33,7 +34,7 @@ local function HandleData(PData: PlayerData.PlayerData)
 	local Data = PData.Profile.Data
 
 	local function OnTick()
-		pcall(function()
+		Promise.try(function()
 			LevelXPStore:UpdateAsync(UserId, function(Level: number?): number?
 				if Level ~= Data.Level then
 					return Data.Level
@@ -43,7 +44,7 @@ local function HandleData(PData: PlayerData.PlayerData)
 			end)
 		end)
 
-		pcall(function()
+		Promise.try(function()
 			TotalGoldStore:UpdateAsync(UserId, function(Gold: number?): number?
 				if Gold ~= Data.TotalGoldGained then
 					return Data.TotalGoldGained
@@ -52,8 +53,7 @@ local function HandleData(PData: PlayerData.PlayerData)
 				end
 			end)
 		end)
-
-		pcall(function()
+		Promise.try(function()
 			RobuxSpentStore:UpdateAsync(UserId, function(Robux: number?): number?
 				if Robux ~= Data.RobuxSpent then
 					return Data.RobuxSpent
@@ -62,8 +62,7 @@ local function HandleData(PData: PlayerData.PlayerData)
 				end
 			end)
 		end)
-
-		pcall(function()
+		Promise.try(function()
 			DamageStore:UpdateAsync(UserId, function(Damage: number?): number?
 				if Damage then
 					if math.floor(Damage) ~= math.floor(Data.TotalDamageDone) then
