@@ -6,6 +6,15 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local Packages = ReplicatedStorage.Packages
+local Promise = require(Packages.Promise)
+local React = require(Packages.React)
+local e = React.createElement
+
+local Modules = ReplicatedStorage.Modules
+local HelperFunctions = require(Modules.HelperFunctions)
+local Join = HelperFunctions.joinDicts
+
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
@@ -19,14 +28,6 @@ local TradeContext = require(Trade.TradeContext)
 
 local SettingsFolder = Gui.Settings
 local SettingsContext = require(SettingsFolder.SettingsContext)
-
-local Modules = ReplicatedStorage.Modules
-local HelperFunctions = require(Modules.HelperFunctions)
-local Join = HelperFunctions.joinDicts
-
-local Packages = ReplicatedStorage.Packages
-local React = require(Packages.React)
-local e = React.createElement
 
 local Client = ReplicatedStorage.Client
 local TradeService = require(Client.LobbyClient.TradeService)
@@ -58,9 +59,14 @@ local function CreatePlayerFrame(Properties: PlayerFrameProps)
 	local SentId, SetSentId = React.useState(false)
 
 	React.useEffect(function()
-		local ThumbnailId = HelperFunctions.GetThumbnailIdAsync(Properties.Player.UserId)
-		if ThumbnailId then
+		local ThumbnailPromise = Promise.try(function()
+			return HelperFunctions.GetThumbnailIdAsync(Properties.Player.UserId)
+		end):andThen(function(ThumbnailId)
 			SetThumbnail(ThumbnailId)
+		end)
+
+		return function()
+			ThumbnailPromise:cancel()
 		end
 	end, { Properties.Player })
 

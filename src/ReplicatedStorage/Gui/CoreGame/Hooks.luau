@@ -9,6 +9,7 @@ local LocalizationService = game:GetService("LocalizationService")
 local PolicyService = game:GetService("PolicyService")
 
 local Packages = ReplicatedStorage.Packages
+local Promise = require(Packages.Promise)
 local Signal = require(Packages.Signal)
 local React = require(Packages.React)
 local e = React.createElement
@@ -246,19 +247,17 @@ function Hooks.useTranslator()
 	local translator, SetTranslator = React.useState(nil :: Translator?)
 
 	React.useEffect(function()
-		local Success, Translator = pcall(function()
-			return LocalizationService:GetTranslatorForPlayerAsync(Players.LocalPlayer)
-		end)
-		if not Success then
-			while not Success do
-				task.wait(20)
-				Success, Translator = pcall(function()
-					return LocalizationService:GetTranslatorForPlayerAsync(Players.LocalPlayer)
-				end)
-			end
-		end
+		local TranslatorPromise = Promise.retryWithDelay(function()
+			return Promise.try(function()
+				return LocalizationService:GetTranslatorForPlayerAsync(Players.LocalPlayer)
+			end):andThen(function(Translator: Translator)
+				SetTranslator(Translator)
+			end)
+		end, 3, 10)
 
-		SetTranslator(Translator)
+		return function()
+			TranslatorPromise:cancel()
+		end
 	end, {})
 
 	React.useEffect(function()
@@ -307,9 +306,15 @@ function Hooks.usePolicyInfo()
 	} :: PolicyInfo)
 
 	React.useEffect(function()
-		local Policy = PolicyService:GetPolicyInfoForPlayerAsync(Players.LocalPlayer)
+		local PolicyPromise = Promise.try(function()
+			return PolicyService:GetPolicyInfoForPlayerAsync(Players.LocalPlayer)
+		end):andThen(function(Policy)
+			SetPolicyInfo(Policy)
+		end)
 
-		SetPolicyInfo(Policy)
+		return function()
+			PolicyPromise:cancel()
+		end
 	end, {})
 
 	return PolicyInfo

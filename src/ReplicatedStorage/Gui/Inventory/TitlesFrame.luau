@@ -222,7 +222,7 @@ local function Connected(props: { CloseClick: (() -> ())?, native: { [any]: any 
 	local EquippedTitle, SetEquippedTitle = React.useState("Player")
 
 	React.useEffect(function()
-		Promise.new(function(resolve)
+		local SyncedPromise = Promise.new(function(resolve)
 			if not InventoryService.IsSynced then
 				InventoryService.Synced:Wait()
 			end
@@ -234,6 +234,10 @@ local function Connected(props: { CloseClick: (() -> ())?, native: { [any]: any 
 			SetTitles(data.Titles)
 			SetEquippedTitle(data.EquippedTitle)
 		end)
+
+		return function()
+			SyncedPromise:cancel()
+		end
 	end, {})
 
 	Hooks.useEventConnection(InventoryService.TitleAdded, function()

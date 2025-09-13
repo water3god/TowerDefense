@@ -232,13 +232,6 @@ function Booth:ChooseMap(MapId: string, LevelId: string, Difficulty: string)
 	if PData then
 		local _, LevelInfo = GameInfo.GetDataFromInfo(MapId, LevelId)
 		if LevelInfo then
-			print(
-				PData:OwnsMap(MapId),
-				PData:OwnsStage({
-					Map = MapId,
-					Stage = LevelInfo.Index,
-				})
-			)
 			if not (PData:OwnsMap(MapId) and PData:OwnsStage({
 				Map = MapId,
 				Stage = LevelInfo.Index,

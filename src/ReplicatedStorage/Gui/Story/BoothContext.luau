@@ -60,7 +60,7 @@ local function Provider(props: Properties)
 
 		if NewBooth then
 			local function HandleWaiting()
-				local Data = NewBooth.Data :: any
+				local Data = NewBooth.Data
 				local Table = {
 					MapId = Data.MapId,
 					LevelId = Data.LevelId,
@@ -71,7 +71,8 @@ local function Provider(props: Properties)
 					EndTime = NewBooth.StartTime + NewBooth.TimeLeft,
 					Status = "LoadingPlayers",
 				}
-				SetValue(Table :: any)
+
+				SetValue(Table)
 			end
 
 			local function HandleChoosing()

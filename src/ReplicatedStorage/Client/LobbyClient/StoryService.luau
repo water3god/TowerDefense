@@ -26,9 +26,6 @@ local PlayerChanged = Network.BoothPlayerChanged
 
 local DataSync = Network.StoryDataSync
 
-local Shared = ReplicatedStorage.Shared
-local GameInfo = require(Shared.GameInfo)
-
 export type TimeData = {
 	StartTime: number,
 	EndTime: number,
@@ -118,7 +115,6 @@ BoothRestarted.SetCallback(function()
 end)
 
 BoothWaiting.SetCallback(function(Data: any)
-	print("Set")
 	Module.Data = Data
 	Module.BoothWaiting:Fire(Data)
 end)

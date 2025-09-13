@@ -253,21 +253,24 @@ local function CreateUpgradeFrame(Properties: Properties)
 
 	React.useEffect(function()
 		if UpgradeData.OwnerId then
-			local function NamePromise()
+			local RetryPromise = Promise.retryWithDelay(function()
 				return HelperFunctions.GetNameFromIdAsync(UpgradeData.OwnerId)
-					:andThen(function(Name: string)
-						SetOwnerName(Name)
-					end)
-					:catch(function()
-						task.wait(3)
-						return NamePromise()
-					end)
-			end
+			end, 3, 1)
+				:andThen(function(Name: string)
+					SetOwnerName(Name)
+				end)
+				:catch(function()
+					SetOwnerName(nil)
+				end)
 
-			NamePromise()
+			return function()
+				RetryPromise:cancel()
+			end
 		else
 			SetOwnerName(nil)
 		end
+
+		return function() end
 	end, { UpgradeData.OwnerId })
 
 	React.useEffect(function()

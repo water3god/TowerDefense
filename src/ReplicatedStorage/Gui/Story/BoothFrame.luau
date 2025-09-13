@@ -16,7 +16,6 @@ local Join = HelperFunctions.joinDicts
 
 local NetworkFolder = ReplicatedStorage.Network
 local ServerOnly = require(NetworkFolder.ServerOnly)
-local BoothLoaded = ServerOnly.BoothLoaded
 
 -- Reference UI --
 local Gui = ReplicatedStorage.Gui
@@ -38,22 +37,6 @@ export type Properties = {
 
 local function CreateBoothFrame(Props: Properties)
 	local BoothData = React.useContext(BoothContext.Context)
-	local Loading, SetLoading = React.useState(true)
-
-	local Ran = React.useRef(0)
-
-	React.useEffect(function()
-		Ran.current += 1
-		if Ran.current > 1 then
-			SetLoading(false)
-		end
-	end, { BoothData })
-
-	React.useEffect(function()
-		if not Loading then
-			BoothLoaded:Fire(Props.UniqueId)
-		end
-	end, { Loading })
 
 	local GameData: { MapData: GameInfo.MapInfo, StageData: GameInfo.LevelInfo }?, SetGameData =
 		React.useState(nil :: { MapData: GameInfo.MapInfo, StageData: GameInfo.LevelInfo }?)
@@ -96,14 +79,12 @@ local function CreateBoothFrame(Props: Properties)
 	end, { BoothData.Status })
 
 	local MiscText = React.useMemo(function()
-		if Loading then
-			return "Loading..."
-		elseif BoothData.Status == "ChoosingMap" then
+		if BoothData.Status == "ChoosingMap" then
 			return "Choosing Map..."
 		else
 			return "Empty"
 		end
-	end, { Loading, BoothData.Status } :: { unknown })
+	end, { BoothData.Status } :: { unknown })
 
 	return e(Main.ImageLabel, {
 		native = Join({

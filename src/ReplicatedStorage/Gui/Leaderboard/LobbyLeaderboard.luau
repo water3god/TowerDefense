@@ -11,6 +11,7 @@ local Players = game:GetService("Players")
 local Packages = ReplicatedStorage.Packages
 local Promise = require(Packages.Promise)
 local Timer = require(Packages.Timer)
+local Trove = require(Packages.Trove)
 local React = require(Packages.React)
 local e = React.createElement
 
@@ -70,22 +71,29 @@ local function CreatePlayerFrame(props: PlayerProps)
 		if CachedNames[props.UserId] then
 			SetName(CachedNames[props.UserId])
 		else
-			local Success, Returned = pcall(function()
+			local NamePromise = Promise.try(function()
 				return Players:GetNameFromUserIdAsync(props.UserId)
 			end)
-			if Success then
-				CachedNames[props.UserId] = Returned
-				SetName(Returned)
-			else
-				SetName(tostring(props.UserId))
+				:andThen(function(Returned)
+					CachedNames[props.UserId] = Returned
+					SetName(Returned)
+				end)
+				:catch(function()
+					SetName(tostring(props.UserId))
+				end)
+
+			return function()
+				NamePromise:cancel()
 			end
 		end
+
+		return function() end
 	end, { props.UserId })
 
 	local Icon, SetIcon = React.useState("")
 
 	React.useEffect(function()
-		Promise.try(function()
+		local ThumbnailPromise = Promise.try(function()
 			return HelperFunctions.GetThumbnailIdAsync(props.UserId)
 		end)
 			:andThen(function(ThumbnailId)
@@ -94,6 +102,10 @@ local function CreatePlayerFrame(props: PlayerProps)
 			:catch(function()
 				SetIcon("")
 			end)
+
+		return function()
+			ThumbnailPromise:cancel()
+		end
 	end, { props.UserId })
 
 	local Value = React.useMemo(function()
@@ -262,29 +274,32 @@ local function LeaderboardConnected(props: ConnectedProps)
 	local Data, SetData = React.useState({})
 
 	React.useEffect(function()
-		local DataTimer = Timer.new(100)
+		local DataTrove = Trove.new()
+		local DataTimer = DataTrove:Construct(Timer, 100)
 		local Datastore = Datastores[props.Type]
 
 		local function Set()
-			local Success, Pages = pcall(function()
+			local SetPromise = Promise.try(function()
 				return Datastore:GetSortedAsync(false, 100)
 			end)
+				:andThen(function(Pages)
+					local DataToSet = {}
+					for Index, PageData in ipairs(Pages:GetCurrentPage()) do
+						DataToSet[Index] = { UserId = PageData.key, Value = PageData.value }
+					end
+					SetData(DataToSet)
+				end)
+				:catch(function()
+					warn("Failed to retrieve leaderboard data for type: " .. props.Type)
+				end)
 
-			if Success then
-				local DataToSet = {}
-				for Index, PageData in ipairs(Pages:GetCurrentPage()) do
-					DataToSet[Index] = { UserId = PageData.key, Value = PageData.value }
-				end
-				SetData(DataToSet)
-			end
+			DataTrove:AddPromise(SetPromise :: any)
 		end
-
-		Set()
 
 		DataTimer.Tick:Connect(Set)
 
 		return function()
-			DataTimer:Destroy()
+			DataTrove:Destroy()
 		end
 	end, {})
 

@@ -358,7 +358,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.015,
+				Stroke = 0.01,
 			}),
 		}),
 

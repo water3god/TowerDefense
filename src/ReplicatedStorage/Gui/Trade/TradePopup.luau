@@ -61,13 +61,17 @@ local function Popup(props: PopupProps)
 	end, { props.UserId })
 
 	React.useEffect(function()
-		HelperFunctions.GetNameFromIdAsync(props.UserId)
+		local NamePromise = HelperFunctions.GetNameFromIdAsync(props.UserId)
 			:andThen(function(Name: string)
 				SetUsername(Name)
 			end)
 			:catch(function()
 				warn("Failed to get username for UserId: " .. tostring(props.UserId))
 			end)
+
+		return function()
+			NamePromise:cancel()
+		end
 	end, { props.UserId })
 
 	return e(Main.Frame, {

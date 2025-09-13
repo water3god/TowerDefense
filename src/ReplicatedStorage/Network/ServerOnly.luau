@@ -16,7 +16,6 @@ local ServerOnly = {
 	PlayerLoaded = Signal.new(),
 
 	StartGame = Signal.new() :: Signal.Signal<>,
-	BoothLoaded = Signal.new() :: Signal.Signal<string>,
 }
 
 return ServerOnly

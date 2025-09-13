@@ -28,10 +28,7 @@ local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local ObserveTag = require(Modules.ObserveTag)
 
-local NetworkFolder = ReplicatedStorage.Network
-local Network = require(NetworkFolder.Server)
-local ServerOnly = require(NetworkFolder.ServerOnly)
-local BoothLoaded = ServerOnly.BoothLoaded
+local Network = require(ReplicatedStorage.Network.Server)
 
 local Shared = ReplicatedStorage.Shared
 local GameInfo = require(Shared.GameInfo)
@@ -130,14 +127,6 @@ local function TpToMap(Data: Types.SentData)
 		end, 5)
 	end)
 end
-
-BoothLoaded:Connect(function(BoothId: string)
-	local NewBooth = Booth.GetBooth(BoothId)
-
-	if NewBooth then
-		NewBooth.TouchPart.CanTouch = true
-	end
-end)
 
 local function InitLoadingBooth(Model: typeof(_BoothsInstance.Booth1))
 	local NewBooth = Booth.new({
