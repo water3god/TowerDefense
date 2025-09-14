@@ -428,10 +428,6 @@ local function TradeMain(Properties: Properties)
 			},
 		}, {
 			SelectCount = e(SelectCount, {
-				native = {
-					Size = UDim2.fromScale(0.7, 0.6),
-					Position = UDim2.fromScale(0.15, 0.2),
-				},
 				OnClick = SelectClick,
 				CloseClick = function()
 					SetSelectCountFrame(nil)
