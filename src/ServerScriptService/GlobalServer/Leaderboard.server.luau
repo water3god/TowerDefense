@@ -26,7 +26,7 @@ SafePlayerAdded:Connect(function(Player: Player)
 
 		if IsLobby then
 			local GoldCount = Instance.new("IntValue")
-			GoldCount.Name = "Gold Count"
+			GoldCount.Name = "Gold"
 			GoldCount.Value = Data.Profile.Data.Gold
 			GoldCount.Parent = Leaderstats
 
@@ -35,7 +35,7 @@ SafePlayerAdded:Connect(function(Player: Player)
 			end)
 		else
 			local CoinCount = Instance.new("IntValue")
-			CoinCount.Name = "Coin Count"
+			CoinCount.Name = "Coins"
 
 			local function HandleWave(Wave: GlobalWave.GlobalWave)
 				CoinCount.Value = Wave.Coins[Player.UserId]
