@@ -399,6 +399,14 @@ function PlayerData.new(Player: Player)
 		TableUtil.Reconcile(Data.QuestData, QuestData.QuestPlayerData.EventQuests)
 		TableUtil.Reconcile(Data.QuestData, QuestData.QuestPlayerData.GlobalQuests)
 
+		for Index, EquippedUnit in pairs(Data.EquippedUnits) do
+			if EquippedUnit then
+				if not Data.Units[EquippedUnit] then
+					Data.EquippedUnits[Index] = nil
+				end
+			end
+		end
+
 		if Constants.CurrentEvent ~= Data.Quests.MetaData.CurrentEvent then
 			Data.Quests.EventQuests = TableUtil.Copy(QuestData.Quests.EventQuests)
 		end

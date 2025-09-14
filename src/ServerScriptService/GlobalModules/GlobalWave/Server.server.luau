@@ -169,16 +169,18 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 				for _, EquippedUnit in ipairs(PlayerDataModule:GetEquippedUnits()) do
 					local OldData = PlayerDataModule:GetUnitFromId(EquippedUnit) :: any
 
-					local Data = {
-						Name = OldData.Unit,
-						Trait = OldData.Trait,
-						OldLevel = OldData.Level,
-						OldXP = OldData.XP,
-					}
-					PlayerDataModule:AddUnitXP(EquippedUnit, math.floor(TotalXP * 30 * XPMultiplier))
-					Data.NewLevel = OldData.Level
-					Data.NewXP = OldData.XP
-					table.insert(SendData.ExistingUnits, Data)
+					if OldData then
+						local Data = {
+							Name = OldData.Unit,
+							Trait = OldData.Trait,
+							OldLevel = OldData.Level,
+							OldXP = OldData.XP,
+						}
+						PlayerDataModule:AddUnitXP(EquippedUnit, math.floor(TotalXP * 30 * XPMultiplier))
+						Data.NewLevel = OldData.Level
+						Data.NewXP = OldData.XP
+						table.insert(SendData.ExistingUnits, Data)
+					end
 				end
 
 				OtherSendData.OldXP = PlayerDataModule.Profile.Data.XP
