@@ -137,11 +137,11 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 									table.insert(SendData.Resources, NewResource)
 								end
 							else
-								local Amount = math.floor((Resource.Count * GoldMultiplier) / WavePercentage / 2)
-								if Amount > 0 then
-									PlayerDataModule:AddGold(Amount)
+								local Gold = math.floor((Resource.Count * GoldMultiplier) * (WavePercentage / 2))
+								if Gold > 0 then
+									PlayerDataModule:AddGold(Gold)
 									local NewResource = table.clone(Resource)
-									NewResource.Count = Amount
+									NewResource.Count = Gold
 									table.insert(SendData.Resources, NewResource)
 								end
 							end
@@ -167,7 +167,7 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 				end
 
 				for _, EquippedUnit in ipairs(PlayerDataModule:GetEquippedUnits()) do
-					local OldData = PlayerDataModule:GetUnitFromId(EquippedUnit) :: any
+					local OldData = PlayerDataModule:GetUnitFromId(EquippedUnit)
 
 					if OldData then
 						local Data = {
