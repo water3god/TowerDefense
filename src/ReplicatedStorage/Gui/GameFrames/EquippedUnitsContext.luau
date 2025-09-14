@@ -39,14 +39,21 @@ local function Provider(props)
 	React.useEffect(function()
 		local function Convert(EquippedUnits: { string })
 			local NewTable = {}
+			local InventoryUnits = InventoryService:GetInventory().Units
 			for Index, Id in pairs(EquippedUnits) do
-				local Data = InventoryService:GetInventory().Units[Id]
-				NewTable[Index] = {
-					UniqueId = Id,
-					Unit = Data.Unit,
-					Level = Data.Level,
-					Trait = Data.Trait,
-				}
+				if Id then
+					local Data = InventoryUnits[Id]
+					if Data then
+						NewTable[Index] = {
+							UniqueId = Id,
+							Unit = Data.Unit,
+							Level = Data.Level,
+							Trait = Data.Trait,
+						}
+					else
+						warn("Missing data for equipped unit:", Id)
+					end
+				end
 			end
 
 			return NewTable

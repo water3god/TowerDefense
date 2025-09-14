@@ -142,7 +142,6 @@ InventorySync.SetCallback(
 		MaxUnitCount: number,
 		TitleData: { EquippedTitle: string, Titles: { string } }
 	)
-		Data.IsSynced = true
 		CurrentInventory = SentData
 		Data.EquippedUnits = EquippedUnits
 
@@ -153,6 +152,7 @@ InventorySync.SetCallback(
 		Data.TitleData = TitleData
 
 		Data.MaxUnitCount = MaxUnitCount
+		Data.IsSynced = true
 		Synced:Fire()
 	end
 )
