@@ -97,7 +97,7 @@ local function CreateMainXPFrame(props: MainXPProps)
 	local XPInfo: React.Binding<UnitXP> = Styles.alpha:map(function(alpha: number)
 		local Level: number = nil
 		local XP: number = nil
-		local NeededXP: number = nil
+		local NeededXP: number = 1
 
 		local LerpGain = math.lerp(0, BindingData.current, alpha)
 		local total = 0

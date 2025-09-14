@@ -136,7 +136,7 @@ local function Init(DataInput: Types.RecieveData?)
 			end
 		end
 
-		Wave.Ended:Once(function()
+		Wave.Ended:Once(function(Win: boolean)
 			if IsTutorial then
 				local _, PData = next(PlayerData.GetDatas())
 
@@ -164,19 +164,21 @@ local function Init(DataInput: Types.RecieveData?)
 					end
 				end
 			else
-				for PlayerId, _ in pairs(Wave.Coins) do
-					local Player = Players:GetPlayerByUserId(PlayerId)
+				if Win then
+					for PlayerId, _ in pairs(Wave.Coins) do
+						local Player = Players:GetPlayerByUserId(PlayerId)
 
-					if Player then
-						local DataModule = PlayerData.GetPlayerData(Player)
+						if Player then
+							local DataModule = PlayerData.GetPlayerData(Player)
 
-						if DataModule then
-							DataModule:AddStage({
-								Map = Data.MapId,
-								Stage = LevelInfo.Index,
-								Difficulty = Data.Difficulty,
-								TimeFinished = math.floor(workspace:GetServerTimeNow() - Wave.InitTime),
-							})
+							if DataModule then
+								DataModule:AddStage({
+									Map = Data.MapId,
+									Stage = LevelInfo.Index,
+									Difficulty = Data.Difficulty,
+									TimeFinished = math.floor(workspace:GetServerTimeNow() - Wave.InitTime),
+								})
+							end
 						end
 					end
 				end
@@ -274,9 +276,7 @@ Promise.retryWithDelay(function()
 		end
 	end)
 end, 5, 1)
-	:andThen(function(Value)
-		Init(Value)
-	end)
+	:andThen(Init)
 	:catch(function()
 		OnError()
 	end)

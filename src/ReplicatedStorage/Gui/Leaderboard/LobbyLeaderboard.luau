@@ -72,9 +72,7 @@ local function CreatePlayerFrame(props: PlayerProps)
 			SetName(CachedNames[props.UserId])
 		else
 			local function NamePromise()
-				return Promise.try(function()
-					return Players:GetNameFromUserIdAsync(props.UserId)
-				end)
+				return HelperFunctions.GetNameFromIdAsync(props.UserId)
 					:andThen(function(Returned)
 						CachedNames[props.UserId] = Returned
 						SetName(Returned)

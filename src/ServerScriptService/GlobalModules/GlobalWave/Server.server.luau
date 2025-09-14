@@ -104,6 +104,8 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 				local GoldMultiplier = PlayerDataModule:CalculateGoldMultiplier()
 				local XPMultiplier = PlayerDataModule:CalculateXPMultiplier()
 
+				local WaveMultiplier = HelperFunctions.Round(Wave.Wave / 15, 3)
+
 				if Win then
 					for _, Unit in ipairs(Wave.RewardInfo.Units) do
 						local Data = PlayerDataModule.Profile.Data
@@ -126,7 +128,15 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 
 							table.insert(SendData.Resources, NewResource)
 						else
-							if not Wave.IsInfinite then
+							if Wave.IsInfinite then
+								local Gold = math.floor((Resource.Count * GoldMultiplier * WaveMultiplier) / 2)
+								if Gold > 0 then
+									PlayerDataModule:AddGold(Gold)
+									local NewResource = table.clone(Resource)
+									NewResource.Count = Gold
+									table.insert(SendData.Resources, NewResource)
+								end
+							else
 								local Amount = math.floor((Resource.Count * GoldMultiplier) / WavePercentage / 2)
 								if Amount > 0 then
 									PlayerDataModule:AddGold(Amount)
@@ -137,9 +147,21 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 							end
 						end
 					else
-						if Win then
-							PlayerDataModule:AddResource(Resource.Resource, Resource.Count)
-							table.insert(SendData.Resources, Resource)
+						if Wave.IsInfinite then
+							if Resource.Resource == "Omen Coins" then
+								local OmenCoins = math.floor(Wave.Wave / 10)
+								if OmenCoins > 0 then
+									PlayerDataModule:AddResource("Omen Coins", OmenCoins)
+									local NewResource = table.clone(Resource)
+									NewResource.Count = OmenCoins
+									table.insert(SendData.Resources, NewResource)
+								end
+							end
+						else
+							if Win then
+								PlayerDataModule:AddResource(Resource.Resource, Resource.Count)
+								table.insert(SendData.Resources, Resource)
+							end
 						end
 					end
 				end

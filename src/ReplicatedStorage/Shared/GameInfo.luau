@@ -62,18 +62,21 @@ local GameInfo: { MapInfo } = {
 						Units = {},
 						Resources = {
 							{ Resource = "Gold", Count = 200 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
 							{ Resource = "Gold", Count = 240 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
 							{ Resource = "Gold", Count = 280 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -269,18 +272,21 @@ local GameInfo: { MapInfo } = {
 						Units = {},
 						Resources = {
 							{ Resource = "Gold", Count = 260 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
 							{ Resource = "Gold", Count = 300 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
 							{ Resource = "Gold", Count = 340 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -477,18 +483,21 @@ local GameInfo: { MapInfo } = {
 						Units = {},
 						Resources = {
 							{ Resource = "Gold", Count = 340 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
 							{ Resource = "Gold", Count = 380 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
 							{ Resource = "Gold", Count = 420 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -685,18 +694,21 @@ local GameInfo: { MapInfo } = {
 						Units = {},
 						Resources = {
 							{ Resource = "Gold", Count = 420 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
 							{ Resource = "Gold", Count = 460 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
 							{ Resource = "Gold", Count = 500 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
@@ -893,18 +905,21 @@ local GameInfo: { MapInfo } = {
 						Units = {},
 						Resources = {
 							{ Resource = "Gold", Count = 500 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Hard = {
 						Units = {},
 						Resources = {
 							{ Resource = "Gold", Count = 540 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 					Insane = {
 						Units = {},
 						Resources = {
 							{ Resource = "Gold", Count = 580 },
+							{ Resource = "Omen Coins", Count = 1 },
 						},
 					},
 				},
