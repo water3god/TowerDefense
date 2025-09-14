@@ -71,19 +71,24 @@ local function CreatePlayerFrame(props: PlayerProps)
 		if CachedNames[props.UserId] then
 			SetName(CachedNames[props.UserId])
 		else
-			local NamePromise = Promise.try(function()
-				return Players:GetNameFromUserIdAsync(props.UserId)
-			end)
-				:andThen(function(Returned)
-					CachedNames[props.UserId] = Returned
-					SetName(Returned)
+			local function NamePromise()
+				return Promise.try(function()
+					return Players:GetNameFromUserIdAsync(props.UserId)
 				end)
-				:catch(function()
-					SetName(tostring(props.UserId))
-				end)
+					:andThen(function(Returned)
+						CachedNames[props.UserId] = Returned
+						SetName(Returned)
+					end)
+					:catch(function()
+						SetName(tostring(props.UserId))
+						return Promise.delay(60):andThenReturn(NamePromise())
+					end)
+			end
+
+			local Call = NamePromise()
 
 			return function()
-				NamePromise:cancel()
+				Call:cancel()
 			end
 		end
 
@@ -280,7 +285,7 @@ local function LeaderboardConnected(props: ConnectedProps)
 
 		local function Set()
 			local SetPromise = Promise.try(function()
-				return Datastore:GetSortedAsync(false, 100)
+				return Datastore:GetSortedAsync(false, 50)
 			end)
 				:andThen(function(Pages)
 					local DataToSet = {}
@@ -295,6 +300,8 @@ local function LeaderboardConnected(props: ConnectedProps)
 
 			DataTrove:AddPromise(SetPromise :: any)
 		end
+
+		Set()
 
 		DataTimer.Tick:Connect(Set)
 

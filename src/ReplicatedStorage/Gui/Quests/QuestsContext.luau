@@ -47,7 +47,7 @@ local function QuestsProvider(props)
 	local QuestsData, SetQuestsData = React.useState(Default)
 
 	React.useEffect(function()
-		Promise.new(function(resolve)
+		local QuestsPromise = Promise.new(function(resolve)
 			if not QuestsService.IsSynced then
 				QuestsService.Synced:Wait()
 			end
@@ -60,6 +60,10 @@ local function QuestsProvider(props)
 				})
 			end
 		end)
+
+		return function()
+			QuestsPromise:cancel()
+		end
 	end, {})
 
 	Hooks.useEventConnection(QuestsService.QuestChanged, function()

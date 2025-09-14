@@ -235,7 +235,7 @@ local Quests: Quests = {
 			QuestReward = { Type = "Resource", Value = "Gold", Count = 234 },
 		},
 		{
-			Type = "Win",
+			Type = "Wins",
 			Id = "Daily_Win_1",
 			Name = "Welcome",
 			Description = "Win 1 round for rewards.",
@@ -246,7 +246,7 @@ local Quests: Quests = {
 			QuestReward = { Type = "Resource", Value = "Gold", Count = 54 },
 		},
 		{
-			Type = "Win",
+			Type = "Wins",
 			Id = "Daily_Win_2",
 			Name = "Welcome",
 			Description = "Win 5 round for rewards.",
@@ -270,7 +270,7 @@ local Quests: Quests = {
 			QuestReward = { Type = "Resource", Value = "Gold", Count = 604 },
 		},
 		{
-			Type = "Win",
+			Type = "Wins",
 			Id = "Weekly_Win_2",
 			Name = "Competitor",
 			Description = "Win 20 games within ts week.",
@@ -292,7 +292,7 @@ local Quests: Quests = {
 			QuestReward = { Type = "Resource", Value = "Gold", Count = 284 },
 		},
 		{
-			Type = "Robux Spent",
+			Type = "RobuxSpent",
 			Id = "Weekly_Robux_Spent_1",
 			Name = "Spend 1000 Robux",
 			Description = "Spend 1000 Robux to earn rewards.",
@@ -303,7 +303,7 @@ local Quests: Quests = {
 			QuestReward = { Type = "Resource", Value = "Gold", Count = 1000 },
 		},
 		{
-			Type = "Robux Spent 2",
+			Type = "RobuxSpent",
 			Id = "Weekly_Robux_Spent_2",
 			Name = "Money Spender",
 			Description = "Spend 2000 Robux to earn rewards.",
@@ -314,7 +314,7 @@ local Quests: Quests = {
 			QuestReward = { Type = "Resource", Value = "Gold", Count = 20000 },
 		},
 		{
-			Type = "Win",
+			Type = "Wins",
 			Id = "Weekly_Win_1",
 			Name = "Win 10 Games",
 			Description = "Win 10 Games to earn rewards.",
@@ -358,7 +358,7 @@ local Quests: Quests = {
 			QuestReward = { Type = "Product", Value = "3x Luck Boost (1 Hour)", Count = 1 },
 		},
 		{
-			Type = "Summom",
+			Type = "Summon",
 			Id = "Weekly_Summon_1",
 			Name = "Summoner",
 			Description = "Summon 60 units.",

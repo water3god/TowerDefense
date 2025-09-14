@@ -212,64 +212,6 @@ local Data: { [string]: Enemy.EnemyInfo } = {
 		Ally = false,
 	},
 
-	-- Medieval --
-	["Medieval Footman"] = {
-		ModelName = "Medieval Footman",
-		Health = 25,
-		Speed = 1.8,
-		IsBoss = false,
-		Ally = false,
-	},
-	["Medieval Spearman"] = {
-		ModelName = "Medieval Spearman",
-		Health = 35,
-		Speed = 1.6,
-		IsBoss = false,
-		Ally = false,
-	},
-	["Axeman"] = {
-		ModelName = "Axeman",
-		Health = 50,
-		Speed = 1.2,
-		IsBoss = false,
-		Ally = false,
-	},
-	["Knight"] = {
-		ModelName = "Knight",
-		Health = 160,
-		Speed = 1.0,
-		IsBoss = false,
-		Ally = false,
-	},
-	["Medieval Captain"] = {
-		ModelName = "Medieval Captain",
-		Health = 250,
-		Speed = 0.8,
-		IsBoss = false,
-		Ally = false,
-	},
-	["Banneret"] = {
-		ModelName = "Banneret",
-		Health = 300,
-		Speed = 0.6,
-		IsBoss = false,
-		Ally = false,
-	},
-	["Bodyguard"] = {
-		ModelName = "Bodyguard",
-		Health = 500,
-		Speed = 0.3,
-		IsBoss = false,
-		Ally = false,
-	},
-	["Charlemagne"] = {
-		ModelName = "Charlemagne",
-		Health = 4000,
-		Speed = 0.2,
-		IsBoss = true,
-		Ally = false,
-	},
-
 	-- Chinese --
 	["Foot Soldier"] = {
 		ModelName = "Foot Soldier",
@@ -323,6 +265,64 @@ local Data: { [string]: Enemy.EnemyInfo } = {
 	["Qin Shi Huang"] = {
 		ModelName = "Qin Shi Huang",
 		Health = 2000,
+		Speed = 0.2,
+		IsBoss = true,
+		Ally = false,
+	},
+
+	-- Medieval --
+	["Medieval Footman"] = {
+		ModelName = "Medieval Footman",
+		Health = 25,
+		Speed = 1.8,
+		IsBoss = false,
+		Ally = false,
+	},
+	["Medieval Spearman"] = {
+		ModelName = "Medieval Spearman",
+		Health = 35,
+		Speed = 1.6,
+		IsBoss = false,
+		Ally = false,
+	},
+	["Axeman"] = {
+		ModelName = "Axeman",
+		Health = 50,
+		Speed = 1.2,
+		IsBoss = false,
+		Ally = false,
+	},
+	["Knight"] = {
+		ModelName = "Knight",
+		Health = 160,
+		Speed = 1.0,
+		IsBoss = false,
+		Ally = false,
+	},
+	["Medieval Captain"] = {
+		ModelName = "Medieval Captain",
+		Health = 250,
+		Speed = 0.8,
+		IsBoss = false,
+		Ally = false,
+	},
+	["Banneret"] = {
+		ModelName = "Banneret",
+		Health = 300,
+		Speed = 0.6,
+		IsBoss = false,
+		Ally = false,
+	},
+	["Bodyguard"] = {
+		ModelName = "Bodyguard",
+		Health = 500,
+		Speed = 0.3,
+		IsBoss = false,
+		Ally = false,
+	},
+	["Charlemagne"] = {
+		ModelName = "Charlemagne",
+		Health = 4000,
 		Speed = 0.2,
 		IsBoss = true,
 		Ally = false,
