@@ -250,7 +250,7 @@ function GlobalWave.new(Input: Input)
 	end)
 
 	self.EnemyDestroying:Connect(function(EnemyInput: Enemy.Enemy)
-		self:AddCoins(EnemyInput.MaxHealth / 3)
+		self:AddCoins(math.ceil(EnemyInput.MaxHealth / 20))
 	end)
 
 	CurrentWave = self

@@ -6,8 +6,8 @@
       "Egypt": {
         "0": {
           "Insane": {
-            "Damage": 0,
-            "Wave": 4
+            "Damage": 2665014.462200007,
+            "Wave": 108
           }
         }
       }
@@ -16,117 +16,113 @@
       "China": [
         {
           "Insane": {
-            "FastestTime": 230,
+            "FastestTime": 651,
             "FinishedCount": 2
           }
         },
         {
           "Insane": {
-            "FastestTime": 230,
+            "FastestTime": 653,
             "FinishedCount": 2
           }
         },
         {
           "Insane": {
-            "FastestTime": 230,
+            "FastestTime": 667,
             "FinishedCount": 2
           }
         },
         {
           "Insane": {
-            "FastestTime": 230,
+            "FastestTime": 670,
             "FinishedCount": 2
           }
         },
         {
           "Insane": {
-            "FastestTime": 215,
+            "FastestTime": 676,
             "FinishedCount": 2
           }
         },
         {
           "Insane": {
-            "FastestTime": 200,
-            "FinishedCount": 7
+            "FastestTime": 684,
+            "FinishedCount": 2
           }
         }
       ],
       "Egypt": [
         {
           "Insane": {
-            "FastestTime": 188,
-            "FinishedCount": 2
-          },
-          "Normal": {
-            "FastestTime": 264,
+            "FastestTime": 868,
             "FinishedCount": 2
           }
         },
         {
           "Insane": {
-            "FastestTime": 204,
-            "FinishedCount": 5
-          }
-        },
-        {
-          "Insane": {
-            "FastestTime": 221,
+            "FastestTime": 895,
             "FinishedCount": 2
           }
         },
         {
           "Insane": {
-            "FastestTime": 221,
+            "FastestTime": 864,
             "FinishedCount": 2
           }
         },
         {
           "Insane": {
-            "FastestTime": 222,
+            "FastestTime": 970,
             "FinishedCount": 2
           }
         },
         {
           "Insane": {
-            "FastestTime": 221,
-            "FinishedCount": 12
+            "FastestTime": 1002,
+            "FinishedCount": 2
+          }
+        },
+        {
+          "Insane": {
+            "FastestTime": 685,
+            "FinishedCount": 2
           }
         }
       ],
       "Greece": [
         {
           "Insane": {
-            "FastestTime": 302,
+            "FastestTime": 650,
             "FinishedCount": 2
           }
         },
         {
           "Insane": {
-            "FastestTime": 315,
+            "FastestTime": 664,
             "FinishedCount": 2
           }
         },
         {
           "Insane": {
-            "FastestTime": 299,
+            "FastestTime": 646,
             "FinishedCount": 2
           }
         },
         {
           "Insane": {
-            "FastestTime": 330,
+            "FastestTime": 673,
             "FinishedCount": 2
           }
         },
         {
           "Insane": {
-            "FastestTime": 308,
+            "FastestTime": 671,
             "FinishedCount": 2
           }
         },
         {
           "Insane": {
-            "FastestTime": 307,
+            "FastestTime": 686,
             "FinishedCount": 2
           }
         }
@@ -134,83 +130,75 @@
       "Medieval": [
         {
           "Insane": {
-            "FastestTime": 256,
+            "FastestTime": 648,
             "FinishedCount": 2
           }
         },
         {
           "Insane": {
-            "FastestTime": 256,
+            "FastestTime": 666,
             "FinishedCount": 2
           }
         },
         {
           "Insane": {
-            "FastestTime": 247,
+            "FastestTime": 657,
             "FinishedCount": 2
           }
         },
         {
           "Insane": {
-            "FastestTime": 256,
+            "FastestTime": 646,
             "FinishedCount": 2
           }
         },
         {
           "Insane": {
-            "FastestTime": 254,
+            "FastestTime": 662,
             "FinishedCount": 2
           }
         },
         {
           "Insane": {
-            "FastestTime": 236,
-            "FinishedCount": 3
+            "FastestTime": 689,
+            "FinishedCount": 2
           }
         }
       ],
       "Rome": [
         {
           "Insane": {
-            "FastestTime": 266,
+            "FastestTime": 654,
             "FinishedCount": 2
           }
         },
         {
           "Insane": {
-            "FastestTime": 266,
+            "FastestTime": 670,
             "FinishedCount": 2
           }
         },
         {
           "Insane": {
-            "FastestTime": 254,
+            "FastestTime": 669,
             "FinishedCount": 2
           }
         },
         {
           "Insane": {
-            "FastestTime": 254,
+            "FastestTime": 676,
             "FinishedCount": 2
           }
         },
         {
           "Insane": {
-            "FastestTime": 254,
+            "FastestTime": 681,
             "FinishedCount": 2
           }
         },
         {
           "Insane": {
-            "FastestTime": 266,
-            "FinishedCount": 2
-          }
-        }
-      ],
-      "Tutorial": [
-        {
-          "Normal": {
-            "FastestTime": 146,
+            "FastestTime": 701,
             "FinishedCount": 2
           }
         }
@@ -218,230 +206,304 @@
     },
     "DailyData": {
       "Day": 2,
-      "LastRedeemed": 1757801979.580653
+      "LastRedeemed": 1757792489.421399
     },
-    "EquippedTitle": "TOP 100",
+    "EquippedTitle": "Annahilator",
     "EquippedUnits": [
-      "9h7tPTQLh8b6qlXnxco6",
-      "v1EP1llvCk7Ril22bDEb",
-      "ex5GV8f11uEahObOkICf",
-      "897Gppnh6jMkMYEaz1m8"
+      "LLuzKlTMKvepn3J1lio1",
+      "yby0PBTBFsVlWYXz7BUn",
+      "V8M2cEVgh7sPm3KkvTt6",
+      "Qkc4czsPYan2BUy5qpXx",
+      "iWoNVTJXkuoIgIod49f6"
     ],
     "Gamepasses": [],
-    "Gold": 1291,
+    "Gold": 11723,
     "LeaderboardData": {
-      "DamageStorev0.99": 24,
-      "LevelXPStorev0.99": 3,
-      "TotalGoldv0.99": 2
+      "DamageStorev0.99": 1,
+      "LevelXPStorev0.99": 2,
+      "TotalGoldv0.99": 3
     },
-    "Level": 73,
+    "Level": 89,
     "MaxUnitCount": 100,
-    "MostRecentGameId": "b23320e6-c522-4c38-8ba3-7beb9e1e7e5e",
-    "PassedTutorial": true,
+    "MostRecentGameId": "14f300fe-193c-4d78-85c4-94a158463eff",
+    "PassedTutorial": false,
     "Products": {
-      "dr1LZawluTN5K9guRDwu": {
-        "Count": 1,
+      "BKOz4RPqqTmpb8isd9dq": {
+        "Count": 3,
         "IsGamepass": false,
         "ProductId": 3359651817,
-        "UniqueId": "dr1LZawluTN5K9guRDwu"
+        "UniqueId": "BKOz4RPqqTmpb8isd9dq"
+      },
+      "G8vHxVR8lyTLyW1kKWsJ": {
+        "Count": 1,
+        "IsGamepass": false,
+        "ProductId": 3359652520,
+        "UniqueId": "G8vHxVR8lyTLyW1kKWsJ"
       }
     },
     "QuestData": {
       "DailyQuests": {
-        "Damage": 42771.19999999986,
+        "Damage": 1394857.1300000262,
         "DamageByUnit": {
-          "Charlemagne": 24787.19999999986,
-          "Trajan": 17984
+          "Augustus": 384148.5000000023,
+          "Cleopatra": 72.14000000000001,
+          "Leonidas": 1003901.2500000086,
+          "Spartacus": 6735.240000000029
         },
         "EnemyKills": {
-          "Charioteer": 43,
-          "Egyptian Archer": 208,
+          "Axeman": 358,
+          "Banneret": 37,
+          "Bodyguard": 16,
+          "Centurion": 57,
+          "Charioteer": 22,
+          "Charlemagne": 1,
+          "Chinese Archer": 134,
+          "Chinese Commander": 54,
+          "Chinese General": 35,
+          "Chinese Spearman": 665,
+          "Egyptian Archer": 109,
           "Egyptian Commander": 6,
-          "Egyptian Scout": 283,
-          "Egyptian Spearman": 101,
-          "Ramesses II": 3,
-          "Royal Guard": 12,
-          "War Priest": 15
+          "Egyptian Scout": 166,
+          "Egyptian Spearman": 52,
+          "Foot Soldier": 996,
+          "Greek Cavalryman": 314,
+          "Greek Slinger": 140,
+          "Hoplite": 662,
+          "Imperial Guard": 16,
+          "Knight": 143,
+          "Legionary": 670,
+          "Medieval Captain": 56,
+          "Medieval Footman": 1104,
+          "Medieval Spearman": 732,
+          "Palace Guard": 18,
+          "Peltast": 993,
+          "Polemarch": 39,
+          "Praetorian Guard": 16,
+          "Pyrrhus": 1,
+          "Qin Shi Huang": 1,
+          "Ramesses II": 1,
+          "Roman Archer": 136,
+          "Roman Slinger": 1010,
+          "Royal Guard": 6,
+          "Shield Bearer": 311,
+          "Standard Bearer": 312,
+          "Strategos": 59,
+          "Trajan": 1,
+          "Tribune": 35,
+          "War Priest": 9
         },
-        "Kills": 671,
+        "Kills": 9493,
         "Leaderboard": {
-          "DamageStorev0.99": 24,
+          "DamageStorev0.99": 1,
           "LevelXPStorev0.99": 2,
-          "TotalGoldv0.99": 2
+          "TotalGoldv0.99": 3
         },
-        "Playtime": 36360,
+        "Playtime": 30780,
         "Resources": {
-          "Omen Coins": 20
+          "Omen Coins": 29
         },
         "RobuxSpent": 0,
-        "Summon": 1100,
-        "Wins": 13
+        "Summon": 310,
+        "Wins": 25
       },
       "EventQuests": {
-        "Damage": 43523.64999999991,
+        "Damage": 4947355.029999258,
         "DamageByUnit": {
-          "Charlemagne": 25539.64999999991,
-          "Trajan": 17984
+          "Augustus": 550510.1999999962,
+          "Cleopatra": 312.18000000000006,
+          "Leonidas": 4348945.4999993,
+          "Pompey": 256.84999999999974,
+          "Spartacus": 47330.30000000073
         },
         "EnemyKills": {
-          "Charioteer": 43,
-          "CheneyC9999": 12,
-          "Egyptian Archer": 208,
-          "Egyptian Commander": 6,
-          "Egyptian Scout": 283,
-          "Egyptian Spearman": 101,
-          "PCE3R": 12,
-          "Ramesses II": 3,
-          "Royal Guard": 12,
-          "ULTIMATEFORM": 1,
-          "Wa1er_God": 12,
-          "War Priest": 15
+          "Axeman": 358,
+          "Banneret": 37,
+          "Bodyguard": 16,
+          "Centurion": 57,
+          "Charioteer": 1495,
+          "Charlemagne": 1,
+          "Chinese Archer": 134,
+          "Chinese Commander": 54,
+          "Chinese General": 35,
+          "Chinese Spearman": 665,
+          "Egyptian Archer": 2194,
+          "Egyptian Commander": 325,
+          "Egyptian Scout": 2200,
+          "Egyptian Spearman": 2088,
+          "Foot Soldier": 996,
+          "Greek Cavalryman": 314,
+          "Greek Slinger": 140,
+          "Hoplite": 662,
+          "Imperial Guard": 16,
+          "Knight": 143,
+          "Legionary": 670,
+          "Medieval Captain": 56,
+          "Medieval Footman": 1104,
+          "Medieval Spearman": 732,
+          "Palace Guard": 18,
+          "Peltast": 993,
+          "Polemarch": 39,
+          "Praetorian Guard": 16,
+          "Pyrrhus": 1,
+          "Qin Shi Huang": 1,
+          "Ramesses II": 7,
+          "Roman Archer": 136,
+          "Roman Slinger": 1010,
+          "Royal Guard": 177,
+          "Shield Bearer": 311,
+          "Standard Bearer": 312,
+          "Strategos": 59,
+          "Trajan": 1,
+          "Tribune": 35,
+          "War Priest": 597
         },
-        "Kills": 708,
+        "Kills": 18205,
         "Leaderboard": {
-          "DamageStorev0.99": 24,
+          "DamageStorev0.99": 1,
           "LevelXPStorev0.99": 2,
-          "TotalGoldv0.99": 2
+          "TotalGoldv0.99": 3
         },
-        "Playtime": 42180,
+        "Playtime": 45780,
         "Resources": {
-          "Omen Coins": 20
+          "Omen Coins": 42
         },
         "RobuxSpent": 0,
-        "Summon": 1110,
-        "Wins": 14
+        "Summon": 412,
+        "Wins": 30
       },
       "GlobalQuests": {
-        "Damage": 43523.64999999991,
+        "Damage": 4947355.029999258,
         "DamageByUnit": {
-          "Charlemagne": 25539.64999999991,
-          "Trajan": 17984
+          "Augustus": 550510.1999999962,
+          "Cleopatra": 312.18000000000006,
+          "Leonidas": 4348945.4999993,
+          "Pompey": 256.84999999999974,
+          "Spartacus": 47330.30000000073
         },
         "EnemyKills": {
-          "Charioteer": 43,
-          "CheneyC9999": 12,
-          "Egyptian Archer": 208,
-          "Egyptian Commander": 6,
-          "Egyptian Scout": 283,
-          "Egyptian Spearman": 101,
-          "PCE3R": 12,
-          "Ramesses II": 3,
-          "Royal Guard": 12,
-          "ULTIMATEFORM": 1,
-          "Wa1er_God": 12,
-          "War Priest": 15
+          "Axeman": 358,
+          "Banneret": 37,
+          "Bodyguard": 16,
+          "Centurion": 57,
+          "Charioteer": 1495,
+          "Charlemagne": 1,
+          "Chinese Archer": 134,
+          "Chinese Commander": 54,
+          "Chinese General": 35,
+          "Chinese Spearman": 665,
+          "Egyptian Archer": 2194,
+          "Egyptian Commander": 325,
+          "Egyptian Scout": 2200,
+          "Egyptian Spearman": 2088,
+          "Foot Soldier": 996,
+          "Greek Cavalryman": 314,
+          "Greek Slinger": 140,
+          "Hoplite": 662,
+          "Imperial Guard": 16,
+          "Knight": 143,
+          "Legionary": 670,
+          "Medieval Captain": 56,
+          "Medieval Footman": 1104,
+          "Medieval Spearman": 732,
+          "Palace Guard": 18,
+          "Peltast": 993,
+          "Polemarch": 39,
+          "Praetorian Guard": 16,
+          "Pyrrhus": 1,
+          "Qin Shi Huang": 1,
+          "Ramesses II": 7,
+          "Roman Archer": 136,
+          "Roman Slinger": 1010,
+          "Royal Guard": 177,
+          "Shield Bearer": 311,
+          "Standard Bearer": 312,
+          "Strategos": 59,
+          "Trajan": 1,
+          "Tribune": 35,
+          "War Priest": 597
         },
-        "Kills": 708,
+        "Kills": 18205,
         "Leaderboard": {
-          "DamageStorev0.99": 24,
+          "DamageStorev0.99": 1,
           "LevelXPStorev0.99": 2,
-          "TotalGoldv0.99": 2
+          "TotalGoldv0.99": 3
         },
-        "Playtime": 42180,
+        "Playtime": 45780,
         "Resources": {
-          "Omen Coins": 20
+          "Omen Coins": 42
         },
         "RobuxSpent": 0,
-        "Summon": 1110,
-        "Wins": 14
+        "Summon": 412,
+        "Wins": 30
       },
       "WeeklyQuests": {
-        "Damage": 43523.64999999991,
+        "Damage": 4947355.029999258,
         "DamageByUnit": {
-          "Charlemagne": 25539.64999999991,
-          "Trajan": 17984
+          "Augustus": 550510.1999999962,
+          "Cleopatra": 312.18000000000006,
+          "Leonidas": 4348945.4999993,
+          "Pompey": 256.84999999999974,
+          "Spartacus": 47330.30000000073
         },
         "EnemyKills": {
-          "Charioteer": 43,
-          "CheneyC9999": 12,
-          "Egyptian Archer": 208,
-          "Egyptian Commander": 6,
-          "Egyptian Scout": 283,
-          "Egyptian Spearman": 101,
-          "PCE3R": 12,
-          "Ramesses II": 3,
-          "Royal Guard": 12,
-          "ULTIMATEFORM": 1,
-          "Wa1er_God": 12,
-          "War Priest": 15
+          "Axeman": 358,
+          "Banneret": 37,
+          "Bodyguard": 16,
+          "Centurion": 57,
+          "Charioteer": 1495,
+          "Charlemagne": 1,
+          "Chinese Archer": 134,
+          "Chinese Commander": 54,
+          "Chinese General": 35,
+          "Chinese Spearman": 665,
+          "Egyptian Archer": 2194,
+          "Egyptian Commander": 325,
+          "Egyptian Scout": 2200,
+          "Egyptian Spearman": 2088,
+          "Foot Soldier": 996,
+          "Greek Cavalryman": 314,
+          "Greek Slinger": 140,
+          "Hoplite": 662,
+          "Imperial Guard": 16,
+          "Knight": 143,
+          "Legionary": 670,
+          "Medieval Captain": 56,
+          "Medieval Footman": 1104,
+          "Medieval Spearman": 732,
+          "Palace Guard": 18,
+          "Peltast": 993,
+          "Polemarch": 39,
+          "Praetorian Guard": 16,
+          "Pyrrhus": 1,
+          "Qin Shi Huang": 1,
+          "Ramesses II": 7,
+          "Roman Archer": 136,
+          "Roman Slinger": 1010,
+          "Royal Guard": 177,
+          "Shield Bearer": 311,
+          "Standard Bearer": 312,
+          "Strategos": 59,
+          "Trajan": 1,
+          "Tribune": 35,
+          "War Priest": 597
         },
-        "Kills": 708,
+        "Kills": 18205,
         "Leaderboard": {
-          "DamageStorev0.99": 24,
+          "DamageStorev0.99": 1,
           "LevelXPStorev0.99": 2,
-          "TotalGoldv0.99": 2
+          "TotalGoldv0.99": 3
         },
-        "Playtime": 42180,
+        "Playtime": 45780,
         "Resources": {
-          "Omen Coins": 20
+          "Omen Coins": 42
         },
         "RobuxSpent": 0,
-        "Summon": 1110,
-        "Wins": 14
+        "Summon": 412,
+        "Wins": 30
       }
     },
     "Quests": {
       "DailyQuests": [
-        {
-          "CurrentValue": 0,
-          "Data": [],
-          "Description": "Win 5 round for rewards.",
-          "Id": "Daily_Win_2",
-          "Name": "Welcome",
-          "NeededValue": 1,
-          "QuestReward": {
-            "Count": 157,
-            "Type": "Resource",
-            "Value": "Gold"
-          },
-          "Redeemed": false,
-          "Type": "Win"
-        },
-        {
-          "CurrentValue": 50,
-          "Data": [],
-          "Description": "Eliminate 50 enemies for rewards.",
-          "Id": "Daily_Kills_2",
-          "Name": "Eliminate 50",
-          "NeededValue": 50,
-          "QuestReward": {
-            "Count": 184,
-            "Type": "Resource",
-            "Value": "Gold"
-          },
-          "Redeemed": true,
-          "Type": "Kills"
-        },
-        {
-          "CurrentValue": 0,
-          "Data": [],
-          "Description": "Win 1 round for rewards.",
-          "Id": "Daily_Win_1",
-          "Name": "Welcome",
-          "NeededValue": 1,
-          "QuestReward": {
-            "Count": 54,
-            "Type": "Resource",
-            "Value": "Gold"
-          },
-          "Redeemed": false,
-          "Type": "Win"
-        },
-        {
-          "CurrentValue": 671,
-          "Data": [],
-          "Description": "Eliminate 2000 enemies for rewards.",
-          "Id": "Daily_Kills_4",
-          "Name": "Eliminate 2000",
-          "NeededValue": 2000,
-          "QuestReward": {
-            "Count": 452,
-            "Type": "Resource",
-            "Value": "Gold"
-          },
-          "Redeemed": false,
-          "Type": "Kills"
-        },
         {
           "CurrentValue": 7200,
           "Data": {
@@ -458,6 +520,66 @@
           },
           "Redeemed": true,
           "Type": "Playtime"
+        },
+        {
+          "CurrentValue": 2000,
+          "Data": [],
+          "Description": "Eliminate 2000 enemies for rewards.",
+          "Id": "Daily_Kills_4",
+          "Name": "Eliminate 2000",
+          "NeededValue": 2000,
+          "QuestReward": {
+            "Count": 452,
+            "Type": "Resource",
+            "Value": "Gold"
+          },
+          "Redeemed": true,
+          "Type": "Kills"
+        },
+        {
+          "CurrentValue": 1000,
+          "Data": [],
+          "Description": "Eliminate 1000 enemies for rewards.",
+          "Id": "Daily_Kills_3",
+          "Name": "Eliminate 1000",
+          "NeededValue": 1000,
+          "QuestReward": {
+            "Count": 5,
+            "Type": "Resource",
+            "Value": "Omen Coins"
+          },
+          "Redeemed": true,
+          "Type": "Kills"
+        },
+        {
+          "CurrentValue": 0,
+          "Data": [],
+          "Description": "Win 5 round for rewards.",
+          "Id": "Daily_Win_2",
+          "Name": "Welcome",
+          "NeededValue": 1,
+          "QuestReward": {
+            "Count": 157,
+            "Type": "Resource",
+            "Value": "Gold"
+          },
+          "Redeemed": false,
+          "Type": "Win"
+        },
+        {
+          "CurrentValue": 0,
+          "Data": [],
+          "Description": "Win 1 round for rewards.",
+          "Id": "Daily_Win_1",
+          "Name": "Welcome",
+          "NeededValue": 1,
+          "QuestReward": {
+            "Count": 54,
+            "Type": "Resource",
+            "Value": "Gold"
+          },
+          "Redeemed": false,
+          "Type": "Win"
         }
       ],
       "EventQuests": [],
@@ -510,7 +632,7 @@
           "Type": "Summon"
         },
         {
-          "CurrentValue": 708,
+          "CurrentValue": 10000,
           "Data": [],
           "Description": "Kill 10K Enemies to earn rewards.",
           "Id": "Global_Kills_3",
@@ -521,11 +643,11 @@
             "Type": "Title",
             "Value": "Slayer"
           },
-          "Redeemed": false,
+          "Redeemed": true,
           "Type": "Kills"
         },
         {
-          "CurrentValue": 43523.64999999991,
+          "CurrentValue": 100000,
           "Data": [],
           "Description": "Annahilate 100k Enemies.",
           "Id": "Global_Kills_2",
@@ -536,11 +658,11 @@
             "Type": "Title",
             "Value": "Annahilator"
           },
-          "Redeemed": false,
+          "Redeemed": true,
           "Type": "Damage"
         },
         {
-          "CurrentValue": 708,
+          "CurrentValue": 18205,
           "Data": [],
           "Description": "Delete 1 Million Enemies.",
           "Id": "Global_Kills_1",
@@ -576,9 +698,54 @@
       "MetaData": {
         "CurrentEvent": "None",
         "DailyRegenerated": 1757808001,
-        "WeeklyRegenerated": 1757800459
+        "WeeklyRegenerated": 1757792453
       },
       "WeeklyQuests": [
+        {
+          "CurrentValue": 36000,
+          "Data": ["Hours"],
+          "Description": "Play CTD 10 hours within the week.",
+          "Id": "Weekly_Playtime_1",
+          "Name": "Dedicated",
+          "NeededValue": 36000,
+          "QuestReward": {
+            "Count": 1,
+            "Type": "Product",
+            "Value": "3x Luck Boost (1 Hour)"
+          },
+          "Redeemed": true,
+          "Type": "Playtime"
+        },
+        {
+          "CurrentValue": 1240,
+          "Data": [],
+          "Description": "Eliminate 1240 Enemies.",
+          "Id": "Weekly_Kills_2",
+          "Name": "Hunt",
+          "NeededValue": 1240,
+          "QuestReward": {
+            "Count": 604,
+            "Type": "Resource",
+            "Value": "Gold"
+          },
+          "Redeemed": true,
+          "Type": "Kills"
+        },
+        {
+          "CurrentValue": 0,
+          "Data": [],
+          "Description": "Spend 1000 Robux to earn rewards.",
+          "Id": "Weekly_Robux_Spent_1",
+          "Name": "Spend 1000 Robux",
+          "NeededValue": 1000,
+          "QuestReward": {
+            "Count": 1000,
+            "Type": "Resource",
+            "Value": "Gold"
+          },
+          "Redeemed": false,
+          "Type": "Robux Spent"
+        },
         {
           "CurrentValue": 1000,
           "Data": [],
@@ -593,51 +760,6 @@
           },
           "Redeemed": true,
           "Type": "Damage"
-        },
-        {
-          "CurrentValue": 708,
-          "Data": [],
-          "Description": "Eliminate 1240 Enemies.",
-          "Id": "Weekly_Kills_2",
-          "Name": "Hunt",
-          "NeededValue": 1240,
-          "QuestReward": {
-            "Count": 604,
-            "Type": "Resource",
-            "Value": "Gold"
-          },
-          "Redeemed": false,
-          "Type": "Kills"
-        },
-        {
-          "CurrentValue": 500,
-          "Data": [],
-          "Description": "Deal 500 Damage to the enemies.",
-          "Id": "Weekly_Damage_1",
-          "Name": "BOOST",
-          "NeededValue": 500,
-          "QuestReward": {
-            "Count": 2,
-            "Type": "Product",
-            "Value": "2x Luck Boost (1 Hour)"
-          },
-          "Redeemed": true,
-          "Type": "Damage"
-        },
-        {
-          "CurrentValue": 60,
-          "Data": [],
-          "Description": "Summon 60 units.",
-          "Id": "Weekly_Summon_1",
-          "Name": "Summoner",
-          "NeededValue": 60,
-          "QuestReward": {
-            "Count": 2,
-            "Type": "Resource",
-            "Value": "Omen Coins"
-          },
-          "Redeemed": false,
-          "Type": "Summon"
         },
         {
           "CurrentValue": 175,
@@ -672,21 +794,6 @@
         {
           "CurrentValue": 0,
           "Data": [],
-          "Description": "Spend 1000 Robux to earn rewards.",
-          "Id": "Weekly_Robux_Spent_1",
-          "Name": "Spend 1000 Robux",
-          "NeededValue": 1000,
-          "QuestReward": {
-            "Count": 1000,
-            "Type": "Resource",
-            "Value": "Gold"
-          },
-          "Redeemed": false,
-          "Type": "Robux Spent"
-        },
-        {
-          "CurrentValue": 0,
-          "Data": [],
           "Description": "Spend 2000 Robux to earn rewards.",
           "Id": "Weekly_Robux_Spent_2",
           "Name": "Money Spender",
@@ -700,19 +807,19 @@
           "Type": "Robux Spent 2"
         },
         {
-          "CurrentValue": 36000,
-          "Data": ["Hours"],
-          "Description": "Play CTD 10 hours within the week.",
-          "Id": "Weekly_Playtime_1",
-          "Name": "Dedicated",
+          "CurrentValue": 0,
+          "Data": [],
+          "Description": "Summon 60 units.",
+          "Id": "Weekly_Summon_1",
+          "Name": "Summoner",
           "NeededValue": 36000,
           "QuestReward": {
-            "Count": 1,
-            "Type": "Product",
-            "Value": "3x Luck Boost (1 Hour)"
+            "Count": 2,
+            "Type": "Resource",
+            "Value": "Omen Coins"
           },
-          "Redeemed": true,
-          "Type": "Playtime"
+          "Redeemed": false,
+          "Type": "Summom"
         },
         {
           "CurrentValue": 0,
@@ -728,6 +835,21 @@
           },
           "Redeemed": false,
           "Type": "Win"
+        },
+        {
+          "CurrentValue": 500,
+          "Data": [],
+          "Description": "Deal 500 Damage to the enemies.",
+          "Id": "Weekly_Damage_1",
+          "Name": "BOOST",
+          "NeededValue": 500,
+          "QuestReward": {
+            "Count": 2,
+            "Type": "Product",
+            "Value": "2x Luck Boost (1 Hour)"
+          },
+          "Redeemed": true,
+          "Type": "Damage"
         }
       ]
     },
@@ -735,10 +857,10 @@
     "Referrals": [],
     "ReferredDate": 14,
     "Resources": {
-      "P7FLIYYK3T29wzzUrCuS": {
-        "Count": 1,
+      "3XseQher9dvqA0ZverYR": {
+        "Count": 19,
         "Resource": "Omen Coins",
-        "UniqueId": "P7FLIYYK3T29wzzUrCuS"
+        "UniqueId": "3XseQher9dvqA0ZverYR"
       }
     },
     "RobuxSpent": 0,
@@ -749,7 +871,7 @@
       "CommonSkip": true,
       "EpicSkip": true,
       "LegendarySkip": false,
-      "Music": true,
+      "Music": false,
       "MusicVolume": 1,
       "MythicSkip": false,
       "RareSkip": true,
@@ -757,261 +879,71 @@
       "WaveAutoSkip": true
     },
     "StarterChosen": true,
-    "Titles": ["Player", "TOP 100", "Furious", "Advanced Summoner"],
-    "TotalDamageDone": 43329,
-    "TotalGoldGained": 45691,
+    "Titles": [
+      "Player",
+      "Furious",
+      "TOP 100",
+      "Group Member",
+      "Annahilator",
+      "Advanced Summoner",
+      "Slayer"
+    ],
+    "TotalDamageDone": 4935038,
+    "TotalGoldGained": 28203,
     "Units": {
-      "0JimaBHSekF8NRib8doi": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "0JimaBHSekF8NRib8doi",
-        "Unit": "Akhenaten",
-        "XP": 0
-      },
-      "0a744ZI1Dtdculg2qpB3": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "0a744ZI1Dtdculg2qpB3",
-        "Unit": "Augustus",
-        "XP": 0
-      },
-      "0sz6yGsH7vbmAIpSrjJW": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "0sz6yGsH7vbmAIpSrjJW",
-        "Unit": "Themistocles",
-        "XP": 0
-      },
-      "2uPxGRw9tArpu2rQzDhH": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "2uPxGRw9tArpu2rQzDhH",
+      "LLuzKlTMKvepn3J1lio1": {
+        "Level": 87,
+        "NeededXP": 3033,
+        "UniqueId": "LLuzKlTMKvepn3J1lio1",
         "Unit": "Joan of Arc",
-        "XP": 0
+        "XP": 690
       },
-      "4TPfAs2lRW6fk50DwER7": {
-        "Level": 85,
-        "NeededXP": 2804,
-        "Trait": "Fast Loader",
-        "UniqueId": "4TPfAs2lRW6fk50DwER7",
-        "Unit": "Charlemagne",
-        "XP": 1631
+      "Qkc4czsPYan2BUy5qpXx": {
+        "Level": 99,
+        "NeededXP": 4856,
+        "UniqueId": "Qkc4czsPYan2BUy5qpXx",
+        "Unit": "Socrates",
+        "XP": 3675
       },
-      "7BafwmPm889gozuJr5Jp": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "7BafwmPm889gozuJr5Jp",
-        "Unit": "Julius Caesar",
-        "XP": 0
-      },
-      "7SEN4na7L1fYdmYasMDd": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "7SEN4na7L1fYdmYasMDd",
-        "Unit": "Julius Caesar",
-        "XP": 0
-      },
-      "897Gppnh6jMkMYEaz1m8": {
-        "Level": 1,
-        "NeededXP": 104,
-        "Trait": "Ascended",
-        "UniqueId": "897Gppnh6jMkMYEaz1m8",
-        "Unit": "Trajan",
-        "XP": 0
-      },
-      "9h7tPTQLh8b6qlXnxco6": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "9h7tPTQLh8b6qlXnxco6",
+      "V8M2cEVgh7sPm3KkvTt6": {
+        "Level": 97,
+        "NeededXP": 4490,
+        "Trait": "Greedy Hunter",
+        "UniqueId": "V8M2cEVgh7sPm3KkvTt6",
         "Unit": "Leonidas",
-        "XP": 0
+        "XP": 2394
       },
-      "CGBtmxAbHnP5Zpq0T47x": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "CGBtmxAbHnP5Zpq0T47x",
-        "Unit": "Richard the Lionheart",
-        "XP": 0
-      },
-      "DNy7sNDAYgMZPoJCNn09": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "DNy7sNDAYgMZPoJCNn09",
-        "Unit": "Richard the Lionheart",
-        "XP": 0
-      },
-      "DWwopgS59XOTzUrNspDo": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "DWwopgS59XOTzUrNspDo",
-        "Unit": "Akhenaten",
-        "XP": 0
-      },
-      "E70xb0dnQiHafgQG42dY": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "E70xb0dnQiHafgQG42dY",
+      "iWoNVTJXkuoIgIod49f6": {
+        "Level": 99,
+        "NeededXP": 4856,
+        "Trait": "Annihilator",
+        "UniqueId": "iWoNVTJXkuoIgIod49f6",
         "Unit": "Augustus",
-        "XP": 0
+        "XP": 195
       },
-      "JwUDDCFzCSmKxSjg5nJA": {
-        "Level": 1,
-        "NeededXP": 104,
-        "Trait": "All Seeing",
-        "UniqueId": "JwUDDCFzCSmKxSjg5nJA",
-        "Unit": "Themistocles",
-        "XP": 0
-      },
-      "K8vZvaMaCaoCpKDssB8z": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "K8vZvaMaCaoCpKDssB8z",
-        "Unit": "Akhenaten",
-        "XP": 0
-      },
-      "KHV57tuH0eu25ugXryLz": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "KHV57tuH0eu25ugXryLz",
-        "Unit": "Joan of Arc",
-        "XP": 0
-      },
-      "NI0XI27ZnEYJjyKb3zhY": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "NI0XI27ZnEYJjyKb3zhY",
-        "Unit": "Augustus",
-        "XP": 0
-      },
-      "OuPWl0XqF0jOIq93Y1Of": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "OuPWl0XqF0jOIq93Y1Of",
-        "Unit": "Joan of Arc",
-        "XP": 0
-      },
-      "PfHmo1OxEZnnOyo68JyN": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "PfHmo1OxEZnnOyo68JyN",
-        "Unit": "Augustus",
-        "XP": 0
-      },
-      "RfqVcGpDpemed93YKmkp": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "RfqVcGpDpemed93YKmkp",
-        "Unit": "Alexander The Great",
-        "XP": 0
-      },
-      "TnAsRQRqRjQDjBBTlH9d": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "TnAsRQRqRjQDjBBTlH9d",
-        "Unit": "Themistocles",
-        "XP": 0
-      },
-      "ex5GV8f11uEahObOkICf": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "ex5GV8f11uEahObOkICf",
-        "Unit": "Richard the Lionheart",
-        "XP": 0
-      },
-      "fgKEW4uoh7rtooBLouax": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "fgKEW4uoh7rtooBLouax",
-        "Unit": "Akhenaten",
-        "XP": 0
-      },
-      "jOL3lwlCDLTIcnG27fxM": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "jOL3lwlCDLTIcnG27fxM",
-        "Unit": "Joan of Arc",
-        "XP": 0
-      },
-      "lAAMEmxfDRL4oevbP8z8": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "lAAMEmxfDRL4oevbP8z8",
-        "Unit": "Joan of Arc",
-        "XP": 0
-      },
-      "mgzfuEbaLOfOf3AWJ22a": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "mgzfuEbaLOfOf3AWJ22a",
-        "Unit": "Akhenaten",
-        "XP": 0
-      },
-      "ml43wVYrqeVmCzX9tCE2": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "ml43wVYrqeVmCzX9tCE2",
-        "Unit": "Joan of Arc",
-        "XP": 0
-      },
-      "ntpYA8vX2vgZLXQrpvjj": {
-        "Level": 1,
-        "NeededXP": 104,
-        "Trait": "All Seeing",
-        "UniqueId": "ntpYA8vX2vgZLXQrpvjj",
-        "Unit": "William the Conqueror",
-        "XP": 0
-      },
-      "oT3k5qIxdgU3n01yGBB0": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "oT3k5qIxdgU3n01yGBB0",
-        "Unit": "William the Conqueror",
-        "XP": 0
-      },
-      "qieQVxW38vh5GA4h740I": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "qieQVxW38vh5GA4h740I",
-        "Unit": "William the Conqueror",
-        "XP": 0
-      },
-      "tgZTH5rfoJDMQJmEwj5f": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "tgZTH5rfoJDMQJmEwj5f",
-        "Unit": "Joan of Arc",
-        "XP": 0
-      },
-      "vxiE0nZXfMoXOXWv7aV8": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "vxiE0nZXfMoXOXWv7aV8",
-        "Unit": "Joan of Arc",
-        "XP": 0
-      },
-      "wglefMYBNYyH0Mrx36mo": {
-        "Level": 1,
-        "NeededXP": 104,
-        "UniqueId": "wglefMYBNYyH0Mrx36mo",
-        "Unit": "Joan of Arc",
-        "XP": 0
+      "yby0PBTBFsVlWYXz7BUn": {
+        "Level": 100,
+        "NeededXP": 5050,
+        "UniqueId": "yby0PBTBFsVlWYXz7BUn",
+        "Unit": "Spartacus",
+        "XP": 479
       }
     },
-    "XP": 352
+    "XP": 299
   },
   "GlobalUpdates": [0, []],
   "MetaData": {
     "ActiveSession": [
-      137160416806142,
-      "efb3c345-74d2-4f3d-8fa6-6df4f740fa7e",
-      "c3c555ee-82a0-4d91-b07a-a3fc9457256d"
+      133996430724424,
+      "d0ae7559-8e8c-4671-b8e1-78e03fc6c744",
+      "ef0b65ba-1e56-4396-b795-715bc37fb700"
     ],
-    "LastUpdate": 1757865014,
+    "LastUpdate": 1757874958,
     "MetaTags": [],
-    "ProfileCreateTime": 1757800459,
-    "SessionLoadCount": 108
+    "ProfileCreateTime": 1757792453,
+    "SessionLoadCount": 93
   },
   "RobloxMetaData": [],
-  "UserIds": [1251609686],
+  "UserIds": [8480796170],
   "WasOverwritten": false
 }
