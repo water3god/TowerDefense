@@ -54,9 +54,13 @@ local function CreateProductFrame(props: ProductProps)
 	end, { props.ProductId, props.IsGamepass, PurchaseData } :: { unknown })
 
 	local RarityData = React.useMemo(function()
-		local Rarity = ProductData.Rarity
+		if ProductData then
+			local Rarity = ProductData.Rarity
 
-		return RarityInfo[Rarity :: any]
+			return RarityInfo[Rarity :: RarityInfo.Rarity]
+		else
+			return RarityInfo["Common" :: RarityInfo.Rarity]
+		end
 	end, { ProductData })
 
 	local OnClick = React.useCallback(function()

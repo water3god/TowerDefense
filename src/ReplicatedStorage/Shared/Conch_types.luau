@@ -13,6 +13,7 @@ local HelperFunctions = require(Modules.HelperFunctions)
 
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
+local ProductInfo = require(Shared.ProductInfo)
 local GameInfo = require(Shared.GameInfo)
 local Traits = require(Shared.Traits)
 
@@ -41,6 +42,19 @@ local TraitType = Conch.register_type(
 	)
 )
 
+local Products = {}
+
+for _, Product in pairs(ProductInfo.ProductInfo) do
+	table.insert(Products, Product.Name)
+end
+
+for _, Product in pairs(ProductInfo.GamepassInfo) do
+	table.insert(Products, Product.Name)
+end
+
+local ProductType =
+	Conch.register_type("product", Conch.args.enum_new(Products, "Product", "Products that can be purchased"))
+
 local ResourceType = Conch.register_type(
 	"resource",
 	Conch.args.enum_new(
@@ -54,5 +68,6 @@ return {
 	UnitType = UnitType,
 	EnemyType = EnemyType,
 	TraitType = TraitType,
+	ProductType = ProductType,
 	ResourceType = ResourceType,
 }

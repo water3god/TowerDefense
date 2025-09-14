@@ -235,9 +235,9 @@ end
 
 local function ProductIsGamepass(ProductId: number): boolean
 	if ProductInfo[ProductId] then
-		return true
-	elseif GamepassInfo[ProductId] then
 		return false
+	elseif GamepassInfo[ProductId] then
+		return true
 	else
 		error("Product with ID " .. tostring(ProductId) .. " does not exist.")
 	end

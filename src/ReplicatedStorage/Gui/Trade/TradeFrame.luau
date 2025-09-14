@@ -341,6 +341,7 @@ local function TradeMain(Properties: Properties)
 					UniqueId = ProductData.UniqueId,
 					Type = "Product",
 				}
+
 				SetSelectCountFrame(e(ProductFrame, {
 					ProductId = ProductData.ProductId,
 					Count = ProductData.Count,

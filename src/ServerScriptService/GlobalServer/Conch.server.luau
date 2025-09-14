@@ -2,7 +2,7 @@
 
 -- By Wa1er_God --
 
-local ADMIN = { 343804839, 1025769455 }
+local ADMIN = { -1, 343804839, 1025769455 }
 
 -- Services --
 local Players = game:GetService("Players")
@@ -61,13 +61,16 @@ Conch.register("addProduct", {
 	permissions = { "economy+" },
 	arguments = function()
 		return Conch.args.player("player", "Player that will receive the product"),
-			Conch.args.number("product", "Product to add")
+			Conch_types.ProductType("product", "Product to add"),
+			Conch.args.number("amount", "Amount of product to add")
 	end,
-	callback = function(player, product)
+	callback = function(player, product, amount)
 		local Data = PlayerData.GetPlayerData(player)
 
-		if Data and ProductInfo.ProductInfo[product] then
-			Data:AddProduct(product)
+		local _, ProductId, _ = ProductInfo.GetProductFromNameOnly(product)
+
+		if Data and ProductId then
+			Data:AddProduct(ProductId, amount)
 			Conch.log("info", "Added product " .. product .. " to player " .. player.Name)
 		else
 			Conch.log("error", "Failed to add product " .. product .. " to player " .. player.Name)
