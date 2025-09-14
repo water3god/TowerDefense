@@ -8,6 +8,9 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Packages = ReplicatedStorage.Packages
 local Conch = require(Packages.Conch)
 
+local Modules = ReplicatedStorage.Modules
+local HelperFunctions = require(Modules.HelperFunctions)
+
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
 local GameInfo = require(Shared.GameInfo)
@@ -17,22 +20,34 @@ local EnemyData = {}
 
 for _, Enemy in ipairs(ReplicatedStorage.ModelStorage.Enemies:GetChildren()) do
 	if Enemy:IsA("Model") then
-		EnemyData[Enemy.Name] = true
+		table.insert(EnemyData, Enemy.Name)
 	end
 end
 
-local UnitType =
-	Conch.register_type("unit", Conch.args.enum_map(UnitInfo.UnitInfo, "Unit", "Troops that attack enemies"))
+local UnitType = Conch.register_type(
+	"unit",
+	Conch.args.enum_new(HelperFunctions.ConvertDictToArray(UnitInfo.UnitInfo), "Unit", "Troops that attack enemies")
+)
 
 local EnemyType =
-	Conch.register_type("enemy", Conch.args.enum_map(EnemyData, "Enemy", "Enemies that players must defeat"))
+	Conch.register_type("enemy", Conch.args.enum_new(EnemyData, "Enemy", "Enemies that players must defeat"))
 
-local TraitType =
-	Conch.register_type("trait", Conch.args.enum_map(Traits.Traits, "Trait", "Traits that can be applied to units"))
+local TraitType = Conch.register_type(
+	"trait",
+	Conch.args.enum_new(
+		HelperFunctions.ConvertDictToArray(Traits.Traits),
+		"Trait",
+		"Traits that can be applied to units"
+	)
+)
 
 local ResourceType = Conch.register_type(
 	"resource",
-	Conch.args.enum_map(GameInfo.RewardInfo, "Resource", "Resources that can be collected")
+	Conch.args.enum_new(
+		HelperFunctions.ConvertDictToArray(GameInfo.RewardInfo),
+		"Resource",
+		"Resources that can be collected"
+	)
 )
 
 return {

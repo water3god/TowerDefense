@@ -97,6 +97,14 @@ function Funcs.GetLimitedArray(t1, t2)
 	return NewTable
 end
 
+function Funcs.ConvertDictToArray(Dict: { [any]: any }): { any }
+	local Array = {}
+	for Key, _ in pairs(Dict) do
+		table.insert(Array, Key)
+	end
+	return Array
+end
+
 function Funcs.GetDifferentTable(t1, t2)
 	local OneOnly = {}
 	local TwoOnly = {}
