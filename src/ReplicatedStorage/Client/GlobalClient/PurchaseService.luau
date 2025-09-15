@@ -170,12 +170,16 @@ for ProductId, Data in pairs(ProductInfo.ProductInfo) do
 		return Promise.try(function()
 			return MarketplaceService:GetProductInfo(ProductId, Enum.InfoType.Product)
 		end)
-	end, 10, 5):andThen(function(Info: ProductInfo)
-		Module.ProductData[ProductId] = {
-			ProductInfo = Info,
-			Rarity = Data.Rarity,
-		}
-	end)
+	end, 10, 5)
+		:andThen(function(Info: ProductInfo)
+			Module.ProductData[ProductId] = {
+				ProductInfo = Info,
+				Rarity = Data.Rarity,
+			}
+		end)
+		:catch(function(error)
+			print(error)
+		end)
 
 	table.insert(Promises, ProductPromise)
 end
@@ -184,21 +188,27 @@ local Ids = if RunService:IsRunning() then GamepassIds or Module.GamepassSynced:
 for GamepassId, Data in pairs(ProductInfo.GamepassInfo) do
 	local GamepassPromise = Promise.retryWithDelay(function()
 		return Promise.try(function()
-			return MarketplaceService:GetProductInfo(GamepassId, Enum.InfoType.Product)
+			return MarketplaceService:GetProductInfo(GamepassId, Enum.InfoType.GamePass)
 		end)
-	end, 10, 5):andThen(function(Info: ProductInfo)
-		Module.GamepassData[GamepassId] = {
-			ProductInfo = Info,
-			Owned = table.find(Ids, GamepassId) ~= nil,
-			Rarity = Data.Rarity,
-		}
-	end)
+	end, 10, 5)
+		:andThen(function(Info: ProductInfo)
+			print("[DEBUG]", "Ran")
+			Module.GamepassData[GamepassId] = {
+				ProductInfo = Info,
+				Owned = table.find(Ids, GamepassId) ~= nil,
+				Rarity = Data.Rarity,
+			}
+		end)
+		:catch(function(error)
+			print(error)
+		end)
 
 	table.insert(Promises, GamepassPromise)
 end
 
 Promise.all(Promises)
 	:andThen(function()
+		print("Loaded")
 		Module.IsLoaded = true
 		Module.Loaded:Fire()
 	end)
