@@ -633,31 +633,31 @@ local UnitInfo: { [string]: UnitInfo } = {
 
 		UnitData = {
 			[0] = {
-				Damage = { 20 },
+				Damage = { 7 },
 				FireRate = 8,
 				Range = 5,
 				Cost = 100,
 			},
 			[1] = {
-				Damage = { 40 },
+				Damage = { 16 },
 				FireRate = 7,
 				Range = 5,
 				Cost = 200,
 			},
 			[2] = {
-				Damage = { 60 },
+				Damage = { 25 },
 				FireRate = 6.5,
 				Range = 5,
 				Cost = 250,
 			},
 			[3] = {
-				Damage = { 90 },
+				Damage = { 40 },
 				FireRate = 6,
 				Range = 5,
 				Cost = 350,
 			},
 			[4] = {
-				Damage = { 140 },
+				Damage = { 60 },
 				FireRate = 6,
 				Range = 25,
 				Cost = 600,
