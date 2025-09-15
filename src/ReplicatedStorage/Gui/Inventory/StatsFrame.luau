@@ -396,7 +396,7 @@ local function CreateStatsFrame(props: Props)
 		end
 
 		return
-	end, { UnitData, props.Type, props.Level, props.Name } :: { unknown })
+	end, { UnitData, props.Type, props.Level, props.Name, props.Trait } :: { unknown })
 
 	local TraitRarity = React.useMemo(function()
 		if props.Type == "Unit" and props.Trait then
