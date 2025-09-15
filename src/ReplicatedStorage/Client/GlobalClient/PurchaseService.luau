@@ -192,7 +192,6 @@ for GamepassId, Data in pairs(ProductInfo.GamepassInfo) do
 		end)
 	end, 10, 5)
 		:andThen(function(Info: ProductInfo)
-			print("[DEBUG]", "Ran")
 			Module.GamepassData[GamepassId] = {
 				ProductInfo = Info,
 				Owned = table.find(Ids, GamepassId) ~= nil,
