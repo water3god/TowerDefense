@@ -51,6 +51,7 @@ local function AddAllyToWave(Unit: UnitModule.Unit, Callback: () -> (string, {}?
 	local Wave = GlobalWave.GetWave()
 	local AllyTimer = AllyTrove:Construct(Timer, Unit:GetProperty("FireRate"))
 	local function HandleWave(Input: GlobalWave.GlobalWave)
+		AllyTimer.Interval = Unit:GetProperty("FireRate")
 		if Input.Wave == 0 then
 			AllyTrove:Connect(Input.Passed, function()
 				AllyTimer:Start()
@@ -430,9 +431,18 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 		AttackFuncs = {},
 		DefaultRuns = {
 			function(Unit: UnitModule.Unit)
-				local Ratio = Unit:GetPropertyRaw("Damage")
-				local Range = ApplyBuff(Unit, "Range", Ratio, math.huge)
-				return Range
+				local AllyName = nil
+
+				if Unit.Level < 2 then
+					AllyName = "Viking 1"
+				else
+					AllyName = "Viking 2"
+				end
+
+				return AddAllyToWave(Unit, function()
+					Unit:PlayAnimation("Ability")
+					return AllyName, { Health = Unit:GetProperty("Damage") }
+				end)
 			end,
 		},
 		Abilities = {},
