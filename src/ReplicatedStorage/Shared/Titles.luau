@@ -41,9 +41,9 @@ local Titles: {
 		Description = "A tester ensuring game quality.",
 		Priority = 6,
 	},
-	VIP = {
-		Color = ColorSequence.new(Color3.fromRGB(255, 215, 0), Color3.fromRGB(255, 230, 150)),
-		Description = "A player who has achieved VIP status.",
+	["Content Creator"] = {
+		Color = ColorSequence.new(Color3.fromRGB(255, 0, 0), Color3.fromRGB(255, 100, 100)),
+		Description = "A player who creates content for the game.",
 		Priority = 7,
 	},
 	["Ultra VIP"] = {
@@ -51,30 +51,35 @@ local Titles: {
 		Description = "A player who has achieved Ultra VIP status.",
 		Priority = 8,
 	},
+	VIP = {
+		Color = ColorSequence.new(Color3.fromRGB(255, 215, 0), Color3.fromRGB(255, 230, 150)),
+		Description = "A player who has achieved VIP status.",
+		Priority = 9,
+	},
 	["TOP 100"] = {
 		Color = ColorSequence.new(Color3.fromRGB(255, 0, 255), Color3.fromRGB(255, 100, 200)),
 		Description = "A player who is one of the top 100 in the leaderboard.",
-		Priority = 8,
+		Priority = 10,
 	},
 	["Destroyer Of Worlds"] = {
 		Color = ColorSequence.new(Color3.fromRGB(255, 0, 255), Color3.fromRGB(255, 100, 200)),
 		Description = "A player who has achieved Destroyer of Worlds status.",
-		Priority = 7,
+		Priority = 12,
 	},
 	["Eradicator"] = {
 		Color = ColorSequence.new(Color3.fromRGB(255, 0, 255), Color3.fromRGB(255, 100, 200)),
 		Description = "Damage Dealer.",
-		Priority = 10,
+		Priority = 13,
 	},
 	["Slayer"] = {
 		Color = ColorSequence.new(Color3.fromRGB(200, 0, 255), Color3.fromRGB(200, 100, 200)),
 		Description = "A player who has achieved Slayer II status.",
-		Priority = 11,
+		Priority = 14,
 	},
 	["Slayer III"] = {
 		Color = ColorSequence.new(Color3.fromRGB(150, 0, 255), Color3.fromRGB(150, 100, 200)),
 		Description = "A player who has achieved Slayer III status.",
-		Priority = 12,
+		Priority = 15,
 	},
 	["Annahilator"] = {
 		Color = ColorSequence.new(Color3.fromRGB(255, 100, 0), Color3.fromRGB(135, 0, 172)),
