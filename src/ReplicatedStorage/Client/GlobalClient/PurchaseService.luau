@@ -11,6 +11,7 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 
 local Packages = ReplicatedStorage.Packages
+local Promise = require(Packages.Promise)
 local Signal = require(Packages.Signal)
 
 local Network = require(ReplicatedStorage.Network.Client)
@@ -162,25 +163,47 @@ OwnedGamepasses.SetCallback(function(Ids: { number })
 	Module.GamepassSynced:Fire(Ids)
 end)
 
-task.spawn(function()
-	for ProductId, Data in pairs(ProductInfo.ProductInfo) do
+local Promises = {}
+
+for ProductId, Data in pairs(ProductInfo.ProductInfo) do
+	local ProductPromise = Promise.retryWithDelay(function()
+		return Promise.try(function()
+			return MarketplaceService:GetProductInfo(ProductId, Enum.InfoType.Product)
+		end)
+	end, 10, 5):andThen(function(Info: ProductInfo)
 		Module.ProductData[ProductId] = {
-			ProductInfo = MarketplaceService:GetProductInfo(ProductId, Enum.InfoType.Product),
+			ProductInfo = Info,
 			Rarity = Data.Rarity,
 		}
-	end
+	end)
 
-	local Ids = if RunService:IsRunning() then GamepassIds or Module.GamepassSynced:Wait() else {}
-	for GamepassId, Data in pairs(ProductInfo.GamepassInfo) do
+	table.insert(Promises, ProductPromise)
+end
+
+local Ids = if RunService:IsRunning() then GamepassIds or Module.GamepassSynced:Wait() else {}
+for GamepassId, Data in pairs(ProductInfo.GamepassInfo) do
+	local GamepassPromise = Promise.retryWithDelay(function()
+		return Promise.try(function()
+			return MarketplaceService:GetProductInfo(GamepassId, Enum.InfoType.Product)
+		end)
+	end, 10, 5):andThen(function(Info: ProductInfo)
 		Module.GamepassData[GamepassId] = {
-			ProductInfo = MarketplaceService:GetProductInfo(GamepassId, Enum.InfoType.GamePass),
+			ProductInfo = Info,
 			Owned = table.find(Ids, GamepassId) ~= nil,
 			Rarity = Data.Rarity,
 		}
-	end
+	end)
 
-	Module.IsLoaded = true
-	Module.Loaded:Fire()
-end)
+	table.insert(Promises, GamepassPromise)
+end
+
+Promise.all(Promises)
+	:andThen(function()
+		Module.IsLoaded = true
+		Module.Loaded:Fire()
+	end)
+	:catch(function()
+		LocalPlayer:Kick("Failed to load Product Data")
+	end)
 
 return Module
