@@ -208,7 +208,6 @@ end
 
 Promise.all(Promises)
 	:andThen(function()
-		print("Loaded")
 		Module.IsLoaded = true
 		Module.Loaded:Fire()
 	end)
