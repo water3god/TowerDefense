@@ -152,15 +152,15 @@ local function PreloadAsync()
 end
 
 local function HandleNewGui(Gui: typeof(script.LoadingGui))
-	local Main = Gui.Main
+	local Main = Gui:WaitForChild("Main")
 
-	Main.MapImage.Image = Id
-	Main.MapInfoLabel.Text = MapName
+	Main:WaitForChild("MapImage").Image = Id
+	Main:WaitForChild("MapInfoLabel").Text = MapName
 end
 
 local function AnimateGui(Gui: typeof(script.LoadingGui))
-	local Main = Gui.Main
-	local LoadImage = Main.LoadImage
+	local Main = Gui:WaitForChild("Main")
+	local LoadImage = Main:WaitForChild("LoadImage")
 	local Connection = RunService.PostSimulation:Connect(function(Delta: number)
 		LoadImage.Rotation += Delta * 100
 	end)
@@ -189,7 +189,7 @@ ReplicatedFirst:RemoveDefaultLoadingScreen()
 PreloadAsync()
 
 local Tween = TweenService:Create(
-	Gui.Main,
+	Gui:WaitForChild("Main"),
 	TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out),
 	{ GroupTransparency = 1 }
 )

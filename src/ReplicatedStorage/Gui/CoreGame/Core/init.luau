@@ -607,7 +607,7 @@ local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (strin
 							return
 						end
 
-						OnPress(NewGamepad:GetPosition())
+						OnPress(NewGamepad:GetThumbstick(Enum.KeyCode.Thumbstick1))
 					end)
 				elseif Preferred == "Touch" then
 					local NewTouch = InputTrove:Construct(Touch)
