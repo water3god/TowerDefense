@@ -123,6 +123,10 @@ local function CreateUnitStats(props: { UnitData: UnitInfo.UnitInfo, Level: numb
 
 				local Value = Data[Property]
 
+				if Property == "Damage" then
+					Value = table.clone(Value)
+				end
+
 				if Value == nil then
 					continue
 				end
