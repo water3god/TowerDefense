@@ -16,10 +16,14 @@ local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
 
+local NetworkFolder = ReplicatedStorage.Network
+local ClientOnly = require(NetworkFolder.ClientOnly)
+
 -- Reference UI --
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
+local Hooks = require(CoreGame.Hooks)
 
 local Client = ReplicatedStorage.Client
 local GlobalClient = Client.GlobalClient
@@ -33,6 +37,7 @@ local TutorialContext = require(Gui.MiscContexts.PassedTutorial)
 export type Properties = {
 	Wave: number?,
 	Status: string?,
+	Name: string?,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
@@ -77,6 +82,12 @@ local function CreateIndicator(props: Properties)
 		end
 		SetEnabled(props.Status == PassedTutorial.Status)
 	end, { props.Status, PassedTutorial.Status })
+
+	Hooks.useEventConnection(ClientOnly.NewNPCTalk, function(NPCName: string)
+		if NPCName == props.Name then
+			SetEnabled(false)
+		end
+	end, { props.Name })
 
 	React.useEffect(function()
 		if not IsTutorial then

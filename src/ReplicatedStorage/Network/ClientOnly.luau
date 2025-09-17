@@ -24,7 +24,7 @@ local ClientOnly = {
 	TraitsTouched = Signal.new(),
 	DailysTouched = Signal.new(),
 
-	NewNPCTalk = Signal.new(),
+	NewNPCTalk = Signal.new() :: Signal.Signal<string>,
 }
 
 return ClientOnly

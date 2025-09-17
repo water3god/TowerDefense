@@ -85,6 +85,7 @@ local function Render(props: { Character: Types.Rig, Wave: number?, Status: stri
 		Indicator = e(Indicator, {
 			Wave = props.Wave,
 			Status = props.Status,
+			Name = props.Character.Name,
 		}, {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 				AspectRatio = 1,

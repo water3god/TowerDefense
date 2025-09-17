@@ -23,6 +23,7 @@ local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
 local ProductInfo = require(Shared.ProductInfo)
 local RarityInfo = require(Shared.RarityInfo)
+local GameInfo = require(Shared.GameInfo)
 
 EquipUnit.SetCallback(function(Player: Player, Data: { UniqueId: string, Equip: boolean })
 	if typeof(Data) ~= "table" then
@@ -126,7 +127,10 @@ Sell.SetCallback(function(Player: Player, Type: string, Data: { string })
 				if not Resource then
 					continue
 				end
-				local Rarity = UnitInfo.UnitInfo[Resource.Resource].Rarity
+				if Resource.Resource == "Gold" then
+					continue
+				end
+				local Rarity = GameInfo.RewardInfo[Resource.Resource].Rarity
 				TotalCost += (RarityInfo[Rarity :: any].Value * Resource.Count) / 10
 				PData:RemoveResource(Resource.Resource)
 			end

@@ -103,7 +103,7 @@ ObserveTag.ObserveTag("NPCTalk", function(NPC)
 			if ActivePrompt then
 				return
 			end
-			Network.NewNPCTalk:Fire()
+			Network.NewNPCTalk:Fire(NPC.Name)
 
 			local Talk = NPCTalk.new(Input)
 			ActivePrompt = Talk

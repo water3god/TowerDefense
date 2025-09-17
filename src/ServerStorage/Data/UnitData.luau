@@ -440,7 +440,6 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 				end
 
 				return AddAllyToWave(Unit, function()
-					print("Ran")
 					return AllyName, { Health = Unit:GetProperty("Damage") }
 				end)
 			end,
