@@ -186,13 +186,13 @@ local remotes = ReplicatedStorage:WaitForChild("Zap4")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
-export type Level = (number)
 export type QuestRemoteInfo = ({
 	["Id"]: (string),
 	["CurrentValue"]: (number),
 	["Redeemed"]: (boolean),
 	["Data"]: ((unknown)),
 })
+export type Level = (number)
 
 local function SendEvents()
 	if outgoing_used ~= 0 then

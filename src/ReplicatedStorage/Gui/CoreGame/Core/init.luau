@@ -99,6 +99,7 @@ local TraitsFrame = require(TraitsFolder.TraitsFrame)
 
 local MessageFolder = Gui.Message
 local Message = require(MessageFolder.Message)
+local Indicator = require(MessageFolder.Indicator)
 
 local MiscContexts = Gui.MiscContexts
 
@@ -1185,6 +1186,10 @@ local function Render()
 					native = {
 						LayoutOrder = LayoutOrder(),
 					},
+				}, {
+					Indicator = e(Indicator, {
+						Status = "Active",
+					}),
 				}),
 				StoreButton = e(MainButtonFrame, {
 					Name = "Store",
@@ -1207,6 +1212,10 @@ local function Render()
 					native = {
 						LayoutOrder = LayoutOrder(),
 					},
+				}, {
+					Indicator = e(Indicator, {
+						Status = "Active",
+					}),
 				}),
 				TradeButton = e(MainButtonFrame, {
 					Name = "Trade",
@@ -1229,6 +1238,10 @@ local function Render()
 					native = {
 						LayoutOrder = LayoutOrder(),
 					},
+				}, {
+					Indicator = e(Indicator, {
+						Status = "Active",
+					}),
 				}),
 			}),
 			RightButtons = IsLobby and e(Main.Frame, {

@@ -200,6 +200,20 @@ function Hooks.useZapConnection<T...>(
 	end, { Event, cachedCallback } :: { unknown })
 end
 
+function Hooks.useZapManyConnection<T...>(
+	Event: { On: ((T...) -> ()) -> () -> () },
+	Callback: (T...) -> (),
+	dependencies: { any }
+)
+	local cachedCallback = React.useMemo(function()
+		return Callback
+	end, dependencies)
+
+	React.useEffect(function()
+		return Event.On(cachedCallback)
+	end, { Event, cachedCallback } :: { unknown })
+end
+
 function Hooks.useCamera()
 	return React.useMemo(function()
 		return workspace.CurrentCamera

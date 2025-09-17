@@ -255,13 +255,13 @@ end
 Players.PlayerRemoving:Connect(function(player)
 	player_map[player] = nil
 end)
-export type Level = (number)
 export type QuestRemoteInfo = ({
 	["Id"]: (string),
 	["CurrentValue"]: (number),
 	["Redeemed"]: (boolean),
 	["Data"]: ((unknown)),
 })
+export type Level = (number)
 
 local function SendEvents()
 	for player, outgoing in player_map do

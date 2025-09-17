@@ -7,10 +7,13 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
+local Signal = require(Packages.Signal)
 local React = require(Packages.React)
 local e = React.createElement
 
-local Network = require(ReplicatedStorage.Network.Client)
+local NetworkFolder = ReplicatedStorage.Network
+local Network = require(NetworkFolder.Client)
+local ClientOnly = require(NetworkFolder.ClientOnly)
 local TutorialSent = Network.TutorialSent
 
 local CoreGame = ReplicatedStorage.Gui.CoreGame
@@ -25,12 +28,18 @@ local PassedContext = React.createContext({
 	Status: string,
 })
 
+local TutorialSentSig = Signal.new() :: Signal.Signal<boolean>
+
+TutorialSent.SetCallback(function(Passed: boolean)
+	TutorialSentSig:Fire(Passed)
+end)
+
 local function PassedProvider(props)
 	local IsPassed, SetIsPassed = React.useState(true)
 	local PassedGameTutorial, SetPassedGameTutorial = React.useState(false)
 	local Status, SetStatus = React.useState("")
 
-	Hooks.useZapConnection(TutorialSent, function(Passed: boolean)
+	Hooks.useEventConnection(TutorialSentSig, function(Passed: boolean)
 		SetIsPassed(false)
 		SetPassedGameTutorial(Passed)
 

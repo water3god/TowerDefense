@@ -28,6 +28,9 @@ local NewGui = require(CoreGame.NewGui)
 local Hooks = require(CoreGame.Hooks)
 local Indicator = require(Gui.Message.Indicator)
 
+local MiscContexts = Gui.MiscContexts
+local TutorialContext = require(MiscContexts.PassedTutorial)
+
 local Client = ReplicatedStorage.Client
 local GlobalClient = Client.GlobalClient
 local UnitClient = require(GlobalClient.UnitClient)
@@ -113,9 +116,11 @@ elseif IsLobby then
 			local ReactRoot = ReactRoblox.createRoot(Instance.new("Folder"))
 			ReactRoot:render(ReactRoblox.createPortal(
 				e(NewGui, {}, {
-					Indicator = e(Render, {
-						Character = Character :: Types.Rig,
-						Status = "Active",
+					TutorialProvider = e(TutorialContext.Provider, {}, {
+						Indicator = e(Render, {
+							Character = Character :: Types.Rig,
+							Status = "Active",
+						}),
 					}),
 				}),
 				PlayerGui
