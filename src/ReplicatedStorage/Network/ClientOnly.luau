@@ -23,6 +23,8 @@ local ClientOnly = {
 	EvolutionTouched = Signal.new(),
 	TraitsTouched = Signal.new(),
 	DailysTouched = Signal.new(),
+
+	NewNPCTalk = Signal.new(),
 }
 
 return ClientOnly

@@ -452,16 +452,28 @@ local returns = {
 		end,
 	},
 	TutorialSent = {
-		Fire = function(Player: Player)
+		Fire = function(Player: Player, PassedGameTutorial: (boolean))
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			local bool_2 = 0
+			local bool_2_pos_1 = alloc(1)
+			if PassedGameTutorial then
+				bool_2 = bit32.bor(bool_2, 0b0000000000000001)
+			end
+			buffer.writeu8(outgoing_buff, bool_2_pos_1, bool_2)
 			player_map[Player] = save()
 		end,
-		FireAll = function()
+		FireAll = function(PassedGameTutorial: (boolean))
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			local bool_3 = 0
+			local bool_3_pos_1 = alloc(1)
+			if PassedGameTutorial then
+				bool_3 = bit32.bor(bool_3, 0b0000000000000001)
+			end
+			buffer.writeu8(outgoing_buff, bool_3_pos_1, bool_3)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				load_player(player)
@@ -471,10 +483,16 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireExcept = function(Except: Player)
+		FireExcept = function(Except: Player, PassedGameTutorial: (boolean))
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			local bool_4 = 0
+			local bool_4_pos_1 = alloc(1)
+			if PassedGameTutorial then
+				bool_4 = bit32.bor(bool_4, 0b0000000000000001)
+			end
+			buffer.writeu8(outgoing_buff, bool_4_pos_1, bool_4)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -486,10 +504,16 @@ local returns = {
 				end
 			end
 		end,
-		FireList = function(List: { [unknown]: Player })
+		FireList = function(List: { [unknown]: Player }, PassedGameTutorial: (boolean))
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			local bool_5 = 0
+			local bool_5_pos_1 = alloc(1)
+			if PassedGameTutorial then
+				bool_5 = bit32.bor(bool_5, 0b0000000000000001)
+			end
+			buffer.writeu8(outgoing_buff, bool_5_pos_1, bool_5)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -499,10 +523,16 @@ local returns = {
 				player_map[player] = save()
 			end
 		end,
-		FireSet = function(Set: { [Player]: any })
+		FireSet = function(Set: { [Player]: any }, PassedGameTutorial: (boolean))
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			local bool_6 = 0
+			local bool_6_pos_1 = alloc(1)
+			if PassedGameTutorial then
+				bool_6 = bit32.bor(bool_6, 0b0000000000000001)
+			end
+			buffer.writeu8(outgoing_buff, bool_6_pos_1, bool_6)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -944,8 +974,8 @@ local returns = {
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_31)
 			for i_1 = 1, len_31 do
-				local bool_2 = 0
-				local bool_2_pos_1 = alloc(1)
+				local bool_7 = 0
+				local bool_7_pos_1 = alloc(1)
 				local val_1 = Value["DailyQuests"][i_1]
 				local len_32 = #val_1["Id"]
 				alloc(2)
@@ -955,20 +985,20 @@ local returns = {
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, val_1["CurrentValue"])
 				if val_1["Redeemed"] then
-					bool_2 = bit32.bor(bool_2, 0b0000000000000001)
+					bool_7 = bit32.bor(bool_7, 0b0000000000000001)
 				end
 				if val_1["Data"] ~= nil then
-					bool_2 = bit32.bor(bool_2, 0b0000000000000010)
+					bool_7 = bit32.bor(bool_7, 0b0000000000000010)
 					table.insert(outgoing_inst, val_1["Data"])
 				end
-				buffer.writeu8(outgoing_buff, bool_2_pos_1, bool_2)
+				buffer.writeu8(outgoing_buff, bool_7_pos_1, bool_7)
 			end
 			local len_33 = #Value["WeeklyQuests"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_33)
 			for i_2 = 1, len_33 do
-				local bool_3 = 0
-				local bool_3_pos_1 = alloc(1)
+				local bool_8 = 0
+				local bool_8_pos_1 = alloc(1)
 				local val_2 = Value["WeeklyQuests"][i_2]
 				local len_34 = #val_2["Id"]
 				alloc(2)
@@ -978,20 +1008,20 @@ local returns = {
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, val_2["CurrentValue"])
 				if val_2["Redeemed"] then
-					bool_3 = bit32.bor(bool_3, 0b0000000000000001)
+					bool_8 = bit32.bor(bool_8, 0b0000000000000001)
 				end
 				if val_2["Data"] ~= nil then
-					bool_3 = bit32.bor(bool_3, 0b0000000000000010)
+					bool_8 = bit32.bor(bool_8, 0b0000000000000010)
 					table.insert(outgoing_inst, val_2["Data"])
 				end
-				buffer.writeu8(outgoing_buff, bool_3_pos_1, bool_3)
+				buffer.writeu8(outgoing_buff, bool_8_pos_1, bool_8)
 			end
 			local len_35 = #Value["EventQuests"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_35)
 			for i_3 = 1, len_35 do
-				local bool_4 = 0
-				local bool_4_pos_1 = alloc(1)
+				local bool_9 = 0
+				local bool_9_pos_1 = alloc(1)
 				local val_3 = Value["EventQuests"][i_3]
 				local len_36 = #val_3["Id"]
 				alloc(2)
@@ -1001,20 +1031,20 @@ local returns = {
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, val_3["CurrentValue"])
 				if val_3["Redeemed"] then
-					bool_4 = bit32.bor(bool_4, 0b0000000000000001)
+					bool_9 = bit32.bor(bool_9, 0b0000000000000001)
 				end
 				if val_3["Data"] ~= nil then
-					bool_4 = bit32.bor(bool_4, 0b0000000000000010)
+					bool_9 = bit32.bor(bool_9, 0b0000000000000010)
 					table.insert(outgoing_inst, val_3["Data"])
 				end
-				buffer.writeu8(outgoing_buff, bool_4_pos_1, bool_4)
+				buffer.writeu8(outgoing_buff, bool_9_pos_1, bool_9)
 			end
 			local len_37 = #Value["GlobalQuests"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_37)
 			for i_4 = 1, len_37 do
-				local bool_5 = 0
-				local bool_5_pos_1 = alloc(1)
+				local bool_10 = 0
+				local bool_10_pos_1 = alloc(1)
 				local val_4 = Value["GlobalQuests"][i_4]
 				local len_38 = #val_4["Id"]
 				alloc(2)
@@ -1024,13 +1054,13 @@ local returns = {
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, val_4["CurrentValue"])
 				if val_4["Redeemed"] then
-					bool_5 = bit32.bor(bool_5, 0b0000000000000001)
+					bool_10 = bit32.bor(bool_10, 0b0000000000000001)
 				end
 				if val_4["Data"] ~= nil then
-					bool_5 = bit32.bor(bool_5, 0b0000000000000010)
+					bool_10 = bit32.bor(bool_10, 0b0000000000000010)
 					table.insert(outgoing_inst, val_4["Data"])
 				end
-				buffer.writeu8(outgoing_buff, bool_5_pos_1, bool_5)
+				buffer.writeu8(outgoing_buff, bool_10_pos_1, bool_10)
 			end
 			player_map[Player] = save()
 		end,
@@ -1067,8 +1097,8 @@ local returns = {
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_39)
 			for i_5 = 1, len_39 do
-				local bool_6 = 0
-				local bool_6_pos_1 = alloc(1)
+				local bool_11 = 0
+				local bool_11_pos_1 = alloc(1)
 				local val_5 = Value["DailyQuests"][i_5]
 				local len_40 = #val_5["Id"]
 				alloc(2)
@@ -1078,20 +1108,20 @@ local returns = {
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, val_5["CurrentValue"])
 				if val_5["Redeemed"] then
-					bool_6 = bit32.bor(bool_6, 0b0000000000000001)
+					bool_11 = bit32.bor(bool_11, 0b0000000000000001)
 				end
 				if val_5["Data"] ~= nil then
-					bool_6 = bit32.bor(bool_6, 0b0000000000000010)
+					bool_11 = bit32.bor(bool_11, 0b0000000000000010)
 					table.insert(outgoing_inst, val_5["Data"])
 				end
-				buffer.writeu8(outgoing_buff, bool_6_pos_1, bool_6)
+				buffer.writeu8(outgoing_buff, bool_11_pos_1, bool_11)
 			end
 			local len_41 = #Value["WeeklyQuests"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_41)
 			for i_6 = 1, len_41 do
-				local bool_7 = 0
-				local bool_7_pos_1 = alloc(1)
+				local bool_12 = 0
+				local bool_12_pos_1 = alloc(1)
 				local val_6 = Value["WeeklyQuests"][i_6]
 				local len_42 = #val_6["Id"]
 				alloc(2)
@@ -1101,20 +1131,20 @@ local returns = {
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, val_6["CurrentValue"])
 				if val_6["Redeemed"] then
-					bool_7 = bit32.bor(bool_7, 0b0000000000000001)
+					bool_12 = bit32.bor(bool_12, 0b0000000000000001)
 				end
 				if val_6["Data"] ~= nil then
-					bool_7 = bit32.bor(bool_7, 0b0000000000000010)
+					bool_12 = bit32.bor(bool_12, 0b0000000000000010)
 					table.insert(outgoing_inst, val_6["Data"])
 				end
-				buffer.writeu8(outgoing_buff, bool_7_pos_1, bool_7)
+				buffer.writeu8(outgoing_buff, bool_12_pos_1, bool_12)
 			end
 			local len_43 = #Value["EventQuests"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_43)
 			for i_7 = 1, len_43 do
-				local bool_8 = 0
-				local bool_8_pos_1 = alloc(1)
+				local bool_13 = 0
+				local bool_13_pos_1 = alloc(1)
 				local val_7 = Value["EventQuests"][i_7]
 				local len_44 = #val_7["Id"]
 				alloc(2)
@@ -1124,20 +1154,20 @@ local returns = {
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, val_7["CurrentValue"])
 				if val_7["Redeemed"] then
-					bool_8 = bit32.bor(bool_8, 0b0000000000000001)
+					bool_13 = bit32.bor(bool_13, 0b0000000000000001)
 				end
 				if val_7["Data"] ~= nil then
-					bool_8 = bit32.bor(bool_8, 0b0000000000000010)
+					bool_13 = bit32.bor(bool_13, 0b0000000000000010)
 					table.insert(outgoing_inst, val_7["Data"])
 				end
-				buffer.writeu8(outgoing_buff, bool_8_pos_1, bool_8)
+				buffer.writeu8(outgoing_buff, bool_13_pos_1, bool_13)
 			end
 			local len_45 = #Value["GlobalQuests"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_45)
 			for i_8 = 1, len_45 do
-				local bool_9 = 0
-				local bool_9_pos_1 = alloc(1)
+				local bool_14 = 0
+				local bool_14_pos_1 = alloc(1)
 				local val_8 = Value["GlobalQuests"][i_8]
 				local len_46 = #val_8["Id"]
 				alloc(2)
@@ -1147,13 +1177,13 @@ local returns = {
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, val_8["CurrentValue"])
 				if val_8["Redeemed"] then
-					bool_9 = bit32.bor(bool_9, 0b0000000000000001)
+					bool_14 = bit32.bor(bool_14, 0b0000000000000001)
 				end
 				if val_8["Data"] ~= nil then
-					bool_9 = bit32.bor(bool_9, 0b0000000000000010)
+					bool_14 = bit32.bor(bool_14, 0b0000000000000010)
 					table.insert(outgoing_inst, val_8["Data"])
 				end
-				buffer.writeu8(outgoing_buff, bool_9_pos_1, bool_9)
+				buffer.writeu8(outgoing_buff, bool_14_pos_1, bool_14)
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
@@ -1197,8 +1227,8 @@ local returns = {
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_47)
 			for i_9 = 1, len_47 do
-				local bool_10 = 0
-				local bool_10_pos_1 = alloc(1)
+				local bool_15 = 0
+				local bool_15_pos_1 = alloc(1)
 				local val_9 = Value["DailyQuests"][i_9]
 				local len_48 = #val_9["Id"]
 				alloc(2)
@@ -1208,20 +1238,20 @@ local returns = {
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, val_9["CurrentValue"])
 				if val_9["Redeemed"] then
-					bool_10 = bit32.bor(bool_10, 0b0000000000000001)
+					bool_15 = bit32.bor(bool_15, 0b0000000000000001)
 				end
 				if val_9["Data"] ~= nil then
-					bool_10 = bit32.bor(bool_10, 0b0000000000000010)
+					bool_15 = bit32.bor(bool_15, 0b0000000000000010)
 					table.insert(outgoing_inst, val_9["Data"])
 				end
-				buffer.writeu8(outgoing_buff, bool_10_pos_1, bool_10)
+				buffer.writeu8(outgoing_buff, bool_15_pos_1, bool_15)
 			end
 			local len_49 = #Value["WeeklyQuests"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_49)
 			for i_10 = 1, len_49 do
-				local bool_11 = 0
-				local bool_11_pos_1 = alloc(1)
+				local bool_16 = 0
+				local bool_16_pos_1 = alloc(1)
 				local val_10 = Value["WeeklyQuests"][i_10]
 				local len_50 = #val_10["Id"]
 				alloc(2)
@@ -1231,20 +1261,20 @@ local returns = {
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, val_10["CurrentValue"])
 				if val_10["Redeemed"] then
-					bool_11 = bit32.bor(bool_11, 0b0000000000000001)
+					bool_16 = bit32.bor(bool_16, 0b0000000000000001)
 				end
 				if val_10["Data"] ~= nil then
-					bool_11 = bit32.bor(bool_11, 0b0000000000000010)
+					bool_16 = bit32.bor(bool_16, 0b0000000000000010)
 					table.insert(outgoing_inst, val_10["Data"])
 				end
-				buffer.writeu8(outgoing_buff, bool_11_pos_1, bool_11)
+				buffer.writeu8(outgoing_buff, bool_16_pos_1, bool_16)
 			end
 			local len_51 = #Value["EventQuests"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_51)
 			for i_11 = 1, len_51 do
-				local bool_12 = 0
-				local bool_12_pos_1 = alloc(1)
+				local bool_17 = 0
+				local bool_17_pos_1 = alloc(1)
 				local val_11 = Value["EventQuests"][i_11]
 				local len_52 = #val_11["Id"]
 				alloc(2)
@@ -1254,20 +1284,20 @@ local returns = {
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, val_11["CurrentValue"])
 				if val_11["Redeemed"] then
-					bool_12 = bit32.bor(bool_12, 0b0000000000000001)
+					bool_17 = bit32.bor(bool_17, 0b0000000000000001)
 				end
 				if val_11["Data"] ~= nil then
-					bool_12 = bit32.bor(bool_12, 0b0000000000000010)
+					bool_17 = bit32.bor(bool_17, 0b0000000000000010)
 					table.insert(outgoing_inst, val_11["Data"])
 				end
-				buffer.writeu8(outgoing_buff, bool_12_pos_1, bool_12)
+				buffer.writeu8(outgoing_buff, bool_17_pos_1, bool_17)
 			end
 			local len_53 = #Value["GlobalQuests"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_53)
 			for i_12 = 1, len_53 do
-				local bool_13 = 0
-				local bool_13_pos_1 = alloc(1)
+				local bool_18 = 0
+				local bool_18_pos_1 = alloc(1)
 				local val_12 = Value["GlobalQuests"][i_12]
 				local len_54 = #val_12["Id"]
 				alloc(2)
@@ -1277,13 +1307,13 @@ local returns = {
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, val_12["CurrentValue"])
 				if val_12["Redeemed"] then
-					bool_13 = bit32.bor(bool_13, 0b0000000000000001)
+					bool_18 = bit32.bor(bool_18, 0b0000000000000001)
 				end
 				if val_12["Data"] ~= nil then
-					bool_13 = bit32.bor(bool_13, 0b0000000000000010)
+					bool_18 = bit32.bor(bool_18, 0b0000000000000010)
 					table.insert(outgoing_inst, val_12["Data"])
 				end
-				buffer.writeu8(outgoing_buff, bool_13_pos_1, bool_13)
+				buffer.writeu8(outgoing_buff, bool_18_pos_1, bool_18)
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
@@ -1329,8 +1359,8 @@ local returns = {
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_55)
 			for i_13 = 1, len_55 do
-				local bool_14 = 0
-				local bool_14_pos_1 = alloc(1)
+				local bool_19 = 0
+				local bool_19_pos_1 = alloc(1)
 				local val_13 = Value["DailyQuests"][i_13]
 				local len_56 = #val_13["Id"]
 				alloc(2)
@@ -1340,20 +1370,20 @@ local returns = {
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, val_13["CurrentValue"])
 				if val_13["Redeemed"] then
-					bool_14 = bit32.bor(bool_14, 0b0000000000000001)
+					bool_19 = bit32.bor(bool_19, 0b0000000000000001)
 				end
 				if val_13["Data"] ~= nil then
-					bool_14 = bit32.bor(bool_14, 0b0000000000000010)
+					bool_19 = bit32.bor(bool_19, 0b0000000000000010)
 					table.insert(outgoing_inst, val_13["Data"])
 				end
-				buffer.writeu8(outgoing_buff, bool_14_pos_1, bool_14)
+				buffer.writeu8(outgoing_buff, bool_19_pos_1, bool_19)
 			end
 			local len_57 = #Value["WeeklyQuests"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_57)
 			for i_14 = 1, len_57 do
-				local bool_15 = 0
-				local bool_15_pos_1 = alloc(1)
+				local bool_20 = 0
+				local bool_20_pos_1 = alloc(1)
 				local val_14 = Value["WeeklyQuests"][i_14]
 				local len_58 = #val_14["Id"]
 				alloc(2)
@@ -1363,20 +1393,20 @@ local returns = {
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, val_14["CurrentValue"])
 				if val_14["Redeemed"] then
-					bool_15 = bit32.bor(bool_15, 0b0000000000000001)
+					bool_20 = bit32.bor(bool_20, 0b0000000000000001)
 				end
 				if val_14["Data"] ~= nil then
-					bool_15 = bit32.bor(bool_15, 0b0000000000000010)
+					bool_20 = bit32.bor(bool_20, 0b0000000000000010)
 					table.insert(outgoing_inst, val_14["Data"])
 				end
-				buffer.writeu8(outgoing_buff, bool_15_pos_1, bool_15)
+				buffer.writeu8(outgoing_buff, bool_20_pos_1, bool_20)
 			end
 			local len_59 = #Value["EventQuests"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_59)
 			for i_15 = 1, len_59 do
-				local bool_16 = 0
-				local bool_16_pos_1 = alloc(1)
+				local bool_21 = 0
+				local bool_21_pos_1 = alloc(1)
 				local val_15 = Value["EventQuests"][i_15]
 				local len_60 = #val_15["Id"]
 				alloc(2)
@@ -1386,20 +1416,20 @@ local returns = {
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, val_15["CurrentValue"])
 				if val_15["Redeemed"] then
-					bool_16 = bit32.bor(bool_16, 0b0000000000000001)
+					bool_21 = bit32.bor(bool_21, 0b0000000000000001)
 				end
 				if val_15["Data"] ~= nil then
-					bool_16 = bit32.bor(bool_16, 0b0000000000000010)
+					bool_21 = bit32.bor(bool_21, 0b0000000000000010)
 					table.insert(outgoing_inst, val_15["Data"])
 				end
-				buffer.writeu8(outgoing_buff, bool_16_pos_1, bool_16)
+				buffer.writeu8(outgoing_buff, bool_21_pos_1, bool_21)
 			end
 			local len_61 = #Value["GlobalQuests"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_61)
 			for i_16 = 1, len_61 do
-				local bool_17 = 0
-				local bool_17_pos_1 = alloc(1)
+				local bool_22 = 0
+				local bool_22_pos_1 = alloc(1)
 				local val_16 = Value["GlobalQuests"][i_16]
 				local len_62 = #val_16["Id"]
 				alloc(2)
@@ -1409,13 +1439,13 @@ local returns = {
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, val_16["CurrentValue"])
 				if val_16["Redeemed"] then
-					bool_17 = bit32.bor(bool_17, 0b0000000000000001)
+					bool_22 = bit32.bor(bool_22, 0b0000000000000001)
 				end
 				if val_16["Data"] ~= nil then
-					bool_17 = bit32.bor(bool_17, 0b0000000000000010)
+					bool_22 = bit32.bor(bool_22, 0b0000000000000010)
 					table.insert(outgoing_inst, val_16["Data"])
 				end
-				buffer.writeu8(outgoing_buff, bool_17_pos_1, bool_17)
+				buffer.writeu8(outgoing_buff, bool_22_pos_1, bool_22)
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
@@ -1459,8 +1489,8 @@ local returns = {
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_63)
 			for i_17 = 1, len_63 do
-				local bool_18 = 0
-				local bool_18_pos_1 = alloc(1)
+				local bool_23 = 0
+				local bool_23_pos_1 = alloc(1)
 				local val_17 = Value["DailyQuests"][i_17]
 				local len_64 = #val_17["Id"]
 				alloc(2)
@@ -1470,20 +1500,20 @@ local returns = {
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, val_17["CurrentValue"])
 				if val_17["Redeemed"] then
-					bool_18 = bit32.bor(bool_18, 0b0000000000000001)
+					bool_23 = bit32.bor(bool_23, 0b0000000000000001)
 				end
 				if val_17["Data"] ~= nil then
-					bool_18 = bit32.bor(bool_18, 0b0000000000000010)
+					bool_23 = bit32.bor(bool_23, 0b0000000000000010)
 					table.insert(outgoing_inst, val_17["Data"])
 				end
-				buffer.writeu8(outgoing_buff, bool_18_pos_1, bool_18)
+				buffer.writeu8(outgoing_buff, bool_23_pos_1, bool_23)
 			end
 			local len_65 = #Value["WeeklyQuests"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_65)
 			for i_18 = 1, len_65 do
-				local bool_19 = 0
-				local bool_19_pos_1 = alloc(1)
+				local bool_24 = 0
+				local bool_24_pos_1 = alloc(1)
 				local val_18 = Value["WeeklyQuests"][i_18]
 				local len_66 = #val_18["Id"]
 				alloc(2)
@@ -1493,20 +1523,20 @@ local returns = {
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, val_18["CurrentValue"])
 				if val_18["Redeemed"] then
-					bool_19 = bit32.bor(bool_19, 0b0000000000000001)
+					bool_24 = bit32.bor(bool_24, 0b0000000000000001)
 				end
 				if val_18["Data"] ~= nil then
-					bool_19 = bit32.bor(bool_19, 0b0000000000000010)
+					bool_24 = bit32.bor(bool_24, 0b0000000000000010)
 					table.insert(outgoing_inst, val_18["Data"])
 				end
-				buffer.writeu8(outgoing_buff, bool_19_pos_1, bool_19)
+				buffer.writeu8(outgoing_buff, bool_24_pos_1, bool_24)
 			end
 			local len_67 = #Value["EventQuests"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_67)
 			for i_19 = 1, len_67 do
-				local bool_20 = 0
-				local bool_20_pos_1 = alloc(1)
+				local bool_25 = 0
+				local bool_25_pos_1 = alloc(1)
 				local val_19 = Value["EventQuests"][i_19]
 				local len_68 = #val_19["Id"]
 				alloc(2)
@@ -1516,20 +1546,20 @@ local returns = {
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, val_19["CurrentValue"])
 				if val_19["Redeemed"] then
-					bool_20 = bit32.bor(bool_20, 0b0000000000000001)
+					bool_25 = bit32.bor(bool_25, 0b0000000000000001)
 				end
 				if val_19["Data"] ~= nil then
-					bool_20 = bit32.bor(bool_20, 0b0000000000000010)
+					bool_25 = bit32.bor(bool_25, 0b0000000000000010)
 					table.insert(outgoing_inst, val_19["Data"])
 				end
-				buffer.writeu8(outgoing_buff, bool_20_pos_1, bool_20)
+				buffer.writeu8(outgoing_buff, bool_25_pos_1, bool_25)
 			end
 			local len_69 = #Value["GlobalQuests"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_69)
 			for i_20 = 1, len_69 do
-				local bool_21 = 0
-				local bool_21_pos_1 = alloc(1)
+				local bool_26 = 0
+				local bool_26_pos_1 = alloc(1)
 				local val_20 = Value["GlobalQuests"][i_20]
 				local len_70 = #val_20["Id"]
 				alloc(2)
@@ -1539,13 +1569,13 @@ local returns = {
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, val_20["CurrentValue"])
 				if val_20["Redeemed"] then
-					bool_21 = bit32.bor(bool_21, 0b0000000000000001)
+					bool_26 = bit32.bor(bool_26, 0b0000000000000001)
 				end
 				if val_20["Data"] ~= nil then
-					bool_21 = bit32.bor(bool_21, 0b0000000000000010)
+					bool_26 = bit32.bor(bool_26, 0b0000000000000010)
 					table.insert(outgoing_inst, val_20["Data"])
 				end
-				buffer.writeu8(outgoing_buff, bool_21_pos_1, bool_21)
+				buffer.writeu8(outgoing_buff, bool_26_pos_1, bool_26)
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
@@ -1571,8 +1601,8 @@ local returns = {
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_71)
 			for i_21 = 1, len_71 do
-				local bool_22 = 0
-				local bool_22_pos_1 = alloc(1)
+				local bool_27 = 0
+				local bool_27_pos_1 = alloc(1)
 				local val_21 = Value[i_21]
 				local len_72 = #val_21["Id"]
 				alloc(2)
@@ -1582,13 +1612,13 @@ local returns = {
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, val_21["CurrentValue"])
 				if val_21["Redeemed"] then
-					bool_22 = bit32.bor(bool_22, 0b0000000000000001)
+					bool_27 = bit32.bor(bool_27, 0b0000000000000001)
 				end
 				if val_21["Data"] ~= nil then
-					bool_22 = bit32.bor(bool_22, 0b0000000000000010)
+					bool_27 = bit32.bor(bool_27, 0b0000000000000010)
 					table.insert(outgoing_inst, val_21["Data"])
 				end
-				buffer.writeu8(outgoing_buff, bool_22_pos_1, bool_22)
+				buffer.writeu8(outgoing_buff, bool_27_pos_1, bool_27)
 			end
 			player_map[Player] = save()
 		end,
@@ -1605,8 +1635,8 @@ local returns = {
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_73)
 			for i_22 = 1, len_73 do
-				local bool_23 = 0
-				local bool_23_pos_1 = alloc(1)
+				local bool_28 = 0
+				local bool_28_pos_1 = alloc(1)
 				local val_22 = Value[i_22]
 				local len_74 = #val_22["Id"]
 				alloc(2)
@@ -1616,13 +1646,13 @@ local returns = {
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, val_22["CurrentValue"])
 				if val_22["Redeemed"] then
-					bool_23 = bit32.bor(bool_23, 0b0000000000000001)
+					bool_28 = bit32.bor(bool_28, 0b0000000000000001)
 				end
 				if val_22["Data"] ~= nil then
-					bool_23 = bit32.bor(bool_23, 0b0000000000000010)
+					bool_28 = bit32.bor(bool_28, 0b0000000000000010)
 					table.insert(outgoing_inst, val_22["Data"])
 				end
-				buffer.writeu8(outgoing_buff, bool_23_pos_1, bool_23)
+				buffer.writeu8(outgoing_buff, bool_28_pos_1, bool_28)
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
@@ -1646,8 +1676,8 @@ local returns = {
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_75)
 			for i_23 = 1, len_75 do
-				local bool_24 = 0
-				local bool_24_pos_1 = alloc(1)
+				local bool_29 = 0
+				local bool_29_pos_1 = alloc(1)
 				local val_23 = Value[i_23]
 				local len_76 = #val_23["Id"]
 				alloc(2)
@@ -1657,13 +1687,13 @@ local returns = {
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, val_23["CurrentValue"])
 				if val_23["Redeemed"] then
-					bool_24 = bit32.bor(bool_24, 0b0000000000000001)
+					bool_29 = bit32.bor(bool_29, 0b0000000000000001)
 				end
 				if val_23["Data"] ~= nil then
-					bool_24 = bit32.bor(bool_24, 0b0000000000000010)
+					bool_29 = bit32.bor(bool_29, 0b0000000000000010)
 					table.insert(outgoing_inst, val_23["Data"])
 				end
-				buffer.writeu8(outgoing_buff, bool_24_pos_1, bool_24)
+				buffer.writeu8(outgoing_buff, bool_29_pos_1, bool_29)
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
@@ -1689,8 +1719,8 @@ local returns = {
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_77)
 			for i_24 = 1, len_77 do
-				local bool_25 = 0
-				local bool_25_pos_1 = alloc(1)
+				local bool_30 = 0
+				local bool_30_pos_1 = alloc(1)
 				local val_24 = Value[i_24]
 				local len_78 = #val_24["Id"]
 				alloc(2)
@@ -1700,13 +1730,13 @@ local returns = {
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, val_24["CurrentValue"])
 				if val_24["Redeemed"] then
-					bool_25 = bit32.bor(bool_25, 0b0000000000000001)
+					bool_30 = bit32.bor(bool_30, 0b0000000000000001)
 				end
 				if val_24["Data"] ~= nil then
-					bool_25 = bit32.bor(bool_25, 0b0000000000000010)
+					bool_30 = bit32.bor(bool_30, 0b0000000000000010)
 					table.insert(outgoing_inst, val_24["Data"])
 				end
-				buffer.writeu8(outgoing_buff, bool_25_pos_1, bool_25)
+				buffer.writeu8(outgoing_buff, bool_30_pos_1, bool_30)
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
@@ -1730,8 +1760,8 @@ local returns = {
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_79)
 			for i_25 = 1, len_79 do
-				local bool_26 = 0
-				local bool_26_pos_1 = alloc(1)
+				local bool_31 = 0
+				local bool_31_pos_1 = alloc(1)
 				local val_25 = Value[i_25]
 				local len_80 = #val_25["Id"]
 				alloc(2)
@@ -1741,13 +1771,13 @@ local returns = {
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, val_25["CurrentValue"])
 				if val_25["Redeemed"] then
-					bool_26 = bit32.bor(bool_26, 0b0000000000000001)
+					bool_31 = bit32.bor(bool_31, 0b0000000000000001)
 				end
 				if val_25["Data"] ~= nil then
-					bool_26 = bit32.bor(bool_26, 0b0000000000000010)
+					bool_31 = bit32.bor(bool_31, 0b0000000000000010)
 					table.insert(outgoing_inst, val_25["Data"])
 				end
-				buffer.writeu8(outgoing_buff, bool_26_pos_1, bool_26)
+				buffer.writeu8(outgoing_buff, bool_31_pos_1, bool_31)
 			end
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
@@ -1852,8 +1882,8 @@ local returns = {
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
-			local bool_27 = 0
-			local bool_27_pos_1 = alloc(1)
+			local bool_32 = 0
+			local bool_32_pos_1 = alloc(1)
 			local len_pos_1
 			local len_81 = 0
 			for k_1, v_1 in Value do
@@ -1872,17 +1902,17 @@ local returns = {
 			if len_pos_1 then
 				buffer.writeu16(outgoing_buff, len_pos_1, len_81 - 1)
 			else
-				bool_27 = bit32.bor(bool_27, 0b0000000000000001)
+				bool_32 = bit32.bor(bool_32, 0b0000000000000001)
 			end
-			buffer.writeu8(outgoing_buff, bool_27_pos_1, bool_27)
+			buffer.writeu8(outgoing_buff, bool_32_pos_1, bool_32)
 			player_map[Player] = save()
 		end,
 		FireAll = function(Value: ({ [(string)]: (number) }))
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
-			local bool_28 = 0
-			local bool_28_pos_1 = alloc(1)
+			local bool_33 = 0
+			local bool_33_pos_1 = alloc(1)
 			local len_pos_2
 			local len_83 = 0
 			for k_2, v_2 in Value do
@@ -1901,9 +1931,9 @@ local returns = {
 			if len_pos_2 then
 				buffer.writeu16(outgoing_buff, len_pos_2, len_83 - 1)
 			else
-				bool_28 = bit32.bor(bool_28, 0b0000000000000001)
+				bool_33 = bit32.bor(bool_33, 0b0000000000000001)
 			end
-			buffer.writeu8(outgoing_buff, bool_28_pos_1, bool_28)
+			buffer.writeu8(outgoing_buff, bool_33_pos_1, bool_33)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				load_player(player)
@@ -1917,8 +1947,8 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
-			local bool_29 = 0
-			local bool_29_pos_1 = alloc(1)
+			local bool_34 = 0
+			local bool_34_pos_1 = alloc(1)
 			local len_pos_3
 			local len_85 = 0
 			for k_3, v_3 in Value do
@@ -1937,9 +1967,9 @@ local returns = {
 			if len_pos_3 then
 				buffer.writeu16(outgoing_buff, len_pos_3, len_85 - 1)
 			else
-				bool_29 = bit32.bor(bool_29, 0b0000000000000001)
+				bool_34 = bit32.bor(bool_34, 0b0000000000000001)
 			end
-			buffer.writeu8(outgoing_buff, bool_29_pos_1, bool_29)
+			buffer.writeu8(outgoing_buff, bool_34_pos_1, bool_34)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -1955,8 +1985,8 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
-			local bool_30 = 0
-			local bool_30_pos_1 = alloc(1)
+			local bool_35 = 0
+			local bool_35_pos_1 = alloc(1)
 			local len_pos_4
 			local len_87 = 0
 			for k_4, v_4 in Value do
@@ -1975,9 +2005,9 @@ local returns = {
 			if len_pos_4 then
 				buffer.writeu16(outgoing_buff, len_pos_4, len_87 - 1)
 			else
-				bool_30 = bit32.bor(bool_30, 0b0000000000000001)
+				bool_35 = bit32.bor(bool_35, 0b0000000000000001)
 			end
-			buffer.writeu8(outgoing_buff, bool_30_pos_1, bool_30)
+			buffer.writeu8(outgoing_buff, bool_35_pos_1, bool_35)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -1991,8 +2021,8 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
-			local bool_31 = 0
-			local bool_31_pos_1 = alloc(1)
+			local bool_36 = 0
+			local bool_36_pos_1 = alloc(1)
 			local len_pos_5
 			local len_89 = 0
 			for k_5, v_5 in Value do
@@ -2011,9 +2041,9 @@ local returns = {
 			if len_pos_5 then
 				buffer.writeu16(outgoing_buff, len_pos_5, len_89 - 1)
 			else
-				bool_31 = bit32.bor(bool_31, 0b0000000000000001)
+				bool_36 = bit32.bor(bool_36, 0b0000000000000001)
 			end
-			buffer.writeu8(outgoing_buff, bool_31_pos_1, bool_31)
+			buffer.writeu8(outgoing_buff, bool_36_pos_1, bool_36)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -2037,8 +2067,8 @@ local returns = {
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
-			local bool_32 = 0
-			local bool_32_pos_1 = alloc(1)
+			local bool_37 = 0
+			local bool_37_pos_1 = alloc(1)
 			local len_pos_6
 			local len_91 = 0
 			for k_6, v_6 in Value do
@@ -2059,11 +2089,11 @@ local returns = {
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_93)
 				for i_26 = 1, len_93 do
-					local bool_33 = 0
-					local bool_33_pos_1 = alloc(1)
+					local bool_38 = 0
+					local bool_38_pos_1 = alloc(1)
 					local val_26 = v_6["EquippedUnits"][i_26]
 					if val_26 ~= nil then
-						bool_33 = bit32.bor(bool_33, 0b0000000000000001)
+						bool_38 = bit32.bor(bool_38, 0b0000000000000001)
 						local len_94 = #val_26["Id"]
 						alloc(2)
 						buffer.writeu16(outgoing_buff, outgoing_apos, len_94)
@@ -2077,15 +2107,15 @@ local returns = {
 						alloc(len_95)
 						buffer.writestring(outgoing_buff, outgoing_apos, val_26["UnitName"], len_95)
 					end
-					buffer.writeu8(outgoing_buff, bool_33_pos_1, bool_33)
+					buffer.writeu8(outgoing_buff, bool_38_pos_1, bool_38)
 				end
 			end
 			if len_pos_6 then
 				buffer.writeu16(outgoing_buff, len_pos_6, len_91 - 1)
 			else
-				bool_32 = bit32.bor(bool_32, 0b0000000000000001)
+				bool_37 = bit32.bor(bool_37, 0b0000000000000001)
 			end
-			buffer.writeu8(outgoing_buff, bool_32_pos_1, bool_32)
+			buffer.writeu8(outgoing_buff, bool_37_pos_1, bool_37)
 			player_map[Player] = save()
 		end,
 		FireAll = function(Value: ({ [(Player)]: ({
@@ -2100,8 +2130,8 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
-			local bool_34 = 0
-			local bool_34_pos_1 = alloc(1)
+			local bool_39 = 0
+			local bool_39_pos_1 = alloc(1)
 			local len_pos_7
 			local len_96 = 0
 			for k_7, v_7 in Value do
@@ -2122,11 +2152,11 @@ local returns = {
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_98)
 				for i_27 = 1, len_98 do
-					local bool_35 = 0
-					local bool_35_pos_1 = alloc(1)
+					local bool_40 = 0
+					local bool_40_pos_1 = alloc(1)
 					local val_27 = v_7["EquippedUnits"][i_27]
 					if val_27 ~= nil then
-						bool_35 = bit32.bor(bool_35, 0b0000000000000001)
+						bool_40 = bit32.bor(bool_40, 0b0000000000000001)
 						local len_99 = #val_27["Id"]
 						alloc(2)
 						buffer.writeu16(outgoing_buff, outgoing_apos, len_99)
@@ -2140,15 +2170,15 @@ local returns = {
 						alloc(len_100)
 						buffer.writestring(outgoing_buff, outgoing_apos, val_27["UnitName"], len_100)
 					end
-					buffer.writeu8(outgoing_buff, bool_35_pos_1, bool_35)
+					buffer.writeu8(outgoing_buff, bool_40_pos_1, bool_40)
 				end
 			end
 			if len_pos_7 then
 				buffer.writeu16(outgoing_buff, len_pos_7, len_96 - 1)
 			else
-				bool_34 = bit32.bor(bool_34, 0b0000000000000001)
+				bool_39 = bit32.bor(bool_39, 0b0000000000000001)
 			end
-			buffer.writeu8(outgoing_buff, bool_34_pos_1, bool_34)
+			buffer.writeu8(outgoing_buff, bool_39_pos_1, bool_39)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				load_player(player)
@@ -2170,8 +2200,8 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
-			local bool_36 = 0
-			local bool_36_pos_1 = alloc(1)
+			local bool_41 = 0
+			local bool_41_pos_1 = alloc(1)
 			local len_pos_8
 			local len_101 = 0
 			for k_8, v_8 in Value do
@@ -2192,11 +2222,11 @@ local returns = {
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_103)
 				for i_28 = 1, len_103 do
-					local bool_37 = 0
-					local bool_37_pos_1 = alloc(1)
+					local bool_42 = 0
+					local bool_42_pos_1 = alloc(1)
 					local val_28 = v_8["EquippedUnits"][i_28]
 					if val_28 ~= nil then
-						bool_37 = bit32.bor(bool_37, 0b0000000000000001)
+						bool_42 = bit32.bor(bool_42, 0b0000000000000001)
 						local len_104 = #val_28["Id"]
 						alloc(2)
 						buffer.writeu16(outgoing_buff, outgoing_apos, len_104)
@@ -2210,15 +2240,15 @@ local returns = {
 						alloc(len_105)
 						buffer.writestring(outgoing_buff, outgoing_apos, val_28["UnitName"], len_105)
 					end
-					buffer.writeu8(outgoing_buff, bool_37_pos_1, bool_37)
+					buffer.writeu8(outgoing_buff, bool_42_pos_1, bool_42)
 				end
 			end
 			if len_pos_8 then
 				buffer.writeu16(outgoing_buff, len_pos_8, len_101 - 1)
 			else
-				bool_36 = bit32.bor(bool_36, 0b0000000000000001)
+				bool_41 = bit32.bor(bool_41, 0b0000000000000001)
 			end
-			buffer.writeu8(outgoing_buff, bool_36_pos_1, bool_36)
+			buffer.writeu8(outgoing_buff, bool_41_pos_1, bool_41)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -2242,8 +2272,8 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
-			local bool_38 = 0
-			local bool_38_pos_1 = alloc(1)
+			local bool_43 = 0
+			local bool_43_pos_1 = alloc(1)
 			local len_pos_9
 			local len_106 = 0
 			for k_9, v_9 in Value do
@@ -2264,11 +2294,11 @@ local returns = {
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_108)
 				for i_29 = 1, len_108 do
-					local bool_39 = 0
-					local bool_39_pos_1 = alloc(1)
+					local bool_44 = 0
+					local bool_44_pos_1 = alloc(1)
 					local val_29 = v_9["EquippedUnits"][i_29]
 					if val_29 ~= nil then
-						bool_39 = bit32.bor(bool_39, 0b0000000000000001)
+						bool_44 = bit32.bor(bool_44, 0b0000000000000001)
 						local len_109 = #val_29["Id"]
 						alloc(2)
 						buffer.writeu16(outgoing_buff, outgoing_apos, len_109)
@@ -2282,15 +2312,15 @@ local returns = {
 						alloc(len_110)
 						buffer.writestring(outgoing_buff, outgoing_apos, val_29["UnitName"], len_110)
 					end
-					buffer.writeu8(outgoing_buff, bool_39_pos_1, bool_39)
+					buffer.writeu8(outgoing_buff, bool_44_pos_1, bool_44)
 				end
 			end
 			if len_pos_9 then
 				buffer.writeu16(outgoing_buff, len_pos_9, len_106 - 1)
 			else
-				bool_38 = bit32.bor(bool_38, 0b0000000000000001)
+				bool_43 = bit32.bor(bool_43, 0b0000000000000001)
 			end
-			buffer.writeu8(outgoing_buff, bool_38_pos_1, bool_38)
+			buffer.writeu8(outgoing_buff, bool_43_pos_1, bool_43)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -2312,8 +2342,8 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
-			local bool_40 = 0
-			local bool_40_pos_1 = alloc(1)
+			local bool_45 = 0
+			local bool_45_pos_1 = alloc(1)
 			local len_pos_10
 			local len_111 = 0
 			for k_10, v_10 in Value do
@@ -2334,11 +2364,11 @@ local returns = {
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_113)
 				for i_30 = 1, len_113 do
-					local bool_41 = 0
-					local bool_41_pos_1 = alloc(1)
+					local bool_46 = 0
+					local bool_46_pos_1 = alloc(1)
 					local val_30 = v_10["EquippedUnits"][i_30]
 					if val_30 ~= nil then
-						bool_41 = bit32.bor(bool_41, 0b0000000000000001)
+						bool_46 = bit32.bor(bool_46, 0b0000000000000001)
 						local len_114 = #val_30["Id"]
 						alloc(2)
 						buffer.writeu16(outgoing_buff, outgoing_apos, len_114)
@@ -2352,15 +2382,15 @@ local returns = {
 						alloc(len_115)
 						buffer.writestring(outgoing_buff, outgoing_apos, val_30["UnitName"], len_115)
 					end
-					buffer.writeu8(outgoing_buff, bool_41_pos_1, bool_41)
+					buffer.writeu8(outgoing_buff, bool_46_pos_1, bool_46)
 				end
 			end
 			if len_pos_10 then
 				buffer.writeu16(outgoing_buff, len_pos_10, len_111 - 1)
 			else
-				bool_40 = bit32.bor(bool_40, 0b0000000000000001)
+				bool_45 = bit32.bor(bool_45, 0b0000000000000001)
 			end
-			buffer.writeu8(outgoing_buff, bool_40_pos_1, bool_40)
+			buffer.writeu8(outgoing_buff, bool_45_pos_1, bool_45)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)

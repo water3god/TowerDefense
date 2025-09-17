@@ -73,6 +73,7 @@ export type Data = {
 	QuestData: Quests.TotalPlayerData,
 	StarterChosen: boolean,
 	PassedTutorial: boolean,
+	PassedLobbyTutorial: boolean,
 	Boosts: { [string]: number }, -- BoostName, EndTime
 	RedeemedLevels: { number },
 	Referrals: { number },
@@ -109,6 +110,7 @@ local Data: Data = {
 	QuestData = Quests.QuestPlayerData,
 	StarterChosen = false,
 	PassedTutorial = false,
+	PassedLobbyTutorial = false,
 	Boosts = {},
 	RedeemedLevels = {},
 	Referrals = {},

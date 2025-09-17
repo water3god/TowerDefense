@@ -19,6 +19,8 @@ local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local ObserveTag = require(Modules.ObserveTag)
 
+local Network = require(ReplicatedStorage.Network.ClientOnly)
+
 local Client = ReplicatedStorage.Client
 local LobbyClient = Client.LobbyClient
 local NPCTalk = require(LobbyClient.NPCTalk)
@@ -101,6 +103,8 @@ ObserveTag.ObserveTag("NPCTalk", function(NPC)
 			if ActivePrompt then
 				return
 			end
+			Network.NewNPCTalk:Fire()
+
 			local Talk = NPCTalk.new(Input)
 			ActivePrompt = Talk
 			ProximityPrompt.Enabled = false

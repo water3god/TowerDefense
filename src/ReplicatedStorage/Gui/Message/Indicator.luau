@@ -28,24 +28,30 @@ local WaveService = require(GlobalClient.WaveService)
 local Shared = ReplicatedStorage.Shared
 local IsTutorial = require(Shared.IsTutorial)
 
+local TutorialContext = require(Gui.MiscContexts.PassedTutorial)
+
 export type Properties = {
-	Wave: number,
+	Wave: number?,
+	Status: string?,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
 
 local function CreateIndicator(props: Properties)
+	local PassedTutorial = React.useContext(TutorialContext.Context)
+
 	local styles, API = ReactSpring.useSpring(function()
 		return {
 			size = 1,
 		}
 	end)
 
-	local Parent = React.useRef(nil :: Instance?)
-
 	local Enabled, SetEnabled = React.useState(false)
 
 	React.useEffect(function()
+		if not Enabled then
+			return
+		end
 		local SizeTimer = Timer.new(1)
 
 		SizeTimer:Start()
@@ -63,7 +69,14 @@ local function CreateIndicator(props: Properties)
 				reset = true,
 			})
 		end)
-	end, {})
+	end, { Enabled })
+
+	React.useEffect(function()
+		if IsTutorial then
+			return
+		end
+		SetEnabled(props.Status == PassedTutorial.Status)
+	end, { props.Status, PassedTutorial.Status })
 
 	React.useEffect(function()
 		if not IsTutorial then
@@ -91,7 +104,7 @@ local function CreateIndicator(props: Properties)
 			Connection:Disconnect()
 			Connection2:Disconnect()
 		end
-	end, {})
+	end, { props.Wave })
 
 	local OnClick = React.useCallback(function()
 		SetEnabled(false)
@@ -100,7 +113,6 @@ local function CreateIndicator(props: Properties)
 	return Enabled
 		and e(Main.Frame, {
 			native = Join({
-				ref = Parent,
 				Active = false,
 				Size = styles.size:map(function(size: number)
 					return UDim2.fromScale(size, size)

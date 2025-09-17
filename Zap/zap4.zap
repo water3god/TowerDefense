@@ -106,6 +106,9 @@ event TutorialSent = {
 	from: Server,
 	type: Reliable,
 	call: SingleAsync,
+	data: (
+		PassedGameTutorial: boolean,
+	),
 }
 
 event AcceptTutorial = {

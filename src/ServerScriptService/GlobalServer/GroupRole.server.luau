@@ -26,13 +26,17 @@ local Roles = {
 local function HandleData(Data: PlayerData.PlayerData)
 	Promise.try(function()
 		return Data.Player:GetRankInGroup(Constants.GroupId)
-	end):andThen(function(RoleNumber: number)
-		if RoleNumber ~= 0 then
-			if Roles[RoleNumber] then
-				Data:AddTitle(Roles[RoleNumber])
-			end
-		end
 	end)
+		:andThen(function(RoleNumber: number)
+			if RoleNumber ~= 0 then
+				if Roles[RoleNumber] then
+					Data:AddTitle(Roles[RoleNumber])
+				end
+			end
+		end)
+		:catch(function(err)
+			warn("Error getting group role for player " .. Data.Player.Name .. ": " .. err)
+		end)
 end
 
 for _, Data in pairs(PlayerData.GetDatas()) do

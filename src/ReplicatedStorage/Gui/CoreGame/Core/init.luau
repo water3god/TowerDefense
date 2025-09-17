@@ -97,6 +97,9 @@ local TraitsFolder = Gui.Traits
 local Evolution = require(TraitsFolder.Evolution)
 local TraitsFrame = require(TraitsFolder.TraitsFrame)
 
+local MessageFolder = Gui.Message
+local Message = require(MessageFolder.Message)
+
 local MiscContexts = Gui.MiscContexts
 
 -- Contexts --
@@ -414,54 +417,82 @@ local function HandleTutorial(props: { OpenFrame: string? })
 			Network.AcceptTutorial.Fire()
 		end
 		SetTutorialEnabled(false)
-	end, { PassedTutorial })
+	end, {})
 
 	local OpenTutorial = React.useCallback(function()
 		SetTutorialEnabled(true)
 	end, {})
 
+	local MessageVisible, SetMessageVisible = React.useState(false)
+
+	React.useEffect(function()
+		if not PassedTutorial.IsPassed and PassedTutorial.PassedGameTutorial then
+			SetMessageVisible(true)
+		end
+	end, { PassedTutorial.IsPassed, PassedTutorial.PassedGameTutorial })
+
+	Hooks.useEventConnection(ClientOnly.NewNPCTalk, function()
+		SetMessageVisible(false)
+	end, {})
+
 	return e(React.Fragment, nil, {
+		Message = MessageVisible
+			and e(Message, {
+				SpeakerName = "Trajan",
+				Messages = {
+					"Welcome to the lobby! There are buttons on the sides of your screen that you can click to open different menus. The summon button is used to summon units to fight for you in game using gold. The play button teleports you to the map selection area where you can choose a map to play on. The ascension button is used to make your units stronger.",
+					"Level up your units to make them stronger by playing games and earning XP. Talk to the NPCs around the map to learn more about the game!",
+				},
+				SpeakerImage = "rbxassetid://103084517800878",
+				CloseClick = function()
+					SetMessageVisible(false)
+				end,
+			}),
 		ConfirmGui = e(Confirm, {
 			Title = "Tutorial",
 			Description = "Would you like to play the tutorial?",
-			Enabled = props.OpenFrame ~= Constants.STARTER_CHOOSE and not PassedTutorial and TutorialEnabled,
+			Enabled = props.OpenFrame ~= Constants.STARTER_CHOOSE
+				and not PassedTutorial.PassedGameTutorial
+				and TutorialEnabled,
 			Handler = Handler,
 		}),
-		OpenTutorialButton = not PassedTutorial and not TutorialEnabled and e(Main.Animateables.TextButton, {
-			native = {
-				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.fromRGB(22, 229, 11),
-				Text = "",
-				Position = UDim2.fromScale(0.5, 0.2),
-				Size = UDim2.fromScale(0.1, 0.06),
-				[React.Event.MouseButton1Click] = OpenTutorial,
-			},
-		}, {
-			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 3,
-			}),
-			Label = e(Main.TextLabel, {
+		OpenTutorialButton = not PassedTutorial.PassedGameTutorial
+			and not TutorialEnabled
+			and e(Main.Animateables.TextButton, {
 				native = {
-					Text = "Open Tutorial",
-					Size = UDim2.fromScale(0.9, 0.6),
+					BackgroundTransparency = 0,
+					BackgroundColor3 = Color3.fromRGB(22, 229, 11),
+					Text = "",
+					Position = UDim2.fromScale(0.5, 0.2),
+					Size = UDim2.fromScale(0.1, 0.06),
+					[React.Event.MouseButton1Click] = OpenTutorial,
 				},
 			}, {
+				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+					AspectRatio = 3,
+				}),
+				Label = e(Main.TextLabel, {
+					native = {
+						Text = "Open Tutorial",
+						Size = UDim2.fromScale(0.9, 0.6),
+					},
+				}, {
+					UIStroke = e(UIStroke.UIStrokeAdvanced, {
+						Stroke = 0.015,
+					}),
+				}),
+				UICorner = e("UICorner", {
+					CornerRadius = UDim.new(0, 8),
+				}),
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.015,
+					Stroke = 0.01,
+					native = {
+						Color = Color3.fromRGB(13, 119, 7),
+						LineJoinMode = Enum.LineJoinMode.Round,
+						ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+					},
 				}),
 			}),
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0, 8),
-			}),
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.01,
-				native = {
-					Color = Color3.fromRGB(13, 119, 7),
-					LineJoinMode = Enum.LineJoinMode.Round,
-					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-				},
-			}),
-		}),
 	})
 end
 

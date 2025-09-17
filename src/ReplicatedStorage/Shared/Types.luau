@@ -20,6 +20,8 @@ local Extra = ModelStorage.Extra
 local _CollisionRadius = Extra.CollisionRadius
 local _Rig = Extra.Rig
 
+export type Rig = typeof(_Rig)
+
 export type Status = "InTrade" | "Finalized" | "Accepted"
 export type TradeStatusMessage = "Trading" | "CanTrade" | "TradeDisabled"
 

@@ -213,7 +213,7 @@ RunService.Heartbeat:Connect(SendEvents)
 local reliable_events = table.create(11)
 local reliable_event_queue: { [number]: { any } } = table.create(11)
 reliable_event_queue[7] = {}
-reliable_event_queue[6] = 0
+reliable_event_queue[6] = {}
 reliable_event_queue[8] = {}
 reliable_event_queue[0] = {}
 reliable_event_queue[1] = {}
@@ -246,12 +246,14 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 6 then
 			local value
+			local bool_1 = buffer.readu8(incoming_buff, read(1))
+			value = bit32.btest(bool_1, 0b0000000000000001)
 			if reliable_events[6] then
 				task.spawn(reliable_events[6], value)
 			else
-				reliable_event_queue[6] += 1
-				if reliable_event_queue[6] > 16 then
-					warn(`[ZAP] {reliable_event_queue[6]} events in queue for TutorialSent. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[6], value)
+				if #reliable_event_queue[6] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[6]} events in queue for TutorialSent. Did you forget to attach a listener?`)
 				end
 			end
 		elseif id == 8 then
@@ -309,14 +311,14 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			local len_6 = buffer.readu16(incoming_buff, read(2))
 			value["DailyQuests"] = table.create(len_6)
 			for i_1 = 1, len_6 do
-				local bool_1 = buffer.readu8(incoming_buff, read(1))
+				local bool_2 = buffer.readu8(incoming_buff, read(1))
 				local val_1
 				val_1 = {  }
 				local len_7 = buffer.readu16(incoming_buff, read(2))
 				val_1["Id"] = buffer.readstring(incoming_buff, read(len_7), len_7)
 				val_1["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
-				val_1["Redeemed"] = bit32.btest(bool_1, 0b0000000000000001)
-				if bit32.btest(bool_1, 0b0000000000000010) then
+				val_1["Redeemed"] = bit32.btest(bool_2, 0b0000000000000001)
+				if bit32.btest(bool_2, 0b0000000000000010) then
 					incoming_ipos = incoming_ipos + 1
 					val_1["Data"] = incoming_inst[incoming_ipos]
 				else
@@ -327,14 +329,14 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			local len_8 = buffer.readu16(incoming_buff, read(2))
 			value["WeeklyQuests"] = table.create(len_8)
 			for i_2 = 1, len_8 do
-				local bool_2 = buffer.readu8(incoming_buff, read(1))
+				local bool_3 = buffer.readu8(incoming_buff, read(1))
 				local val_2
 				val_2 = {  }
 				local len_9 = buffer.readu16(incoming_buff, read(2))
 				val_2["Id"] = buffer.readstring(incoming_buff, read(len_9), len_9)
 				val_2["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
-				val_2["Redeemed"] = bit32.btest(bool_2, 0b0000000000000001)
-				if bit32.btest(bool_2, 0b0000000000000010) then
+				val_2["Redeemed"] = bit32.btest(bool_3, 0b0000000000000001)
+				if bit32.btest(bool_3, 0b0000000000000010) then
 					incoming_ipos = incoming_ipos + 1
 					val_2["Data"] = incoming_inst[incoming_ipos]
 				else
@@ -345,14 +347,14 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			local len_10 = buffer.readu16(incoming_buff, read(2))
 			value["EventQuests"] = table.create(len_10)
 			for i_3 = 1, len_10 do
-				local bool_3 = buffer.readu8(incoming_buff, read(1))
+				local bool_4 = buffer.readu8(incoming_buff, read(1))
 				local val_3
 				val_3 = {  }
 				local len_11 = buffer.readu16(incoming_buff, read(2))
 				val_3["Id"] = buffer.readstring(incoming_buff, read(len_11), len_11)
 				val_3["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
-				val_3["Redeemed"] = bit32.btest(bool_3, 0b0000000000000001)
-				if bit32.btest(bool_3, 0b0000000000000010) then
+				val_3["Redeemed"] = bit32.btest(bool_4, 0b0000000000000001)
+				if bit32.btest(bool_4, 0b0000000000000010) then
 					incoming_ipos = incoming_ipos + 1
 					val_3["Data"] = incoming_inst[incoming_ipos]
 				else
@@ -363,14 +365,14 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			local len_12 = buffer.readu16(incoming_buff, read(2))
 			value["GlobalQuests"] = table.create(len_12)
 			for i_4 = 1, len_12 do
-				local bool_4 = buffer.readu8(incoming_buff, read(1))
+				local bool_5 = buffer.readu8(incoming_buff, read(1))
 				local val_4
 				val_4 = {  }
 				local len_13 = buffer.readu16(incoming_buff, read(2))
 				val_4["Id"] = buffer.readstring(incoming_buff, read(len_13), len_13)
 				val_4["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
-				val_4["Redeemed"] = bit32.btest(bool_4, 0b0000000000000001)
-				if bit32.btest(bool_4, 0b0000000000000010) then
+				val_4["Redeemed"] = bit32.btest(bool_5, 0b0000000000000001)
+				if bit32.btest(bool_5, 0b0000000000000010) then
 					incoming_ipos = incoming_ipos + 1
 					val_4["Data"] = incoming_inst[incoming_ipos]
 				else
@@ -391,14 +393,14 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			local len_14 = buffer.readu16(incoming_buff, read(2))
 			value = table.create(len_14)
 			for i_5 = 1, len_14 do
-				local bool_5 = buffer.readu8(incoming_buff, read(1))
+				local bool_6 = buffer.readu8(incoming_buff, read(1))
 				local val_5
 				val_5 = {  }
 				local len_15 = buffer.readu16(incoming_buff, read(2))
 				val_5["Id"] = buffer.readstring(incoming_buff, read(len_15), len_15)
 				val_5["CurrentValue"] = buffer.readf64(incoming_buff, read(8))
-				val_5["Redeemed"] = bit32.btest(bool_5, 0b0000000000000001)
-				if bit32.btest(bool_5, 0b0000000000000010) then
+				val_5["Redeemed"] = bit32.btest(bool_6, 0b0000000000000001)
+				if bit32.btest(bool_6, 0b0000000000000010) then
 					incoming_ipos = incoming_ipos + 1
 					val_5["Data"] = incoming_inst[incoming_ipos]
 				else
@@ -426,9 +428,9 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 9 then
 			local value
-			local bool_6 = buffer.readu8(incoming_buff, read(1))
+			local bool_7 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
-			if not bit32.btest(bool_6, 0b0000000000000001) then
+			if not bit32.btest(bool_7, 0b0000000000000001) then
 				for _ = 1, buffer.readu16(incoming_buff, read(2)) + 1 do
 					local key_1
 					local val_6
@@ -448,9 +450,9 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 2 then
 			local value
-			local bool_7 = buffer.readu8(incoming_buff, read(1))
+			local bool_8 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
-			if not bit32.btest(bool_7, 0b0000000000000001) then
+			if not bit32.btest(bool_8, 0b0000000000000001) then
 				for _ = 1, buffer.readu16(incoming_buff, read(2)) + 1 do
 					local key_2
 					local val_7
@@ -465,9 +467,9 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 					local len_18 = buffer.readu16(incoming_buff, read(2))
 					val_7["EquippedUnits"] = table.create(len_18)
 					for i_6 = 1, len_18 do
-						local bool_8 = buffer.readu8(incoming_buff, read(1))
+						local bool_9 = buffer.readu8(incoming_buff, read(1))
 						local val_8
-						if bit32.btest(bool_8, 0b0000000000000001) then
+						if bit32.btest(bool_9, 0b0000000000000001) then
 							val_8 = {  }
 							local len_19 = buffer.readu16(incoming_buff, read(2))
 							val_8["Id"] = buffer.readstring(incoming_buff, read(len_19), len_19)
@@ -515,12 +517,12 @@ local returns = {
 		end,
 	},
 	TutorialSent = {
-		SetCallback = function(Callback: () -> ()): () -> ()
+		SetCallback = function(Callback: (PassedGameTutorial: (boolean)) -> ()): () -> ()
 			reliable_events[6] = Callback
-			for _ = 1, reliable_event_queue[6] do
-				task.spawn(Callback)
+			for _, value in reliable_event_queue[6] do
+				task.spawn(Callback, value)
 			end
-			reliable_event_queue[6] = 0
+			reliable_event_queue[6] = {}
 			return function()
 				reliable_events[6] = nil
 			end
@@ -569,12 +571,12 @@ local returns = {
 		Fire = function(Value: (boolean))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-			local bool_9 = 0
-			local bool_9_pos_1 = alloc(1)
+			local bool_10 = 0
+			local bool_10_pos_1 = alloc(1)
 			if Value then
-				bool_9 = bit32.bor(bool_9, 0b0000000000000001)
+				bool_10 = bit32.bor(bool_10, 0b0000000000000001)
 			end
-			buffer.writeu8(outgoing_buff, bool_9_pos_1, bool_9)
+			buffer.writeu8(outgoing_buff, bool_10_pos_1, bool_10)
 		end,
 	},
 	RollTrait = {
