@@ -78,6 +78,13 @@ export type AbilityProps = {
 	children: { [any]: any }?,
 }
 
+local Keys = {
+	Upgrade = Enum.KeyCode.U,
+	Sell = Enum.KeyCode.X,
+	Priority = Enum.KeyCode.P,
+	Close = Enum.KeyCode.Escape,
+}
+
 local function CreatePropertyFrame(Props: PropertyProperties)
 	local Color = Stats.Colors[Props.PropertyName]
 	local Order = Hooks.LayoutOrder()

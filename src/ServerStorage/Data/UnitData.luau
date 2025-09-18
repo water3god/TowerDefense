@@ -78,6 +78,12 @@ local function AddAllyToWave(Unit: UnitModule.Unit, Callback: () -> (string, {}?
 		AddAlly(Unit, Ally, Data)
 	end)
 
+	local GetWave = GlobalWave.GetWave()
+
+	if GetWave then
+		AllyTrove:Connect(GetWave.Ended, AllyTrove:WrapClean())
+	end
+
 	return AllyTrove:WrapClean()
 end
 

@@ -9,6 +9,7 @@ local LocalizationService = game:GetService("LocalizationService")
 local PolicyService = game:GetService("PolicyService")
 
 local Packages = ReplicatedStorage.Packages
+local Input = require(Packages.Input)
 local Promise = require(Packages.Promise)
 local Signal = require(Packages.Signal)
 local React = require(Packages.React)
@@ -332,6 +333,22 @@ function Hooks.usePolicyInfo()
 	end, {})
 
 	return PolicyInfo
+end
+
+export type InputType = "MouseKeyboard" | "Touch" | "Gamepad"
+
+function Hooks.useInput()
+	local Value, SetValue = React.useState(nil :: InputType?)
+
+	React.useEffect(function()
+		local Clean = Input.PreferredInput.Observe(function(NewValue)
+			SetValue(NewValue)
+		end)
+
+		return Clean
+	end, {})
+
+	return Value
 end
 
 local useState = React.useState

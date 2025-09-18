@@ -159,6 +159,7 @@ local function PlaceUnit(Player: Player, Wave: GlobalWave.GlobalWave, Data: Plac
 					OwnerId = Player.UserId,
 					Level = 0,
 					DamageMultiplier = DamageMultiplier,
+					Trait = PDataUnit.Trait,
 				}, UnitUnitData)
 				Wave:AddUnit(NewUnit)
 				Wave:SubtractCoinsFromUser(Player.UserId, Cost)

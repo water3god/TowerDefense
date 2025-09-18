@@ -310,6 +310,13 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 		Coins = 1,
 	}
 
+	self.Promises = {}
+
+	self.IsGlobal = if UserInput.ReplicateTo then false else true
+	self.ReplicateTo = UserInput.ReplicateTo or Players:GetPlayers()
+
+	self.TotalCost = UnitInfo.CalculateTotalCost(self.UnitData.UnitData, self.Level)
+
 	self.Trait = UserInput.Trait
 
 	if self.Trait then
@@ -319,13 +326,6 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 			self:ChangeRatio("__Trait__" .. TraitType, "Global", TraitType, Value, math.huge)
 		end
 	end
-
-	self.Promises = {}
-
-	self.IsGlobal = if UserInput.ReplicateTo then false else true
-	self.ReplicateTo = UserInput.ReplicateTo or Players:GetPlayers()
-
-	self.TotalCost = UnitInfo.CalculateTotalCost(self.UnitData.UnitData, self.Level)
 
 	if UserInput.DamageMultiplier then
 		self:ChangeRatio("__DamageMultiplier", "Global", "Damage", UserInput.DamageMultiplier, math.huge)
@@ -690,6 +690,7 @@ function Unit:ChangeRatio(Name: string, SubName: string, Type: string, Ratio: nu
 		self.RatioData[Name] = {}
 	end
 	self.RatioData[Name][SubName] = Data
+
 	RatioEvent.FireList(self.ReplicateTo, self.UniqueId, Name, SubName, Data)
 	self:_CalculateRatio()
 	if Duration ~= math.huge then
