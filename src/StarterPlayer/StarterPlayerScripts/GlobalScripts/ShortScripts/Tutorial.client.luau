@@ -105,7 +105,7 @@ if IsTutorial then
 	ReactRoot:render(ReactRoblox.createPortal(
 		e(NewGui, {}, {
 			Indicator = e(Render, {
-				Character = Unit,
+				Character = Unit.Character,
 				Wave = 2,
 			}),
 		}),
