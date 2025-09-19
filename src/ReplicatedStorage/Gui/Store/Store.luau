@@ -299,6 +299,7 @@ local function CreateStoreFrame(Properties: Properties)
 
 				if ProductData then
 					local GiftId = ProductInfo.GetProductIdFromGiftId(Id)
+
 					Frames["Offer" .. Id] = e(CreateOffer, {
 						Name = ProductData.ProductInfo.Name,
 						Image = Data.Icon or "rbxassetid://3385224877",

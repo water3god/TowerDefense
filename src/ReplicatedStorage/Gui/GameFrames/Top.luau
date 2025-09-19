@@ -4,6 +4,8 @@
 
 -- Services --
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local SoundService = game:GetService("SoundService")
+local TweenService = game:GetService("TweenService")
 
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
@@ -25,7 +27,16 @@ local Hooks = require(CoreGame.Hooks)
 
 local WaveContext = require(Gui.GameFrames.WaveContext)
 
-local ColorLerp = Lerps.Color3(Color3.new(1, 0.011765, 0.011765), Color3.new(0.117647, 1, 0.054902))
+local Client = ReplicatedStorage.Client
+local GlobalClient = Client.GlobalClient
+local SFXService = require(GlobalClient.SFXService)
+
+local Sounds = SoundService.SoundEffects.Sounds
+local BaseLoseHp = Sounds.BaseLoseHp
+local TimeTick = Sounds.TimeTick
+
+local HealthLerp = Lerps.Color3(Color3.new(1, 0.011765, 0.011765), Color3.new(0.117647, 1, 0.054902))
+local TimeLerp = Lerps.Color3(Color3.fromRGB(255, 255, 255), Color3.fromRGB(255, 0, 0))
 
 export type Properties = {
 	native: { [any]: any }?,
@@ -41,7 +52,7 @@ local function CreateTopFrame(Props: Properties)
 	local Health, SetHealth = React.useBinding(1)
 	local MaxHealth, SetMaxHealth = React.useBinding(1)
 
-	local Styles, API = ReactSpring.useSpring(function()
+	local HealthStyles, API = ReactSpring.useSpring(function()
 		return {
 			alpha = 1,
 		}
@@ -72,7 +83,7 @@ local function CreateTopFrame(Props: Properties)
 			}, Props.native),
 		}, {
 			UISizeConstraint = e("UISizeConstraint", {
-				MinSize = Vector2.new(250, 45),
+				MinSize = Vector2.new(200, 35),
 				MaxSize = Vector2.new(600, 100),
 			}),
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
@@ -87,9 +98,30 @@ local function CreateTopFrame(Props: Properties)
 				TimeLabel = e(Main.TextLabel, {
 					native = {
 						Position = UDim2.fromScale(0.5, 0.7),
-						Size = UDim2.fromScale(1, 0.4),
 						Text = Time:map(function(TimeInput: number)
 							return HelperFunctions.FormatTime(TimeInput)
+						end),
+						TextColor3 = Time:map(function(TimeInput: number)
+							if TimeInput < 6 then
+								local alpha = TimeInput - math.floor(TimeInput)
+
+								return TimeLerp(math.clamp(alpha * 3 - 2, 0, 1))
+							else
+								return Color3.fromRGB(255, 255, 255)
+							end
+						end),
+						Size = Time:map(function(TimeInput: number)
+							if TimeInput < 6 then
+								local alpha = TimeInput - math.floor(TimeInput)
+								local added = TweenService:GetValue(
+									math.clamp(alpha * 3 - 2, 0, 1),
+									Enum.EasingStyle.Quad,
+									Enum.EasingDirection.In
+								) / 10
+								return UDim2.fromScale(1, 0.4 + added)
+							else
+								return UDim2.fromScale(1, 0.4)
+							end
 						end),
 					},
 				}, {
@@ -160,11 +192,11 @@ local function CreateTopFrame(Props: Properties)
 				Bar = e(Main.Frame, {
 					native = {
 						BackgroundTransparency = 0,
-						BackgroundColor3 = Styles.alpha:map(function(alpha: number)
-							return ColorLerp(alpha)
+						BackgroundColor3 = HealthStyles.alpha:map(function(alpha: number)
+							return HealthLerp(alpha)
 						end),
 						Position = UDim2.fromScale(0, 0.5),
-						Size = Styles.alpha:map(function(alpha)
+						Size = HealthStyles.alpha:map(function(alpha)
 							return UDim2.fromScale(alpha, 1)
 						end),
 						AnchorPoint = Vector2.new(0, 0.5),

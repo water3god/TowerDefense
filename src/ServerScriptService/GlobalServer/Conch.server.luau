@@ -123,7 +123,7 @@ Conch.register("addCoins", {
 	end,
 })
 
-Conch.register("AddEnemy", {
+Conch.register("addEnemy", {
 	permissions = { "economy+" },
 	arguments = function()
 		return Conch_types.EnemyType("enemy", "Enemy to add")

@@ -11,6 +11,31 @@ export type Dialog = {
 
 -- MapId, StageId, Wave
 local Dialogs: { [string]: { [string]: { Dialog } } } = {
+	Egypt = {
+		AncientEgypt_DesertReconnaissance = {
+			{
+				Title = "Cleopatra",
+				Message = {
+					"Hello There Player. It Seems Like The Rival Pyramid Has Sendt Some Units To Invade Our Pyramid. Defend Our Pyramid!",
+				},
+				Image = "rbxassetid://75102060035053",
+			},
+			{
+				Title = "Cleopatra",
+				Message = {
+					"They Sendt More Of Their Troops To Our Pyramid!.",
+				},
+				Image = "rbxassetid://75102060035053",
+			},
+			{
+				Title = "Cleopatra",
+				Message = {
+					"Your Doing Good So Far! Ill Be Gone For Now. GOODLUCK!",
+				},
+				Image = "rbxassetid://75102060035053",
+			},
+		},
+	},
 	Tutorial = {
 		Tutorial = {
 			{

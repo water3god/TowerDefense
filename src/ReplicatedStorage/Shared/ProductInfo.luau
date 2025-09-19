@@ -23,7 +23,7 @@ local Offers: Offers = {
 			{ Type = "Resource", Name = "Omen Coins", Amount = 10 },
 		},
 		Color = Color3.new(0.862745, 0.654902, 0.121569),
-		Icon = "rbxassetid://3385224877",
+		Icon = "rbxassetid://74963095419523",
 	},
 	[3387895527] = {
 		Rewards = {
@@ -33,6 +33,7 @@ local Offers: Offers = {
 			{ Type = "Resource", Name = "Omen Coins", Amount = 10 },
 		},
 		Color = Color3.new(0.827451, 0.862745, 0.141176),
+		Icon = "rbxassetid://81730317336118",
 	},
 }
 
