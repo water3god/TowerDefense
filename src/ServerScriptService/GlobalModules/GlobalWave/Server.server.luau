@@ -5,6 +5,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local ServerScriptService = game:GetService("ServerScriptService")
+local RunService = game:GetService("RunService")
 
 local HelperFunctions = require(ReplicatedStorage.Modules.HelperFunctions)
 
@@ -61,7 +62,9 @@ local Won = false
 
 local function OnAdded(Wave: GlobalWave.GlobalWave)
 	local SerializedWave = SerializeWave(Wave)
-	Added.FireAll(SerializedWave)
+	if not RunService:IsStudio() then
+		Added.FireAll(SerializedWave)
+	end
 
 	Wave.TimeChanged:Connect(function(Time: number, StartTime: number)
 		TimeChanged.FireAll({
