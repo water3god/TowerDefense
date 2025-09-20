@@ -4,6 +4,7 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local SoundService = game:GetService("SoundService")
 
 local Network = require(ReplicatedStorage.Network.Client)
 local SpawnEvent = Network.EnemySpawnEvent
@@ -20,6 +21,10 @@ local Modules = ReplicatedStorage.Modules
 local BezierPath = require(Modules.BezierPath)
 local HelperFunctions = require(Modules.HelperFunctions)
 local GenerateId = require(Modules.GenerateId)
+
+local Client = ReplicatedStorage.Client
+local GlobalClient = Client.GlobalClient
+local SFXService = require(GlobalClient.SFXService)
 
 local Shared = ReplicatedStorage.Shared
 local Types = require(Shared.Types)
@@ -45,6 +50,10 @@ local AdornmentFolder = {}
 for _, Adornment in ipairs(ModelStorage.Adornments:GetChildren()) do
 	AdornmentFolder[Adornment.Name] = Adornment
 end
+
+local Sounds = SoundService.SoundEffects.Sounds
+local Death1 = Sounds.Death
+local Death2 = Sounds.Death2
 
 local GlobalWorkspace = workspace.GlobalWorkspace
 local EnemiesFolder = GlobalWorkspace.Enemies
@@ -211,6 +220,10 @@ local function NewEnemy(Input: Types.EnemyInput, SpectateFire: boolean)
 
 	self.Destroying:Connect(function(Animate: boolean)
 		if Animate then
+			if self.IsBoss then
+				local Death = if math.random(1, 2) == 1 then Death1 else Death2
+				SFXService.PlaySoundAt(Death, self.Root.CFrame)
+			end
 			local Particle = HelperFunctions.EmitParticle({ DestroyParticle }, self.Root.CFrame, 1, SetColor, true)
 			local OtherParticle =
 				HelperFunctions.EmitParticle({ OtherDestroyParticle }, self.Root.CFrame, 16, SetColor, true)

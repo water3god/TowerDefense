@@ -28,7 +28,7 @@ local CloseButton = require(CoreGame.CloseButton)
 local SFXService = require(ReplicatedStorage.Client.GlobalClient.SFXService)
 
 local SoundEffects = SoundService.SoundEffects
-local NPCBeep = SoundEffects.Sounds.NPCBeep
+local NPCBeep = SoundEffects.Sounds.Typing2
 
 export type Properties = {
 	SpeakerName: string,
