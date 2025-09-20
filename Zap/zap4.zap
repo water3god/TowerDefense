@@ -180,3 +180,16 @@ event Rejoin = {
 	type: Reliable,
 	call: SingleAsync,
 }
+
+-- Rare Units --
+
+event RareUnitMessage = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: struct {
+		PlayerName: string.binary,
+		PlayerUserId: i32,
+		UnitName: string.binary,
+	},
+}

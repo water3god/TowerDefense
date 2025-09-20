@@ -2,10 +2,10 @@
 
 -- By Wa1er_God --
 
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local ServerStorage = game:GetService("ServerStorage")
-local Players = game:GetService("Players")
 
 local Packages = ReplicatedStorage.Packages
 local Timer = require(Packages.Timer)
@@ -15,12 +15,15 @@ local Modules = ReplicatedStorage.Modules
 local RandomGenerate = require(Modules.RandomGenerate)
 local HelperFunctions = require(Modules.HelperFunctions)
 
-local Network = require(ReplicatedStorage.Network.Server)
+local NetworkFolder = ReplicatedStorage.Network
+local Network = require(NetworkFolder.Server)
+local ServerOnly = require(NetworkFolder.ServerOnly)
 local AutoRoll = Network.AutoRoll
 local RollEventServer = Network.RollEventServer
 local RollEventClient = Network.RollEventClient
 local StopAutoRollServer = Network.StopAutoRollServer
 local StopAutoRollClient = Network.StopAutoRollClient
+local PlayerRolled = ServerOnly.PlayerRolled
 
 local Shared = ReplicatedStorage.Shared
 local IsLobby = require(Shared.IsLobby)
@@ -79,9 +82,7 @@ local function Roll(Data: PlayerData.PlayerData, Count: number, Auto: boolean)
 		local UnitData = Data:AddUnit(UnitName)
 		if UnitData then
 			Data.Summoned:Fire(UnitData)
-		end
-
-		if UnitData then
+			PlayerRolled:Fire(Data.Player, UnitName)
 			table.insert(SendData, { Name = UnitName, Id = UnitData.UniqueId })
 		else
 			warn("NO Unit Available for " .. UnitName)
