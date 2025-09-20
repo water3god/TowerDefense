@@ -105,6 +105,14 @@ function Funcs.ConvertDictToArray(Dict: { [any]: any }): { any }
 	return Array
 end
 
+function Funcs.ConvertDictToArrayWithValues(Dict: { [any]: any }): { any }
+	local Array = {}
+	for _, Value in pairs(Dict) do
+		table.insert(Array, Value)
+	end
+	return Array
+end
+
 function Funcs.GetDifferentTable(t1, t2)
 	local OneOnly = {}
 	local TwoOnly = {}
