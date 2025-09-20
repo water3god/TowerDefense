@@ -46,7 +46,6 @@ local StartTrove = Trove.new()
 
 local function OnStart()
 	local ArrowTimer = StartTrove:Construct(Timer, 1)
-	print("Start")
 
 	ArrowTimer.Tick:Connect(function()
 		for Id, Bezier in pairs(Beziers) do

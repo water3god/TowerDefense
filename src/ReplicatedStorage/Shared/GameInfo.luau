@@ -1152,6 +1152,11 @@ local RewardInfo: { [string]: RewardData } = {
 		Rarity = "Common",
 		Description = "A basic currency used for various transactions.",
 	},
+	["XP"] = {
+		Image = "rbxassetid://87241276261105", -- Change later (placeholder)
+		Rarity = "Common",
+		Description = "Experience points used to level up your units and player profile.",
+	},
 }
 
 local Colors: { [string]: Color3 } = {

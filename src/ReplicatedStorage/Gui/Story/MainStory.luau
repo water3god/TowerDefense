@@ -255,6 +255,8 @@ local function CreateMainStory(Properties: Properties)
 
 			if Reward.Resource == "Gold" then
 				Value = math.floor(Reward.Count * GoldMultiplier)
+			elseif Reward.Resource == "XP" then
+				continue
 			end
 
 			FrameTable["Reward" .. Reward.Resource] = e(ResourceFrame, {

@@ -149,6 +149,8 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 								end
 							end
 						end
+					elseif Resource.Resource == "XP" then
+						continue
 					else
 						if Wave.IsInfinite then
 							if Resource.Resource == "Omen Coins" then

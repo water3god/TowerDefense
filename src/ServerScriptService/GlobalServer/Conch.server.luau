@@ -91,6 +91,8 @@ Conch.register("addResource", {
 		if Data and GameInfo.RewardInfo[resource] then
 			if resource == "Gold" then
 				Data:AddGold(count)
+			elseif resource == "XP" then
+				Data:AddXP(count)
 			else
 				Data:AddResource(resource, count)
 			end

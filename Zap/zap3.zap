@@ -60,8 +60,9 @@ event NewBanner = {
 	call: SingleAsync,
 	data: struct {
 		Id: string.binary,
-		Units: string.binary[],
 		TimeEnd: f64,
+		Units: string.binary[],
+		Banner: string.binary,
 	},
 }
 

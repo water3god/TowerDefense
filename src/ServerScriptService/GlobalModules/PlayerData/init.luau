@@ -349,19 +349,28 @@ function PlayerData.new(Player: Player)
 	self.SettingSignals = {}
 	self.Player = Player
 
-	if game.PlaceId == 0 then
-		self.Profile = MainDatastore.Mock:StartSessionAsync("PlayerData9" .. Player.UserId, {
-			Cancel = function()
-				return Player.Parent ~= Players
-			end,
-		}) :: any
-	else
-		self.Profile = MainDatastore:StartSessionAsync("PlayerData9" .. Player.UserId, {
-			Cancel = function()
-				return Player.Parent ~= Players
-			end,
-		}) :: any
-	end
+	Promise.retryWithDelay(function()
+		return Promise.try(function()
+			if game.PlaceId == 0 then
+				self.Profile = MainDatastore.Mock:StartSessionAsync("PlayerData9" .. Player.UserId, {
+					Cancel = function()
+						return Player.Parent ~= Players
+					end,
+				}) :: any
+			else
+				self.Profile = MainDatastore:StartSessionAsync("PlayerData9" .. Player.UserId, {
+					Cancel = function()
+						return Player.Parent ~= Players
+					end,
+				}) :: any
+			end
+		end)
+	end, 5, 2)
+		:catch(function()
+			self.Player:Kick("Failed to load profile. Please rejoin.")
+			return
+		end)
+		:await()
 
 	if self.Profile then
 		self.Profile:AddUserId(Player.UserId)
@@ -1050,6 +1059,8 @@ function PlayerData:RedeemDaily()
 	elseif RewardData.Type == "Resource" then
 		if RewardData.Name == "Gold" then
 			self:AddGold(RewardData.Count)
+		elseif RewardData.Name == "XP" then
+			self:AddXP(RewardData.Count)
 		else
 			self:AddResource(RewardData.Name, RewardData.Count)
 		end
@@ -1191,6 +1202,8 @@ function PlayerData:RedeemQuest(Id: string)
 	elseif Reward.Type == "Resource" then
 		if Reward.Value == "Gold" then
 			self:AddGold(Reward.Count)
+		elseif Reward.Value == "XP" then
+			self:AddXP(Reward.Count)
 		else
 			self:AddResource(Reward.Value, Reward.Count)
 		end

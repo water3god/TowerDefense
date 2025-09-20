@@ -2,6 +2,13 @@
 
 -- By Wa1er_God --
 
+local Banners = {
+	Egypt = "rbxassetid://81730317336118",
+	Rome = "rbxassetid://74963095419523",
+	Greece = "rbxassetid://120734686321148",
+	Medieval = "rbxassetid://80598570223220",
+}
+
 -- Services --
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -277,12 +284,34 @@ local function CreateRollMain(props: Properties)
 		return Frames
 	end, { PurchaseData.Loaded })
 
+	local BannerImage = React.useMemo(function()
+		return Banners[RollData.Banner]
+	end, {})
+
 	return e(Main.ImageLabel, {
 		native = Join({
 			Size = UDim2.fromScale(0.6, 0.5),
 			Image = "rbxassetid://100546338175267",
 		}, props.native),
 	}, {
+		BackgroundImage = e(Main.ImageLabel, {
+			native = {
+				Size = UDim2.fromScale(0.9, 0.8),
+				Image = BannerImage,
+				Visible = BannerImage ~= nil,
+				ZIndex = 0,
+			},
+		}, {
+			UIGradient = e("UIGradient", {
+				Transparency = NumberSequence.new({
+					NumberSequenceKeypoint.new(0, 1),
+					NumberSequenceKeypoint.new(0.3, 0.6),
+					NumberSequenceKeypoint.new(0.5, 0.4),
+					NumberSequenceKeypoint.new(0.7, 0.6),
+					NumberSequenceKeypoint.new(1, 1),
+				}),
+			}),
+		}),
 		UnitInformation = e(UnitInformation, {
 			Visible = UnitInfoVis,
 			CloseClick = UnitVisCloseClick,

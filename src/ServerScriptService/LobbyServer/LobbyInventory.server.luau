@@ -129,6 +129,8 @@ Sell.SetCallback(function(Player: Player, Type: string, Data: { string })
 				end
 				if Resource.Resource == "Gold" then
 					continue
+				elseif Resource.Resource == "XP" then
+					continue
 				end
 				local Rarity = GameInfo.RewardInfo[Resource.Resource].Rarity
 				TotalCost += (RarityInfo[Rarity :: any].Value * Resource.Count) / 10

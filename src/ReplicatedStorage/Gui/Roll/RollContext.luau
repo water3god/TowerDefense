@@ -19,12 +19,14 @@ local Hooks = require(CoreGame.Hooks)
 
 export type RollData = {
 	Units: { [number]: string },
+	Banner: string,
 	TimeStart: number,
 	TotalTime: number,
 }
 
 local Default: RollData = {
 	Units = { "Richard the Lionheart", "Leonidas", "Trajan" },
+	Banner = "Rome",
 	TimeStart = 0,
 	TotalTime = 30,
 }
@@ -37,6 +39,7 @@ local function RollProvider(props)
 	Hooks.useZapConnection(NewBanner, function(data)
 		SetState({
 			Units = data.Units,
+			Banner = data.Banner,
 			TimeStart = workspace:GetServerTimeNow(),
 			TotalTime = data.TimeEnd - workspace:GetServerTimeNow(),
 		})

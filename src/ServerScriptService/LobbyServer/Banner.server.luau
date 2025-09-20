@@ -29,9 +29,9 @@ end
 
 local Banner = {
 	Egypt = 0.25,
+	Greece = 0.25,
 	Rome = 0.25,
 	Medieval = 0.25,
-	Greece = 0.25,
 }
 
 local Data = {
@@ -65,13 +65,14 @@ local function Start()
 		local CurrentTime = DateTime.now().UnixTimestamp
 		NextTime = math.ceil(CurrentTime / 3600) * 3600
 		local WaitTime = NextTime - CurrentTime
-		local SelectedBanner = RandomGenerate(Banner, NextTime)
+		local SelectedBanner = RandomGenerate(Banner, NextTime) :: string
 		CurrentBanner = SelectedBanner
 		Variables.Banner = Data[SelectedBanner]
 		NewBanner.FireAll({
 			Id = "MAIN",
 			TimeEnd = workspace:GetServerTimeNow() + WaitTime,
 			Units = Data[SelectedBanner],
+			Banner = SelectedBanner,
 		})
 		task.wait(WaitTime)
 	end):andThen(function()
@@ -92,5 +93,6 @@ SafePlayerAdded:Connect(function(Player: Player)
 		Id = "MAIN",
 		TimeEnd = workspace:GetServerTimeNow() + WaitTime,
 		Units = Data[CurrentBanner],
+		Banner = CurrentBanner,
 	})
 end, true)
