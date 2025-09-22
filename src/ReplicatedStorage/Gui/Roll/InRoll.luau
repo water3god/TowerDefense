@@ -16,6 +16,7 @@ local SummonSound = SoundService.SoundEffects.Sounds.SummonEffect
 
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
+local ReactSpring = require(Packages.ReactSpring)
 local React = require(Packages.React)
 local e = React.createElement
 
@@ -91,6 +92,16 @@ end
 local function CreateUnitFrame(props: UnitProperties)
 	local ViewRef = React.useRef(nil :: ViewportFrame?)
 
+	local Styles = ReactSpring.useSpring({
+		from = {
+			Size = 0.5,
+		},
+		to = {
+			Size = 1,
+		},
+		config = { mass = 1, tension = 200, friction = 14 },
+	})
+
 	local SettingsData = React.useContext(SettingsContext.Context)
 
 	local Data = React.useMemo(function()
@@ -128,9 +139,9 @@ local function CreateUnitFrame(props: UnitProperties)
 	React.useEffect(function()
 		if props.Visible and RunService:IsRunning() then
 			local Viewport = ViewRef.current :: ViewportFrame
-			local Size = Viewport.AbsoluteSize
+
 			local Part = HelperFunctions.EmitContinous({ SummonParticle }, CFrame.new(), function(Particle)
-				Particle.Size = ChangeSize(Particle.Size, Size.X / 800)
+				Particle.Size = ChangeSize(Particle.Size, Viewport.AbsoluteSize.X / 800)
 				Particle.Color = Data.RarityData.BackgroundColor
 				task.defer(function()
 					Particle:Emit(1)
@@ -138,12 +149,12 @@ local function CreateUnitFrame(props: UnitProperties)
 			end)
 
 			local OtherPart = HelperFunctions.EmitParticle({ SummonParticle2 }, CFrame.new(), 12, function(Particle)
-				Particle.Size = ChangeSize(Particle.Size, Size.X / 800)
+				Particle.Size = ChangeSize(Particle.Size, Viewport.AbsoluteSize.X / 800)
 				Particle.Color = Data.RarityData.BackgroundColor
 			end, true)
 
 			local Connection = RunService.PreRender:Connect(function()
-				local NewPos = GuiService:GetGuiInset() + Viewport.AbsolutePosition + Size / 2
+				local NewPos = GuiService:GetGuiInset() + Viewport.AbsolutePosition + Viewport.AbsoluteSize / 2
 
 				local Ray = Camera:ViewportPointToRay(NewPos.X, NewPos.Y, 2)
 				local NewCFrame = CFrame.new(Ray.Origin + Camera.CFrame.LookVector * 0)
@@ -172,7 +183,10 @@ local function CreateUnitFrame(props: UnitProperties)
 		}),
 		Container = e(Main.Frame, {
 			native = {
-				Size = UDim2.fromScale(0.9, 0.9),
+				--Size = UDim2.fromScale(0.9, 0.9),
+				Size = Styles.Size:map(function(Size: number)
+					return UDim2.fromScale(Size * 0.9, Size * 0.9)
+				end),
 			},
 		}, {
 			View = e(UnitView, {
@@ -180,7 +194,7 @@ local function CreateUnitFrame(props: UnitProperties)
 				UnitName = props.UnitName,
 				RotationCFrame = RotationCFrame,
 				Distance = 4,
-				Size = UDim2.fromScale(1.2, 1.2),
+
 				Offset = Vector3.new(0, -1, 0),
 				native = {
 					Position = UDim2.fromScale(0.5, 0.6),
@@ -409,9 +423,12 @@ local function CreateRollConnected(props: ConnectedProperties)
 	local InAutoRoll, SetAutoRoll = React.useState(false)
 
 	Hooks.useEventConnection(RollService.Rolled, function(RollData: RollService.RollData)
-		SFXService.PlaySoundGlobal(SummonSound, function(Sound: Sound)
-			Sound.Volume = 0.05 + (0.15 * math.log(#RollData.Data + 1) / math.log(11))
+		task.delay(0.3, function()
+			SFXService.PlaySoundGlobal(SummonSound, function(Sound: Sound)
+				Sound.Volume = 0.05 + (0.15 * math.log(#RollData.Data + 1) / math.log(11))
+			end)
 		end)
+
 		SetLastFiredTime(RollData.SentTime)
 		SetUnitNames(RollData.Data)
 		SetAutoRoll(RollData.AutoRoll)

@@ -3,6 +3,7 @@
 -- By Wa1er_God --
 
 -- Services --
+--[[
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Selection = game:GetService("Selection")
 local CoreGui = game:GetService("CoreGui")
@@ -52,3 +53,4 @@ InitButton.Click:Connect(function()
 		Root:render(ReactRoblox.createPortal(e(App), CoreGui))
 	end
 end)
+]]

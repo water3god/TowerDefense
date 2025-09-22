@@ -45,7 +45,7 @@ local function HandleData(PData: PlayerData.PlayerData)
 				continue
 			end
 			local RequiredLevel = Levels[BadgeName]
-			if Level >= RequiredLevel then
+			if RequiredLevel and Level >= RequiredLevel then
 				BadgeService:AwardBadge(UserId, BadgeId)
 				table.insert(BadgeCache, BadgeId)
 			end
@@ -63,6 +63,7 @@ local function HandleData(PData: PlayerData.PlayerData)
 					if not table.find(Badges, BadgeId) then
 						if BadgeName == "Welcome" then
 							BadgeService:AwardBadge(UserId, BadgeId)
+							table.insert(BadgeCache, BadgeId)
 						else
 							CheckLevel()
 						end
