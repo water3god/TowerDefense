@@ -108,6 +108,7 @@ end)
 
 InventoryService.UnitEquipChanged:Connect(OnLocalChanged)
 InventoryService.TitleChanged:Connect(OnLocalChanged)
+InventoryService.LevelChanged:Connect(OnLocalChanged)
 
 Players.PlayerRemoving:Connect(function(Player: Player)
 	if Equipped[Player] then

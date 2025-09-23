@@ -7,6 +7,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 
 local Packages = ReplicatedStorage.Packages
+local Promise = require(Packages.Promise)
 local Trove = require(Packages.Trove)
 local Signal = require(Packages.Signal)
 
@@ -15,6 +16,7 @@ local BezierPath = require(Modules.BezierPath)
 local GenerateId = require(Modules.GenerateId)
 
 local Shared = ReplicatedStorage.Shared
+local Debuffs = require(Shared.DeBuffs)
 local UnitInfo = require(Shared.UnitInfo)
 
 local Random: Random = Random.new()
@@ -58,6 +60,8 @@ type EnemyData = {
 	ReplicateTo: { Player },
 	IsGlobal: boolean,
 
+	Promises: { [string]: Promise.Promise },
+
 	PlayFunc: ((Enemy: Enemy) -> ())?,
 	DestroyFunc: ((Enemy: Enemy) -> ())?,
 
@@ -65,7 +69,9 @@ type EnemyData = {
 	OriginalSpeed: number,
 	VectorOffset: Vector3,
 
+	Debuffs: { [string]: { { Strength: number, Duration: number, TimeStart: number } } },
 	SpeedChanges: { { TimeStart: number, Speed: number, TimeEnd: number? } },
+	SpeedMultipliers: { [string]: { number } },
 
 	Damaged: Signal.Signal<number>,
 	Healed: Signal.Signal<number>,
@@ -73,6 +79,7 @@ type EnemyData = {
 	HealthChanged: Signal.Signal<number>,
 	MaxHealthChanged: Signal.Signal<number>,
 	SpeedChanged: Signal.Signal<number, number>,
+	SpeedMultiplierChanged: Signal.Signal<>,
 	ReachedEnd: Signal.Signal<>,
 
 	SpectatorAdded: Signal.Signal<>,
@@ -90,7 +97,13 @@ type EnemyImpl = {
 	Damage: (self: Enemy, Damage: number) -> (),
 	Heal: (self: Enemy, Health: number) -> (),
 
+	ChangeMultiplier: (self: Enemy, Name: string, Multiplier: number, Time: number) -> (),
+	ApplyDebuff: (self: Enemy, Debuff: string, Seconds: number, Strength: number) -> (),
+
 	IsInRange: (self: Enemy, Position: Vector2, Range: number) -> boolean,
+
+	AddPromise: (self: Enemy, Promise: Promise.Promise, Name: string) -> Promise.Promise,
+	CancelPromise: (self: Enemy, Name: string) -> (),
 
 	Destroy: (self: Enemy, Animate: boolean) -> (),
 
@@ -145,6 +158,7 @@ function Enemy.new(Input: EnemyInput)
 	self.HealthChanged = self.Trove:Construct(Signal)
 	self.MaxHealthChanged = self.Trove:Construct(Signal)
 	self.SpeedChanged = self.Trove:Construct(Signal)
+	self.SpeedMultiplierChanged = self.Trove:Construct(Signal)
 	self.ReachedEnd = self.Trove:Construct(Signal)
 	self.Damaged = self.Trove:Construct(Signal)
 	self.Destroying = self.Trove:Construct(Signal)
@@ -155,6 +169,9 @@ function Enemy.new(Input: EnemyInput)
 	self.Speed = Input.EnemyInfo.Speed
 	self.IsBoss = Input.EnemyInfo.IsBoss
 	self.Ally = Input.EnemyInfo.Ally
+
+	self.Promises = {}
+	self.Debuffs = {}
 
 	self.ReplicateTo = Input.Players or Players:GetPlayers()
 	self.IsGlobal = Input.Players == nil
@@ -171,6 +188,7 @@ function Enemy.new(Input: EnemyInput)
 	end
 
 	self.SpeedChanges = { { TimeStart = workspace:GetServerTimeNow(), Speed = self.Speed } }
+	self.SpeedMultipliers = {}
 	self.OriginalSpeed = self.Speed
 	self.VectorOffset = Vector3.zero
 	self.VectorOffset = Vector3.new(Random:NextNumber(-0.1, 0.1), 0, Random:NextNumber(-0.1, 0.1))
@@ -212,6 +230,23 @@ function Enemy.new(Input: EnemyInput)
 		if self.DestroyFunc then
 			self.DestroyFunc(self)
 		end
+	end)
+
+	self.SpeedMultiplierChanged:Connect(function()
+		local Multiplier: number = 1
+		for _, Value in pairs(self.SpeedMultipliers) do
+			if #Value == 0 then
+				continue
+			end
+			local SmallestNumber = Value[1]
+			for _, Num in pairs(Value) do
+				if Num < SmallestNumber then
+					SmallestNumber = Num
+				end
+			end
+			Multiplier *= SmallestNumber
+		end
+		self:AdjustSpeed(self.OriginalSpeed * Multiplier)
 	end)
 
 	if self.IsGlobal then
@@ -270,10 +305,82 @@ function Enemy:Heal(Health: number)
 	self:SetHealth(self.Health + Health)
 end
 
+function Enemy:ChangeMultiplier(Name: string, Multiplier: number, Time: number)
+	self:CancelPromise(Name .. Multiplier)
+	if Multiplier <= 0 then
+		local Index = table.find(self.SpeedMultipliers[Name], Multiplier)
+		if Index then
+			table.remove(self.SpeedMultipliers[Name], Index)
+		end
+	else
+		table.insert(self.SpeedMultipliers[Name], Multiplier)
+	end
+
+	self:AddPromise(Promise.delay(Time), Name .. Multiplier):andThen(function()
+		local Index = table.find(self.SpeedMultipliers[Name], Multiplier)
+		if Index then
+			table.remove(self.SpeedMultipliers[Name], Index)
+		end
+		if #self.SpeedMultipliers[Name] == 0 then
+			self.SpeedMultipliers[Name] = nil
+		end
+		self.SpeedMultiplierChanged:Fire()
+	end)
+
+	self.SpeedMultiplierChanged:Fire()
+end
+
+function Enemy:ApplyDebuff(Debuff: string | Debuffs.Debuff, Seconds: number, Strength: number)
+	if not Debuffs[Debuff] then
+		warn("Debuff does not exist: " .. Debuff)
+		return
+	end
+
+	if not self.Debuffs[Debuff] then
+		self.Debuffs[Debuff] = {}
+	end
+
+	local PromiseName = "Debuff_" .. Debuff .. "_" .. tostring(#self.Debuffs[Debuff] + 1)
+
+	if Debuff == "Bleed" then
+		local DamagePerTick = Strength * self.MaxHealth
+
+		if self.IsBoss then
+			DamagePerTick *= 0.5
+		end
+
+		for i = 1, math.floor(Seconds) do
+			self:AddPromise(Promise.delay(i), PromiseName .. i):andThen(function()
+				self:Damage(DamagePerTick)
+			end)
+		end
+	elseif Debuff == "Slow" then
+		self:ChangeMultiplier("Slow", Strength, Seconds)
+	end
+end
+
 function Enemy:IsInRange(StandardPos: Vector2, Range: number)
 	local SelfPos = Vector2.new(self.CFrame.X, self.CFrame.Z)
 
 	return (SelfPos - StandardPos).Magnitude <= Range / 2
+end
+
+function Enemy:AddPromise(NewPromise: Promise.Promise, Name: string)
+	self:CancelPromise(Name)
+	self.Promises[Name] = NewPromise:finally(function()
+		self.Promises[Name] = nil
+	end)
+	self.Trove:AddPromise(self.Promises[Name] :: any)
+
+	return self.Promises[Name]
+end
+
+function Enemy:CancelPromise(Name: string)
+	local OldPromise: Promise.Promise = self.Promises[Name]
+	if OldPromise then
+		OldPromise:cancel()
+		self.Promises[Name] = nil
+	end
 end
 
 function Enemy:Destroy(Animate: boolean)
