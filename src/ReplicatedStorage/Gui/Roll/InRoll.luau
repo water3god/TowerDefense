@@ -137,7 +137,7 @@ local function CreateUnitFrame(props: UnitProperties)
 	end, { IsSold, props.UniqueId } :: { unknown })
 
 	React.useEffect(function()
-		if props.Visible and RunService:IsRunning() then
+		if props.Visible and RunService:IsRunning() and false then
 			local Viewport = ViewRef.current :: ViewportFrame
 
 			local Part = HelperFunctions.EmitContinous({ SummonParticle }, CFrame.new(), function(Particle)
