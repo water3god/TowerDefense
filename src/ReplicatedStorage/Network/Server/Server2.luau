@@ -259,6 +259,9 @@ if not RunService:IsRunning() then
 		PlaceUnit = table.freeze({
 			SetCallback = noop
 		}),
+		GameLoaded = table.freeze({
+			SetCallback = noop
+		}),
 		EndTrade = table.freeze({
 			SetCallback = noop
 		}),
@@ -324,8 +327,13 @@ export type UnitInput = ({
 	["Trait"]: ((string)?),
 	["Abilities"]: ({ (number) }),
 })
-export type XP = (number)
-export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
+export type Health = (number)
+export type Level = (number)
+export type ProductData = ({
+	["UniqueId"]: (string),
+	["Product"]: (number),
+	["Count"]: (number),
+})
 export type UnitData = ({
 	["Unit"]: (string),
 	["Level"]: (number),
@@ -334,23 +342,12 @@ export type UnitData = ({
 	["XP"]: (number),
 	["NeededXP"]: (number),
 })
-export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
-export type SortType = ("First" | "Last" | "Strongest" | "Weakest")
-export type PlacementData = ({
-	["Unit"]: (string),
-	["UnitPosition"]: (Vector3),
-	["RotationIndex"]: (number),
-})
-export type Level = (number)
-export type Time = (number)
-export type Health = (number)
-export type AbilityIndex = (number)
 export type ResourceData = ({
 	["UniqueId"]: (string),
 	["Resource"]: (string),
 	["Count"]: (number),
 })
-export type ProductId = (number)
+export type Time = (number)
 export type UnitAttackInput = ({
 	["UniqueId"]: (string),
 	["Index"]: (number),
@@ -358,10 +355,16 @@ export type UnitAttackInput = ({
 	["Firetime"]: (number),
 	["SpeedRatio"]: (number),
 })
-export type ProductData = ({
-	["UniqueId"]: (string),
-	["Product"]: (number),
-	["Count"]: (number),
+export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
+export type XP = (number)
+export type ProductId = (number)
+export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
+export type SortType = ("First" | "Last" | "Strongest" | "Weakest")
+export type AbilityIndex = (number)
+export type PlacementData = ({
+	["Unit"]: (string),
+	["UnitPosition"]: (Vector3),
+	["RotationIndex"]: (number),
 })
 
 local function SendEvents()
@@ -382,7 +385,7 @@ end
 
 RunService.Heartbeat:Connect(SendEvents)
 
-local reliable_events = table.create(12)
+local reliable_events = table.create(13)
 reliable.OnServerEvent:Connect(function(player, buff, inst)
 	incoming_buff = buff
 	incoming_inst = inst
@@ -391,29 +394,20 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 	local len = buffer.len(buff)
 	while incoming_read < len do
 		local id = buffer.readu8(buff, read(1))
-		if id == 11 then
+		if id == 12 then
 			local value, value2
 			local len_1 = buffer.readu16(incoming_buff, read(2))
 			value = buffer.readstring(incoming_buff, read(len_1), len_1)
 			value2 = buffer.readu8(incoming_buff, read(1))
-			if reliable_events[11] then
-				task.spawn(reliable_events[11], player, value, value2)
+			if reliable_events[12] then
+				task.spawn(reliable_events[12], player, value, value2)
 			end
-		elseif id == 10 then
+		elseif id == 11 then
 			local value
 			local len_2 = buffer.readu16(incoming_buff, read(2))
 			value = buffer.readstring(incoming_buff, read(len_2), len_2)
-			if reliable_events[10] then
-				task.spawn(reliable_events[10], player, value)
-			end
-		elseif id == 0 then
-			local value
-			incoming_ipos = incoming_ipos + 1
-			value = incoming_inst[incoming_ipos]
-			assert(value ~= nil, "received instance is nil!")
-			assert(value:IsA("Player"), "received instance is not of the Player class!")
-			if reliable_events[0] then
-				task.spawn(reliable_events[0], player, value)
+			if reliable_events[11] then
+				task.spawn(reliable_events[11], player, value)
 			end
 		elseif id == 1 then
 			local value
@@ -424,66 +418,80 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 			if reliable_events[1] then
 				task.spawn(reliable_events[1], player, value)
 			end
-		elseif id == 5 then
+		elseif id == 2 then
+			local value
+			incoming_ipos = incoming_ipos + 1
+			value = incoming_inst[incoming_ipos]
+			assert(value ~= nil, "received instance is nil!")
+			assert(value:IsA("Player"), "received instance is not of the Player class!")
+			if reliable_events[2] then
+				task.spawn(reliable_events[2], player, value)
+			end
+		elseif id == 6 then
 			local value
 			local bool_1 = buffer.readu8(incoming_buff, read(1))
 			value = bit32.btest(bool_1, 0b0000000000000001)
-			if reliable_events[5] then
-				task.spawn(reliable_events[5], player, value)
+			if reliable_events[6] then
+				task.spawn(reliable_events[6], player, value)
 			end
-		elseif id == 9 then
+		elseif id == 10 then
 			local value
 			local len_3 = buffer.readu16(incoming_buff, read(2))
 			value = buffer.readstring(incoming_buff, read(len_3), len_3)
-			if reliable_events[9] then
-				task.spawn(reliable_events[9], player, value)
+			if reliable_events[10] then
+				task.spawn(reliable_events[10], player, value)
 			end
-		elseif id == 8 then
+		elseif id == 9 then
 			local value
 			value = {  }
 			local len_4 = buffer.readu16(incoming_buff, read(2))
 			value["Unit"] = buffer.readstring(incoming_buff, read(len_4), len_4)
 			value["UnitPosition"] = Vector3.new(buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)))
 			value["RotationIndex"] = buffer.readu8(incoming_buff, read(1))
-			if reliable_events[8] then
-				task.spawn(reliable_events[8], player, value)
+			if reliable_events[9] then
+				task.spawn(reliable_events[9], player, value)
 			end
-		elseif id == 6 then
+		elseif id == 0 then
 			local value
-			if reliable_events[6] then
-				task.spawn(reliable_events[6], player, value)
+			if reliable_events[0] then
+				task.spawn(reliable_events[0], player, value)
 			end
 		elseif id == 7 then
 			local value
-			local len_5 = buffer.readu16(incoming_buff, read(2))
-			value = buffer.readstring(incoming_buff, read(len_5), len_5)
 			if reliable_events[7] then
 				task.spawn(reliable_events[7], player, value)
 			end
-		elseif id == 2 then
+		elseif id == 8 then
+			local value
+			local len_5 = buffer.readu16(incoming_buff, read(2))
+			value = buffer.readstring(incoming_buff, read(len_5), len_5)
+			if reliable_events[8] then
+				task.spawn(reliable_events[8], player, value)
+			end
+		elseif id == 3 then
 			local value, value2
 			local len_6 = buffer.readu16(incoming_buff, read(2))
 			value = buffer.readstring(incoming_buff, read(len_6), len_6)
 			local len_7 = buffer.readu16(incoming_buff, read(2))
 			value2 = buffer.readstring(incoming_buff, read(len_7), len_7)
-			if reliable_events[2] then
-				task.spawn(reliable_events[2], player, value, value2)
+			if reliable_events[3] then
+				task.spawn(reliable_events[3], player, value, value2)
 			end
-		elseif id == 4 then
+		elseif id == 5 then
 			local value, value2
 			local len_8 = buffer.readu16(incoming_buff, read(2))
 			value = buffer.readstring(incoming_buff, read(len_8), len_8)
 			value2 = buffer.readu16(incoming_buff, read(2))
-			if reliable_events[4] then
-				task.spawn(reliable_events[4], player, value, value2)
+			if reliable_events[5] then
+				task.spawn(reliable_events[5], player, value, value2)
 			end
-		elseif id == 3 then
+		elseif id == 4 then
 			local value, value2
 			local len_9 = buffer.readu16(incoming_buff, read(2))
 			value = buffer.readstring(incoming_buff, read(len_9), len_9)
 			value2 = buffer.readu16(incoming_buff, read(2))
-			if reliable_events[3] then
-				task.spawn(reliable_events[3], player, value, value2)
+			if reliable_events[4] then
+				task.spawn(reliable_events[4], player, value, value2)
 			end
 		else
 			error("Unknown event id")
@@ -497,17 +505,17 @@ local returns = {
 	SendEvents = SendEvents,
 	UseUnitAbility = {
 		SetCallback = function(Callback: (Player: Player, Value: (string), Value2: (number)) -> ()): () -> ()
-			reliable_events[11] = Callback
+			reliable_events[12] = Callback
 			return function()
-				reliable_events[11] = nil
+				reliable_events[12] = nil
 			end
 		end,
 	},
 	UpgradeUnit = {
 		SetCallback = function(Callback: (Player: Player, Value: (string)) -> ()): () -> ()
-			reliable_events[10] = Callback
+			reliable_events[11] = Callback
 			return function()
-				reliable_events[10] = nil
+				reliable_events[11] = nil
 			end
 		end,
 	},
@@ -3097,9 +3105,9 @@ local returns = {
 	},
 	TradeRequestClient = {
 		SetCallback = function(Callback: (Player: Player, Value: (Player)) -> ()): () -> ()
-			reliable_events[0] = Callback
+			reliable_events[1] = Callback
 			return function()
-				reliable_events[0] = nil
+				reliable_events[1] = nil
 			end
 		end,
 	},
@@ -3167,17 +3175,17 @@ local returns = {
 	},
 	TradeAccept = {
 		SetCallback = function(Callback: (Player: Player, Value: (Player)) -> ()): () -> ()
-			reliable_events[1] = Callback
+			reliable_events[2] = Callback
 			return function()
-				reliable_events[1] = nil
+				reliable_events[2] = nil
 			end
 		end,
 	},
 	ToggleStatus = {
 		SetCallback = function(Callback: (Player: Player, Value: (boolean)) -> ()): () -> ()
-			reliable_events[5] = Callback
+			reliable_events[6] = Callback
 			return function()
-				reliable_events[5] = nil
+				reliable_events[6] = nil
 			end
 		end,
 	},
@@ -3345,9 +3353,9 @@ local returns = {
 	},
 	SellUnit = {
 		SetCallback = function(Callback: (Player: Player, Value: (string)) -> ()): () -> ()
-			reliable_events[9] = Callback
+			reliable_events[10] = Callback
 			return function()
-				reliable_events[9] = nil
+				reliable_events[10] = nil
 			end
 		end,
 	},
@@ -3878,49 +3886,57 @@ local returns = {
 			["UnitPosition"]: (Vector3),
 			["RotationIndex"]: (number),
 		})) -> ()): () -> ()
-			reliable_events[8] = Callback
+			reliable_events[9] = Callback
 			return function()
-				reliable_events[8] = nil
+				reliable_events[9] = nil
+			end
+		end,
+	},
+	GameLoaded = {
+		SetCallback = function(Callback: (Player: Player) -> ()): () -> ()
+			reliable_events[0] = Callback
+			return function()
+				reliable_events[0] = nil
 			end
 		end,
 	},
 	EndTrade = {
 		SetCallback = function(Callback: (Player: Player) -> ()): () -> ()
-			reliable_events[6] = Callback
-			return function()
-				reliable_events[6] = nil
-			end
-		end,
-	},
-	ChangeUnitPriority = {
-		SetCallback = function(Callback: (Player: Player, Value: (string)) -> ()): () -> ()
 			reliable_events[7] = Callback
 			return function()
 				reliable_events[7] = nil
 			end
 		end,
 	},
+	ChangeUnitPriority = {
+		SetCallback = function(Callback: (Player: Player, Value: (string)) -> ()): () -> ()
+			reliable_events[8] = Callback
+			return function()
+				reliable_events[8] = nil
+			end
+		end,
+	},
 	ChangeUnit = {
 		SetCallback = function(Callback: (Player: Player, Value: (string), Value2: (string)) -> ()): () -> ()
-			reliable_events[2] = Callback
+			reliable_events[3] = Callback
 			return function()
-				reliable_events[2] = nil
+				reliable_events[3] = nil
 			end
 		end,
 	},
 	ChangeResource = {
 		SetCallback = function(Callback: (Player: Player, Value: (string), Value2: (number)) -> ()): () -> ()
-			reliable_events[4] = Callback
+			reliable_events[5] = Callback
 			return function()
-				reliable_events[4] = nil
+				reliable_events[5] = nil
 			end
 		end,
 	},
 	ChangeProduct = {
 		SetCallback = function(Callback: (Player: Player, Value: (string), Value2: (number)) -> ()): () -> ()
-			reliable_events[3] = Callback
+			reliable_events[4] = Callback
 			return function()
-				reliable_events[3] = nil
+				reliable_events[4] = nil
 			end
 		end,
 	},

@@ -191,6 +191,9 @@ if not RunService:IsRunning() then
 		PlaceUnit = table.freeze({
 			Fire = noop
 		}),
+		GameLoaded = table.freeze({
+			Fire = noop
+		}),
 		EndTrade = table.freeze({
 			Fire = noop
 		}),
@@ -231,8 +234,13 @@ export type UnitInput = ({
 	["Trait"]: ((string)?),
 	["Abilities"]: ({ (number) }),
 })
-export type XP = (number)
-export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
+export type Health = (number)
+export type Level = (number)
+export type ProductData = ({
+	["UniqueId"]: (string),
+	["Product"]: (number),
+	["Count"]: (number),
+})
 export type UnitData = ({
 	["Unit"]: (string),
 	["Level"]: (number),
@@ -241,23 +249,12 @@ export type UnitData = ({
 	["XP"]: (number),
 	["NeededXP"]: (number),
 })
-export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
-export type SortType = ("First" | "Last" | "Strongest" | "Weakest")
-export type PlacementData = ({
-	["Unit"]: (string),
-	["UnitPosition"]: (Vector3),
-	["RotationIndex"]: (number),
-})
-export type Level = (number)
-export type Time = (number)
-export type Health = (number)
-export type AbilityIndex = (number)
 export type ResourceData = ({
 	["UniqueId"]: (string),
 	["Resource"]: (string),
 	["Count"]: (number),
 })
-export type ProductId = (number)
+export type Time = (number)
 export type UnitAttackInput = ({
 	["UniqueId"]: (string),
 	["Index"]: (number),
@@ -265,10 +262,16 @@ export type UnitAttackInput = ({
 	["Firetime"]: (number),
 	["SpeedRatio"]: (number),
 })
-export type ProductData = ({
-	["UniqueId"]: (string),
-	["Product"]: (number),
-	["Count"]: (number),
+export type TradeStatus = ("InTrade" | "Finalized" | "Accepted")
+export type XP = (number)
+export type ProductId = (number)
+export type TradeStatusMessage = ("Trading" | "CanTrade" | "TradeDisabled")
+export type SortType = ("First" | "Last" | "Strongest" | "Weakest")
+export type AbilityIndex = (number)
+export type PlacementData = ({
+	["Unit"]: (string),
+	["UnitPosition"]: (Vector3),
+	["RotationIndex"]: (number),
 })
 
 local function SendEvents()
@@ -749,7 +752,7 @@ local returns = {
 	UseUnitAbility = {
 		Fire = function(Value: (string), Value2: (number))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
 			local len_32 = #Value
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_32)
@@ -762,7 +765,7 @@ local returns = {
 	UpgradeUnit = {
 		Fire = function(Value: (string))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
 			local len_33 = #Value
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_33)
@@ -966,7 +969,7 @@ local returns = {
 	TradeRequestClient = {
 		Fire = function(Value: (Player))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 			assert(Value:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value)
 		end,
@@ -986,7 +989,7 @@ local returns = {
 	TradeAccept = {
 		Fire = function(Value: (Player))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
 			assert(Value:IsA("Player"), "received instance is not of the Player class!")
 			table.insert(outgoing_inst, Value)
 		end,
@@ -994,7 +997,7 @@ local returns = {
 	ToggleStatus = {
 		Fire = function(Value: (boolean))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
 			local bool_11 = 0
 			local bool_11_pos_1 = alloc(1)
 			if Value then
@@ -1021,7 +1024,7 @@ local returns = {
 	SellUnit = {
 		Fire = function(Value: (string))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
 			local len_34 = #Value
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_34)
@@ -1084,7 +1087,7 @@ local returns = {
 			["RotationIndex"]: (number),
 		}))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
 			local len_35 = #Value["Unit"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_35)
@@ -1100,16 +1103,22 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["RotationIndex"])
 		end,
 	},
+	GameLoaded = {
+		Fire = function()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+		end,
+	},
 	EndTrade = {
 		Fire = function()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
 		end,
 	},
 	ChangeUnitPriority = {
 		Fire = function(Value: (string))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
 			local len_36 = #Value
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_36)
@@ -1120,7 +1129,7 @@ local returns = {
 	ChangeUnit = {
 		Fire = function(Value: (string), Value2: (string))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
 			local len_37 = #Value
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_37)
@@ -1136,7 +1145,7 @@ local returns = {
 	ChangeResource = {
 		Fire = function(Value: (string), Value2: (number))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
 			local len_39 = #Value
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_39)
@@ -1149,7 +1158,7 @@ local returns = {
 	ChangeProduct = {
 		Fire = function(Value: (string), Value2: (number))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
 			local len_40 = #Value
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_40)

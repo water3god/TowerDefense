@@ -17,10 +17,12 @@ local Client1 = require(ReplicatedStorage.Network.Client.Client1)
 local Client2 = require(ReplicatedStorage.Network.Client.Client2)
 local Client3 = require(ReplicatedStorage.Network.Client.Client3)
 local Client4 = require(ReplicatedStorage.Network.Client.Client4)
+local Client5 = require(ReplicatedStorage.Network.Client.Client5)
 
 return HelperFunctions.joinDicts(
 		Client1,
 		Client2,
 		Client3,
-		Client4
-	) :: typeof(Client1) & typeof(Client2) & typeof(Client3) & typeof(Client4)
+		Client4,
+		Client5
+	) :: typeof(Client1) & typeof(Client2) & typeof(Client3) & typeof(Client4) & typeof(Client5)

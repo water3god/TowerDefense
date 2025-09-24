@@ -10,9 +10,16 @@ type Health = u32
 
 type Time = f64
 
+-- Global --
+
+event GameLoaded = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+}
+
 -- Trade --
 
--- TBD NOT DONE --
 type TradeStatus = enum { InTrade, Finalized, Accepted }
 type TradeStatusMessage = enum { Trading, CanTrade, TradeDisabled }
 
