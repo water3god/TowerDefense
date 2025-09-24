@@ -145,95 +145,101 @@ local function CreateUnitToolTip(Props: Props)
 		return function() end
 	end, { Props.OwnerId })
 
-	return e(Main.ImageLabel, {
+	return e(Main.Frame, {
 		native = Join({
 			Size = UDim2.fromScale(0.2, 0.15),
-			AnchorPoint = Vector2.new(0.5, 0),
 			Position = Props.Position and Props.Position:map(function(PositionInput: Vector2)
 				local Position = PositionInput - GuiService:GetGuiInset()
 
 				return UDim2.fromOffset(Position.X, Position.Y)
 			end),
-			Image = "rbxassetid://103903141717286",
 		}, Props.native),
 	}, {
-		UISizeConstraint = e("UISizeConstraint", {
-			MinSize = Vector2.new(160, 80),
-			MaxSize = Vector2.new(300, 150),
-		}),
-		UIAspectRatio = e("UIAspectRatioConstraint", {
-			AspectRatio = 2,
-		}),
-		TraitFrame = e(TraitFrame, {
-			Trait = Props.Trait,
+		Container = e(Main.Frame, {
 			native = {
-				Position = UDim2.fromScale(0.9, 0.23),
-				Size = UDim2.fromScale(0.12, 0.3),
-			},
-		}),
-		NameLabel = e(Main.TextLabel, {
-			native = {
-				Position = UDim2.fromScale(0.5, 0.225),
-				Size = UDim2.fromScale(0.9, 0.18),
-				Text = Props.UnitName,
+				AnchorPoint = Vector2.new(0, 0),
+				Size = UDim2.fromScale(0.9, 0.9),
+				Position = UDim2.fromScale(0.5, 0.5),
 			},
 		}, {
-			UIGradient = e(AnimatedGradient, {
-				GradColor = RarityData.Color,
-				Animate = true,
+			UISizeConstraint = e("UISizeConstraint", {
+				MinSize = Vector2.new(160, 80),
+				MaxSize = Vector2.new(300, 150),
 			}),
-			UIStroke = e(UIStroke.UIStrokeGradient, {
-				GradColor = RarityData.StrokeColor,
-				Stroke = 0.01,
+			UIAspectRatio = e("UIAspectRatioConstraint", {
+				AspectRatio = 2,
 			}),
+			TraitFrame = e(TraitFrame, {
+				Trait = Props.Trait,
+				native = {
+					Position = UDim2.fromScale(0.9, 0.23),
+					Size = UDim2.fromScale(0.12, 0.3),
+				},
+			}),
+			NameLabel = e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.5, 0.225),
+					Size = UDim2.fromScale(0.9, 0.18),
+					Text = Props.UnitName,
+				},
+			}, {
+				UIGradient = e(AnimatedGradient, {
+					GradColor = RarityData.Color,
+					Animate = true,
+				}),
+				UIStroke = e(UIStroke.UIStrokeGradient, {
+					GradColor = RarityData.StrokeColor,
+					Stroke = 0.01,
+				}),
+			}),
+			LevelLabel = e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.25, 0.45),
+					Size = UDim2.fromScale(0.45, 0.12),
+					Text = string.format("Level: %u", Props.Level),
+				},
+			}, {
+				UIGradient = e(AnimatedGradient, {
+					GradColor = RarityData.Color,
+					Animate = true,
+				}),
+				UIStroke = e(UIStroke.UIStrokeGradient, {
+					GradColor = RarityData.StrokeColor,
+					Stroke = 0.01,
+				}),
+			}),
+			OwnerLabel = e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.75, 0.45),
+					Size = UDim2.fromScale(0.45, 0.12),
+					Text = OwnerText or "No Owner",
+					TextXAlignment = Enum.TextXAlignment.Center,
+				},
+			}, {
+				UIGradient = e(AnimatedGradient, {
+					GradColor = RarityData.Color,
+					Animate = true,
+				}),
+				UIStroke = e(UIStroke.UIStrokeGradient, {
+					GradColor = RarityData.StrokeColor,
+					Stroke = 0.01,
+				}),
+			}),
+			Bar = e(Main.Frame, {
+				native = {
+					Position = UDim2.fromScale(0.5, 0.75),
+					Size = UDim2.fromScale(0.9, 0.4),
+				},
+			}, {
+				UIListLayout = e("UIListLayout", {
+					Padding = UDim.new(0.05, 0),
+					HorizontalAlignment = Enum.HorizontalAlignment.Center,
+					VerticalAlignment = Enum.VerticalAlignment.Center,
+					FillDirection = Enum.FillDirection.Horizontal,
+					SortOrder = Enum.SortOrder.LayoutOrder,
+				}),
+			}, Frames),
 		}),
-		LevelLabel = e(Main.TextLabel, {
-			native = {
-				Position = UDim2.fromScale(0.25, 0.45),
-				Size = UDim2.fromScale(0.45, 0.12),
-				Text = string.format("Level: %u", Props.Level),
-			},
-		}, {
-			UIGradient = e(AnimatedGradient, {
-				GradColor = RarityData.Color,
-				Animate = true,
-			}),
-			UIStroke = e(UIStroke.UIStrokeGradient, {
-				GradColor = RarityData.StrokeColor,
-				Stroke = 0.01,
-			}),
-		}),
-		OwnerLabel = e(Main.TextLabel, {
-			native = {
-				Position = UDim2.fromScale(0.75, 0.45),
-				Size = UDim2.fromScale(0.45, 0.12),
-				Text = OwnerText or "No Owner",
-				TextXAlignment = Enum.TextXAlignment.Center,
-			},
-		}, {
-			UIGradient = e(AnimatedGradient, {
-				GradColor = RarityData.Color,
-				Animate = true,
-			}),
-			UIStroke = e(UIStroke.UIStrokeGradient, {
-				GradColor = RarityData.StrokeColor,
-				Stroke = 0.01,
-			}),
-		}),
-		Bar = e(Main.Frame, {
-			native = {
-				Position = UDim2.fromScale(0.5, 0.75),
-				Size = UDim2.fromScale(0.9, 0.4),
-			},
-		}, {
-			UIListLayout = e("UIListLayout", {
-				Padding = UDim.new(0.05, 0),
-				HorizontalAlignment = Enum.HorizontalAlignment.Center,
-				VerticalAlignment = Enum.VerticalAlignment.Center,
-				FillDirection = Enum.FillDirection.Horizontal,
-				SortOrder = Enum.SortOrder.LayoutOrder,
-			}),
-		}, Frames),
 	}, Props.children)
 end
 

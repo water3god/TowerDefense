@@ -46,67 +46,76 @@ export type Props = {
 }
 
 local function CreateEnemyToolTip(Props: Props)
-	return e(Main.ImageLabel, {
+	return e(Main.Frame, {
 		native = Join({
 			Size = UDim2.fromScale(0.15, 0.1),
-			AnchorPoint = Vector2.new(0, 0),
 			Position = Props.Position and Props.Position:map(function(PositionInput: Vector2)
 				local Position = PositionInput - GuiService:GetGuiInset()
 
 				return UDim2.fromOffset(Position.X, Position.Y)
 			end),
-			Image = "rbxassetid://103903141717286",
 		}, Props.native),
 	}, {
-		UISizeConstraint = e("UISizeConstraint", {
-			MinSize = Vector2.new(100, 50),
-			MaxSize = Vector2.new(225, 115),
-		}),
-		UIAspectRatio = e("UIAspectRatioConstraint", {
-			AspectRatio = 2,
-		}),
-		UnitName = e(Main.TextLabel, {
+		Container = e(Main.Frame, {
 			native = {
-				Position = UDim2.fromScale(0.5, 0.275),
-				Size = UDim2.fromScale(0.9, 0.25),
-				Text = Props.EnemyName,
-			},
-		}),
-		Group = e(Main.CanvasGroup, {
-			native = {
-				Position = UDim2.fromScale(0.5, 0.7),
-				Size = UDim2.fromScale(0.8, 0.3),
+				AnchorPoint = Vector2.new(0, 0),
+				Position = UDim2.fromScale(0.7, 0.6),
 			},
 		}, {
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.3, 0),
+			UISizeConstraint = e("UISizeConstraint", {
+				MinSize = Vector2.new(100, 50),
+				MaxSize = Vector2.new(225, 115),
 			}),
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.015,
-				native = {
-					Color = Color3.fromRGB(127, 32, 165),
-					LineJoinMode = Enum.LineJoinMode.Round,
-				},
+			UIAspectRatio = e("UIAspectRatioConstraint", {
+				AspectRatio = 2,
 			}),
-			Bar = e(Main.Frame, {
+			UnitName = e(Main.TextLabel, {
 				native = {
-					AnchorPoint = Vector2.new(0, 0.5),
-					Position = UDim2.fromScale(0, 0.5),
-					Size = UDim2.fromScale(math.clamp(Props.Health / Props.MaxHealth, 0, 1), 1),
-					BackgroundColor3 = Color3.fromRGB(0, 255, 0),
-					BackgroundTransparency = 0,
-				},
-			}),
-			HealthLabel = e(Main.TextLabel, {
-				native = {
-					Size = UDim2.fromScale(0.9, 0.6),
-					Text = string.format("%u / %u", Props.Health, Props.MaxHealth),
-					AutoLocalize = false,
-					ZIndex = 2,
+					Position = UDim2.fromScale(0.5, 0.275),
+					Size = UDim2.fromScale(0.9, 0.25),
+					Text = Props.EnemyName,
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.015,
+					Stroke = 0.01,
+				}),
+			}),
+			Group = e(Main.CanvasGroup, {
+				native = {
+					Position = UDim2.fromScale(0.5, 0.65),
+					Size = UDim2.fromScale(0.8, 0.25),
+				},
+			}, {
+				UICorner = e("UICorner", {
+					CornerRadius = UDim.new(0.3, 0),
+				}),
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.02,
+					native = {
+						Color = Color3.fromRGB(32, 76, 20),
+						LineJoinMode = Enum.LineJoinMode.Round,
+					},
+				}),
+				Bar = e(Main.Frame, {
+					native = {
+						AnchorPoint = Vector2.new(0, 0.5),
+						Position = UDim2.fromScale(0, 0.5),
+						Size = UDim2.fromScale(math.clamp(Props.Health / Props.MaxHealth, 0, 1), 1),
+						BackgroundColor3 = Color3.fromRGB(0, 255, 0),
+						BackgroundTransparency = 0,
+					},
+				}),
+				HealthLabel = e(Main.TextLabel, {
+					native = {
+						Size = UDim2.fromScale(0.9, 0.6),
+						Text = string.format("%u / %u", Props.Health, Props.MaxHealth),
+						AutoLocalize = false,
+						ZIndex = 2,
+					},
+				}, {
+					UIStroke = e(UIStroke.UIStrokeAdvanced, {
+						Stroke = 0.015,
+					}),
 				}),
 			}),
 		}),

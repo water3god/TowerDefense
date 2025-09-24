@@ -516,7 +516,7 @@ function UnitModule:LoadCharacter(Character)
 	self.Character.Parent = UnitsFolder
 
 	self.RadiusPart = self.Trove:Clone(RadiusReference)
-	self.RadiusPart.Transparency = 1
+	self.RadiusPart.Transparency = 0.2
 	self.RadiusPart.Anchored = true
 	self.RadiusPart.Size = Vector3.new(self.CollisionRadius, self.RadiusPart.Size.Y, self.CollisionRadius)
 	self.RadiusPart.CFrame = self.CFrame
@@ -539,23 +539,23 @@ function UnitModule:LoadCharacter(Character)
 			end),
 			"RangeAnimatePromise"
 		)
-		self:AddPromise(
+		--[[self:AddPromise(
 			Promise.defer(function()
 				TweenTransparency(self.RadiusPart, 0.2)
 			end),
 			"ClickOpenPromise"
-		)
+		)]]
 	end
 
 	local function OnClose()
-		self:AddPromise(
+		--[[self:AddPromise(
 			Promise.defer(function()
 				if not Variables.InPlacement then
 					TweenTransparency(self.RadiusPart, 1)
 				end
 			end),
 			"ClickClosePromise"
-		)
+		)]]
 		RangePart.Parent = nil
 	end
 
@@ -1086,17 +1086,17 @@ function UnitModule.InitPlacement(Unit: string)
 	RangePart.Parent = workspace
 	Variables.InPlacement = true
 
-	InitTrove:AddPromise(Promise.defer(function()
+	--[[InitTrove:AddPromise(Promise.defer(function()
 		for _, OtherUnit in pairs(Units) do
 			TweenTransparency(OtherUnit.RadiusPart, 0.4)
 		end
-	end) :: any)
+	end) :: any)]]
 
 	InitTrove:Add(function()
 		Variables.InPlacement = false
-		for _, OtherUnit in pairs(Units) do
+		--[[for _, OtherUnit in pairs(Units) do
 			TweenTransparency(OtherUnit.RadiusPart, 1)
-		end
+		end]]
 	end)
 
 	for _, Descendant in ipairs(UnitModel:GetDescendants()) do
