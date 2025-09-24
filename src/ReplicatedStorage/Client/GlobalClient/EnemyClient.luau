@@ -11,9 +11,11 @@ local SpawnEvent = Network.EnemySpawnEvent
 local SpeedEvent = Network.EnemySpeedEvent
 local HealthEvent = Network.EnemyHealthEvent
 local LocationEvent = Network.EnemyLocationEvent
+local DebuffEvent = Network.EnemyDebuffEvent
 local DestroyEvent = Network.EnemyDestroyEvent
 
 local Packages = ReplicatedStorage.Packages
+local Promise = require(Packages.Promise)
 local Signal = require(Packages.Signal)
 local Trove = require(Packages.Trove)
 
@@ -153,6 +155,10 @@ local function NewEnemy(Input: Types.EnemyInput, SpectateFire: boolean)
 	self.SpeedChanged = self.Trove:Construct(Signal)
 	self.HealthChanged = self.Trove:Construct(Signal)
 	self.MaxHealthChanged = self.Trove:Construct(Signal)
+
+	self.DebuffAdded = self.Trove:Construct(Signal)
+	self.DebuffRemoved = self.Trove:Construct(Signal)
+
 	self.ReachedEnd = self.Trove:Construct(Signal)
 	self.Destroying = self.Trove:Construct(Signal)
 
@@ -164,6 +170,7 @@ local function NewEnemy(Input: Types.EnemyInput, SpectateFire: boolean)
 	self.Ally = Input.Ally
 	self.TimePosition = Input.TimePosition
 	self.SpeedChanges = Input.SpeedChanges
+	self.Debuffs = Input.Debuffs
 
 	self.OriginalSpeed = Input.OriginalSpeed
 	self.VectorOffset = Input.VectorOffset
@@ -257,6 +264,27 @@ local function EnemyDestroy(self: Types.EnemyClient, Animate: boolean)
 	setmetatable(self :: any, nil)
 end
 
+function EnemyModule:AddPromise(NewPromise: Promise.Promise, PromiseName: string)
+	self:CancelPromise(PromiseName)
+	self.Promises[PromiseName] = NewPromise
+
+	self.Trove:AddPromise(NewPromise :: any)
+
+	NewPromise:finally(function()
+		self.Promises[PromiseName] = nil
+	end)
+
+	return NewPromise
+end
+
+function EnemyModule:CancelPromise(PromiseName: string)
+	local UnitPromise = self.Promises[PromiseName]
+	if UnitPromise then
+		UnitPromise:cancel()
+		self.Promises[PromiseName] = nil
+	end
+end
+
 function EnemyModule:GetAnimationRatio()
 	return self.Speed / self.OriginalSpeed
 end
@@ -331,6 +359,46 @@ HealthEvent.SetCallback(function(UniqueId: string, Health: number, MaxHealth: nu
 	end
 end)
 
+DebuffEvent.SetCallback(function(Data)
+	local Enemy = Enemies[Data.UniqueId]
+
+	if Enemy then
+		if not Enemy.Debuffs[Data.Debuff] then
+			Enemy.Debuffs[Data.Debuff] = {}
+		end
+
+		local EndTime = Data.TimeStart + Data.Duration
+		local Delay = math.max(0, EndTime - workspace:GetServerTimeNow())
+
+		local Shorter = false
+
+		for _, Existing in ipairs(Enemy.Debuffs[Data.Debuff]) do
+			local OtherEndTime = Existing.TimeStart + Existing.Duration
+
+			if OtherEndTime >= EndTime then
+				Shorter = true
+				break
+			end
+		end
+
+		if Delay ~= 0 then
+			if not Shorter then
+				Enemy:AddPromise(Promise.delay(Delay), Data.Debuff):andThen(function()
+					Enemy.Debuffs[Data.Debuff] = nil
+					Enemy.DebuffRemoved:Fire(Data.Debuff)
+				end)
+			end
+
+			table.insert(Enemy.Debuffs[Data.Debuff], {
+				Strength = Data.Strength,
+				TimeStart = Data.TimeStart,
+				Duration = Data.Duration,
+			})
+			Enemy.DebuffAdded:Fire(Data.Debuff)
+		end
+	end
+end)
+
 DestroyEvent.SetCallback(function(UniqueIds: { string }, Animate: boolean)
 	for _, Id in ipairs(UniqueIds) do
 		local Enemy = Enemies[Id]
@@ -373,9 +441,5 @@ RunService.Heartbeat:Connect(function()
 		self.Root.CFrame = self.CFrame + Vector3.new(0, self.YOffset, 0)
 	end
 end)
-
--- Arrow Info --
-
--- End of Arrow stuff --
 
 return EnemyModule

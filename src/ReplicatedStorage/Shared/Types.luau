@@ -104,6 +104,13 @@ export type EnemyInput = {
 	Time: number,
 	AdornmentName: string?,
 	SpeedChanges: { { TimeStart: number, Speed: number, TimeEnd: number? } },
+	Debuffs: { [string]: {
+		{
+			Strength: number,
+			TimeStart: number,
+			Duration: number,
+		}
+	} },
 }
 
 type EnemyData = {
@@ -125,11 +132,20 @@ type EnemyData = {
 	IsBoss: boolean,
 	Ally: boolean,
 
+	Promises: { [string]: Promise.Promise },
+
 	OriginalSpeed: number,
 	VectorOffset: Vector3,
 
 	TimePosition: number,
 	SpeedChanges: { { TimeStart: number, Speed: number, TimeEnd: number? } },
+	Debuffs: { [string]: {
+		{
+			Strength: number,
+			TimeStart: number,
+			Duration: number,
+		}
+	} },
 	Bezier: BezierPath.Path,
 	PathLength: number,
 
@@ -142,6 +158,10 @@ type EnemyData = {
 	SpeedChanged: Signal.Signal<number>,
 	HealthChanged: Signal.Signal<number>,
 	MaxHealthChanged: Signal.Signal<number>,
+
+	DebuffAdded: Signal.Signal<string>,
+	DebuffRemoved: Signal.Signal<string>,
+
 	ReachedEnd: Signal.Signal<>,
 	Destroying: Signal.Signal<boolean>,
 }
@@ -149,6 +169,9 @@ type EnemyData = {
 export type EnemyModule = {
 	GetAnimationRatio: (self: EnemyClient) -> number,
 	PartIsDescendantOf: (self: EnemyClient, Part: BasePart) -> boolean,
+
+	AddPromise: (self: EnemyClient, Promise: Promise.Promise, PromiseName: string) -> Promise.Promise,
+	CancelPromise: (self: EnemyClient, PromiseName: string) -> (),
 
 	GetEnemy: (UniqueId: string) -> EnemyClient?,
 

@@ -167,6 +167,9 @@ if not RunService:IsRunning() then
 		EnemyDestroyEvent = table.freeze({
 			SetCallback = noop
 		}),
+		EnemyDebuffEvent = table.freeze({
+			SetCallback = noop
+		}),
 		ChooseMap = table.freeze({
 			Fire = noop
 		}),
@@ -195,27 +198,12 @@ local remotes = ReplicatedStorage:WaitForChild("Zap1")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
-export type Health = (number)
-export type Level = (number)
-export type InfiniteStageData = ({
-	["Wave"]: (number),
-	["Damage"]: (number),
-})
-export type BoothData = ({
-	["OwnerId"]: (number),
-	["MapId"]: (string),
-	["LevelId"]: (string),
-	["Difficulty"]: (string),
-	["Players"]: ({ (Player) }),
+export type TimeData = ({
 	["StartTime"]: (number),
 	["EndTime"]: (number),
 })
-export type ResourceData = ({
-	["Resource"]: (string),
-	["Count"]: (number),
-	["UniqueId"]: (string),
-	["PartialOneLose"]: ((boolean)?),
-})
+export type Health = (number)
+export type Time = (number)
 export type VisualUnitData = ({
 	["Unit"]: (string),
 	["Level"]: (number),
@@ -224,7 +212,37 @@ export type VisualUnitData = ({
 	["XP"]: (number),
 	["NeededXP"]: (number),
 })
-export type Time = (number)
+export type LevelData = ({
+	["Level"]: (number),
+	["XP"]: (number),
+	["NeededXP"]: (number),
+})
+export type XP = (number)
+export type EnemyInput = ({
+	["UniqueId"]: (string),
+	["ModelName"]: (string),
+	["Health"]: (number),
+	["MaxHealth"]: (number),
+	["Speed"]: (number),
+	["IsBoss"]: (boolean),
+	["Ally"]: (boolean),
+	["OriginalSpeed"]: (number),
+	["VectorOffset"]: (Vector3),
+	["BezierId"]: (string),
+	["TimePosition"]: (number),
+	["Time"]: (number),
+	["AdornmentName"]: ((string)?),
+	["SpeedChanges"]: ({ ({
+		["TimeStart"]: (number),
+		["Speed"]: (number),
+		["TimeEnd"]: ((number)?),
+	}) }),
+	["Debuffs"]: ({ [(string)]: ({ ({
+		["Strength"]: (number),
+		["Duration"]: (number),
+		["TimeStart"]: (number),
+	}) }) }),
+})
 export type Inventory = ({
 	["Units"]: ({ [(string)]: ({
 		["Unit"]: (string),
@@ -247,58 +265,53 @@ export type Inventory = ({
 		["PartialOneLose"]: ((boolean)?),
 	}) }),
 })
-export type StageData = ({
-	["FastestTime"]: (number),
-	["FinishedCount"]: (number),
-})
-export type XP = (number)
-export type EnemyInput = ({
-	["UniqueId"]: (string),
-	["ModelName"]: (string),
-	["Health"]: (number),
-	["MaxHealth"]: (number),
-	["Speed"]: (number),
-	["IsBoss"]: (boolean),
-	["Ally"]: (boolean),
-	["OriginalSpeed"]: (number),
-	["VectorOffset"]: (Vector3),
-	["BezierId"]: (string),
-	["TimePosition"]: (number),
-	["Time"]: (number),
-	["AdornmentName"]: ((string)?),
-	["SpeedChanges"]: ({ ({
-		["TimeStart"]: (number),
-		["Speed"]: (number),
-		["TimeEnd"]: ((number)?),
-	}) }),
-})
-export type SpeedChange = ({
-	["UniqueId"]: (string),
-	["Speed"]: (number),
-	["Time"]: (number),
-})
 export type ProductData = ({
 	["ProductId"]: (number),
 	["IsGamepass"]: (boolean),
 	["Count"]: (number),
 	["UniqueId"]: (string),
 })
+export type Level = (number)
+export type BoothData = ({
+	["OwnerId"]: (number),
+	["MapId"]: (string),
+	["LevelId"]: (string),
+	["Difficulty"]: (string),
+	["Players"]: ({ (Player) }),
+	["StartTime"]: (number),
+	["EndTime"]: (number),
+})
 export type SpeedChangeData = ({
 	["TimeStart"]: (number),
 	["Speed"]: (number),
 	["TimeEnd"]: ((number)?),
 })
-export type LevelData = ({
-	["Level"]: (number),
-	["XP"]: (number),
-	["NeededXP"]: (number),
+export type InfiniteStageData = ({
+	["Wave"]: (number),
+	["Damage"]: (number),
+})
+export type Debuff = ({
+	["Strength"]: (number),
+	["Duration"]: (number),
+	["TimeStart"]: (number),
+})
+export type ResourceData = ({
+	["Resource"]: (string),
+	["Count"]: (number),
+	["UniqueId"]: (string),
+	["PartialOneLose"]: ((boolean)?),
 })
 export type Item = ("Units" | "Products" | "Resources")
-export type ProductId = (number)
-export type TimeData = ({
-	["StartTime"]: (number),
-	["EndTime"]: (number),
+export type SpeedChange = ({
+	["UniqueId"]: (string),
+	["Speed"]: (number),
+	["Time"]: (number),
 })
+export type StageData = ({
+	["FastestTime"]: (number),
+	["FinishedCount"]: (number),
+})
+export type ProductId = (number)
 
 local function SendEvents()
 	if outgoing_used ~= 0 then
@@ -316,19 +329,20 @@ end
 
 RunService.Heartbeat:Connect(SendEvents)
 
-local reliable_events = table.create(16)
-local reliable_event_queue: { [number]: { any } } = table.create(16)
-reliable_event_queue[14] = {}
+local reliable_events = table.create(17)
+local reliable_event_queue: { [number]: { any } } = table.create(17)
+reliable_event_queue[15] = {}
 reliable_event_queue[0] = {}
 reliable_event_queue[1] = {}
+reliable_event_queue[14] = {}
 reliable_event_queue[13] = {}
-reliable_event_queue[12] = {}
-reliable_event_queue[15] = {}
+reliable_event_queue[16] = {}
 reliable_event_queue[11] = {}
 reliable_event_queue[10] = {}
 reliable_event_queue[9] = {}
 reliable_event_queue[8] = {}
 reliable_event_queue[7] = {}
+reliable_event_queue[12] = {}
 reliable_event_queue[5] = {}
 reliable_event_queue[4] = 0
 reliable_event_queue[6] = {}
@@ -342,7 +356,7 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 	local len = buffer.len(buff)
 	while incoming_read < len do
 		local id = buffer.readu8(buff, read(1))
-		if id == 14 then
+		if id == 15 then
 			local value
 			local bool_1 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
@@ -350,12 +364,12 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			value["UniqueId"] = buffer.readstring(incoming_buff, read(len_1), len_1)
 			value["Index"] = buffer.readu8(incoming_buff, read(1))
 			value["Equip"] = bit32.btest(bool_1, 0b0000000000000001)
-			if reliable_events[14] then
-				task.spawn(reliable_events[14], value)
+			if reliable_events[15] then
+				task.spawn(reliable_events[15], value)
 			else
-				table.insert(reliable_event_queue[14], value)
-				if #reliable_event_queue[14] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[14]} events in queue for UnitEquipped. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[15], value)
+				if #reliable_event_queue[15] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[15]} events in queue for UnitEquipped. Did you forget to attach a listener?`)
 				end
 			end
 		elseif id == 0 then
@@ -452,7 +466,7 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 					warn(`[ZAP] {#reliable_event_queue[1]} events in queue for StoryDataSync. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 13 then
+		elseif id == 14 then
 			local value, value2, value3
 			local bool_7 = buffer.readu8(incoming_buff, read(1))
 			if bit32.btest(bool_7, 0b0000000000000001) then
@@ -470,15 +484,15 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			else
 				value3 = nil
 			end
-			if reliable_events[13] then
-				task.spawn(reliable_events[13], value, value2, value3)
+			if reliable_events[14] then
+				task.spawn(reliable_events[14], value, value2, value3)
 			else
-				table.insert(reliable_event_queue[13], { value, value2, value3 })
-				if #reliable_event_queue[13] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[13]} events in queue for ItemChanged. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[14], { value, value2, value3 })
+				if #reliable_event_queue[14] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[14]} events in queue for ItemChanged. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 12 then
+		elseif id == 13 then
 			local value, value2, value3, value4, value5
 			local bool_8 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
@@ -575,23 +589,23 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 				val_11 = buffer.readstring(incoming_buff, read(len_22), len_22)
 				value5["Titles"][i_2] = val_11
 			end
-			if reliable_events[12] then
-				task.spawn(reliable_events[12], value, value2, value3, value4, value5)
+			if reliable_events[13] then
+				task.spawn(reliable_events[13], value, value2, value3, value4, value5)
 			else
-				table.insert(reliable_event_queue[12], { value, value2, value3, value4, value5 })
-				if #reliable_event_queue[12] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[12]} events in queue for InventorySync. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[13], { value, value2, value3, value4, value5 })
+				if #reliable_event_queue[13] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[13]} events in queue for InventorySync. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 15 then
+		elseif id == 16 then
 			local value
 			value = buffer.readu32(incoming_buff, read(4))
-			if reliable_events[15] then
-				task.spawn(reliable_events[15], value)
+			if reliable_events[16] then
+				task.spawn(reliable_events[16], value)
 			else
-				table.insert(reliable_event_queue[15], value)
-				if #reliable_event_queue[15] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[15]} events in queue for InventorySpaceChanged. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[16], value)
+				if #reliable_event_queue[16] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[16]} events in queue for InventorySpaceChanged. Did you forget to attach a listener?`)
 				end
 			end
 		elseif id == 11 then
@@ -657,6 +671,26 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 						end
 						val_12["SpeedChanges"][i_3] = val_13
 					end
+					val_12["Debuffs"] = {  }
+					if not bit32.btest(bool_14, 0b0000000000001000) then
+						for _ = 1, buffer.readu16(incoming_buff, read(2)) + 1 do
+							local key_11
+							local val_14
+							local len_30 = buffer.readu16(incoming_buff, read(2))
+							key_11 = buffer.readstring(incoming_buff, read(len_30), len_30)
+							local len_31 = buffer.readu16(incoming_buff, read(2))
+							val_14 = table.create(len_31)
+							for i_4 = 1, len_31 do
+								local val_15
+								val_15 = {  }
+								val_15["Strength"] = buffer.readf64(incoming_buff, read(8))
+								val_15["Duration"] = buffer.readf64(incoming_buff, read(8))
+								val_15["TimeStart"] = buffer.readf64(incoming_buff, read(8))
+								val_14[i_4] = val_15
+							end
+							val_12["Debuffs"][key_11] = val_14
+						end
+					end
 					value[key_10] = val_12
 				end
 			end
@@ -672,15 +706,15 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 		elseif id == 9 then
 			local value, value2
 			local bool_16 = buffer.readu8(incoming_buff, read(1))
-			local len_30 = buffer.readu16(incoming_buff, read(2))
-			value = buffer.readstring(incoming_buff, read(len_30), len_30)
+			local len_32 = buffer.readu16(incoming_buff, read(2))
+			value = buffer.readstring(incoming_buff, read(len_32), len_32)
 			if bit32.btest(bool_16, 0b0000000000000001) then
-				local len_31 = buffer.readu16(incoming_buff, read(2))
-				value2 = table.create(len_31)
-				for i_4 = 1, len_31 do
-					local val_14
-					val_14 = Vector3.new(buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)))
-					value2[i_4] = val_14
+				local len_33 = buffer.readu16(incoming_buff, read(2))
+				value2 = table.create(len_33)
+				for i_5 = 1, len_33 do
+					local val_16
+					val_16 = Vector3.new(buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)))
+					value2[i_5] = val_16
 				end
 			else
 				value2 = nil
@@ -695,8 +729,8 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 8 then
 			local value, value2, value3
-			local len_32 = buffer.readu16(incoming_buff, read(2))
-			value = buffer.readstring(incoming_buff, read(len_32), len_32)
+			local len_34 = buffer.readu16(incoming_buff, read(2))
+			value = buffer.readstring(incoming_buff, read(len_34), len_34)
 			value2 = buffer.readf64(incoming_buff, read(8))
 			value3 = buffer.readf64(incoming_buff, read(8))
 			if reliable_events[8] then
@@ -710,13 +744,13 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 		elseif id == 7 then
 			local value, value2
 			local bool_17 = buffer.readu8(incoming_buff, read(1))
-			local len_33 = buffer.readu16(incoming_buff, read(2))
-			value = table.create(len_33)
-			for i_5 = 1, len_33 do
-				local val_15
-				local len_34 = buffer.readu16(incoming_buff, read(2))
-				val_15 = buffer.readstring(incoming_buff, read(len_34), len_34)
-				value[i_5] = val_15
+			local len_35 = buffer.readu16(incoming_buff, read(2))
+			value = table.create(len_35)
+			for i_6 = 1, len_35 do
+				local val_17
+				local len_36 = buffer.readu16(incoming_buff, read(2))
+				val_17 = buffer.readstring(incoming_buff, read(len_36), len_36)
+				value[i_6] = val_17
 			end
 			value2 = bit32.btest(bool_17, 0b0000000000000001)
 			if reliable_events[7] then
@@ -727,25 +761,43 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 					warn(`[ZAP] {#reliable_event_queue[7]} events in queue for EnemyDestroyEvent. Did you forget to attach a listener?`)
 				end
 			end
+		elseif id == 12 then
+			local value
+			value = {  }
+			local len_37 = buffer.readu16(incoming_buff, read(2))
+			value["UniqueId"] = buffer.readstring(incoming_buff, read(len_37), len_37)
+			local len_38 = buffer.readu16(incoming_buff, read(2))
+			value["Debuff"] = buffer.readstring(incoming_buff, read(len_38), len_38)
+			value["Strength"] = buffer.readf64(incoming_buff, read(8))
+			value["TimeStart"] = buffer.readf64(incoming_buff, read(8))
+			value["Duration"] = buffer.readf64(incoming_buff, read(8))
+			if reliable_events[12] then
+				task.spawn(reliable_events[12], value)
+			else
+				table.insert(reliable_event_queue[12], value)
+				if #reliable_event_queue[12] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[12]} events in queue for EnemyDebuffEvent. Did you forget to attach a listener?`)
+				end
+			end
 		elseif id == 5 then
 			local value
 			value = {  }
 			value["OwnerId"] = buffer.readf64(incoming_buff, read(8))
-			local len_35 = buffer.readu16(incoming_buff, read(2))
-			value["MapId"] = buffer.readstring(incoming_buff, read(len_35), len_35)
-			local len_36 = buffer.readu16(incoming_buff, read(2))
-			value["LevelId"] = buffer.readstring(incoming_buff, read(len_36), len_36)
-			local len_37 = buffer.readu16(incoming_buff, read(2))
-			value["Difficulty"] = buffer.readstring(incoming_buff, read(len_37), len_37)
-			local len_38 = buffer.readu16(incoming_buff, read(2))
-			value["Players"] = table.create(len_38)
-			for i_6 = 1, len_38 do
-				local val_16
+			local len_39 = buffer.readu16(incoming_buff, read(2))
+			value["MapId"] = buffer.readstring(incoming_buff, read(len_39), len_39)
+			local len_40 = buffer.readu16(incoming_buff, read(2))
+			value["LevelId"] = buffer.readstring(incoming_buff, read(len_40), len_40)
+			local len_41 = buffer.readu16(incoming_buff, read(2))
+			value["Difficulty"] = buffer.readstring(incoming_buff, read(len_41), len_41)
+			local len_42 = buffer.readu16(incoming_buff, read(2))
+			value["Players"] = table.create(len_42)
+			for i_7 = 1, len_42 do
+				local val_18
 				incoming_ipos = incoming_ipos + 1
-				val_16 = incoming_inst[incoming_ipos]
-				assert(val_16 ~= nil, "received instance is nil!")
-				assert(val_16:IsA("Player"), "received instance is not of the Player class!")
-				value["Players"][i_6] = val_16
+				val_18 = incoming_inst[incoming_ipos]
+				assert(val_18 ~= nil, "received instance is nil!")
+				assert(val_18:IsA("Player"), "received instance is not of the Player class!")
+				value["Players"][i_7] = val_18
 			end
 			value["StartTime"] = buffer.readf64(incoming_buff, read(8))
 			value["EndTime"] = buffer.readf64(incoming_buff, read(8))
@@ -819,13 +871,13 @@ local returns = {
 			["Index"]: (number),
 			["Equip"]: (boolean),
 		})) -> ()): () -> ()
-			reliable_events[14] = Callback
-			for _, value in reliable_event_queue[14] do
+			reliable_events[15] = Callback
+			for _, value in reliable_event_queue[15] do
 				task.spawn(Callback, value)
 			end
-			reliable_event_queue[14] = {}
+			reliable_event_queue[15] = {}
 			return function()
-				reliable_events[14] = nil
+				reliable_events[15] = nil
 			end
 		end,
 	},
@@ -878,33 +930,33 @@ local returns = {
 		Fire = function(Value: (string), Value2: ({ (string) }))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
-			local len_39 = #Value
+			local len_43 = #Value
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_39)
-			alloc(len_39)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_39)
-			local len_40 = #Value2
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_43)
+			alloc(len_43)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value, len_43)
+			local len_44 = #Value2
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_40)
-			for i_7 = 1, len_40 do
-				local val_17 = Value2[i_7]
-				local len_41 = #val_17
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_44)
+			for i_8 = 1, len_44 do
+				local val_19 = Value2[i_8]
+				local len_45 = #val_19
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_41)
-				alloc(len_41)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_17, len_41)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_45)
+				alloc(len_45)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_19, len_45)
 			end
 		end,
 	},
 	ItemChanged = {
 		SetCallback = function(Callback: (Value: ("Units" | "Products" | "Resources"), Value2: (string), Value3: ((unknown))) -> ()): () -> ()
-			reliable_events[13] = Callback
-			for _, value in reliable_event_queue[13] do
+			reliable_events[14] = Callback
+			for _, value in reliable_event_queue[14] do
 				task.spawn(Callback, unpack(value))
 			end
-			reliable_event_queue[13] = {}
+			reliable_event_queue[14] = {}
 			return function()
-				reliable_events[13] = nil
+				reliable_events[14] = nil
 			end
 		end,
 	},
@@ -938,25 +990,25 @@ local returns = {
 			["EquippedTitle"]: (string),
 			["Titles"]: ({ (string) }),
 		})) -> ()): () -> ()
-			reliable_events[12] = Callback
-			for _, value in reliable_event_queue[12] do
+			reliable_events[13] = Callback
+			for _, value in reliable_event_queue[13] do
 				task.spawn(Callback, unpack(value))
 			end
-			reliable_event_queue[12] = {}
+			reliable_event_queue[13] = {}
 			return function()
-				reliable_events[12] = nil
+				reliable_events[13] = nil
 			end
 		end,
 	},
 	InventorySpaceChanged = {
 		SetCallback = function(Callback: (Value: (number)) -> ()): () -> ()
-			reliable_events[15] = Callback
-			for _, value in reliable_event_queue[15] do
+			reliable_events[16] = Callback
+			for _, value in reliable_event_queue[16] do
 				task.spawn(Callback, value)
 			end
-			reliable_event_queue[15] = {}
+			reliable_event_queue[16] = {}
 			return function()
-				reliable_events[15] = nil
+				reliable_events[16] = nil
 			end
 		end,
 	},
@@ -975,11 +1027,11 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
 			local bool_19 = 0
 			local bool_19_pos_1 = alloc(1)
-			local len_42 = #Value["UniqueId"]
+			local len_46 = #Value["UniqueId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_42)
-			alloc(len_42)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_42)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_46)
+			alloc(len_46)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["UniqueId"], len_46)
 			if Value["Equip"] then
 				bool_19 = bit32.bor(bool_19, 0b0000000000000001)
 			end
@@ -1022,6 +1074,11 @@ local returns = {
 				["Speed"]: (number),
 				["TimeEnd"]: ((number)?),
 			}) }),
+			["Debuffs"]: ({ [(string)]: ({ ({
+				["Strength"]: (number),
+				["Duration"]: (number),
+				["TimeStart"]: (number),
+			}) }) }),
 		}) }), Value2: (boolean)) -> ()): () -> ()
 			reliable_events[10] = Callback
 			for _, value in reliable_event_queue[10] do
@@ -1069,6 +1126,24 @@ local returns = {
 			end
 		end,
 	},
+	EnemyDebuffEvent = {
+		SetCallback = function(Callback: (Value: ({
+			["UniqueId"]: (string),
+			["Debuff"]: (string),
+			["Strength"]: (number),
+			["TimeStart"]: (number),
+			["Duration"]: (number),
+		})) -> ()): () -> ()
+			reliable_events[12] = Callback
+			for _, value in reliable_event_queue[12] do
+				task.spawn(Callback, value)
+			end
+			reliable_event_queue[12] = {}
+			return function()
+				reliable_events[12] = nil
+			end
+		end,
+	},
 	ChooseMap = {
 		Fire = function(Value: ({
 			["MapId"]: (string),
@@ -1077,21 +1152,21 @@ local returns = {
 		}))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-			local len_43 = #Value["MapId"]
+			local len_47 = #Value["MapId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_43)
-			alloc(len_43)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["MapId"], len_43)
-			local len_44 = #Value["LevelId"]
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_47)
+			alloc(len_47)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["MapId"], len_47)
+			local len_48 = #Value["LevelId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_44)
-			alloc(len_44)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["LevelId"], len_44)
-			local len_45 = #Value["Difficulty"]
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_48)
+			alloc(len_48)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["LevelId"], len_48)
+			local len_49 = #Value["Difficulty"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_45)
-			alloc(len_45)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["Difficulty"], len_45)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_49)
+			alloc(len_49)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["Difficulty"], len_49)
 		end,
 	},
 	BoothWaiting = {

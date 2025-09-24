@@ -11,6 +11,7 @@ local SpawnEvent = Network.EnemySpawnEvent
 local LocationEvent = Network.EnemyLocationEvent
 local SpeedEvent = Network.EnemySpeedEvent
 local HealthEvent = Network.EnemyHealthEvent
+local DebuffEvent = Network.EnemyDebuffEvent
 local DestroyEvent = Network.EnemyDestroyEvent
 
 local Modules = ReplicatedStorage.Modules
@@ -39,6 +40,7 @@ local function AddInfoToSpawn(Data: any, NewEnemy: Enemy.Enemy)
 	Data.TimePosition = NewEnemy.TimePosition
 	Data.Time = workspace:GetServerTimeNow()
 	Data.SpeedChanges = NewEnemy.SpeedChanges
+	Data.Debuffs = NewEnemy.Debuffs
 end
 
 local Beziers = Enemy.GetBeziers()
@@ -84,6 +86,16 @@ Enemy.Spawned:Connect(function(NewEnemy: Enemy.Enemy)
 
 	NewEnemy.MaxHealthChanged:Connect(function(MaxHealth: number)
 		HandleHealth(NewEnemy.Health, MaxHealth)
+	end)
+
+	NewEnemy.DebuffAdded:Connect(function(DebuffData)
+		DebuffEvent.FireList(NewEnemy.ReplicateTo, {
+			UniqueId = NewEnemy.UniqueId,
+			Debuff = DebuffData.Debuff,
+			Strength = DebuffData.Strength,
+			Duration = DebuffData.Duration,
+			TimeStart = DebuffData.TimeStart,
+		})
 	end)
 
 	NewEnemy.Destroying:Once(function(Animate: boolean)

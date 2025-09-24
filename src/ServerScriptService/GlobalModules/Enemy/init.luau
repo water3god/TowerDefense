@@ -79,6 +79,13 @@ type EnemyData = {
 	HealthChanged: Signal.Signal<number>,
 	MaxHealthChanged: Signal.Signal<number>,
 	SpeedChanged: Signal.Signal<number, number>,
+
+	DebuffAdded: Signal.Signal<{
+		Debuff: Debuffs.Debuff | string,
+		Strength: number,
+		Duration: number,
+		TimeStart: number,
+	}>,
 	SpeedMultiplierChanged: Signal.Signal<>,
 	ReachedEnd: Signal.Signal<>,
 
@@ -158,6 +165,8 @@ function Enemy.new(Input: EnemyInput)
 	self.HealthChanged = self.Trove:Construct(Signal)
 	self.MaxHealthChanged = self.Trove:Construct(Signal)
 	self.SpeedChanged = self.Trove:Construct(Signal)
+
+	self.DebuffAdded = self.Trove:Construct(Signal)
 	self.SpeedMultiplierChanged = self.Trove:Construct(Signal)
 	self.ReachedEnd = self.Trove:Construct(Signal)
 	self.Damaged = self.Trove:Construct(Signal)
@@ -307,14 +316,10 @@ end
 
 function Enemy:ChangeMultiplier(Name: string, Multiplier: number, Time: number)
 	self:CancelPromise(Name .. Multiplier)
-	if Multiplier <= 0 then
-		local Index = table.find(self.SpeedMultipliers[Name], Multiplier)
-		if Index then
-			table.remove(self.SpeedMultipliers[Name], Index)
-		end
-	else
-		table.insert(self.SpeedMultipliers[Name], Multiplier)
+	if not self.SpeedMultipliers[Name] then
+		self.SpeedMultipliers[Name] = {}
 	end
+	table.insert(self.SpeedMultipliers[Name], Multiplier)
 
 	self:AddPromise(Promise.delay(Time), Name .. Multiplier):andThen(function()
 		local Index = table.find(self.SpeedMultipliers[Name], Multiplier)
@@ -357,6 +362,33 @@ function Enemy:ApplyDebuff(Debuff: string | Debuffs.Debuff, Seconds: number, Str
 	elseif Debuff == "Slow" then
 		self:ChangeMultiplier("Slow", Strength, Seconds)
 	end
+
+	local DebuffTable = self.Debuffs[Debuff]
+	local Table = {
+		Strength = Strength,
+		Duration = Seconds,
+		TimeStart = workspace:GetServerTimeNow(),
+	}
+	table.insert(DebuffTable, Table)
+
+	self:AddPromise(Promise.delay(Seconds), PromiseName):andThen(function()
+		local Index = table.find(self.Debuffs[Debuff], Table)
+		if Index then
+			table.remove(self.Debuffs[Debuff], Index)
+		end
+		if #self.Debuffs[Debuff] == 0 then
+			self.Debuffs[Debuff] = nil
+		end
+	end)
+
+	local EventData = {
+		Debuff = Debuff,
+		Strength = Strength,
+		Duration = Seconds,
+		TimeStart = Table.TimeStart,
+	}
+
+	self.DebuffAdded:Fire(EventData)
 end
 
 function Enemy:IsInRange(StandardPos: Vector2, Range: number)

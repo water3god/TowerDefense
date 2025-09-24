@@ -139,6 +139,12 @@ type SpeedChange = struct {
 	Time: f64,
 }
 
+type Debuff = struct {
+	Strength: f64,
+	Duration: f64,
+	TimeStart: f64,
+}
+
 type EnemyInput = struct {
 	UniqueId: string.binary,
 	ModelName: string.binary,
@@ -154,6 +160,7 @@ type EnemyInput = struct {
 	Time: Time,
 	AdornmentName: string.binary?,
 	SpeedChanges: SpeedChangeData[],
+	Debuffs: map { [string.binary]: Debuff[] },
 }
 
 event EnemyDestroyEvent = {
@@ -201,6 +208,19 @@ event EnemySpeedEvent = {
 	type: Reliable,
 	call: SingleAsync,
 	data: SpeedChange,
+}
+
+event EnemyDebuffEvent = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: struct {
+		UniqueId: string.binary,
+		Debuff: string.binary,
+		Strength: f64,
+		TimeStart: f64,
+		Duration: f64,
+	},
 }
 
 -- Inventory --
