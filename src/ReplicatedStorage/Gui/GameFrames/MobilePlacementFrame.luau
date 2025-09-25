@@ -33,7 +33,7 @@ local function MobilePlacementFrame(props: Properties)
 		Rotate = e(Main.Animateables.TextButton, {
 			native = {
 				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.new(0.054902, 0.019608, 0.082353),
+				BackgroundColor3 = Color3.new(0.117647, 0.117647, 0.117647),
 				Position = UDim2.fromScale(0.25, 0.5),
 				Size = UDim2.fromScale(0.3, 0.2),
 				Text = "",
@@ -45,10 +45,14 @@ local function MobilePlacementFrame(props: Properties)
 					Size = UDim2.fromScale(0.8, 0.8),
 					Text = "Rotate",
 				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.02,
+				}),
 			}),
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
 				Stroke = 0.01,
-				Color = Color3.new(0.807843, 0.807843, 0.807843),
+				Color = Color3.new(0.537255, 0.537255, 0.537255),
 				native = {
 					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
 					LineJoinMode = Enum.LineJoinMode.Round,
@@ -58,13 +62,25 @@ local function MobilePlacementFrame(props: Properties)
 				CornerRadius = UDim.new(0.1, 0),
 			}),
 		}),
-		Main = e(Main.ImageLabel, {
+		Main = e(Main.Frame, {
 			native = Join({
 				Position = UDim2.fromScale(0.75, 0.5),
 				Size = UDim2.fromScale(0.5, 0.3),
-				Image = "rbxassetid://103903141717286",
+				BackgroundTransparency = 0,
+				BackgroundColor3 = Color3.fromRGB(27, 27, 27),
 			}, props.native),
 		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.01,
+				Color = Color3.new(0.537255, 0.537255, 0.537255),
+				native = {
+					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+					LineJoinMode = Enum.LineJoinMode.Round,
+				},
+			}),
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.1, 0),
+			}),
 			Check = e(Main.Animateables.ImageButton, {
 				native = {
 					Position = UDim2.fromScale(0.25, 0.5),

@@ -37,6 +37,7 @@ local Main = require(CoreGame.Main)
 local UIStroke = require(CoreGame.UIStroke)
 local Hooks = require(CoreGame.Hooks)
 local CloseButton = require(CoreGame.CloseButton)
+local AnimatedGradient = require(CoreGame.AnimatedGradient)
 
 local Inventory = Gui.Inventory
 local UnitFrame = require(Inventory.UnitFrame)
@@ -47,6 +48,8 @@ local GlobalClient = Client.GlobalClient
 local WaveService = require(GlobalClient.WaveService)
 
 local Shared = ReplicatedStorage.Shared
+local UnitInfo = require(Shared.UnitInfo)
+local RarityInfo = require(Shared.RarityInfo)
 local Constants = require(Shared.Constants)
 local IsTutorial = require(Shared.IsTutorial)
 local GameInfo = require(Shared.GameInfo)
@@ -72,6 +75,7 @@ export type ResourceProps = {
 }
 
 export type UnitXPProps = {
+	UnitName: string,
 	Data: { Name: string, Trait: string?, OldLevel: number, NewLevel: number, OldXP: number, NewXP: number },
 	native: { [any]: any }?,
 	children: { [any]: any }?,
@@ -160,7 +164,7 @@ local function CreateMainXPFrame(props: MainXPProps)
 		}),
 		XPLabel = e(Main.TextLabel, {
 			native = {
-				Size = UDim2.fromScale(0.9, 0.8),
+				Size = UDim2.fromScale(0.9, 0.7),
 				Position = UDim2.fromScale(0.5, 0.5),
 				Text = XPInfo:map(function(data: UnitXP)
 					return string.format("Level %u (%u / %u)", data.Level, data.XP, data.NeededXP)
@@ -193,6 +197,14 @@ local function CreateUnitXPFrame(props: UnitXPProps)
 			alpha = 0,
 		}
 	end)
+
+	local UnitData = React.useMemo(function()
+		return UnitInfo.UnitInfo[props.UnitName]
+	end, { props.UnitName })
+
+	local RarityData = React.useMemo(function()
+		return RarityInfo[UnitData.Rarity]
+	end, { UnitData })
 
 	local BindingData = React.useRef(1)
 
@@ -257,12 +269,15 @@ local function CreateUnitXPFrame(props: UnitXPProps)
 	}, {
 		Background = e(Main.Frame, {
 			native = {
-				BackgroundColor3 = Color3.new(0.478431, 0.145098, 0.623529),
+				BackgroundColor3 = Color3.new(0.564706, 0.564706, 0.564706),
 				BackgroundTransparency = 0,
 				ZIndex = -1,
 				Size = UDim2.fromScale(1, 0.9),
 			},
 		}, {
+			UIGradient = e(AnimatedGradient, {
+				GradColor = RarityData.BackgroundColor,
+			}),
 			UICorner = e("UICorner", {
 				CornerRadius = UDim.new(0.2, 0),
 			}),
@@ -303,12 +318,18 @@ local function CreateUnitXPFrame(props: UnitXPProps)
 				Position = UDim2.fromScale(0.6, 0.65),
 			},
 		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.015,
+				native = {
+					LineJoinMode = Enum.LineJoinMode.Round,
+				},
+			}),
 			UICorner = e("UICorner", {
 				CornerRadius = UDim.new(0.4, 0),
 			}),
 			XPLabel = e(Main.TextLabel, {
 				native = {
-					Size = UDim2.fromScale(0.9, 0.8),
+					Size = UDim2.fromScale(0.9, 0.7),
 					Position = UDim2.fromScale(0.5, 0.5),
 					Text = XPInfo:map(function(data: UnitXP)
 						return string.format("%u / %u", data.XP, data.NeededXP)
@@ -415,6 +436,7 @@ local function CreateVoteFrame(Props: Props)
 
 		for Index, UnitData in pairs(Props.EndData.ExistingUnits) do
 			Frames[UnitData.Name .. Index] = e(CreateUnitXPFrame, {
+				UnitName = UnitData.Name,
 				Data = UnitData,
 				native = {
 					LayoutOrder = Index,
@@ -514,7 +536,7 @@ local function CreateVoteFrame(Props: Props)
 		}),
 		Players = e(Main.TextLabel, {
 			native = {
-				Size = UDim2.fromScale(0.5, 0.08),
+				Size = UDim2.fromScale(0.5, 0.06),
 				Position = UDim2.fromScale(0.3, 0.275),
 				Text = Props.PlayerData:map(function(Data)
 					return string.format("Play Again: %u/%u", Data.Votes, Data.Total)
@@ -531,7 +553,7 @@ local function CreateVoteFrame(Props: Props)
 		UnitsContainer = e(Main.Frame, {
 			native = {
 				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.new(0.243137, 0.054902, 0.368627),
+				BackgroundColor3 = Color3.new(0.227451, 0.227451, 0.227451),
 				Position = UDim2.fromScale(0.775, 0.425),
 				Size = UDim2.fromScale(0.4, 0.8),
 			},
@@ -554,9 +576,9 @@ local function CreateVoteFrame(Props: Props)
 		}),
 		Rewards = e(Main.Frame, {
 			native = {
-				BackgroundColor3 = Color3.new(0.243137, 0.054902, 0.368627),
+				BackgroundColor3 = Color3.new(0.227451, 0.227451, 0.227451),
 				BackgroundTransparency = 0,
-				Position = UDim2.fromScale(0.3, 0.55),
+				Position = UDim2.fromScale(0.3, 0.525),
 				Size = UDim2.fromScale(0.4, 0.3),
 			},
 		}, {

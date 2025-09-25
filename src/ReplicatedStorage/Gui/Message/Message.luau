@@ -111,6 +111,10 @@ local function CreateMessage(props: Properties)
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 3,
 		}),
+		UISizeConstraint = e("UISizeConstraint", {
+			MinSize = Vector2.new(300, 75),
+			MaxSize = Vector2.new(600, 150),
+		}),
 		UICorner = e("UICorner", {
 			CornerRadius = UDim.new(0.04, 0),
 		}),

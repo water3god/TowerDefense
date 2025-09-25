@@ -19,11 +19,12 @@ local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
 
-local Network = require(ReplicatedStorage.Network.Client)
+local NetworkFolder = ReplicatedStorage.Network
+local Network = require(NetworkFolder.Client)
 local RollTrait = Network.RollTrait
 local TraitRolled = Network.TraitRolled
 
-local Touched = require(ReplicatedStorage.Network.ClientOnly).TraitsTouched
+local Touched = require(NetworkFolder.ClientOnly).TraitsTouched
 
 -- Reference UI --
 local Gui = ReplicatedStorage.Gui
@@ -54,6 +55,10 @@ local WarningContext = require(WarningFolder.WarningContext)
 
 local Store = Gui.Store
 local PurchaseContext = require(Store.PurchaseContext)
+
+local Client = ReplicatedStorage.Client
+local GlobalClient = Client.GlobalClient
+local SFXService = require(GlobalClient.SFXService)
 
 local Shared = ReplicatedStorage.Shared
 local Traits = require(Shared.Traits)
@@ -180,6 +185,7 @@ local function CreateTraitsFrame(props: Properties)
 
 	Hooks.useZapConnection(TraitRolled, function(Data)
 		if Unit and Unit.UniqueId == Data.UniqueId then
+			SFXService.PlaySoundGlobalWithId("rbxassetid://1788243907")
 			Unit.Trait = Data.NewTrait
 			SetUnit(table.clone(Unit))
 		end

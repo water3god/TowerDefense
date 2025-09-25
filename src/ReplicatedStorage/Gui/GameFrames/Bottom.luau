@@ -366,7 +366,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 			native = {
 				Position = UDim2.fromScale(0.5, -0.1),
 				Size = SizeStyles.Size:map(function(Size: number)
-					return UDim2.fromScale(0.5 * Size, 0.2 * Size)
+					return UDim2.fromScale(0.5 * Size, 0.175 * Size)
 				end),
 			},
 		}, {
@@ -429,33 +429,34 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 				}),
 			}),
 		}),
-		LevelBar = e(Main.ImageLabel, {
+		LevelBar = e(Main.CanvasGroup, {
 			native = {
+				BackgroundTransparency = 0,
+				BackgroundColor3 = Color3.fromRGB(64, 64, 64),
 				Position = UDim2.fromScale(0.5, 0.8),
-				Size = UDim2.fromScale(1, 0.2),
-				Image = "rbxassetid://110783523635885",
+				Size = UDim2.fromScale(0.9, 0.2),
 			},
 		}, {
-			Container = e(Main.Frame, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.01,
 				native = {
-					Size = UDim2.fromScale(0.995, 0.92),
+					LineJoinMode = Enum.LineJoinMode.Round,
+				},
+			}),
+			UICorner = e("UICorner", {
+				CornerRadius = UDim.new(0.5, 0),
+			}),
+			ProgressBar = e(Main.Frame, {
+				native = {
+					BackgroundTransparency = 0,
+					BackgroundColor3 = Color3.fromRGB(35, 35, 35),
+					AnchorPoint = Vector2.new(0, 0.5),
+					Position = UDim2.fromScale(0, 0.5),
+					Size = BarSize,
 				},
 			}, {
 				UICorner = e("UICorner", {
 					CornerRadius = UDim.new(0.5, 0),
-				}),
-				ProgressBar = e(Main.Frame, {
-					native = {
-						BackgroundTransparency = 0,
-						BackgroundColor3 = Color3.fromRGB(104, 36, 132),
-						AnchorPoint = Vector2.new(0, 0.5),
-						Position = UDim2.fromScale(0, 0.5),
-						Size = BarSize,
-					},
-				}, {
-					UICorner = e("UICorner", {
-						CornerRadius = UDim.new(0.5, 0),
-					}),
 				}),
 			}),
 			LevelLabel = e(Main.TextLabel, {
@@ -464,6 +465,10 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 					Text = LevelXP,
 					ZIndex = 2,
 				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.015,
+				}),
 			}),
 		}),
 	}, CoreFrames, Properties.children)

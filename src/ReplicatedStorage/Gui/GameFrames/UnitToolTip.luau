@@ -72,8 +72,14 @@ local function CreateStatFrame(Props: StatProps)
 			Size = UDim2.fromScale(0.3, 1),
 		}, Props.native),
 	}, {
-		UIGradient = e("UIGradient", {
-			Color = Props.Color,
+		UIStroke = e(UIStroke.UIStrokeAdvanced, {
+			Stroke = 0.02,
+			native = {
+				LineJoinMode = Enum.LineJoinMode.Round,
+			},
+		}),
+		UIGradient = e(AnimatedGradient, {
+			GradColor = Props.Color,
 		}),
 		UIAspectRatio = e("UIAspectRatioConstraint", {
 			AspectRatio = 1.8,
@@ -122,6 +128,9 @@ local function CreateUnitToolTip(Props: Props)
 	React.useEffect(function()
 		local Table = {}
 		for Property, Value in pairs(Props.Data) do
+			if Value == 0 then
+				continue
+			end
 			Table[Property] = e(CreateStatFrame, {
 				Type = Property :: any,
 				Color = RarityData.StrokeColor,

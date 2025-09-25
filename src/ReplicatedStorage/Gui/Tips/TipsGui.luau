@@ -53,7 +53,7 @@ local function CreateTipsGui(props: Properties)
 		native = Join({
 			AnchorPoint = Vector2.new(0.5, 0),
 			BackgroundTransparency = 0,
-			BackgroundColor3 = Color3.fromRGB(60, 21, 78),
+			BackgroundColor3 = Color3.fromRGB(27, 27, 27),
 			Position = UDim2.fromScale(0.5, 0),
 			Size = UDim2.fromScale(0.48, 0.08),
 			ZIndex = 0,

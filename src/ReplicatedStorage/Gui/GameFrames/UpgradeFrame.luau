@@ -557,7 +557,6 @@ local function CreateUpgradeFrame(Properties: Properties)
 				LineJoinMode = Enum.LineJoinMode.Round,
 			},
 		}),
-
 		UICorner = e("UICorner", {
 			CornerRadius = UDim.new(0.02, 0),
 		}),
@@ -569,7 +568,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 			Size = UDim2.fromScale(0.2, 0.25),
 			OnClick = CloseClick,
 			native = {
-				ZIndex = 5,
+				ZIndex = 11,
 			},
 		}),
 		UnitName = e(Main.TextLabel, {
@@ -632,6 +631,14 @@ local function CreateUpgradeFrame(Properties: Properties)
 				[React.Event.MouseButton1Click] = SellClick,
 			},
 		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.015,
+				Color = Color3.new(0.419608, 0, 0),
+				native = {
+					LineJoinMode = Enum.LineJoinMode.Round,
+					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+				},
+			}),
 			Label = e(Main.TextLabel, {
 				native = {
 					Size = UDim2.fromScale(0.9, 0.7),
@@ -661,6 +668,14 @@ local function CreateUpgradeFrame(Properties: Properties)
 				[React.Event.MouseButton1Click] = PriorityClick,
 			},
 		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.015,
+				Color = Color3.new(0.207843, 0.207843, 0.207843),
+				native = {
+					LineJoinMode = Enum.LineJoinMode.Round,
+					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+				},
+			}),
 			Label = e(Main.TextLabel, {
 				native = {
 					Size = UDim2.fromScale(0.9, 0.7),
@@ -691,6 +706,14 @@ local function CreateUpgradeFrame(Properties: Properties)
 				[React.Event.MouseButton1Click] = UpgradeClick,
 			},
 		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.01,
+				Color = Color3.new(0.105882, 0.443137, 0.054902),
+				native = {
+					LineJoinMode = Enum.LineJoinMode.Round,
+					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+				},
+			}),
 			Indicator = e(Indicator, {
 				Wave = 2,
 			}),
@@ -716,13 +739,12 @@ local function CreateUpgradeFrame(Properties: Properties)
 		CurrentData = e(Main.Frame, {
 			native = {
 				BackgroundTransparency = 0,
-
 				Position = UDim2.fromScale(0.7, 0.525),
 				Size = UDim2.fromScale(0.45, 0.53),
 			},
 		}, {
-			UIGradient = e("UIGradient", {
-				Color = RarityData.StrokeColor,
+			UIGradient = e(AnimatedGradient, {
+				GradColor = RarityData.StrokeColor,
 			}),
 			UICorner = e("UICorner", {
 				CornerRadius = UDim.new(0.1, 0),
