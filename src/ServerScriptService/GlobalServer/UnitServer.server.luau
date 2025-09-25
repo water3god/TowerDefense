@@ -146,7 +146,12 @@ local function PlaceUnit(Player: Player, Wave: GlobalWave.GlobalWave, Data: Plac
 		end
 	end
 
-	if UnitData and PDataUnit and GetUnitCount(Wave, Player.UserId) < Constants.MaxUnitCount then
+	if UnitData and PDataUnit then
+		if GetUnitCount(Wave, Player.UserId) >= Constants.MaxUnitCount then
+			SendWarning.Fire(Player, "You have reached the maximum unit count!")
+			return
+		end
+
 		local Cost = UnitUnitInfo.UnitData[0].Cost
 		local PlayerCoins = Wave.Coins[Player.UserId]
 

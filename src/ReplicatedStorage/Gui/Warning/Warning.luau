@@ -103,8 +103,8 @@ local function CreateMainFrame(props: any)
 		}, props.native),
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
-			MinSize = Vector2.new(300, 100),
-			MaxSize = Vector2.new(600, 200),
+			MinSize = Vector2.new(200, 80),
+			MaxSize = Vector2.new(400, 160),
 		}),
 		UIListLayout = e("UIListLayout", {
 			FillDirection = Enum.FillDirection.Vertical,
