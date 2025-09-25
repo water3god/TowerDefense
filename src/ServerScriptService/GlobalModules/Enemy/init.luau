@@ -41,6 +41,7 @@ export type EnemyInput = {
 type EnemyData = {
 	UniqueId: string,
 	Trove: Trove.Trove,
+	AttackTrove: Trove.Trove,
 
 	CFrame: CFrame,
 	TimePosition: number,
@@ -76,6 +77,8 @@ type EnemyData = {
 	Damaged: Signal.Signal<number>,
 	Healed: Signal.Signal<number>,
 
+	Attacked: Signal.Signal<string>,
+
 	HealthChanged: Signal.Signal<number>,
 	MaxHealthChanged: Signal.Signal<number>,
 	SpeedChanged: Signal.Signal<number, number>,
@@ -103,6 +106,8 @@ type EnemyImpl = {
 	SetMaxHealth: (self: Enemy, MaxHealth: number) -> (),
 	Damage: (self: Enemy, Damage: number) -> (),
 	Heal: (self: Enemy, Health: number) -> (),
+
+	Attack: (self: Enemy, AttackName: string) -> (),
 
 	ChangeMultiplier: (self: Enemy, Name: string, Multiplier: number, Time: number) -> (),
 	ApplyDebuff: (self: Enemy, Debuff: string, Seconds: number, Strength: number) -> (),
@@ -155,12 +160,15 @@ function Enemy.new(Input: EnemyInput)
 
 	self.UniqueId = GenerateId.GenerateId()
 	self.Trove = Trove.new()
+	self.AttackTrove = self.Trove:Extend()
 
 	self.SpectatorAdded = self.Trove:Construct(Signal)
 	self.SpectatorRemoving = self.Trove:Construct(Signal)
 
 	self.Damaged = self.Trove:Construct(Signal)
 	self.Healed = self.Trove:Construct(Signal)
+
+	self.Attacked = self.Trove:Construct(Signal)
 
 	self.HealthChanged = self.Trove:Construct(Signal)
 	self.MaxHealthChanged = self.Trove:Construct(Signal)
@@ -312,6 +320,10 @@ end
 
 function Enemy:Heal(Health: number)
 	self:SetHealth(self.Health + Health)
+end
+
+function Enemy:Attack(AttackName: string)
+	self.Attacked:Fire(AttackName)
 end
 
 function Enemy:ChangeMultiplier(Name: string, Multiplier: number, Time: number)

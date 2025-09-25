@@ -214,3 +214,15 @@ event EnemyDebuffEvent = {
 		Duration: f64,
 	},
 }
+
+event EnemyAttackEvent = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: struct {
+		UniqueId: string.binary,
+		AttackName: string.binary,
+		SpeedRatio: f64,
+		TimeSent: Time,
+	},
+}

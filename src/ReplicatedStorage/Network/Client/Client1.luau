@@ -149,6 +149,9 @@ if not RunService:IsRunning() then
 		EnemyDebuffEvent = table.freeze({
 			SetCallback = noop
 		}),
+		EnemyAttackEvent = table.freeze({
+			SetCallback = noop
+		}),
 		ChooseMap = table.freeze({
 			Fire = noop
 		}),
@@ -177,6 +180,7 @@ local remotes = ReplicatedStorage:WaitForChild("Zap1")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
+export type Level = (number)
 export type BoothData = ({
 	["OwnerId"]: (number),
 	["MapId"]: (string),
@@ -186,24 +190,10 @@ export type BoothData = ({
 	["StartTime"]: (number),
 	["EndTime"]: (number),
 })
-export type SpeedChange = ({
-	["UniqueId"]: (string),
-	["Speed"]: (number),
-	["Time"]: (number),
-})
-export type Debuff = ({
-	["Strength"]: (number),
-	["Duration"]: (number),
-	["TimeStart"]: (number),
-})
-export type Health = (number)
-export type Time = (number)
-export type ProductId = (number)
-export type Level = (number)
 export type XP = (number)
-export type TimeData = ({
-	["StartTime"]: (number),
-	["EndTime"]: (number),
+export type StageData = ({
+	["FastestTime"]: (number),
+	["FinishedCount"]: (number),
 })
 export type EnemyInput = ({
 	["UniqueId"]: (string),
@@ -230,18 +220,31 @@ export type EnemyInput = ({
 		["TimeStart"]: (number),
 	}) }) }),
 })
+export type ProductId = (number)
+export type Health = (number)
+export type SpeedChange = ({
+	["UniqueId"]: (string),
+	["Speed"]: (number),
+	["Time"]: (number),
+})
+export type Debuff = ({
+	["Strength"]: (number),
+	["Duration"]: (number),
+	["TimeStart"]: (number),
+})
+export type Time = (number)
+export type InfiniteStageData = ({
+	["Wave"]: (number),
+	["Damage"]: (number),
+})
 export type SpeedChangeData = ({
 	["TimeStart"]: (number),
 	["Speed"]: (number),
 	["TimeEnd"]: ((number)?),
 })
-export type StageData = ({
-	["FastestTime"]: (number),
-	["FinishedCount"]: (number),
-})
-export type InfiniteStageData = ({
-	["Wave"]: (number),
-	["Damage"]: (number),
+export type TimeData = ({
+	["StartTime"]: (number),
+	["EndTime"]: (number),
 })
 
 local function SendEvents()
@@ -260,8 +263,8 @@ end
 
 RunService.Heartbeat:Connect(SendEvents)
 
-local reliable_events = table.create(13)
-local reliable_event_queue: { [number]: { any } } = table.create(13)
+local reliable_events = table.create(14)
+local reliable_event_queue: { [number]: { any } } = table.create(14)
 reliable_event_queue[0] = {}
 reliable_event_queue[1] = {}
 reliable_event_queue[11] = {}
@@ -270,6 +273,7 @@ reliable_event_queue[9] = {}
 reliable_event_queue[8] = {}
 reliable_event_queue[7] = {}
 reliable_event_queue[12] = {}
+reliable_event_queue[13] = {}
 reliable_event_queue[5] = {}
 reliable_event_queue[4] = 0
 reliable_event_queue[6] = {}
@@ -548,19 +552,36 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 					warn(`[ZAP] {#reliable_event_queue[12]} events in queue for EnemyDebuffEvent. Did you forget to attach a listener?`)
 				end
 			end
+		elseif id == 13 then
+			local value
+			value = {  }
+			local len_23 = buffer.readu16(incoming_buff, read(2))
+			value["UniqueId"] = buffer.readstring(incoming_buff, read(len_23), len_23)
+			local len_24 = buffer.readu16(incoming_buff, read(2))
+			value["AttackName"] = buffer.readstring(incoming_buff, read(len_24), len_24)
+			value["SpeedRatio"] = buffer.readf64(incoming_buff, read(8))
+			value["TimeSent"] = buffer.readf64(incoming_buff, read(8))
+			if reliable_events[13] then
+				task.spawn(reliable_events[13], value)
+			else
+				table.insert(reliable_event_queue[13], value)
+				if #reliable_event_queue[13] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[13]} events in queue for EnemyAttackEvent. Did you forget to attach a listener?`)
+				end
+			end
 		elseif id == 5 then
 			local value
 			value = {  }
 			value["OwnerId"] = buffer.readf64(incoming_buff, read(8))
-			local len_23 = buffer.readu16(incoming_buff, read(2))
-			value["MapId"] = buffer.readstring(incoming_buff, read(len_23), len_23)
-			local len_24 = buffer.readu16(incoming_buff, read(2))
-			value["LevelId"] = buffer.readstring(incoming_buff, read(len_24), len_24)
 			local len_25 = buffer.readu16(incoming_buff, read(2))
-			value["Difficulty"] = buffer.readstring(incoming_buff, read(len_25), len_25)
+			value["MapId"] = buffer.readstring(incoming_buff, read(len_25), len_25)
 			local len_26 = buffer.readu16(incoming_buff, read(2))
-			value["Players"] = table.create(len_26)
-			for i_5 = 1, len_26 do
+			value["LevelId"] = buffer.readstring(incoming_buff, read(len_26), len_26)
+			local len_27 = buffer.readu16(incoming_buff, read(2))
+			value["Difficulty"] = buffer.readstring(incoming_buff, read(len_27), len_27)
+			local len_28 = buffer.readu16(incoming_buff, read(2))
+			value["Players"] = table.create(len_28)
+			for i_5 = 1, len_28 do
 				local val_13
 				incoming_ipos = incoming_ipos + 1
 				val_13 = incoming_inst[incoming_ipos]
@@ -785,6 +806,23 @@ local returns = {
 			end
 		end,
 	},
+	EnemyAttackEvent = {
+		SetCallback = function(Callback: (Value: ({
+			["UniqueId"]: (string),
+			["AttackName"]: (string),
+			["SpeedRatio"]: (number),
+			["TimeSent"]: (number),
+		})) -> ()): () -> ()
+			reliable_events[13] = Callback
+			for _, value in reliable_event_queue[13] do
+				task.spawn(Callback, value)
+			end
+			reliable_event_queue[13] = {}
+			return function()
+				reliable_events[13] = nil
+			end
+		end,
+	},
 	ChooseMap = {
 		Fire = function(Value: ({
 			["MapId"]: (string),
@@ -793,21 +831,21 @@ local returns = {
 		}))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-			local len_27 = #Value["MapId"]
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_27)
-			alloc(len_27)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["MapId"], len_27)
-			local len_28 = #Value["LevelId"]
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_28)
-			alloc(len_28)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["LevelId"], len_28)
-			local len_29 = #Value["Difficulty"]
+			local len_29 = #Value["MapId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_29)
 			alloc(len_29)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["Difficulty"], len_29)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["MapId"], len_29)
+			local len_30 = #Value["LevelId"]
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_30)
+			alloc(len_30)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["LevelId"], len_30)
+			local len_31 = #Value["Difficulty"]
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_31)
+			alloc(len_31)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["Difficulty"], len_31)
 		end,
 	},
 	BoothWaiting = {

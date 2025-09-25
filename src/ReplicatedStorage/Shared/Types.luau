@@ -116,6 +116,7 @@ export type EnemyInput = {
 type EnemyData = {
 	UniqueId: string,
 	Trove: Trove.Trove,
+	AttackTrove: Trove.Trove,
 
 	Character: typeof(_Rig),
 	Root: typeof(_Rig.HumanoidRootPart),

@@ -12,6 +12,7 @@ local LocationEvent = Network.EnemyLocationEvent
 local SpeedEvent = Network.EnemySpeedEvent
 local HealthEvent = Network.EnemyHealthEvent
 local DebuffEvent = Network.EnemyDebuffEvent
+local AttackEvent = Network.EnemyAttackEvent
 local DestroyEvent = Network.EnemyDestroyEvent
 
 local Modules = ReplicatedStorage.Modules
@@ -95,6 +96,15 @@ Enemy.Spawned:Connect(function(NewEnemy: Enemy.Enemy)
 			Strength = DebuffData.Strength,
 			Duration = DebuffData.Duration,
 			TimeStart = DebuffData.TimeStart,
+		})
+	end)
+
+	NewEnemy.Attacked:Connect(function(AttackName: string)
+		AttackEvent.FireList(NewEnemy.ReplicateTo, {
+			UniqueId = NewEnemy.UniqueId,
+			AttackName = AttackName,
+			SpeedRatio = NewEnemy.Speed / NewEnemy.OriginalSpeed,
+			TimeSent = workspace:GetServerTimeNow(),
 		})
 	end)
 

@@ -6,6 +6,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local GlobalModules = ServerScriptService.GlobalModules
 local Enemy = require(GlobalModules.Enemy)
+local Unit = require(GlobalModules.Unit)
 
 local Data: { [string]: Enemy.EnemyInfo } = {
 	["PCE3R"] = {

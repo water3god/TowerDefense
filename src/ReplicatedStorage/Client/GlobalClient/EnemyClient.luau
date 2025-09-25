@@ -148,6 +148,7 @@ local function NewEnemy(Input: Types.EnemyInput, SpectateFire: boolean)
 	self.UniqueId = Input.UniqueId
 	GenerateId.AddId(self.UniqueId)
 	self.Trove = Trove.new()
+	self.AttackTrove = self.Trove:Extend()
 
 	self.Damaged = self.Trove:Construct(Signal)
 	self.Healed = self.Trove:Construct(Signal)

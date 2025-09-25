@@ -652,12 +652,28 @@ local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (strin
 						OnPress(TouchPosition)
 					end)
 
+					local Position: Vector2? = nil
+
 					NewTouch.TouchMoved:Connect(function(InputObject: InputObject, Processed: boolean)
 						if Processed then
 							return
 						end
 
 						OnFrame(Vector2.new(InputObject.Position.X, InputObject.Position.Y))
+						Position = Vector2.new(InputObject.Position.X, InputObject.Position.Y)
+					end)
+
+					InputTrove:Connect(RunService.Heartbeat, function()
+						if Position then
+							SetHoveredData(function(Data)
+								if Data then
+									OnFrame(Position)
+									Position = nil
+								end
+
+								return Data
+							end)
+						end
 					end)
 				end
 			end)
