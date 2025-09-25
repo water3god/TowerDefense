@@ -134,7 +134,12 @@ Conch.register("addEnemy", {
 		local Wave = GlobalWave.GetWave()
 
 		if Wave and EnemyData[enemy] then
-			Wave:AddEnemy(enemy)
+			if EnemyData[enemy].Ally then
+				Wave:AddAlly(enemy)
+			else
+				Wave:AddEnemy(enemy)
+			end
+
 			Conch.log("info", "Added enemy " .. enemy)
 		else
 			Conch.log("error", "Failed to add enemy " .. enemy)

@@ -58,6 +58,7 @@ export type Props = {
 
 export type StatProps = {
 	Type: "Damage" | "FireRate" | "Range",
+	Color: ColorSequence,
 	Value: number,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
@@ -67,11 +68,13 @@ local function CreateStatFrame(Props: StatProps)
 	return e(Main.Frame, {
 		native = Join({
 			BackgroundTransparency = 0,
-			BackgroundColor3 = Color3.fromRGB(52, 8, 70),
 			LayoutOrder = Stats.Layout[Props.Type],
 			Size = UDim2.fromScale(0.3, 1),
 		}, Props.native),
 	}, {
+		UIGradient = e("UIGradient", {
+			Color = Props.Color,
+		}),
 		UIAspectRatio = e("UIAspectRatioConstraint", {
 			AspectRatio = 1.8,
 		}),
@@ -104,19 +107,8 @@ end
 local function CreateUnitToolTip(Props: Props)
 	local Frames, SetFrames = React.useState({})
 
-	React.useEffect(function()
-		local Table = {}
-		for Property, Value in pairs(Props.Data) do
-			Table[Property] = e(CreateStatFrame, {
-				Type = Property :: any,
-				Value = Value,
-			})
-		end
-		SetFrames(Table)
-	end, { Props.Data })
-
-	local UnitData = React.useMemo(function(): UnitInfo.UnitInfo?
-		return UnitInfo.UnitInfo[Props.UnitName]
+	local UnitData = React.useMemo(function()
+		return UnitInfo.UnitInfo[Props.UnitName] or UnitInfo.UnitInfo["Common"]
 	end, { Props.UnitName })
 
 	local RarityData = React.useMemo(function(): RarityInfo.RarityInfo
@@ -126,6 +118,18 @@ local function CreateUnitToolTip(Props: Props)
 			return RarityInfo["Common" :: "Common"]
 		end
 	end, { UnitData })
+
+	React.useEffect(function()
+		local Table = {}
+		for Property, Value in pairs(Props.Data) do
+			Table[Property] = e(CreateStatFrame, {
+				Type = Property :: any,
+				Color = RarityData.StrokeColor,
+				Value = Value,
+			})
+		end
+		SetFrames(Table)
+	end, { Props.Data })
 
 	local OwnerText: string?, SetOwnerText = React.useState(nil :: string?)
 

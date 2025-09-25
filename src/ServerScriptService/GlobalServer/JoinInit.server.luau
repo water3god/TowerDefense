@@ -40,6 +40,7 @@ local MapData = require(DataFolder.MapData)
 local GlobalModules = ServerScriptService.GlobalModules
 local GlobalWave = require(GlobalModules.GlobalWave)
 local UnitModule = require(GlobalModules.Unit)
+local EnemyModule = require(GlobalModules.Enemy)
 local PlayerData = require(GlobalModules.PlayerData)
 
 local MapStore = MemoryStoreService:GetHashMap(Constants.INFORMATIONHASHMAP)
@@ -89,6 +90,10 @@ local function Init(DataInput: Types.RecieveData?)
 		if Base:IsA("BasePart") then
 			table.insert(Positions, Base.CFrame.Position)
 		end
+	end
+
+	for _, Enemy in pairs(EnemyModule.GetEnemies()) do
+		Enemy:Destroy(true)
 	end
 
 	local Data = DataInput or OldValues :: Types.RecieveData

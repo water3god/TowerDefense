@@ -84,6 +84,8 @@ local function CreateEnemyToolTip(Props: Props)
 				native = {
 					Position = UDim2.fromScale(0.5, 0.65),
 					Size = UDim2.fromScale(0.8, 0.25),
+					BackgroundTransparency = 0,
+					BackgroundColor3 = Color3.fromRGB(20, 47, 12),
 				},
 			}, {
 				UICorner = e("UICorner", {

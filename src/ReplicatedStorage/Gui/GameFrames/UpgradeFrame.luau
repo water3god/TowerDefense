@@ -716,11 +716,14 @@ local function CreateUpgradeFrame(Properties: Properties)
 		CurrentData = e(Main.Frame, {
 			native = {
 				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.new(0.207843, 0.031373, 0.274510),
+
 				Position = UDim2.fromScale(0.7, 0.525),
 				Size = UDim2.fromScale(0.45, 0.53),
 			},
 		}, {
+			UIGradient = e("UIGradient", {
+				Color = RarityData.StrokeColor,
+			}),
 			UICorner = e("UICorner", {
 				CornerRadius = UDim.new(0.1, 0),
 			}),
