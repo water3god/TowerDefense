@@ -12,11 +12,23 @@ end
 local Packages = ReplicatedStorage.Packages
 local Signal = require(Packages.Signal)
 
+export type EnemyData = {
+	Enemy: string,
+	Position: number,
+	Summoned: boolean?,
+}
+
 local ServerOnly = {
 	PlayerLoaded = Signal.new(),
 	PlayerRolled = Signal.new() :: Signal.Signal<Player, string>,
 
 	StartGame = Signal.new() :: Signal.Signal<>,
+
+	AddEnemy = Signal.new() :: Signal.Signal<{
+		Enemy: string,
+		Position: number,
+		Summoned: boolean?,
+	}>,
 }
 
 return ServerOnly

@@ -2,7 +2,11 @@
 
 -- By Wa1er_God --
 
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
+
+local ServerOnly = require(ReplicatedStorage.Network.ServerOnly)
+local AddEnemyEvent = ServerOnly.AddEnemy
 
 local GlobalModules = ServerScriptService.GlobalModules
 local Enemy = require(GlobalModules.Enemy)
@@ -331,6 +335,7 @@ local Data: { [string]: Enemy.EnemyInfo } = {
 
 	-- Allies --
 
+	-- Leif Erikson's Vikings --
 	["Viking 1"] = {
 		ModelName = "Viking 1",
 		Health = 100,
@@ -346,6 +351,7 @@ local Data: { [string]: Enemy.EnemyInfo } = {
 		Ally = true,
 	},
 
+	-- Trajan's Legion --
 	["Trajan's Legionary"] = {
 		ModelName = "Trajan's Legionary",
 		AdornmentName = "LegionaryArmor",

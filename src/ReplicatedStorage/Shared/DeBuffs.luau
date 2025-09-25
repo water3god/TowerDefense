@@ -2,7 +2,7 @@
 
 -- By Wa1er_God --
 
-export type Debuff = "Bleed" | "Slow"
+export type Debuff = "Bleed" | "Slow" | "Stunned"
 
 export type DebuffData = {
 	Name: string,
@@ -20,6 +20,11 @@ local Debuffs: { [string]: DebuffData } = {
 		Name = "Slow",
 		Image = "rbxassetid://13770684945",
 		Color = Color3.fromRGB(0, 0, 255),
+	},
+	Stunned = { -- 0 speed --
+		Name = "Stunned",
+		Image = "rbxassetid://13770684945",
+		Color = Color3.fromRGB(255, 255, 0),
 	},
 }
 

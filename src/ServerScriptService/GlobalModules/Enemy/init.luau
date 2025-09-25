@@ -36,6 +36,8 @@ export type EnemyInput = {
 	EnemyInfo: EnemyInfo,
 	BezierId: string,
 	Players: { Player }?,
+	Position: number?,
+	Summoned: boolean?,
 }
 
 type EnemyData = {
@@ -202,6 +204,10 @@ function Enemy.new(Input: EnemyInput)
 		self.TimePosition = 1
 	else
 		self.TimePosition = 0
+	end
+
+	if Input.Position then
+		self.TimePosition = math.clamp(Input.Position, 0, 1)
 	end
 
 	self.SpeedChanges = { { TimeStart = workspace:GetServerTimeNow(), Speed = self.Speed } }
@@ -373,6 +379,8 @@ function Enemy:ApplyDebuff(Debuff: string | Debuffs.Debuff, Seconds: number, Str
 		end
 	elseif Debuff == "Slow" then
 		self:ChangeMultiplier("Slow", Strength, Seconds)
+	elseif Debuff == "Stunned" then
+		self:ChangeMultiplier("Stunned", 0, Seconds)
 	end
 
 	local DebuffTable = self.Debuffs[Debuff]

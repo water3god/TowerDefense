@@ -13,6 +13,9 @@ local Packages = ReplicatedStorage.Packages
 local Trove = require(Packages.Trove)
 local Signal = require(Packages.Signal)
 
+local ServerOnly = require(ReplicatedStorage.Network.ServerOnly)
+local AddEnemyEvent = ServerOnly.AddEnemy
+
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local BezierPath = require(Modules.BezierPath)
@@ -122,8 +125,8 @@ type Impl = {
 	AddUnit: (self: GlobalWave, Unit: Unit.Unit) -> (),
 	AddDamage: (self: GlobalWave, Damage: number) -> (),
 
-	AddAlly: (self: GlobalWave, Ally: string, ExtraData: {}?) -> Enemy.Enemy,
-	AddEnemy: (self: GlobalWave, EnemyName: string) -> (),
+	AddAlly: (self: GlobalWave, Ally: string, ExtraData: {}?, Position: number?, Summoned: boolean?) -> Enemy.Enemy,
+	AddEnemy: (self: GlobalWave, EnemyName: string, Position: number?, Summoned: boolean?) -> (),
 
 	GetCoinsChangedSignal: (self: GlobalWave, UserId: number) -> Signal.Signal<number>,
 
@@ -251,6 +254,10 @@ function GlobalWave.new(Input: Input)
 
 	self.EnemyDestroying:Connect(function(EnemyInput: Enemy.Enemy)
 		self:AddCoins(math.ceil(EnemyInput.MaxHealth / 20))
+	end)
+
+	self.Trove:Connect(AddEnemyEvent, function(AddData: ServerOnly.EnemyData)
+		self:AddEnemy(AddData.Enemy, AddData.Position, AddData.Summoned)
 	end)
 
 	CurrentWave = self
@@ -475,7 +482,7 @@ function GlobalWave:AddUnit(UnitInput: Unit.Unit)
 	self.UnitAdded:Fire(UnitInput)
 end
 
-function GlobalWave:AddEnemy(EnemyName: string)
+function GlobalWave:AddEnemy(EnemyName: string, Position: number?, Summoned: boolean?)
 	if not EnemyData[EnemyName] then
 		error("Enemy " .. EnemyName .. " does not exist in EnemyData")
 	end
@@ -485,6 +492,8 @@ function GlobalWave:AddEnemy(EnemyName: string)
 	local NewEnemy = self.Trove:Construct(Enemy, {
 		EnemyInfo = DeepClone,
 		BezierId = self.BezierId,
+		Position = Position,
+		Summoned = Summoned,
 	})
 
 	NewEnemy.HealthChanged:Connect(function(Health: number)
@@ -509,10 +518,12 @@ function GlobalWave:AddEnemy(EnemyName: string)
 	return NewEnemy
 end
 
-function GlobalWave:AddAlly(Ally: string, ExtraData: {}?)
+function GlobalWave:AddAlly(Ally: string, ExtraData: {}?, Position: number?, Summoned: boolean?)
 	return self.Trove:Construct(Enemy, {
 		EnemyInfo = HelperFunctions.joinDicts(EnemyData[Ally], ExtraData) :: any,
 		BezierId = self.BezierId,
+		Position = Position,
+		Summoned = Summoned,
 	})
 end
 
