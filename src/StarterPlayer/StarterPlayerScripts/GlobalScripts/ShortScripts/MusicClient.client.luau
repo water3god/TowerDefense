@@ -2,6 +2,7 @@
 
 local SoundService = game:GetService("SoundService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 
 local Client = ReplicatedStorage.Client
 local GlobalClient = Client.GlobalClient
@@ -66,18 +67,31 @@ local function RecalibrateMusic(Index: number)
 	CurrentIndex = Index
 end
 
+local function NextMusic()
+	local NextIndex = CurrentIndex + 1
+	if not Sounds[NextIndex] then
+		NextIndex = 1
+	end
+
+	Sounds[NextIndex]:Play()
+	RecalibrateMusic(NextIndex)
+end
+
 for _, Sound in ipairs(Sounds) do
 	Sound.Looped = false
 
-	Sound.Ended:Connect(function()
-		local NextIndex = CurrentIndex + 1
-		if not Sounds[NextIndex] then
-			NextIndex = 1
-		end
+	if Sound.Name == "LobbyMedieval" then
+		local Time = Sound.TimeLength - 7
 
-		Sounds[NextIndex]:Play()
-		RecalibrateMusic(NextIndex)
-	end)
+		RunService.Heartbeat:Connect(function()
+			print("Ran")
+			if Sound.TimePosition >= Time then
+				Sound.TimePosition = 0
+			end
+		end)
+	else
+		Sound.Ended:Connect(NextMusic)
+	end
 end
 
 local function HandleEnded(Won: boolean)

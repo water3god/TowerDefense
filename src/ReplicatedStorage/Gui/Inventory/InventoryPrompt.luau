@@ -781,14 +781,26 @@ local function InventoryPrompt(Properties: Properties)
 				[React.Event.MouseButton1Click] = FilterMethodCallback,
 			},
 		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Color = Color3.new(0.027451, 0.168627, 0.047059),
+				Stroke = 0.03,
+				native = {
+					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+					LineJoinMode = Enum.LineJoinMode.Round,
+				},
+			}),
 			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.3, 0),
+				CornerRadius = UDim.new(0.2, 0),
 			}),
 			Label = e(Main.TextLabel, {
 				native = {
 					Size = UDim2.fromScale(0.8, 0.6),
 					Text = FilterMethod,
 				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.03,
+				}),
 			}),
 		}),
 		Title = e(Title, {
