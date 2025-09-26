@@ -69,6 +69,7 @@ local function CreateDisplayTitle(props: Properties)
 				Text = props.Title,
 				Size = UDim2.fromScale(0.8, 0.2),
 				Position = UDim2.fromScale(0.5, 0.5),
+				AutoLocalize = false,
 			},
 		}, {
 			UIGradient = e(AnimatedGradient, {
