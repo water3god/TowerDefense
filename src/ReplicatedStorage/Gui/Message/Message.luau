@@ -24,6 +24,7 @@ local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
 local UIStroke = require(CoreGame.UIStroke)
 local CloseButton = require(CoreGame.CloseButton)
+local Hooks = require(CoreGame.Hooks)
 
 local SFXService = require(ReplicatedStorage.Client.GlobalClient.SFXService)
 
@@ -42,6 +43,8 @@ export type Properties = {
 local function CreateMessage(props: Properties)
 	local LerpedMessage, SetLerpedMessage = React.useState("")
 	local CurrentMessageIndex, SetCurrentMessageIndex = React.useState(1)
+
+	local Translator = Hooks.useTranslator()
 
 	React.useEffect(function()
 		SetCurrentMessageIndex(1)
@@ -87,6 +90,10 @@ local function CreateMessage(props: Properties)
 		local CurrentMessage = props.Messages[CurrentMessageIndex] or ""
 		local MessageTrove = Trove.new()
 
+		if Translator then
+			CurrentMessage = Translator:Translate(game, CurrentMessage)
+		end
+
 		for i = 1, #CurrentMessage do
 			local MessagePromise = Promise.delay(0.02 * i):andThen(function()
 				SetLerpedMessage(string.sub(CurrentMessage, 1, i))
@@ -97,7 +104,7 @@ local function CreateMessage(props: Properties)
 		return function()
 			MessageTrove:Destroy()
 		end
-	end, { CurrentMessageIndex, props.Messages } :: { unknown })
+	end, { CurrentMessageIndex, props.Messages, Translator } :: { unknown })
 
 	return e(Main.TextButton, {
 		native = Join({

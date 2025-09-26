@@ -351,7 +351,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 
 		InPlacementLabel = PlacementData and e(Main.TextLabel, {
 			native = {
-				Text = "Placing Unit",
+				Text = "Placing Unit...",
 				Size = UDim2.fromScale(0.8, 0.2),
 				Position = UDim2.fromScale(0.5, -0.4),
 				TextColor3 = Color3.new(0, 1, 0),

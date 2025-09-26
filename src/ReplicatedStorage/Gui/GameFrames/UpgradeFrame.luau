@@ -10,6 +10,8 @@ local Player = Players.LocalPlayer
 
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
+local Trove = require(Packages.Trove)
+local InputService = require(Packages.Input)
 local React = require(Packages.React)
 local ReactSpring = require(Packages.ReactSpring)
 local Promise = require(Packages.Promise)
@@ -475,6 +477,29 @@ local function CreateUpgradeFrame(Properties: Properties)
 		end
 	end, { Visible })
 
+	local InputType: ("MouseKeyboard" | "Touch" | "Gamepad")? = Hooks.useInput()
+
+	React.useEffect(function()
+		local InputTrove = Trove.new()
+		if InputType == "MouseKeyboard" then
+			local Keyboard = InputTrove:Construct(InputService.Keyboard)
+
+			Keyboard.KeyUp:Connect(function(Key: Enum.KeyCode)
+				if Key == Keys.Upgrade then
+					UpgradeClick()
+				elseif Key == Keys.Sell then
+					SellClick()
+				elseif Key == Keys.Priority then
+					PriorityClick()
+				elseif Key == Keys.Close then
+					CloseClick()
+				end
+			end)
+		end
+
+		return InputTrove:WrapClean()
+	end, { InputType, UpgradeClick, SellClick, PriorityClick, CloseClick } :: { unknown })
+
 	local SellText = React.useMemo(function()
 		if InSell then
 			return "Confirm?"
@@ -655,7 +680,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.015,
+				Stroke = 0.02,
 				Color = Color3.new(0.419608, 0, 0),
 				native = {
 					LineJoinMode = Enum.LineJoinMode.Round,
@@ -692,7 +717,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.015,
+				Stroke = 0.02,
 				Color = Color3.new(0.207843, 0.207843, 0.207843),
 				native = {
 					LineJoinMode = Enum.LineJoinMode.Round,
@@ -730,7 +755,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.01,
+				Stroke = 0.015,
 				Color = Color3.new(0.105882, 0.443137, 0.054902),
 				native = {
 					LineJoinMode = Enum.LineJoinMode.Round,

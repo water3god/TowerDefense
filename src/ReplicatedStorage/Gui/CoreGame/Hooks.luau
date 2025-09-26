@@ -337,7 +337,7 @@ end
 
 export type InputType = "MouseKeyboard" | "Touch" | "Gamepad"
 
-function Hooks.useInput()
+function Hooks.useInput(): InputType?
 	local Value, SetValue = React.useState(nil :: InputType?)
 
 	React.useEffect(function()

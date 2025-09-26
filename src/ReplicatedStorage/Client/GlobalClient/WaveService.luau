@@ -106,7 +106,6 @@ local Module: {
 	}
 
 Added.SetCallback(function(Data: WaveData)
-	print("Added")
 	WaveData = Data
 	Module.Added:Fire(Data)
 end)
