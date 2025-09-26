@@ -110,8 +110,9 @@ local function CreatePropertyFrame(Props: PropertyProperties)
 			Size = UDim2.fromScale(1, 0.2),
 		}, Props.native),
 	}, {
-		UIFlex = e("UIListLayout", {
+		UIListLayout = e("UIListLayout", {
 			FillDirection = Enum.FillDirection.Horizontal,
+			HorizontalAlignment = Enum.HorizontalAlignment.Center,
 			VerticalAlignment = Enum.VerticalAlignment.Center,
 			SortOrder = Enum.SortOrder.LayoutOrder,
 		}),
@@ -133,22 +134,40 @@ local function CreatePropertyFrame(Props: PropertyProperties)
 				AutoLocalize = false,
 				TextColor3 = Color,
 				LayoutOrder = Order(),
-			},
-		}),
-		ArrowImage = e(Main.ImageLabel, {
-			native = {
-				Size = UDim2.fromScale(0.2, 0.6),
-				Image = "rbxassetid://90650317828395",
-				LayoutOrder = Order(),
-				ImageColor3 = Color,
-				Visible = not (IsSpecial or Props.Maxxed),
+				TextXAlignment = Enum.TextXAlignment.Right,
 			},
 		}, {
-			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 1.5,
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.05,
 			}),
 		}),
-		Frame = e(Main.Frame, {
+		Frame1 = e(Main.Frame, {
+			native = {
+				Size = UDim2.fromScale(0.05, 1),
+				LayoutOrder = Order(),
+			},
+		}),
+		ArrowFrame = e(Main.Frame, {
+			native = {
+				Size = UDim2.fromScale(0.1, 0.8),
+				LayoutOrder = Order(),
+			},
+		}, {
+			ArrowImage = e(Main.ImageLabel, {
+				native = {
+					Size = UDim2.fromScale(1.2, 1.2),
+					Image = "rbxassetid://138686283797043",
+					LayoutOrder = Order(),
+					ImageColor3 = Color,
+					Visible = not (IsSpecial or Props.Maxxed),
+				},
+			}, {
+				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+					AspectRatio = 1.2,
+				}),
+			}),
+		}),
+		Frame2 = e(Main.Frame, {
 			native = {
 				Size = UDim2.fromScale(0.05, 1),
 				LayoutOrder = Order(),
@@ -164,6 +183,10 @@ local function CreatePropertyFrame(Props: PropertyProperties)
 				Visible = not (IsSpecial or Props.Maxxed),
 				TextXAlignment = Enum.TextXAlignment.Left,
 			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.05,
+			}),
 		}),
 	}, Props.children)
 end
@@ -755,15 +778,21 @@ local function CreateUpgradeFrame(Properties: Properties)
 					Size = UDim2.fromScale(0.8, 0.15),
 				},
 			}, {
-				Arrow = e(Main.ImageLabel, {
+				ArrowFrame = e(Main.Frame, {
 					native = {
-						Size = UDim2.fromScale(1, 0.8),
-						Image = "rbxassetid://90650317828395",
+						Size = UDim2.fromScale(0.1, 1),
 						Visible = HasNextLevel,
 					},
 				}, {
-					UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-						AspectRatio = 1.5,
+					Arrow = e(Main.ImageLabel, {
+						native = {
+							Size = UDim2.fromScale(1.5, 1.5),
+							Image = "rbxassetid://138686283797043",
+						},
+					}, {
+						UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+							AspectRatio = 1.2,
+						}),
 					}),
 				}),
 				FirstLevel = e(Main.TextLabel, {
@@ -774,6 +803,10 @@ local function CreateUpgradeFrame(Properties: Properties)
 						TextXAlignment = Enum.TextXAlignment.Right,
 						Visible = HasNextLevel,
 					},
+				}, {
+					UIStroke = e(UIStroke.UIStrokeAdvanced, {
+						Stroke = 0.05,
+					}),
 				}),
 				NextLevel = e(Main.TextLabel, {
 					native = {
@@ -783,6 +816,10 @@ local function CreateUpgradeFrame(Properties: Properties)
 						TextXAlignment = Enum.TextXAlignment.Left,
 						Visible = HasNextLevel,
 					},
+				}, {
+					UIStroke = e(UIStroke.UIStrokeAdvanced, {
+						Stroke = 0.05,
+					}),
 				}),
 				MaxedLabel = e(Main.TextLabel, {
 					native = {
@@ -790,15 +827,17 @@ local function CreateUpgradeFrame(Properties: Properties)
 						Text = string.format("%u - MAX", UpgradeData.Level),
 						Visible = not HasNextLevel,
 					},
+				}, {
+					UIStroke = e(UIStroke.UIStrokeAdvanced, {
+						Stroke = 0.03,
+					}),
 				}),
 			}),
-
 			UnitInfo = e(Main.ScrollingFrame, {
 				BarSize = 0.01,
 				native = {
-					AnchorPoint = Vector2.new(),
-					Size = UDim2.fromScale(0.8, 0.75),
-					Position = UDim2.fromScale(0.1, 0.25),
+					Size = UDim2.fromScale(1, 0.8),
+					Position = UDim2.fromScale(0.5, 0.65),
 				},
 			}, {
 				UIListLayout = e("UIListLayout", {

@@ -489,7 +489,7 @@ function GlobalWave:AddEnemy(EnemyName: string, Position: number?, Summoned: boo
 
 	local DeepClone = HelperFunctions.DeepClone(EnemyData[EnemyName])
 
-	local NewEnemy = self.Trove:Construct(Enemy, {
+	local NewEnemy = Enemy.new({
 		EnemyInfo = DeepClone,
 		BezierId = self.BezierId,
 		Position = Position,

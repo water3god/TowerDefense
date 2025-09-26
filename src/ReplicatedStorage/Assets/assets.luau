@@ -26,6 +26,7 @@ local assets = {
 	Icons = {
 		["Bilde_2025-08-14_143750303-removebg-preview.png"] = "rbxassetid://99477522912659",
 		["Trajan.png"] = "rbxassetid://103084517800878",
+		["arrow-right.svg"] = "rbxassetid://138686283797043",
 		["gold-ingot.png"] = "rbxassetid://81695874378087",
 		["loading.png"] = "rbxassetid://100999073202792",
 	},

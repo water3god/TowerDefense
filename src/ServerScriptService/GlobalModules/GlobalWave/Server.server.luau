@@ -62,9 +62,8 @@ local Won = false
 
 local function OnAdded(Wave: GlobalWave.GlobalWave)
 	local SerializedWave = SerializeWave(Wave)
-	if not RunService:IsStudio() then
-		Added.FireAll(SerializedWave)
-	end
+
+	Added.FireAll(SerializedWave)
 
 	Wave.TimeChanged:Connect(function(Time: number, StartTime: number)
 		TimeChanged.FireAll({
@@ -215,7 +214,9 @@ local function OnDataAdded(Data: PlayerData.PlayerData)
 
 	if NewWave then
 		local SerializedWave = SerializeWave(NewWave)
-		Added.Fire(Data.Player, SerializedWave)
+		if not RunService:IsStudio() then
+			Added.Fire(Data.Player, SerializedWave)
+		end
 	else
 		WaveEnded.Fire(Data.Player, Won, {
 			Units = {},

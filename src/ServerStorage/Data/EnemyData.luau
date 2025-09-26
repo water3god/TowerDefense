@@ -13,6 +13,14 @@ local Enemy = require(GlobalModules.Enemy)
 local Unit = require(GlobalModules.Unit)
 
 local Data: { [string]: Enemy.EnemyInfo } = {
+	["Death"] = {
+		ModelName = "Death",
+		Health = 1000,
+		Speed = 100,
+		IsBoss = false,
+		Ally = false,
+	},
+
 	["PCE3R"] = {
 		ModelName = "PCE3R",
 		Health = 10,

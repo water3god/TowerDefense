@@ -177,6 +177,7 @@ local function CreateMessage(props: Properties)
 				Position = UDim2.fromScale(0.5, 0.3),
 				Size = UDim2.fromScale(0.9, 0.65),
 				Text = LerpedMessage,
+				AutoLocalize = false,
 				TextXAlignment = Enum.TextXAlignment.Left,
 				TextYAlignment = Enum.TextYAlignment.Top,
 			},

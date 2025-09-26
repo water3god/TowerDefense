@@ -157,7 +157,7 @@ local TouchControlFrame
 local JumpButton
 
 --mobile
-local isMobile = UserInputService.TouchEnabled
+local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
 if isMobile then
 	TouchGui = PlayerGui:WaitForChild("TouchGui")
 	TouchControlFrame = TouchGui:WaitForChild("TouchControlFrame")

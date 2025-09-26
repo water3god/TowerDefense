@@ -59,7 +59,7 @@ local function MobilePlacementFrame(props: Properties)
 				},
 			}),
 			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.1, 0),
+				CornerRadius = UDim.new(0.2, 0),
 			}),
 		}),
 		Main = e(Main.Frame, {
@@ -79,7 +79,7 @@ local function MobilePlacementFrame(props: Properties)
 				},
 			}),
 			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.1, 0),
+				CornerRadius = UDim.new(0.2, 0),
 			}),
 			Check = e(Main.Animateables.ImageButton, {
 				native = {

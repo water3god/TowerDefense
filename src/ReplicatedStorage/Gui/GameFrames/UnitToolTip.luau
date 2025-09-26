@@ -73,7 +73,7 @@ local function CreateStatFrame(Props: StatProps)
 		}, Props.native),
 	}, {
 		UIStroke = e(UIStroke.UIStrokeAdvanced, {
-			Stroke = 0.02,
+			Stroke = 0.04,
 			native = {
 				LineJoinMode = Enum.LineJoinMode.Round,
 			},
@@ -106,6 +106,10 @@ local function CreateStatFrame(Props: StatProps)
 				AutoLocalize = false,
 				TextColor3 = Stats.Colors[Props.Type],
 			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.05,
+			}),
 		}),
 	})
 end

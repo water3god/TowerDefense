@@ -1222,7 +1222,7 @@ function UnitModule.InitPlacement(Unit: string)
 
 	local InputTrove = InitTrove:Extend()
 
-	InputLib.PreferredInput.Observe(function(Preferred)
+	local Clean = InputLib.PreferredInput.Observe(function(Preferred)
 		if Preferred == "MouseKeyboard" then
 			local Mouse = InputTrove:Construct(InputLib.Mouse)
 			local Keyboard = InputTrove:Construct(InputLib.Keyboard)
@@ -1281,6 +1281,8 @@ function UnitModule.InitPlacement(Unit: string)
 			return
 		end
 	end)
+
+	InitTrove:Add(Clean)
 
 	if not UserInputService.KeyboardEnabled and UserInputService.TouchEnabled then
 		local NewRoot = InitTrove:Construct(Instance, "Part") :: Part

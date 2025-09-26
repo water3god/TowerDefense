@@ -568,6 +568,22 @@ local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (strin
 								return
 							end
 						end
+						for _, Enemy in pairs(EnemyClient.GetEnemies()) do
+							if Enemy:PartIsDescendantOf(Result.Instance) then
+								SetHoveredData(function(Data)
+									if not Data or Data.Id ~= Enemy.UniqueId then
+										return {
+											Type = "Enemy",
+											Id = Enemy.UniqueId,
+										}
+									end
+									return Data
+								end)
+
+								SetHoveredPos(Position)
+								return
+							end
+						end
 					end
 				end
 				props.SetUnitId(nil)
@@ -643,24 +659,28 @@ local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (strin
 					end)
 				elseif Preferred == "Touch" then
 					local NewTouch = InputTrove:Construct(Touch)
+					local Position: Vector2? = nil
 
 					NewTouch.TouchTapInWorld:Connect(function(TouchPosition: Vector2, Processed: boolean)
 						if Processed then
 							return
 						end
 
+						Position = TouchPosition
 						OnPress(TouchPosition)
 					end)
-
-					local Position: Vector2? = nil
 
 					NewTouch.TouchMoved:Connect(function(InputObject: InputObject, Processed: boolean)
 						if Processed then
 							return
 						end
 
-						OnFrame(Vector2.new(InputObject.Position.X, InputObject.Position.Y))
 						Position = Vector2.new(InputObject.Position.X, InputObject.Position.Y)
+							+ GuiService:GetGuiInset()
+
+						if Position then
+							OnFrame(Position)
+						end
 					end)
 
 					InputTrove:Connect(RunService.Heartbeat, function()
@@ -668,6 +688,7 @@ local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (strin
 							SetHoveredData(function(Data)
 								if Data then
 									OnFrame(Position)
+								else
 									Position = nil
 								end
 
