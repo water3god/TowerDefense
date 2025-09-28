@@ -1300,7 +1300,7 @@ function UnitModule.InitPlacement(Unit: string)
 		RootGui.Adornee = NewRoot
 		RootGui.Active = true
 		RootGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-		RootGui.Size = UDim2.fromOffset(100, 100)
+		RootGui.Size = UDim2.fromOffset(150, 150)
 		RootGui.Name = "UnitRoot"
 		RootGui.AlwaysOnTop = true
 		RootGui.ResetOnSpawn = false

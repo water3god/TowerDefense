@@ -220,6 +220,10 @@ local function CreateTradeMenu(Properties: Properties)
 			Image = "rbxassetid://85379476276657",
 		}, Properties.native),
 	}, {
+		UISizeConstraint = e("UISizeConstraint", {
+			MinSize = Vector2.new(310, 230),
+			MaxSize = Vector2.new(660, 550),
+		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 1.355,
 		}),

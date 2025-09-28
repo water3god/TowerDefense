@@ -140,11 +140,15 @@ local function CreateDailyFrame(Properties: Properties)
 
 	return e(Main.Frame, {
 		native = JoinDicts({
-			Size = UDim2.fromScale(0.5, 0.6),
+			Size = UDim2.fromScale(0.45, 0.55),
 			BackgroundTransparency = 0,
 			BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
 		}, Properties.native),
 	}, {
+		UISizeConstraint = e("UISizeConstraint", {
+			MinSize = Vector2.new(350, 220),
+			MaxSize = Vector2.new(700, 440),
+		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 1.5,
 		}),

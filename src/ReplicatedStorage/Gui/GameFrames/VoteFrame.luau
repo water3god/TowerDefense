@@ -164,21 +164,26 @@ local function CreateVoteFrame(Props: Props)
 
 	return e(Main.Frame, {
 		native = Join({
+			AnchorPoint = Vector2.new(0.5, 0),
 			BackgroundTransparency = 0,
 			BackgroundColor3 = Color3.new(),
-			Position = UDim2.fromScale(0.5, 0.225),
-			Size = UDim2.fromScale(0.175, 0.2),
+			Position = UDim2.fromScale(0.5, 0.2),
+			Size = UDim2.fromScale(0.175, 0.175),
 			Visible = Visiblity,
 		}, Props.native),
 	}, {
+		UISizeConstraint = e("UISizeConstraint", {
+			MinSize = Vector2.new(120, 50),
+			MaxSize = Vector2.new(240, 100),
+		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 2.15,
 		}),
 		UICorner = e("UICorner", {
 			CornerRadius = UDim.new(0.15, 0),
 		}),
-		UIStroke = e(UIStroke.UIStrokeBasic, {
-			Stroke = 0.002,
+		UIStroke = e(UIStroke.UIStrokeAdvanced, {
+			Stroke = 0.01,
 			native = {
 				Color = Color3.fromRGB(103, 103, 104),
 				LineJoinMode = Enum.LineJoinMode.Round,
@@ -194,8 +199,8 @@ local function CreateVoteFrame(Props: Props)
 				[React.Event.MouseButton1Click] = NoClick,
 			},
 		}, {
-			UIStroke = e(UIStroke.UIStrokeBasic, {
-				Stroke = 0.002,
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.008,
 				native = {
 					Color = Color3.fromRGB(128, 36, 20),
 				},

@@ -224,6 +224,10 @@ local function CreateTraitsFrame(props: Properties)
 			BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
 		}, props.native),
 	}, {
+		UISizeConstraint = e("UISizeConstraint", {
+			MinSize = Vector2.new(210, 230),
+			MaxSize = Vector2.new(420, 460),
+		}),
 		TraitsInfo = TraitsInfoVisible and e(TraitsInfo, {
 			CloseClick = function()
 				SetTraitsInfoVisible(false)

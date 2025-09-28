@@ -84,7 +84,6 @@ for _, Sound in ipairs(Sounds) do
 		local Time = Sound.TimeLength - 7
 
 		RunService.Heartbeat:Connect(function()
-			print("Ran")
 			if Sound.TimePosition >= Time then
 				Sound.TimePosition = 0
 			end

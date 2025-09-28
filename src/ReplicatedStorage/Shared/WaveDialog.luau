@@ -11,7 +11,7 @@ export type Dialog = {
 
 -- MapId, StageId, Wave
 local Dialogs: { [string]: { [string]: { Dialog } } } = {
-	Egypt = {
+	--[[Egypt = {
 		AncientEgypt_DesertReconnaissance = {
 			{
 				Title = "Cleopatra",
@@ -35,7 +35,7 @@ local Dialogs: { [string]: { [string]: { Dialog } } } = {
 				Image = "rbxassetid://75102060035053",
 			},
 		},
-	},
+	},]]
 	Tutorial = {
 		Tutorial = {
 			{

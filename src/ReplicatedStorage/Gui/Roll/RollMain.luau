@@ -294,6 +294,10 @@ local function CreateRollMain(props: Properties)
 			Image = "rbxassetid://100546338175267",
 		}, props.native),
 	}, {
+		UISizeConstraint = e("UISizeConstraint", {
+			MinSize = Vector2.new(250, 150),
+			MaxSize = Vector2.new(500, 300),
+		}),
 		BackgroundImage = e(Main.ImageLabel, {
 			native = {
 				Size = UDim2.fromScale(0.9, 0.8),

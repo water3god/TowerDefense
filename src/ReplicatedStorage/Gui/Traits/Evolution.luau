@@ -172,6 +172,10 @@ local function CreateEvolution(props: Properties)
 			Size = UDim2.fromScale(0.7, 0.6),
 		}, props.native),
 	}, {
+		UISizeConstraint = e("UISizeConstraint", {
+			MinSize = Vector2.new(310, 230),
+			MaxSize = Vector2.new(660, 550),
+		}),
 		InputLabel = e(Main.TextLabel, {
 			native = {
 				Position = UDim2.fromScale(0.5, 0.15),

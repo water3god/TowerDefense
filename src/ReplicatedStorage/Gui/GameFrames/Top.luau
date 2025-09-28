@@ -78,14 +78,15 @@ local function CreateTopFrame(Props: Properties)
 		and e(Main.Frame, {
 			native = Join({
 				AnchorPoint = Vector2.new(0.5, 0),
-				Position = UDim2.fromScale(0.5, 0),
+				Position = UDim2.fromScale(0.5, 0.02),
 				Size = UDim2.fromScale(0.5, 0.1),
 			}, Props.native),
 		}, {
 			UISizeConstraint = e("UISizeConstraint", {
-				MinSize = Vector2.new(200, 35),
+				MinSize = Vector2.new(250, 40),
 				MaxSize = Vector2.new(600, 100),
 			}),
+
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 				AspectRatio = 7,
 			}),

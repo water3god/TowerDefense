@@ -1142,6 +1142,97 @@ export type RewardData = {
 }
 
 local RewardInfo: { [string]: RewardData } = {
+	-- Egypt --
+	["Scrab Gems"] = {
+		Image = "rbxassetid://72575091810623",
+		Rarity = "Common",
+		Description = "A rare currency used to purchase powerful items and units.",
+	},
+	["Nile Pearls"] = {
+		Image = "rbxassetid://72575091810623",
+		Rarity = "Rare",
+		Description = "A rare currency used to purchase powerful items and units.",
+	},
+	["Pyramid Relics"] = {
+		Image = "rbxassetid://72575091810623",
+		Rarity = "Epic",
+		Description = "A rare currency used to purchase powerful items and units.",
+	},
+
+	-- Greece --
+
+	["Olympian Laurels"] = {
+		Image = "rbxassetid://72575091810623",
+		Rarity = "Common",
+		Description = "A rare currency used to purchase powerful items and units.",
+	},
+	["Spartan Shields"] = {
+		Image = "rbxassetid://72575091810623",
+		Rarity = "Rare",
+		Description = "A rare currency used to purchase powerful items and units.",
+	},
+	["Philosopher's Stones"] = {
+		Image = "rbxassetid://72575091810623",
+		Rarity = "Epic",
+		Description = "A rare currency used to purchase powerful items and units.",
+	},
+
+	-- Rome --
+
+	["Roman Eagles"] = {
+		Image = "rbxassetid://72575091810623",
+		Rarity = "Common",
+		Description = "A rare currency used to purchase powerful items and units.",
+	},
+	["Centurion Helmets"] = {
+		Image = "rbxassetid://72575091810623",
+		Rarity = "Rare",
+		Description = "A rare currency used to purchase powerful items and units.",
+	},
+	["Imperial Seals"] = {
+		Image = "rbxassetid://72575091810623",
+		Rarity = "Epic",
+		Description = "A rare currency used to purchase powerful items and units.",
+	},
+
+	-- China --
+
+	["Dragon Scales"] = {
+		Image = "rbxassetid://72575091810623",
+		Rarity = "Common",
+		Description = "A rare currency used to purchase powerful items and units.",
+	},
+	["Jade Amulets"] = {
+		Image = "rbxassetid://72575091810623",
+		Rarity = "Rare",
+		Description = "A rare currency used to purchase powerful items and units.",
+	},
+	["Imperial Dragons"] = {
+		Image = "rbxassetid://72575091810623",
+		Rarity = "Epic",
+		Description = "A rare currency used to purchase powerful items and units.",
+	},
+
+	-- Medieval --
+
+	["Knight's Badges"] = {
+		Image = "rbxassetid://72575091810623",
+		Rarity = "Common",
+		Description = "A rare currency used to purchase powerful items and units.",
+	},
+	["Archer's Bows"] = {
+		Image = "rbxassetid://72575091810623",
+		Rarity = "Rare",
+		Description = "A rare currency used to purchase powerful items and units.",
+	},
+	["King's Crowns"] = {
+		Image = "rbxassetid://72575091810623",
+		Rarity = "Epic",
+		Description = "A rare currency used to purchase powerful items and units.",
+	},
+
+	-- Misc --
+
 	["Omen Coins"] = {
 		Image = "rbxassetid://72575091810623",
 		Rarity = "Mythic",

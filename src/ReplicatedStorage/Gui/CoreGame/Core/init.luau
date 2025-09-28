@@ -715,8 +715,16 @@ local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (strin
 					Position = UDim2.fromScale(0, 0.5),
 					Size = UDim2.fromScale(0.4, 0.55),
 					AnchorPoint = Vector2.new(0, 0.5),
+					ZIndex = 5,
 				},
 			}, {
+				UISizeConstraint = e("UISizeConstraint", {
+					MinSize = Vector2.new(300, 200),
+					MaxSize = Vector2.new(600, 400),
+				}),
+				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+					AspectRatio = 1.5,
+				}),
 				UpgradeFrame = e(UpgradeFrame, {
 					IsVisible = props.PlacingUnitId ~= nil and UnitClient.GetUnit(props.PlacingUnitId) ~= nil,
 				}),
@@ -769,12 +777,26 @@ local CharacterConfig = { mass = 1, tension = 500, friction = 40, velocity = 0.0
 local Params = RaycastParams.new()
 Params.CollisionGroup = "PlacedCharacters"
 
-local function Render()
+local function Render(props: { OpenFrame: string? })
 	local VisibleFrame: string?, SetVisibleFrame = React.useState(nil :: string?)
 	local Character = Hooks.useCharacter()
 	local Camera = Hooks.useCamera()
 
 	local VisibleFrameBinding, SetVisibleFrameBinding = React.useBinding(VisibleFrame)
+
+	local InputTypeValue = Hooks.useInput()
+
+	local InputBinding, SetInputBinding = React.useBinding(InputTypeValue)
+
+	React.useEffect(function()
+		SetInputBinding(InputTypeValue)
+	end, { InputTypeValue })
+
+	React.useEffect(function()
+		if props.OpenFrame then
+			SetVisibleFrame(props.OpenFrame)
+		end
+	end, { props.OpenFrame })
 
 	React.useEffect(function()
 		if VisibleFrame then
@@ -1152,7 +1174,13 @@ local function Render()
 					WaitingFrame = e(StoryContext.Provider, {}, {
 						WaitingFrame = e(WaitingFrame),
 					}),
-					TipsGui = e(TipsGui),
+					TipsGui = e(TipsGui, {
+						native = {
+							Position = Styles.Inverted:map(function(Size: number)
+								return UDim2.fromScale(0.5, 0):Lerp(UDim2.fromScale(0.5, -0.5), Size)
+							end),
+						},
+					}),
 					ClickedInventory = e(ClickedInventory.Connected),
 					RejoinFrame = e(RejoinFrame.Connected),
 					Tutorial = e(HandleTutorial, {
@@ -1169,12 +1197,18 @@ local function Render()
 					end,
 					native = {
 						AnchorPoint = Vector2.new(0.5, 1),
-						Position = React.joinBindings({ Styles.Inverted :: any, VisibleFrameBinding })
+						Position = React.joinBindings(
+							{ Styles.Inverted, VisibleFrameBinding, InputBinding } :: { any }
+						)
 							:map(function(NewData: { any })
-								if NewData[2] and table.find(VisibleFrames[NewData[2]], "Bottom") then
+								local Alpha = NewData[1]
+								local OpenFrame: string? = NewData[2]
+								local InputType: string = NewData[3]
+								local VisibleOpenFrames = OpenFrame and VisibleFrames[OpenFrame] or {}
+								if table.find(VisibleOpenFrames, "Bottom") and InputType ~= "Touch" then
 									return UDim2.fromScale(0.5, 1)
 								else
-									return UDim2.fromScale(0.5, 1):Lerp(UDim2.fromScale(0.5, 1.3), NewData[1])
+									return UDim2.fromScale(0.5, 1):Lerp(UDim2.fromScale(0.5, 1.5), Alpha)
 								end
 							end),
 					},
@@ -1184,13 +1218,13 @@ local function Render()
 				native = {
 					AnchorPoint = Vector2.new(0, 0.5),
 					Position = Styles.Inverted:map(function(Size: number)
-						return UDim2.fromScale(0.01, 0.5):Lerp(UDim2.fromScale(-0.19, 0.5), Size)
+						return UDim2.fromScale(0.01, 0.5):Lerp(UDim2.fromScale(-0.39, 0.5), Size)
 					end),
 					Size = UDim2.fromScale(0.2, 0.4),
 				},
 			}, {
 				UISizeConstraint = e("UISizeConstraint", {
-					MinSize = Vector2.new(60, 130),
+					MinSize = Vector2.new(100, 180),
 					MaxSize = Vector2.new(200, 400),
 				}),
 				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
@@ -1285,13 +1319,13 @@ local function Render()
 				native = {
 					AnchorPoint = Vector2.new(1, 0.5),
 					Position = Styles.Inverted:map(function(Size: number)
-						return UDim2.fromScale(0.99, 0.5):Lerp(UDim2.fromScale(1.19, 0.5), Size)
+						return UDim2.fromScale(0.99, 0.5):Lerp(UDim2.fromScale(1.39, 0.5), Size)
 					end),
 					Size = UDim2.fromScale(0.2, 0.4),
 				},
 			}, {
 				UISizeConstraint = e("UISizeConstraint", {
-					MinSize = Vector2.new(60, 130),
+					MinSize = Vector2.new(100, 180),
 					MaxSize = Vector2.new(200, 400),
 				}),
 				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
@@ -1340,23 +1374,33 @@ local function Render()
 					},
 				}),
 			}),
-			SettingButton = e(MainButtonFrame, {
-				Position = UDim2.fromScale(0.95, 0.02),
-				Size = UDim2.fromScale(0.1, 0.1),
-				Name = "Settings",
-				Icon = "rbxassetid://133964081103849",
-				IconColor = ColorSequence.new(Color3.fromRGB(255, 255, 100), Color3.fromRGB(200, 200, 0)), -- Bright Yellow to Dark Yellow
-				BackgroundColor = ColorSequence.new(Color3.fromRGB(110, 110, 50), Color3.fromRGB(80, 80, 30)), -- Light Yellow to Medium Yellow
-				OnClick = function()
-					OnMainButtonClick(Constants.SETTINGS)
-				end,
+			SettingButtonContainer = e(Main.Frame, {
 				native = {
+					Position = React.joinBindings({ InputBinding, Styles.Inverted :: any }):map(function(data: { any })
+						local InputType: string = data[1]
+						local Size: number = data[2]
+						if InputType == "Touch" then
+							return UDim2.fromScale(0.95, 0):Lerp(UDim2.fromScale(1.25, 0), Size)
+						else
+							return UDim2.fromScale(0.95, 0)
+						end
+					end),
+					Size = UDim2.fromScale(0.1, 0.1),
 					AnchorPoint = Vector2.new(0.5, 0),
 				},
 			}, {
 				UISizeConstraint = e("UISizeConstraint", {
-					MinSize = Vector2.new(35, 35),
+					MinSize = Vector2.new(40, 40),
 					MaxSize = Vector2.new(90, 90),
+				}),
+				SettingButton = e(MainButtonFrame, {
+					Name = "Settings",
+					Icon = "rbxassetid://133964081103849",
+					IconColor = ColorSequence.new(Color3.fromRGB(255, 255, 100), Color3.fromRGB(200, 200, 0)), -- Bright Yellow to Dark Yellow
+					BackgroundColor = ColorSequence.new(Color3.fromRGB(110, 110, 50), Color3.fromRGB(80, 80, 30)), -- Light Yellow to Medium Yellow
+					OnClick = function()
+						OnMainButtonClick(Constants.SETTINGS)
+					end,
 				}),
 			}),
 			[Constants.SETTINGS] = e(RenderSettings, {

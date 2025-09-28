@@ -439,6 +439,10 @@ local function CreateStoreFrame(Properties: Properties)
 			BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
 		}, Properties.native),
 	}, {
+		UISizeConstraint = e("UISizeConstraint", {
+			MinSize = Vector2.new(340, 220),
+			MaxSize = Vector2.new(1000, 600),
+		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 1.5,
 		}),

@@ -264,11 +264,17 @@ function Hooks.useTranslator()
 	React.useEffect(function()
 		local TranslatorPromise = Promise.retryWithDelay(function()
 			return Promise.try(function()
-				return LocalizationService:GetTranslatorForPlayerAsync(Players.LocalPlayer)
+				if RunService:IsRunning() then
+					return LocalizationService:GetTranslatorForPlayerAsync(Players.LocalPlayer)
+				else
+					error("Cannot get translator in Studio Play mode")
+				end
 			end):andThen(function(Translator: Translator)
 				SetTranslator(Translator)
 			end)
-		end, 3, 10)
+		end, 3, 10):catch(function()
+			warn("Failed to get translator for player after multiple attempts")
+		end)
 
 		return function()
 			TranslatorPromise:cancel()

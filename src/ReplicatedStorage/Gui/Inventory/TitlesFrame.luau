@@ -156,6 +156,10 @@ local function CreateTitlesFrame(props: Properties)
 			BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
 		}, props.native),
 	}, {
+		UISizeConstraint = e("UISizeConstraint", {
+			MinSize = Vector2.new(210, 230),
+			MaxSize = Vector2.new(420, 460),
+		}),
 		Title = e(Title, {
 			Position = UDim2.fromScale(0.3, 0),
 			Size = UDim2.fromScale(1, 0.14),

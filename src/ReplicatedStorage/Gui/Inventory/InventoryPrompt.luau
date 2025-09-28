@@ -641,6 +641,10 @@ local function InventoryPrompt(Properties: Properties)
 			end),
 		}, Properties.native),
 	}, {
+		UISizeConstraint = e("UISizeConstraint", {
+			MinSize = Vector2.new(400, 200),
+			MaxSize = Vector2.new(800, 400),
+		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 2,
 		}),
@@ -805,7 +809,7 @@ local function InventoryPrompt(Properties: Properties)
 		}),
 		Title = e(Title, {
 			Title = "INVENTORY",
-			Position = UDim2.fromScale(0.15, -0.03),
+			Position = UDim2.fromScale(0.16, -0.03),
 			Size = UDim2.fromScale(0.5, 0.5),
 		}),
 		MaxUnitsCount = e(Main.TextLabel, {

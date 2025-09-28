@@ -896,6 +896,10 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			Image = "rbxassetid://103903141717286",
 		}, Properties.native),
 	}, {
+		UISizeConstraint = e("UISizeConstraint", {
+			MinSize = Vector2.new(500, 200),
+			MaxSize = Vector2.new(600, 400),
+		}),
 		InventoryStatsFrame = e(StatsFrame, {
 			Name = if OpenFrame and InfoFrameData.Visible then InfoFrameData.Name else nil,
 			Type = OpenFrame,
@@ -1071,7 +1075,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		}),
 		Title = e(Title, {
 			Title = "INVENTORY",
-			Position = UDim2.fromScale(0.15, -0.03),
+			Position = UDim2.fromScale(0.16, -0.03),
 			Size = UDim2.fromScale(0.5, 0.5),
 		}),
 		MaxUnitsCount = e(Main.TextLabel, {

@@ -259,13 +259,23 @@ local function CreateMainStory(Properties: Properties)
 				continue
 			end
 
-			FrameTable["Reward" .. Reward.Resource] = e(ResourceFrame, {
-				Name = Reward.Resource,
-				Value = Value,
-				native = {
-					ZIndex = ResourceOrder(),
-				},
-			})
+			if Reward.Count >= 1 then
+				FrameTable["Reward" .. Reward.Resource] = e(ResourceFrame, {
+					Name = Reward.Resource,
+					Value = Value,
+					native = {
+						ZIndex = ResourceOrder(),
+					},
+				})
+			else
+				FrameTable["Reward" .. Reward.Resource] = e(ResourceFrame, {
+					Name = Reward.Resource,
+					LeftValue = string.format("%.2f%%", Reward.Count * 100),
+					native = {
+						ZIndex = ResourceOrder(),
+					},
+				})
+			end
 		end
 		return FrameTable
 	end, { CurrentMap, Stage, Difficulty, GoldMultiplier } :: { unknown })
@@ -459,6 +469,10 @@ local function CreateMainStory(Properties: Properties)
 			Image = "rbxassetid://100546338175267",
 		}, Properties.native),
 	}, {
+		UISizeConstraint = e("UISizeConstraint", {
+			MinSize = Vector2.new(300, 170),
+			MaxSize = Vector2.new(600, 340),
+		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 1.787,
 		}),

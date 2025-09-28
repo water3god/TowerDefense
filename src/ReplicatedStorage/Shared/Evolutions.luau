@@ -10,6 +10,15 @@ export type EvolutionResource = {
 local Evolutions: { [string]: {
 	Evolution: string,
 	Resources: { EvolutionResource },
-} } = {}
+} } = {
+	["Cleopatra"] = {
+		Evolution = "Cleopatra (Triple)",
+		Resources = {
+			{ Name = "Scrab Gems", Amount = 10 },
+			{ Name = "Nile Pearls", Amount = 10 },
+			{ Name = "Pyramid Relics", Amount = 10 },
+		},
+	},
+}
 
 return table.freeze(Evolutions)

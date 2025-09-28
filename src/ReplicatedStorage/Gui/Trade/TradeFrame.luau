@@ -422,6 +422,10 @@ local function TradeMain(Properties: Properties)
 			Image = "rbxassetid://83575157481281",
 		}, Properties.native),
 	}, {
+		UISizeConstraint = e("UISizeConstraint", {
+			MinSize = Vector2.new(310, 230),
+			MaxSize = Vector2.new(660, 550),
+		}),
 		SelectCountGui = SelectCountFrame and e(NewGui, {
 			native = {
 				DisplayOrder = 5,
