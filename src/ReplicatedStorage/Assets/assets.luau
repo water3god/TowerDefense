@@ -38,6 +38,10 @@ local assets = {
 		["lobby.png"] = "rbxassetid://72426763128452",
 		["rome.png"] = "rbxassetid://74963095419523",
 	},
+	["PC Boss HP sections"] = {
+		["boss lvl pc comm(bg).png"] = "rbxassetid://117640397950526",
+		["boss lvl pc comm(border).png"] = "rbxassetid://130859913415626",
+	},
 	audio = {
 		["657948__lilmati__family-friendly-inspect-sound-ui-or-in-game-notification.wav"] = "rbxassetid://72255888882620",
 		["explosion.mp3"] = "rbxassetid://133965358324268",

@@ -234,6 +234,14 @@ local function CreateRollMain(props: Properties)
 		end
 
 		if HelperFunctions.Len(InventoryData.Units) >= InventoryData.MaxUnitCount then
+			local Gamepass50 = PurchaseData.GamepassData[1435928862].Owned
+			local Gamepass100 = PurchaseData.GamepassData[1435582002].Owned
+
+			if not Gamepass50 then
+				MarketplaceService:PromptProductPurchase(LocalPlayer, 1435928862)
+			elseif not Gamepass100 then
+				MarketplaceService:PromptProductPurchase(LocalPlayer, 1435582002)
+			end
 			WarningData.Add("Your Inventory is Full!")
 			return
 		end
