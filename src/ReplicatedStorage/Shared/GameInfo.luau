@@ -63,6 +63,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 200 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Scrabs", Count = 5 },
+							{ Resource = "Nile Pearls", Count = 2 },
+							{ Resource = "Pyramid Relics", Count = 1 },
 						},
 					},
 					Hard = {
@@ -70,6 +73,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 240 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Scrabs", Count = 5 },
+							{ Resource = "Nile Pearls", Count = 2 },
+							{ Resource = "Pyramid Relics", Count = 1 },
 						},
 					},
 					Insane = {
@@ -77,6 +83,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 280 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Scrabs", Count = 5 },
+							{ Resource = "Nile Pearls", Count = 2 },
+							{ Resource = "Pyramid Relics", Count = 1 },
 						},
 					},
 				},
@@ -92,6 +101,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 200 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Scrabs", Count = 5 },
+							{ Resource = "Nile Pearls", Count = 2 },
+							{ Resource = "Pyramid Relics", Count = 1 },
 						},
 					},
 					Hard = {
@@ -99,6 +111,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 240 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Scrabs", Count = 5 },
+							{ Resource = "Nile Pearls", Count = 2 },
+							{ Resource = "Pyramid Relics", Count = 1 },
 						},
 					},
 					Insane = {
@@ -106,6 +121,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 280 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Scrabs", Count = 5 },
+							{ Resource = "Nile Pearls", Count = 2 },
+							{ Resource = "Pyramid Relics", Count = 1 },
 						},
 					},
 				},
@@ -121,6 +139,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 220 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Scrabs", Count = 5 },
+							{ Resource = "Nile Pearls", Count = 2 },
+							{ Resource = "Pyramid Relics", Count = 1 },
 						},
 					},
 					Hard = {
@@ -128,6 +149,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 260 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Scrabs", Count = 5 },
+							{ Resource = "Nile Pearls", Count = 2 },
+							{ Resource = "Pyramid Relics", Count = 1 },
 						},
 					},
 					Insane = {
@@ -135,6 +159,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 300 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Scrabs", Count = 5 },
+							{ Resource = "Nile Pearls", Count = 2 },
+							{ Resource = "Pyramid Relics", Count = 1 },
 						},
 					},
 				},
@@ -150,6 +177,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 240 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Scrabs", Count = 5 },
+							{ Resource = "Nile Pearls", Count = 2 },
+							{ Resource = "Pyramid Relics", Count = 1 },
 						},
 					},
 					Hard = {
@@ -157,6 +187,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 280 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Scrabs", Count = 5 },
+							{ Resource = "Nile Pearls", Count = 2 },
+							{ Resource = "Pyramid Relics", Count = 1 },
 						},
 					},
 					Insane = {
@@ -164,6 +197,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 320 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Scrabs", Count = 5 },
+							{ Resource = "Nile Pearls", Count = 2 },
+							{ Resource = "Pyramid Relics", Count = 1 },
 						},
 					},
 				},
@@ -179,6 +215,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 260 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Scrabs", Count = 5 },
+							{ Resource = "Nile Pearls", Count = 2 },
+							{ Resource = "Pyramid Relics", Count = 1 },
 						},
 					},
 					Hard = {
@@ -186,6 +225,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 300 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Scrabs", Count = 5 },
+							{ Resource = "Nile Pearls", Count = 2 },
+							{ Resource = "Pyramid Relics", Count = 1 },
 						},
 					},
 					Insane = {
@@ -193,6 +235,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 340 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Scrabs", Count = 5 },
+							{ Resource = "Nile Pearls", Count = 2 },
+							{ Resource = "Pyramid Relics", Count = 1 },
 						},
 					},
 				},
@@ -208,6 +253,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 280 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Scrabs", Count = 5 },
+							{ Resource = "Nile Pearls", Count = 2 },
+							{ Resource = "Pyramid Relics", Count = 1 },
 						},
 					},
 					Hard = {
@@ -215,6 +263,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 320 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Scrabs", Count = 5 },
+							{ Resource = "Nile Pearls", Count = 2 },
+							{ Resource = "Pyramid Relics", Count = 1 },
 						},
 					},
 					Insane = {
@@ -222,6 +273,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 360 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Scrabs", Count = 5 },
+							{ Resource = "Nile Pearls", Count = 2 },
+							{ Resource = "Pyramid Relics", Count = 1 },
 						},
 					},
 				},
@@ -237,6 +291,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 300 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Scrabs", Count = 5 },
+							{ Resource = "Nile Pearls", Count = 2 },
+							{ Resource = "Pyramid Relics", Count = 1 },
 						},
 					},
 					Hard = {
@@ -244,6 +301,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 340 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Scrabs", Count = 5 },
+							{ Resource = "Nile Pearls", Count = 2 },
+							{ Resource = "Pyramid Relics", Count = 1 },
 						},
 					},
 					Insane = {
@@ -251,6 +311,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 380 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Scrabs", Count = 5 },
+							{ Resource = "Nile Pearls", Count = 2 },
+							{ Resource = "Pyramid Relics", Count = 1 },
 						},
 					},
 				},
@@ -273,6 +336,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 260 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Olympian Laurels", Count = 5 },
+							{ Resource = "Spartan Helmets", Count = 2 },
+							{ Resource = "Philosopher's Stones", Count = 1 },
 						},
 					},
 					Hard = {
@@ -280,6 +346,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 300 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Olympian Laurels", Count = 5 },
+							{ Resource = "Spartan Helmets", Count = 2 },
+							{ Resource = "Philosopher's Stones", Count = 1 },
 						},
 					},
 					Insane = {
@@ -287,6 +356,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 340 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Olympian Laurels", Count = 5 },
+							{ Resource = "Spartan Helmets", Count = 2 },
+							{ Resource = "Philosopher's Stones", Count = 1 },
 						},
 					},
 				},
@@ -302,6 +374,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 280 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Olympian Laurels", Count = 5 },
+							{ Resource = "Spartan Helmets", Count = 2 },
+							{ Resource = "Philosopher's Stones", Count = 1 },
 						},
 					},
 					Hard = {
@@ -309,6 +384,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 320 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Olympian Laurels", Count = 5 },
+							{ Resource = "Spartan Helmets", Count = 2 },
+							{ Resource = "Philosopher's Stones", Count = 1 },
 						},
 					},
 					Insane = {
@@ -316,6 +394,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 360 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Olympian Laurels", Count = 5 },
+							{ Resource = "Spartan Helmets", Count = 2 },
+							{ Resource = "Philosopher's Stones", Count = 1 },
 						},
 					},
 				},
@@ -331,6 +412,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 300 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Olympian Laurels", Count = 5 },
+							{ Resource = "Spartan Helmets", Count = 2 },
+							{ Resource = "Philosopher's Stones", Count = 1 },
 						},
 					},
 					Hard = {
@@ -338,6 +422,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 340 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Olympian Laurels", Count = 5 },
+							{ Resource = "Spartan Helmets", Count = 2 },
+							{ Resource = "Philosopher's Stones", Count = 1 },
 						},
 					},
 					Insane = {
@@ -345,6 +432,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 380 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Olympian Laurels", Count = 5 },
+							{ Resource = "Spartan Helmets", Count = 2 },
+							{ Resource = "Philosopher's Stones", Count = 1 },
 						},
 					},
 				},
@@ -360,6 +450,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 320 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Olympian Laurels", Count = 5 },
+							{ Resource = "Spartan Helmets", Count = 2 },
+							{ Resource = "Philosopher's Stones", Count = 1 },
 						},
 					},
 					Hard = {
@@ -367,6 +460,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 360 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Olympian Laurels", Count = 5 },
+							{ Resource = "Spartan Helmets", Count = 2 },
+							{ Resource = "Philosopher's Stones", Count = 1 },
 						},
 					},
 					Insane = {
@@ -374,6 +470,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 400 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Olympian Laurels", Count = 5 },
+							{ Resource = "Spartan Helmets", Count = 2 },
+							{ Resource = "Philosopher's Stones", Count = 1 },
 						},
 					},
 				},
@@ -389,6 +488,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 340 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Olympian Laurels", Count = 5 },
+							{ Resource = "Spartan Helmets", Count = 2 },
+							{ Resource = "Philosopher's Stones", Count = 1 },
 						},
 					},
 					Hard = {
@@ -396,6 +498,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 380 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Olympian Laurels", Count = 5 },
+							{ Resource = "Spartan Helmets", Count = 2 },
+							{ Resource = "Philosopher's Stones", Count = 1 },
 						},
 					},
 					Insane = {
@@ -403,6 +508,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 420 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Olympian Laurels", Count = 5 },
+							{ Resource = "Spartan Helmets", Count = 2 },
+							{ Resource = "Philosopher's Stones", Count = 1 },
 						},
 					},
 				},
@@ -418,6 +526,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 360 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Olympian Laurels", Count = 5 },
+							{ Resource = "Spartan Helmets", Count = 2 },
+							{ Resource = "Philosopher's Stones", Count = 1 },
 						},
 					},
 					Hard = {
@@ -425,6 +536,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 400 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Olympian Laurels", Count = 5 },
+							{ Resource = "Spartan Helmets", Count = 2 },
+							{ Resource = "Philosopher's Stones", Count = 1 },
 						},
 					},
 					Insane = {
@@ -432,6 +546,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 440 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Olympian Laurels", Count = 5 },
+							{ Resource = "Spartan Helmets", Count = 2 },
+							{ Resource = "Philosopher's Stones", Count = 1 },
 						},
 					},
 				},
@@ -447,6 +564,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 380 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Olympian Laurels", Count = 5 },
+							{ Resource = "Spartan Helmets", Count = 2 },
+							{ Resource = "Philosopher's Stones", Count = 1 },
 						},
 					},
 					Hard = {
@@ -454,6 +574,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 420 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Olympian Laurels", Count = 5 },
+							{ Resource = "Spartan Helmets", Count = 2 },
+							{ Resource = "Philosopher's Stones", Count = 1 },
 						},
 					},
 					Insane = {
@@ -461,6 +584,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 460 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Olympian Laurels", Count = 5 },
+							{ Resource = "Spartan Helmets", Count = 2 },
+							{ Resource = "Philosopher's Stones", Count = 1 },
 						},
 					},
 				},
@@ -484,6 +610,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 340 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Roman Eagles", Count = 5 },
+							{ Resource = "Centurion Helmets", Count = 2 },
+							{ Resource = "Imperial Seals", Count = 1 },
 						},
 					},
 					Hard = {
@@ -491,6 +620,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 380 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Roman Eagles", Count = 5 },
+							{ Resource = "Centurion Helmets", Count = 2 },
+							{ Resource = "Imperial Seals", Count = 1 },
 						},
 					},
 					Insane = {
@@ -498,6 +630,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 420 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Roman Eagles", Count = 5 },
+							{ Resource = "Centurion Helmets", Count = 2 },
+							{ Resource = "Imperial Seals", Count = 1 },
 						},
 					},
 				},
@@ -513,6 +648,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 360 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Roman Eagles", Count = 5 },
+							{ Resource = "Centurion Helmets", Count = 2 },
+							{ Resource = "Imperial Seals", Count = 1 },
 						},
 					},
 					Hard = {
@@ -520,6 +658,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 400 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Roman Eagles", Count = 5 },
+							{ Resource = "Centurion Helmets", Count = 2 },
+							{ Resource = "Imperial Seals", Count = 1 },
 						},
 					},
 					Insane = {
@@ -527,6 +668,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 440 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Roman Eagles", Count = 5 },
+							{ Resource = "Centurion Helmets", Count = 2 },
+							{ Resource = "Imperial Seals", Count = 1 },
 						},
 					},
 				},
@@ -542,6 +686,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 380 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Roman Eagles", Count = 5 },
+							{ Resource = "Centurion Helmets", Count = 2 },
+							{ Resource = "Imperial Seals", Count = 1 },
 						},
 					},
 					Hard = {
@@ -549,6 +696,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 420 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Roman Eagles", Count = 5 },
+							{ Resource = "Centurion Helmets", Count = 2 },
+							{ Resource = "Imperial Seals", Count = 1 },
 						},
 					},
 					Insane = {
@@ -556,6 +706,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 460 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Roman Eagles", Count = 5 },
+							{ Resource = "Centurion Helmets", Count = 2 },
+							{ Resource = "Imperial Seals", Count = 1 },
 						},
 					},
 				},
@@ -571,6 +724,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 400 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Roman Eagles", Count = 5 },
+							{ Resource = "Centurion Helmets", Count = 2 },
+							{ Resource = "Imperial Seals", Count = 1 },
 						},
 					},
 					Hard = {
@@ -578,6 +734,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 440 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Roman Eagles", Count = 5 },
+							{ Resource = "Centurion Helmets", Count = 2 },
+							{ Resource = "Imperial Seals", Count = 1 },
 						},
 					},
 					Insane = {
@@ -585,6 +744,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 480 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Roman Eagles", Count = 5 },
+							{ Resource = "Centurion Helmets", Count = 2 },
+							{ Resource = "Imperial Seals", Count = 1 },
 						},
 					},
 				},
@@ -600,6 +762,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 420 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Roman Eagles", Count = 5 },
+							{ Resource = "Centurion Helmets", Count = 2 },
+							{ Resource = "Imperial Seals", Count = 1 },
 						},
 					},
 					Hard = {
@@ -607,6 +772,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 460 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Roman Eagles", Count = 5 },
+							{ Resource = "Centurion Helmets", Count = 2 },
+							{ Resource = "Imperial Seals", Count = 1 },
 						},
 					},
 					Insane = {
@@ -614,6 +782,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 500 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Roman Eagles", Count = 5 },
+							{ Resource = "Centurion Helmets", Count = 2 },
+							{ Resource = "Imperial Seals", Count = 1 },
 						},
 					},
 				},
@@ -629,6 +800,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 440 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Roman Eagles", Count = 5 },
+							{ Resource = "Centurion Helmets", Count = 2 },
+							{ Resource = "Imperial Seals", Count = 1 },
 						},
 					},
 					Hard = {
@@ -636,6 +810,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 480 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Roman Eagles", Count = 5 },
+							{ Resource = "Centurion Helmets", Count = 2 },
+							{ Resource = "Imperial Seals", Count = 1 },
 						},
 					},
 					Insane = {
@@ -643,6 +820,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 520 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Roman Eagles", Count = 5 },
+							{ Resource = "Centurion Helmets", Count = 2 },
+							{ Resource = "Imperial Seals", Count = 1 },
 						},
 					},
 				},
@@ -658,6 +838,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 460 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Roman Eagles", Count = 5 },
+							{ Resource = "Centurion Helmets", Count = 2 },
+							{ Resource = "Imperial Seals", Count = 1 },
 						},
 					},
 					Hard = {
@@ -665,6 +848,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 500 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Roman Eagles", Count = 5 },
+							{ Resource = "Centurion Helmets", Count = 2 },
+							{ Resource = "Imperial Seals", Count = 1 },
 						},
 					},
 					Insane = {
@@ -672,6 +858,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 540 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Roman Eagles", Count = 5 },
+							{ Resource = "Centurion Helmets", Count = 2 },
+							{ Resource = "Imperial Seals", Count = 1 },
 						},
 					},
 				},
@@ -695,6 +884,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 420 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Dragon Scales", Count = 5 },
+							{ Resource = "Warrior's Fans", Count = 2 },
+							{ Resource = "Emperor's Gems", Count = 1 },
 						},
 					},
 					Hard = {
@@ -702,6 +894,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 460 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Dragon Scales", Count = 5 },
+							{ Resource = "Warrior's Fans", Count = 2 },
+							{ Resource = "Emperor's Gems", Count = 1 },
 						},
 					},
 					Insane = {
@@ -709,6 +904,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 500 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Dragon Scales", Count = 5 },
+							{ Resource = "Warrior's Fans", Count = 2 },
+							{ Resource = "Emperor's Gems", Count = 1 },
 						},
 					},
 				},
@@ -724,6 +922,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 440 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Dragon Scales", Count = 5 },
+							{ Resource = "Warrior's Fans", Count = 2 },
+							{ Resource = "Emperor's Gems", Count = 1 },
 						},
 					},
 					Hard = {
@@ -731,6 +932,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 480 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Dragon Scales", Count = 5 },
+							{ Resource = "Warrior's Fans", Count = 2 },
+							{ Resource = "Emperor's Gems", Count = 1 },
 						},
 					},
 					Insane = {
@@ -738,6 +942,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 520 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Dragon Scales", Count = 5 },
+							{ Resource = "Warrior's Fans", Count = 2 },
+							{ Resource = "Emperor's Gems", Count = 1 },
 						},
 					},
 				},
@@ -753,6 +960,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 460 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Dragon Scales", Count = 5 },
+							{ Resource = "Warrior's Fans", Count = 2 },
+							{ Resource = "Emperor's Gems", Count = 1 },
 						},
 					},
 					Hard = {
@@ -760,6 +970,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 500 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Dragon Scales", Count = 5 },
+							{ Resource = "Warrior's Fans", Count = 2 },
+							{ Resource = "Emperor's Gems", Count = 1 },
 						},
 					},
 					Insane = {
@@ -767,6 +980,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 540 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Dragon Scales", Count = 5 },
+							{ Resource = "Warrior's Fans", Count = 2 },
+							{ Resource = "Emperor's Gems", Count = 1 },
 						},
 					},
 				},
@@ -782,6 +998,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 480 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Dragon Scales", Count = 5 },
+							{ Resource = "Warrior's Fans", Count = 2 },
+							{ Resource = "Emperor's Gems", Count = 1 },
 						},
 					},
 					Hard = {
@@ -789,6 +1008,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 520 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Dragon Scales", Count = 5 },
+							{ Resource = "Warrior's Fans", Count = 2 },
+							{ Resource = "Emperor's Gems", Count = 1 },
 						},
 					},
 					Insane = {
@@ -796,6 +1018,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 560 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Dragon Scales", Count = 5 },
+							{ Resource = "Warrior's Fans", Count = 2 },
+							{ Resource = "Emperor's Gems", Count = 1 },
 						},
 					},
 				},
@@ -811,6 +1036,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 500 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Dragon Scales", Count = 5 },
+							{ Resource = "Warrior's Fans", Count = 2 },
+							{ Resource = "Emperor's Gems", Count = 1 },
 						},
 					},
 					Hard = {
@@ -818,6 +1046,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 540 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Dragon Scales", Count = 5 },
+							{ Resource = "Warrior's Fans", Count = 2 },
+							{ Resource = "Emperor's Gems", Count = 1 },
 						},
 					},
 					Insane = {
@@ -825,6 +1056,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 580 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Dragon Scales", Count = 5 },
+							{ Resource = "Warrior's Fans", Count = 2 },
+							{ Resource = "Emperor's Gems", Count = 1 },
 						},
 					},
 				},
@@ -840,6 +1074,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 520 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Dragon Scales", Count = 5 },
+							{ Resource = "Warrior's Fans", Count = 2 },
+							{ Resource = "Emperor's Gems", Count = 1 },
 						},
 					},
 					Hard = {
@@ -847,6 +1084,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 560 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Dragon Scales", Count = 5 },
+							{ Resource = "Warrior's Fans", Count = 2 },
+							{ Resource = "Emperor's Gems", Count = 1 },
 						},
 					},
 					Insane = {
@@ -854,6 +1094,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 600 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Dragon Scales", Count = 5 },
+							{ Resource = "Warrior's Fans", Count = 2 },
+							{ Resource = "Emperor's Gems", Count = 1 },
 						},
 					},
 				},
@@ -869,6 +1112,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 540 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Dragon Scales", Count = 5 },
+							{ Resource = "Warrior's Fans", Count = 2 },
+							{ Resource = "Emperor's Gems", Count = 1 },
 						},
 					},
 					Hard = {
@@ -876,6 +1122,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 580 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Dragon Scales", Count = 5 },
+							{ Resource = "Warrior's Fans", Count = 2 },
+							{ Resource = "Emperor's Gems", Count = 1 },
 						},
 					},
 					Insane = {
@@ -883,6 +1132,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 620 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Dragon Scales", Count = 5 },
+							{ Resource = "Warrior's Fans", Count = 2 },
+							{ Resource = "Emperor's Gems", Count = 1 },
 						},
 					},
 				},
@@ -906,6 +1158,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 500 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Knight's Armor", Count = 5 },
+							{ Resource = "Archer's Bows", Count = 2 },
+							{ Resource = "Queen's Crowns", Count = 1 },
 						},
 					},
 					Hard = {
@@ -913,6 +1168,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 540 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Knight's Armor", Count = 5 },
+							{ Resource = "Archer's Bows", Count = 2 },
+							{ Resource = "Queen's Crowns", Count = 1 },
 						},
 					},
 					Insane = {
@@ -920,6 +1178,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 580 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Knight's Armor", Count = 5 },
+							{ Resource = "Archer's Bows", Count = 2 },
+							{ Resource = "Queen's Crowns", Count = 1 },
 						},
 					},
 				},
@@ -935,6 +1196,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 520 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Knight's Armor", Count = 5 },
+							{ Resource = "Archer's Bows", Count = 2 },
+							{ Resource = "Queen's Crowns", Count = 1 },
 						},
 					},
 					Hard = {
@@ -942,6 +1206,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 560 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Knight's Armor", Count = 5 },
+							{ Resource = "Archer's Bows", Count = 2 },
+							{ Resource = "Queen's Crowns", Count = 1 },
 						},
 					},
 					Insane = {
@@ -949,6 +1216,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 600 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Knight's Armor", Count = 5 },
+							{ Resource = "Archer's Bows", Count = 2 },
+							{ Resource = "Queen's Crowns", Count = 1 },
 						},
 					},
 				},
@@ -964,6 +1234,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 540 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Knight's Armor", Count = 5 },
+							{ Resource = "Archer's Bows", Count = 2 },
+							{ Resource = "Queen's Crowns", Count = 1 },
 						},
 					},
 					Hard = {
@@ -971,6 +1244,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 580 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Knight's Armor", Count = 5 },
+							{ Resource = "Archer's Bows", Count = 2 },
+							{ Resource = "Queen's Crowns", Count = 1 },
 						},
 					},
 					Insane = {
@@ -978,6 +1254,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 620 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Knight's Armor", Count = 5 },
+							{ Resource = "Archer's Bows", Count = 2 },
+							{ Resource = "Queen's Crowns", Count = 1 },
 						},
 					},
 				},
@@ -993,6 +1272,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 560 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Knight's Armor", Count = 5 },
+							{ Resource = "Archer's Bows", Count = 2 },
+							{ Resource = "Queen's Crowns", Count = 1 },
 						},
 					},
 					Hard = {
@@ -1000,6 +1282,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 600 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Knight's Armor", Count = 5 },
+							{ Resource = "Archer's Bows", Count = 2 },
+							{ Resource = "Queen's Crowns", Count = 1 },
 						},
 					},
 					Insane = {
@@ -1007,6 +1292,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 640 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Knight's Armor", Count = 5 },
+							{ Resource = "Archer's Bows", Count = 2 },
+							{ Resource = "Queen's Crowns", Count = 1 },
 						},
 					},
 				},
@@ -1022,6 +1310,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 580 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Knight's Armor", Count = 5 },
+							{ Resource = "Archer's Bows", Count = 2 },
+							{ Resource = "Queen's Crowns", Count = 1 },
 						},
 					},
 					Hard = {
@@ -1029,6 +1320,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 620 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Knight's Armor", Count = 5 },
+							{ Resource = "Archer's Bows", Count = 2 },
+							{ Resource = "Queen's Crowns", Count = 1 },
 						},
 					},
 					Insane = {
@@ -1036,6 +1330,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 660 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Knight's Armor", Count = 5 },
+							{ Resource = "Archer's Bows", Count = 2 },
+							{ Resource = "Queen's Crowns", Count = 1 },
 						},
 					},
 				},
@@ -1051,6 +1348,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 600 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Knight's Armor", Count = 5 },
+							{ Resource = "Archer's Bows", Count = 2 },
+							{ Resource = "Queen's Crowns", Count = 1 },
 						},
 					},
 					Hard = {
@@ -1058,6 +1358,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 640 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Knight's Armor", Count = 5 },
+							{ Resource = "Archer's Bows", Count = 2 },
+							{ Resource = "Queen's Crowns", Count = 1 },
 						},
 					},
 					Insane = {
@@ -1065,6 +1368,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 680 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Knight's Armor", Count = 5 },
+							{ Resource = "Archer's Bows", Count = 2 },
+							{ Resource = "Queen's Crowns", Count = 1 },
 						},
 					},
 				},
@@ -1080,6 +1386,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 620 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Knight's Armor", Count = 5 },
+							{ Resource = "Archer's Bows", Count = 2 },
+							{ Resource = "Queen's Crowns", Count = 1 },
 						},
 					},
 					Hard = {
@@ -1087,6 +1396,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 660 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Knight's Armor", Count = 5 },
+							{ Resource = "Archer's Bows", Count = 2 },
+							{ Resource = "Queen's Crowns", Count = 1 },
 						},
 					},
 					Insane = {
@@ -1094,6 +1406,9 @@ local GameInfo: { MapInfo } = {
 						Resources = {
 							{ Resource = "Gold", Count = 700 },
 							{ Resource = "Omen Coins", Count = 1 },
+							{ Resource = "Knight's Armor", Count = 5 },
+							{ Resource = "Archer's Bows", Count = 2 },
+							{ Resource = "Queen's Crowns", Count = 1 },
 						},
 					},
 				},
@@ -1143,92 +1458,91 @@ export type RewardData = {
 
 local RewardInfo: { [string]: RewardData } = {
 	-- Egypt --
-	["Scrab Gems"] = {
-		Image = "rbxassetid://72575091810623",
+	["Scrabs"] = {
+		Image = "rbxassetid://70964039601875",
 		Rarity = "Common",
-		Description = "A rare currency used to purchase powerful items and units.",
+		Description = "Common Egypt token; sell for gold or use in trades.",
 	},
 	["Nile Pearls"] = {
-		Image = "rbxassetid://72575091810623",
+		Image = "rbxassetid://128470884322511",
 		Rarity = "Rare",
-		Description = "A rare currency used to purchase powerful items and units.",
+		Description = "Rare Egypt resource from river stages; valuable in trades.",
 	},
 	["Pyramid Relics"] = {
-		Image = "rbxassetid://72575091810623",
+		Image = "rbxassetid://81013714522449",
 		Rarity = "Epic",
-		Description = "A rare currency used to purchase powerful items and units.",
+		Description = "Epic Egypt artifact; fetches high gold when sold.",
 	},
 
 	-- Greece --
 
 	["Olympian Laurels"] = {
-		Image = "rbxassetid://72575091810623",
+		Image = "rbxassetid://115219863511315",
 		Rarity = "Common",
-		Description = "A rare currency used to purchase powerful items and units.",
+		Description = "Greece token awarded by the gods; useful for trading or selling.",
 	},
-	["Spartan Shields"] = {
-		Image = "rbxassetid://72575091810623",
+	["Spartan Helmets"] = {
+		Image = "rbxassetid://77775640392808",
 		Rarity = "Rare",
-		Description = "A rare currency used to purchase powerful items and units.",
+		Description = "Rare Greece gear; valuable to collectors and traders.",
 	},
 	["Philosopher's Stones"] = {
-		Image = "rbxassetid://72575091810623",
+		Image = "rbxassetid://98673159570209",
 		Rarity = "Epic",
-		Description = "A rare currency used to purchase powerful items and units.",
+		Description = "Epic Greece relic; high value when traded or sold.",
 	},
 
 	-- Rome --
 
 	["Roman Eagles"] = {
-		Image = "rbxassetid://72575091810623",
+		Image = "rbxassetid://130160697684369",
 		Rarity = "Common",
-		Description = "A rare currency used to purchase powerful items and units.",
+		Description = "Rome token bearing legion standards; trade or sell for gold.",
 	},
 	["Centurion Helmets"] = {
-		Image = "rbxassetid://72575091810623",
+		Image = "rbxassetid://102300455352320",
 		Rarity = "Rare",
-		Description = "A rare currency used to purchase powerful items and units.",
+		Description = "Rare Rome artifact with strong trade value.",
 	},
 	["Imperial Seals"] = {
-		Image = "rbxassetid://72575091810623",
+		Image = "rbxassetid://139842645965754",
 		Rarity = "Epic",
-		Description = "A rare currency used to purchase powerful items and units.",
+		Description = "Epic Rome insignia; yields high gold when sold.",
 	},
 
 	-- China --
 
 	["Dragon Scales"] = {
-		Image = "rbxassetid://72575091810623",
+		Image = "rbxassetid://105518084799272",
 		Rarity = "Common",
-		Description = "A rare currency used to purchase powerful items and units.",
+		Description = "China token from legendary beasts; good trade value.",
 	},
-	["Jade Amulets"] = {
-		Image = "rbxassetid://72575091810623",
+	["Warrior's Fans"] = {
+		Image = "rbxassetid://139609586944192",
 		Rarity = "Rare",
-		Description = "A rare currency used to purchase powerful items and units.",
+		Description = "Rare China keepsake prized in trades.",
 	},
-	["Imperial Dragons"] = {
-		Image = "rbxassetid://72575091810623",
+	["Emperor's Gems"] = {
+		Image = "rbxassetid://118925329985863",
 		Rarity = "Epic",
-		Description = "A rare currency used to purchase powerful items and units.",
+		Description = "Epic China jewel; very high sell value.",
 	},
-
 	-- Medieval --
 
-	["Knight's Badges"] = {
-		Image = "rbxassetid://72575091810623",
+	["Knight's Armor"] = {
+		Image = "rbxassetid://82645425440621",
 		Rarity = "Common",
-		Description = "A rare currency used to purchase powerful items and units.",
+		Description = "Medieval token from fortress raids; trade or sell for gold.",
 	},
 	["Archer's Bows"] = {
-		Image = "rbxassetid://72575091810623",
+		Image = "rbxassetid://77270959725445",
 		Rarity = "Rare",
-		Description = "A rare currency used to purchase powerful items and units.",
+		Description = "Rare Medieval gear with solid trade value.",
 	},
-	["King's Crowns"] = {
-		Image = "rbxassetid://72575091810623",
+	["Queen's Crowns"] = {
+		Image = "rbxassetid://75346323427931",
 		Rarity = "Epic",
-		Description = "A rare currency used to purchase powerful items and units.",
+		Description = "Epic Medieval regalia; fetches a premium when sold.",
 	},
 
 	-- Misc --
@@ -1236,7 +1550,7 @@ local RewardInfo: { [string]: RewardData } = {
 	["Omen Coins"] = {
 		Image = "rbxassetid://72575091810623",
 		Rarity = "Mythic",
-		Description = "A rare currency used to purchase powerful items and units.",
+		Description = "A rare currency used to purchase traits.",
 	},
 	["Gold"] = {
 		Image = "rbxassetid://87241276261105",

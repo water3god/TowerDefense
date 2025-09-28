@@ -171,14 +171,13 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 						continue
 					else
 						if Wave.IsInfinite then
-							if Resource.Resource == "Omen Coins" then
-								local OmenCoins = math.floor(Wave.Wave / 10)
-								if OmenCoins > 0 then
-									PlayerDataModule:AddResource("Omen Coins", OmenCoins)
-									local NewResource = table.clone(Resource)
-									NewResource.Count = OmenCoins
-									table.insert(SendData.Resources, NewResource)
-								end
+							local Num = if Resource.Resource == "Omen Coins" then 10 else 15
+							local ResourceValue = math.floor(Wave.Wave / Num)
+							if ResourceValue > 0 then
+								PlayerDataModule:AddResource(Resource.Resource, ResourceValue)
+								local NewResource = table.clone(Resource)
+								NewResource.Count = ResourceValue
+								table.insert(SendData.Resources, NewResource)
 							end
 						else
 							if Win then
