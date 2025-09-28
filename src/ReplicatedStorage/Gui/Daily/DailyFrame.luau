@@ -147,7 +147,7 @@ local function CreateDailyFrame(Properties: Properties)
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
 			MinSize = Vector2.new(350, 220),
-			MaxSize = Vector2.new(700, 440),
+			MaxSize = Vector2.new(1400, 880),
 		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 1.5,

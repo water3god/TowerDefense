@@ -720,7 +720,7 @@ local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (strin
 			}, {
 				UISizeConstraint = e("UISizeConstraint", {
 					MinSize = Vector2.new(300, 200),
-					MaxSize = Vector2.new(600, 400),
+					MaxSize = Vector2.new(1200, 800),
 				}),
 				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 					AspectRatio = 1.5,
@@ -1225,7 +1225,7 @@ local function Render(props: { OpenFrame: string? })
 			}, {
 				UISizeConstraint = e("UISizeConstraint", {
 					MinSize = Vector2.new(100, 180),
-					MaxSize = Vector2.new(200, 400),
+					MaxSize = Vector2.new(400, 720),
 				}),
 				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 					AspectRatio = 0.62,
@@ -1326,7 +1326,7 @@ local function Render(props: { OpenFrame: string? })
 			}, {
 				UISizeConstraint = e("UISizeConstraint", {
 					MinSize = Vector2.new(100, 180),
-					MaxSize = Vector2.new(200, 400),
+					MaxSize = Vector2.new(400, 720),
 				}),
 				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 					AspectRatio = 0.62,
@@ -1391,7 +1391,7 @@ local function Render(props: { OpenFrame: string? })
 			}, {
 				UISizeConstraint = e("UISizeConstraint", {
 					MinSize = Vector2.new(40, 40),
-					MaxSize = Vector2.new(90, 90),
+					MaxSize = Vector2.new(160, 160),
 				}),
 				SettingButton = e(MainButtonFrame, {
 					Name = "Settings",

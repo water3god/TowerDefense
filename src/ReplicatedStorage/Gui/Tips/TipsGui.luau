@@ -61,7 +61,7 @@ local function CreateTipsGui(props: Properties)
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
 			MinSize = Vector2.new(180, 35),
-			MaxSize = Vector2.new(360, 70),
+			MaxSize = Vector2.new(720, 140),
 		}),
 		UIAspectRatio = e("UIAspectRatioConstraint", {
 			AspectRatio = 6,

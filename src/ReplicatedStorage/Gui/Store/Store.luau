@@ -441,7 +441,7 @@ local function CreateStoreFrame(Properties: Properties)
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
 			MinSize = Vector2.new(340, 220),
-			MaxSize = Vector2.new(1000, 600),
+			MaxSize = Vector2.new(1360, 880),
 		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 1.5,

@@ -898,7 +898,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
 			MinSize = Vector2.new(500, 200),
-			MaxSize = Vector2.new(600, 400),
+			MaxSize = Vector2.new(2000, 800),
 		}),
 		InventoryStatsFrame = e(StatsFrame, {
 			Name = if OpenFrame and InfoFrameData.Visible then InfoFrameData.Name else nil,

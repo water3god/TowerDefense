@@ -120,7 +120,7 @@ local function CreateMessage(props: Properties)
 		}),
 		UISizeConstraint = e("UISizeConstraint", {
 			MinSize = Vector2.new(300, 75),
-			MaxSize = Vector2.new(600, 150),
+			MaxSize = Vector2.new(1200, 300),
 		}),
 		UICorner = e("UICorner", {
 			CornerRadius = UDim.new(0.04, 0),

@@ -643,7 +643,7 @@ local function InventoryPrompt(Properties: Properties)
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
 			MinSize = Vector2.new(400, 200),
-			MaxSize = Vector2.new(800, 400),
+			MaxSize = Vector2.new(1600, 800),
 		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 2,

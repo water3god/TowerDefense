@@ -295,7 +295,7 @@ local function CreateSettingsFrame(props: Properties)
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
 			MinSize = Vector2.new(210, 230),
-			MaxSize = Vector2.new(420, 460),
+			MaxSize = Vector2.new(840, 920),
 		}),
 		MainFrame = e(Main.ScrollingFrame, {
 			BarSize = 0.01,

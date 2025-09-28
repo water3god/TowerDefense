@@ -181,7 +181,7 @@ local function CreateUnitToolTip(Props: Props)
 		}, {
 			UISizeConstraint = e("UISizeConstraint", {
 				MinSize = Vector2.new(160, 80),
-				MaxSize = Vector2.new(300, 150),
+				MaxSize = Vector2.new(640, 360),
 			}),
 			UIAspectRatio = e("UIAspectRatioConstraint", {
 				AspectRatio = 2,

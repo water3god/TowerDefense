@@ -364,7 +364,7 @@ local function CreateQuestsFrame(props: Properties)
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
 			MinSize = Vector2.new(210, 230),
-			MaxSize = Vector2.new(500, 550),
+			MaxSize = Vector2.new(840, 920),
 		}),
 		Title = e(Title, {
 			Position = UDim2.fromScale(0.2, 0),

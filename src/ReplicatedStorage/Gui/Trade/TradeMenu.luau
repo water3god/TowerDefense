@@ -222,7 +222,7 @@ local function CreateTradeMenu(Properties: Properties)
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
 			MinSize = Vector2.new(310, 230),
-			MaxSize = Vector2.new(660, 550),
+			MaxSize = Vector2.new(1240, 920),
 		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 1.355,

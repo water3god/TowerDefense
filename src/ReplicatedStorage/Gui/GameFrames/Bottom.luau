@@ -343,7 +343,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
 			MinSize = Vector2.new(320, 90),
-			MaxSize = Vector2.new(600, 170),
+			MaxSize = Vector2.new(1280, 360),
 		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 3.555,

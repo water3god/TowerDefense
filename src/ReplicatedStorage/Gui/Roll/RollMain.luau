@@ -238,9 +238,9 @@ local function CreateRollMain(props: Properties)
 			local Gamepass100 = PurchaseData.GamepassData[1435582002].Owned
 
 			if not Gamepass50 then
-				MarketplaceService:PromptProductPurchase(LocalPlayer, 1435928862)
+				MarketplaceService:PromptGamePassPurchase(LocalPlayer, 1435928862)
 			elseif not Gamepass100 then
-				MarketplaceService:PromptProductPurchase(LocalPlayer, 1435582002)
+				MarketplaceService:PromptGamePassPurchase(LocalPlayer, 1435582002)
 			end
 			WarningData.Add("Your Inventory is Full!")
 			return
@@ -304,7 +304,7 @@ local function CreateRollMain(props: Properties)
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
 			MinSize = Vector2.new(250, 150),
-			MaxSize = Vector2.new(500, 300),
+			MaxSize = Vector2.new(1000, 600),
 		}),
 		BackgroundImage = e(Main.ImageLabel, {
 			native = {

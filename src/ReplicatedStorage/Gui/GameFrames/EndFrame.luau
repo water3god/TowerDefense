@@ -649,8 +649,8 @@ local function CreateEndFrameButton(props)
 		},
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
-			MinSize = Vector2.new(230, 60),
-			MaxSize = Vector2.new(600, 170),
+			MinSize = Vector2.new(320, 90),
+			MaxSize = Vector2.new(1280, 360),
 		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 3.555,

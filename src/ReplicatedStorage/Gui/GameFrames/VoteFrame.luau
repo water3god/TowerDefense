@@ -174,7 +174,7 @@ local function CreateVoteFrame(Props: Props)
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
 			MinSize = Vector2.new(120, 50),
-			MaxSize = Vector2.new(240, 100),
+			MaxSize = Vector2.new(480, 200),
 		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 2.15,

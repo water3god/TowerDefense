@@ -226,7 +226,7 @@ local function CreateTraitsFrame(props: Properties)
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
 			MinSize = Vector2.new(210, 230),
-			MaxSize = Vector2.new(420, 460),
+			MaxSize = Vector2.new(840, 920),
 		}),
 		TraitsInfo = TraitsInfoVisible and e(TraitsInfo, {
 			CloseClick = function()

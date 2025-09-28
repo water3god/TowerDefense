@@ -471,7 +471,7 @@ local function CreateMainStory(Properties: Properties)
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
 			MinSize = Vector2.new(300, 170),
-			MaxSize = Vector2.new(600, 340),
+			MaxSize = Vector2.new(1200, 680),
 		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 1.787,

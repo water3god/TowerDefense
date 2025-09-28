@@ -174,7 +174,7 @@ local function CreateEvolution(props: Properties)
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
 			MinSize = Vector2.new(310, 230),
-			MaxSize = Vector2.new(660, 550),
+			MaxSize = Vector2.new(1240, 920),
 		}),
 		InputLabel = e(Main.TextLabel, {
 			native = {

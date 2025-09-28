@@ -84,7 +84,7 @@ local function CreateTopFrame(Props: Properties)
 		}, {
 			UISizeConstraint = e("UISizeConstraint", {
 				MinSize = Vector2.new(250, 40),
-				MaxSize = Vector2.new(600, 100),
+				MaxSize = Vector2.new(1250, 160),
 			}),
 
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {

@@ -104,7 +104,7 @@ local function CreateMainFrame(props: any)
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
 			MinSize = Vector2.new(200, 80),
-			MaxSize = Vector2.new(400, 160),
+			MaxSize = Vector2.new(800, 320),
 		}),
 		UIListLayout = e("UIListLayout", {
 			FillDirection = Enum.FillDirection.Vertical,

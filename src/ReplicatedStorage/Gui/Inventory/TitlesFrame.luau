@@ -158,7 +158,7 @@ local function CreateTitlesFrame(props: Properties)
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
 			MinSize = Vector2.new(210, 230),
-			MaxSize = Vector2.new(420, 460),
+			MaxSize = Vector2.new(840, 920),
 		}),
 		Title = e(Title, {
 			Position = UDim2.fromScale(0.3, 0),

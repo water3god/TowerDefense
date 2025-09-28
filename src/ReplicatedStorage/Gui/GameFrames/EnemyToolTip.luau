@@ -64,7 +64,7 @@ local function CreateEnemyToolTip(Props: Props)
 		}, {
 			UISizeConstraint = e("UISizeConstraint", {
 				MinSize = Vector2.new(100, 50),
-				MaxSize = Vector2.new(225, 115),
+				MaxSize = Vector2.new(400, 200),
 			}),
 			UIAspectRatio = e("UIAspectRatioConstraint", {
 				AspectRatio = 2,

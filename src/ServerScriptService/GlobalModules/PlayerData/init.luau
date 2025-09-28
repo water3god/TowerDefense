@@ -7,6 +7,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local ServerStorage = game:GetService("ServerStorage")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local MarketplaceService = game:GetService("MarketplaceService")
 
 local Packages = ReplicatedStorage.Packages
 local Trove = require(Packages.Trove)
@@ -396,6 +397,12 @@ function PlayerData.new(Player: Player)
 		for i = #Data.Titles, 1, -1 do
 			if not TitleData[Data.Titles[i]] then
 				table.remove(Data.Titles, i)
+			end
+		end
+
+		for GamepassId, _ in pairs(ProductInfo.GamepassInfo) do
+			if MarketplaceService:UserOwnsGamePassAsync(self.Player.UserId, GamepassId) then
+				table.insert(Data.Gamepasses, GamepassId)
 			end
 		end
 
