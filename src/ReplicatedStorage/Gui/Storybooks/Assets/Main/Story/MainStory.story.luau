@@ -26,6 +26,7 @@ local Story = {
 			value = {
 				Enabled = true,
 				CompletedMaps = {},
+				CompletedInfinites = {},
 				Data = nil,
 				BoothTimeData = {
 					StartTime = workspace:GetServerTimeNow(),

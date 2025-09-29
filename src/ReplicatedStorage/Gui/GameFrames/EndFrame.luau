@@ -598,6 +598,7 @@ local function CreateVoteFrame(Props: Props)
 					AutomaticCanvasSize = Enum.AutomaticSize.X,
 					Position = UDim2.fromScale(0.5, 0.65),
 					Size = UDim2.fromScale(0.95, 0.65),
+					CanvasSize = UDim2.fromScale(2, 0),
 				},
 			}, {
 				UIListLayout = e("UIListLayout", {

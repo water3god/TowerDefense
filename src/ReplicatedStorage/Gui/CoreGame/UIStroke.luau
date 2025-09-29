@@ -124,6 +124,9 @@ function Funcs.UIStrokeAdvanced(Properties: PropertiesBasic)
 
 			if StrokeInst.Parent and StrokeInst.Parent:IsA("GuiObject") then
 				local function Set()
+					if not StrokeInst.Parent then
+						return
+					end
 					local AbsoluteSize = StrokeInst.Parent.AbsoluteSize
 					local TotalSize = (AbsoluteSize.X + AbsoluteSize.Y) / 2
 

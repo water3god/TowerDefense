@@ -400,11 +400,26 @@ function PlayerData.new(Player: Player)
 			end
 		end
 
+		local GamepassPromises = {}
 		for GamepassId, _ in pairs(ProductInfo.GamepassInfo) do
-			if MarketplaceService:UserOwnsGamePassAsync(self.Player.UserId, GamepassId) then
-				table.insert(Data.Gamepasses, GamepassId)
-			end
+			local NewPromise = Promise.try(function()
+				return MarketplaceService:UserOwnsGamePassAsync(self.Player.UserId, GamepassId)
+			end)
+				:andThen(function(HasGamepass)
+					if HasGamepass then
+						if not table.find(Data.Gamepasses, GamepassId) then
+							table.insert(Data.Gamepasses, GamepassId)
+						end
+					end
+				end)
+				:catch(function()
+					warn("Failed to check if player owns gamepass: " .. tostring(GamepassId))
+				end)
+
+			table.insert(GamepassPromises, NewPromise)
 		end
+
+		Promise.all(GamepassPromises):timeout(10):await()
 
 		SyncIds(Data.Products)
 		SyncIds(Data.Resources)
@@ -1305,7 +1320,8 @@ function PlayerData:CalculateInventorySpace()
 
 	if self:OwnsGamepass(1435928862) then
 		InventorySpace += 50
-	elseif self:OwnsGamepass(1435582002) then
+	end
+	if self:OwnsGamepass(1435582002) then
 		InventorySpace += 100
 	end
 

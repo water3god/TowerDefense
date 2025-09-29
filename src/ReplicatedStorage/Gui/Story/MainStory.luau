@@ -245,7 +245,7 @@ local function CreateMainStory(Properties: Properties)
 				UnitName = Unit,
 				Level = 1,
 				native = {
-					ZIndex = ResourceOrder(),
+					LayoutOrder = ResourceOrder(),
 				},
 			})
 		end
@@ -264,7 +264,7 @@ local function CreateMainStory(Properties: Properties)
 					Name = Reward.Resource,
 					Value = Value,
 					native = {
-						ZIndex = ResourceOrder(),
+						LayoutOrder = ResourceOrder(),
 					},
 				})
 			else
@@ -272,7 +272,7 @@ local function CreateMainStory(Properties: Properties)
 					Name = Reward.Resource,
 					LeftValue = string.format("%.2f%%", Reward.Count * 100),
 					native = {
-						ZIndex = ResourceOrder(),
+						LayoutOrder = ResourceOrder(),
 					},
 				})
 			end
@@ -649,7 +649,7 @@ local function CreateMainStory(Properties: Properties)
 			}),
 			ResourcesTitle = e(Main.TextLabel, {
 				native = {
-					Position = UDim2.fromScale(0.5, 0.2),
+					Position = UDim2.fromScale(0.5, 0.15),
 					Size = UDim2.fromScale(0.6, 0.25),
 					Text = "Resources",
 				},
@@ -658,6 +658,7 @@ local function CreateMainStory(Properties: Properties)
 				BarSize = 0.002,
 				native = {
 					AutomaticCanvasSize = Enum.AutomaticSize.X,
+					CanvasSize = UDim2.fromScale(2, 0),
 					Position = UDim2.fromScale(0.5, 0.65),
 					Size = UDim2.fromScale(0.95, 0.65),
 				},
