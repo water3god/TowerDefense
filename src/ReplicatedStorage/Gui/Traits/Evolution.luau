@@ -106,6 +106,10 @@ local function CreateEvolution(props: Properties)
 			local EvolutionData = Evolutions[CurrentUnitData.Unit]
 
 			if CurrentUnitData and EvolutionData and OpenFrame == "Unit" then
+				if CurrentUnitData.Level ~= 100 then
+					WarningData.Add("Unit must be level 100 to evolve!")
+					return
+				end
 				SetCurrentUnit({
 					Level = CurrentUnitData.Level,
 					Trait = CurrentUnitData.Trait,

@@ -32,6 +32,10 @@ EvolveUnit.SetCallback(function(Player: Player, Data: { UniqueId: string })
 		return
 	end
 
+	if Unit.Level ~= 100 then
+		return
+	end
+
 	local Evolution = Evolutions[Unit.Unit]
 
 	if Evolution then
