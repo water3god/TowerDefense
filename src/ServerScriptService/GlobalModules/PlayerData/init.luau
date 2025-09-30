@@ -421,6 +421,19 @@ function PlayerData.new(Player: Player)
 
 		Promise.all(GamepassPromises):timeout(10):await()
 
+		do
+			local UsedGamepasses = {}
+
+			for i = #Data.Gamepasses, 1, -1 do
+				local GamepassId = Data.Gamepasses[i]
+				if UsedGamepasses[GamepassId] then
+					table.remove(Data.Gamepasses, i)
+				else
+					UsedGamepasses[GamepassId] = true
+				end
+			end
+		end
+
 		SyncIds(Data.Products)
 		SyncIds(Data.Resources)
 		RemoveOld(SettingData.SettingIndexes, Data.Settings :: any)

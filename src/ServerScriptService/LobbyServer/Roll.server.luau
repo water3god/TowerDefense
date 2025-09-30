@@ -60,8 +60,16 @@ local Counts = { 1, 3, 10 }
 
 local Delays: { [Player]: { MinimumTime: number, Timer: any } } = {}
 
+local function GetDelayTime(Data: PlayerData.PlayerData)
+	if Data:OwnsGamepass(1502632065) then
+		return RollDelayTime / 2
+	else
+		return RollDelayTime
+	end
+end
+
 local function Roll(Data: PlayerData.PlayerData, Count: number, Auto: boolean)
-	Delays[Data.Player].MinimumTime = tick() + RollDelayTime
+	Delays[Data.Player].MinimumTime = tick() + GetDelayTime(Data)
 
 	local SendData = {}
 
@@ -121,7 +129,7 @@ end
 
 local function InitTimer(Data: PlayerData.PlayerData, Count: number)
 	local TimerTrove = Trove.new()
-	local Time = TimerTrove:Add(Timer.new(RollDelayTime))
+	local Time = TimerTrove:Add(Timer.new(GetDelayTime(Data)))
 	Time.AllowDrift = false
 
 	Time.Tick:Connect(function()

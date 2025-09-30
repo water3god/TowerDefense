@@ -215,6 +215,40 @@ function Hooks.useZapManyConnection<T...>(
 	end, { Event, cachedCallback } :: { unknown })
 end
 
+function Hooks.usePlayers()
+	local PlayersList, SetPlayers = React.useState({})
+
+	React.useEffect(function()
+		SetPlayers(Players:GetPlayers())
+	end, {})
+
+	Hooks.useEventConnection(Players.PlayerAdded, function(OtherPlayer: Player)
+		SetPlayers(function(Table)
+			if not table.find(Table, OtherPlayer) then
+				table.insert(Table, OtherPlayer)
+				Table = table.clone(Table)
+			end
+
+			return Table
+		end)
+	end, {})
+
+	Hooks.useEventConnection(Players.PlayerRemoving, function(OtherPlayer: Player)
+		SetPlayers(function(Table)
+			local Index = table.find(Table, OtherPlayer)
+
+			if Index then
+				table.remove(Table, Index)
+				Table = table.clone(Table)
+			end
+
+			return Table
+		end)
+	end, {})
+
+	return PlayersList
+end
+
 function Hooks.useCamera()
 	return React.useMemo(function()
 		return workspace.CurrentCamera

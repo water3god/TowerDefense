@@ -37,6 +37,7 @@ local PurchaseContext = require(StoreFolder.PurchaseContext)
 
 local Components = Gui.Components
 local UnitLabel = require(Components.UnitLabel)
+local GiftFrame = require(Components.GiftFrame)
 
 local Shared = ReplicatedStorage.Shared
 local ProductInfo = require(Shared.ProductInfo)
@@ -85,6 +86,7 @@ export type OfferProps = {
 	ProductId: number,
 	GiftId: number?,
 	Cost: number,
+	GiftClick: () -> (),
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
@@ -93,14 +95,6 @@ local function CreateOffer(props: OfferProps)
 	local BuyClick = React.useCallback(function()
 		MarketplaceService:PromptProductPurchase(Player, props.ProductId)
 	end, { props.ProductId })
-
-	local GiftClick = React.useCallback(function()
-		if props.GiftId then
-			MarketplaceService:PromptProductPurchase(Player, props.GiftId)
-		else
-			warn("No GiftId found for offer: " .. props.Name)
-		end
-	end, { props.GiftId })
 
 	local Rewards = React.useMemo(function()
 		local Frames: { [string]: React.Node } = {}
@@ -228,7 +222,7 @@ local function CreateOffer(props: OfferProps)
 					Position = UDim2.fromScale(0.89, 0.825),
 					Size = UDim2.fromScale(0.3, 0.2),
 					Text = "",
-					[React.Event.MouseButton1Click] = GiftClick,
+					[React.Event.MouseButton1Click] = props.GiftClick,
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {
@@ -284,6 +278,9 @@ local function CreateStoreFrame(Properties: Properties)
 		SetOpenFrame(OpenFrameInput)
 	end, {})
 
+	local GiftFrameData: { ProductId: number, GiftId: number }?, SetGiftFrameData =
+		React.useState(nil :: { ProductId: number, GiftId: number }?)
+
 	local MainFrames = React.useMemo(function()
 		if not PurchaseData.Loaded then
 			return {}
@@ -304,7 +301,14 @@ local function CreateStoreFrame(Properties: Properties)
 						Name = ProductData.ProductInfo.Name,
 						Image = Data.Icon or "rbxassetid://3385224877",
 						ProductId = Id,
-						GiftId = GiftId,
+						GiftClick = function()
+							if GiftId then
+								SetGiftFrameData({
+									ProductId = Id,
+									GiftId = GiftId,
+								})
+							end
+						end,
 						Cost = ProductData.ProductInfo.PriceInRobux,
 						Rewards = Data.Rewards,
 						Color = Data.Color,
@@ -389,9 +393,14 @@ local function CreateStoreFrame(Properties: Properties)
 	end, { HoveredProduct, OpenFrame } :: { unknown })
 
 	local GiftFunc = React.useCallback(function()
+		print("Ran")
 		if OpenFrame == "Products" or OpenFrame == "Gamepasses" then
-			if GiftId then
-				MarketplaceService:PromptProductPurchase(Player, GiftId)
+			if GiftId and HoveredProduct then
+				SetGiftFrameData({
+					ProductId = HoveredProduct,
+					GiftId = GiftId,
+				})
+				--MarketplaceService:PromptProductPurchase(Player, GiftId)
 			end
 		elseif OpenFrame == "Offers" then
 			return
@@ -439,6 +448,13 @@ local function CreateStoreFrame(Properties: Properties)
 			BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
 		}, Properties.native),
 	}, {
+		GiftFrame = GiftFrameData and e(GiftFrame, {
+			ProductId = GiftFrameData.ProductId,
+			GiftId = GiftFrameData.GiftId,
+			CloseClick = function()
+				SetGiftFrameData(nil)
+			end,
+		}),
 		UISizeConstraint = e("UISizeConstraint", {
 			MinSize = Vector2.new(340, 220),
 			MaxSize = Vector2.new(1360, 880),

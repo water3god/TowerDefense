@@ -193,3 +193,12 @@ event RareUnitMessage = {
 		UnitName: string.binary,
 	},
 }
+
+-- Store --
+
+event SendGift = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: Instance.Player?,
+}

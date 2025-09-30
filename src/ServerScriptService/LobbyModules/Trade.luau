@@ -644,7 +644,7 @@ function Trade:_Complete()
 	end
 
 	for _, UniqueId in ipairs(self.Player2Units) do
-		local UnitData = Data1:GetUnitFromId(UniqueId)
+		local UnitData = Data2:GetUnitFromId(UniqueId)
 
 		if UnitData then
 			Data1:AddUnitFromExisting(UnitData)

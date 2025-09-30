@@ -76,7 +76,7 @@ local function HandleData(PData: PlayerData.PlayerData)
 			end
 		end)
 		:catch(function(Err)
-			warn("Error when checking/awarding badges: " .. Err)
+			warn("Error when checking/awarding badges: " .. tostring(Err))
 		end)
 
 	PData.LeveledUp:Connect(CheckLevel)

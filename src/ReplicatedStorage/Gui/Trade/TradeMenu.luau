@@ -23,6 +23,9 @@ local Title = require(CoreGame.Title)
 local UIStroke = require(CoreGame.UIStroke)
 local Hooks = require(CoreGame.Hooks)
 
+local GameFrames = Gui.GameFrames
+local EquippedUnitsContext = require(GameFrames.EquippedUnitsContext)
+
 local Trade = Gui.Trade
 local TradeContext = require(Trade.TradeContext)
 
@@ -193,6 +196,7 @@ end
 local function CreateTradeMenu(Properties: Properties)
 	local TradeStatuses = React.useContext(TradeContext.Context)
 	local Settings = React.useContext(SettingsContext.Context)
+	local EquippedUnits = React.useContext(EquippedUnitsContext.Context)
 
 	local PolicyInfo = Hooks.usePolicyInfo()
 
@@ -211,8 +215,8 @@ local function CreateTradeMenu(Properties: Properties)
 	local Enabled, SetEnabled = React.useState(false)
 
 	React.useEffect(function()
-		SetEnabled(PolicyInfo.IsPaidItemTradingAllowed and Settings.CanTrade)
-	end, { PolicyInfo, Settings } :: { unknown })
+		SetEnabled(PolicyInfo.IsPaidItemTradingAllowed and Settings.CanTrade and EquippedUnits.GlobalLevel >= 50)
+	end, { PolicyInfo, Settings, EquippedUnits } :: { unknown })
 
 	return e(Main.ImageLabel, {
 		native = Join({
@@ -263,7 +267,7 @@ local function CreateTradeMenu(Properties: Properties)
 			NoPlayersLabel = e(Main.TextLabel, {
 				native = {
 					Size = UDim2.fromScale(1, 0.8),
-					Text = "Trading Disabled",
+					Text = EquippedUnits.GlobalLevel < 50 and "Level 50 Required" or "Trading Disabled",
 				},
 			}),
 		}),

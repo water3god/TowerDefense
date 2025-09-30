@@ -361,8 +361,8 @@ local function CreateRollMain(props: Properties)
 					Text = "Units",
 				},
 			}, {
-				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.002,
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.02,
 				}),
 			}),
 		}),
@@ -384,8 +384,8 @@ local function CreateRollMain(props: Properties)
 					Text = string.format("Auto Roll: %s", if InAutoSell then "On" else "Off"),
 				},
 			}, {
-				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.002,
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.02,
 				}),
 			}),
 		}),
@@ -407,8 +407,8 @@ local function CreateRollMain(props: Properties)
 					Text = SummonText,
 				},
 			}, {
-				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.002,
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.02,
 				}),
 			}),
 		}),
@@ -444,8 +444,8 @@ local function CreateRollMain(props: Properties)
 					Text = string.format("x%u", RollMultiplier),
 				},
 			}, {
-				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.002,
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.03,
 				}),
 			}),
 		}),

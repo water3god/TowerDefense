@@ -137,6 +137,9 @@ if not RunService:IsRunning() then
 		TeleportBack = table.freeze({
 			Fire = noop
 		}),
+		SendGift = table.freeze({
+			Fire = noop
+		}),
 		RollTrait = table.freeze({
 			Fire = noop
 		}),
@@ -189,13 +192,13 @@ local remotes = ReplicatedStorage:WaitForChild("Zap4")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
+export type Level = (number)
 export type QuestRemoteInfo = ({
 	["Id"]: (string),
 	["CurrentValue"]: (number),
 	["Redeemed"]: (boolean),
 	["Data"]: ((unknown)),
 })
-export type Level = (number)
 
 local function SendEvents()
 	if outgoing_used ~= 0 then
@@ -597,6 +600,20 @@ local returns = {
 				bool_10 = bit32.bor(bool_10, 0b0000000000000001)
 			end
 			buffer.writeu8(outgoing_buff, bool_10_pos_1, bool_10)
+		end,
+	},
+	SendGift = {
+		Fire = function(Value: ((Player)?))
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
+			local bool_11 = 0
+			local bool_11_pos_1 = alloc(1)
+			if Value ~= nil then
+				bool_11 = bit32.bor(bool_11, 0b0000000000000001)
+				assert(Value:IsA("Player"), "received instance is not of the Player class!")
+				table.insert(outgoing_inst, Value)
+			end
+			buffer.writeu8(outgoing_buff, bool_11_pos_1, bool_11)
 		end,
 	},
 	RollTrait = {

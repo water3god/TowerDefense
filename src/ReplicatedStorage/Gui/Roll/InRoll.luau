@@ -45,6 +45,7 @@ local RollService = require(LobbyClient.RollService)
 local GlobalClient = Client.GlobalClient
 local SFXService = require(GlobalClient.SFXService)
 local InventoryService = require(GlobalClient.InventoryService)
+local PurchaseService = require(GlobalClient.PurchaseService)
 
 local ModelStorage = ReplicatedStorage.ModelStorage
 local Emitters = ModelStorage.Emitters
@@ -80,6 +81,14 @@ export type ConnectedProperties = {
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
+
+local function CalculateDelayTime()
+	if PurchaseService.OwnsGamepass(1502632065) then
+		return Constants.ROLLDELAYTIME / 2
+	else
+		return Constants.ROLLDELAYTIME
+	end
+end
 
 local function ChangeSize(Sequence: NumberSequence, Ratio: number)
 	local NewKeypoints = {}
@@ -311,7 +320,7 @@ local function CreateInRoll(props: Properties)
 		end
 
 		local TimeDifference = workspace:GetServerTimeNow() - props.LastFiredTime
-		local DelayTime = Constants.ROLLDELAYTIME * Constants.ROLLPERCENT - TimeDifference
+		local DelayTime = CalculateDelayTime() * Constants.ROLLPERCENT - TimeDifference
 		if not props.AutoRoll then
 			if DelayTime <= 0 then
 				SetVisible(false)
@@ -331,7 +340,7 @@ local function CreateInRoll(props: Properties)
 			if
 				props.CloseClick
 				and workspace:GetServerTimeNow() - props.LastFiredTime
-					> Constants.ROLLDELAYTIME * Constants.ROLLPERCENT
+					> CalculateDelayTime() * Constants.ROLLPERCENT
 			then
 				if not props.AutoRoll then
 					SetVisible(false)

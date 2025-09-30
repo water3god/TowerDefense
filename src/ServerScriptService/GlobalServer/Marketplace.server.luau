@@ -10,9 +10,11 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 local Network = require(ReplicatedStorage.Network.Server)
+
 local OwnedGamepasses = Network.OwnedGamepasses
 local UseProduct = Network.UseProduct
 local SendWarning = Network.SendWarning
+local SendGift = Network.SendGift
 
 local Shared = ReplicatedStorage.Shared
 local ProductInfo = require(Shared.ProductInfo)
@@ -103,6 +105,16 @@ type ReceiptInfo = {
 	ProductPurchaseChannel: Enum.ProductPurchaseChannel,
 }
 
+local PlayerGifts: { [Player]: Player? } = {}
+
+SendGift.SetCallback(function(Player: Player, OtherPlayer: Player?)
+	if Player == OtherPlayer then
+		SendWarning.Fire(Player, "You cannot send a gift to yourself.", Color3.fromRGB(255, 0, 0))
+		return
+	end
+	PlayerGifts[Player] = OtherPlayer
+end)
+
 MarketplaceService.ProcessReceipt = function(ReceiptInfo: ReceiptInfo): Enum.ProductPurchaseDecision
 	local Player = Players:GetPlayerByUserId(ReceiptInfo.PlayerId)
 
@@ -124,9 +136,38 @@ MarketplaceService.ProcessReceipt = function(ReceiptInfo: ReceiptInfo): Enum.Pro
 				local GiftId = GiftIds[ReceiptInfo.ProductId]
 
 				if GiftId then
-					Data:AddProduct(GiftId)
 					Data:AddRobuxSpent(ReceiptInfo.CurrencySpent)
-					Data.Profile:Save()
+
+					local OtherPlayer = PlayerGifts[Player]
+
+					if OtherPlayer then
+						local OtherData = PlayerData.GetPlayerData(OtherPlayer)
+
+						if OtherData then
+							SendWarning.Fire(
+								Player,
+								string.format("You have successfully sent a gift to %s!", OtherPlayer.Name),
+								Color3.fromRGB(0, 255, 0)
+							)
+							SendWarning.Fire(
+								OtherPlayer,
+								string.format("You have received a gift from %s!", Player.Name),
+								Color3.fromRGB(0, 255, 0)
+							)
+
+							if Products[GiftId] then
+								Products[GiftId](OtherData)
+							elseif ProductInfo.GamepassInfo[GiftId] then
+								OtherData:RedeemGamepass(GiftId)
+							else
+								warn(string.format("NO PRODUCT WITH ID: %u", GiftId))
+							end
+						end
+					else
+						Data:AddProduct(GiftId)
+						Data.Profile:Save()
+					end
+
 					return Enum.ProductPurchaseDecision.PurchaseGranted
 				else
 					task.spawn(function()
@@ -226,6 +267,10 @@ end
 
 for _, Data in pairs(PlayerData.GetDatas()) do
 	OnPlayerData(Data)
+
+	Data.Destroying:Connect(function()
+		PlayerGifts[Data.Player] = nil
+	end)
 end
 PlayerData.DataAdded:Connect(OnPlayerData)
 

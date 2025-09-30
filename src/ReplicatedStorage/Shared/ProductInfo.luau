@@ -135,6 +135,11 @@ local GamepassInfo: { [number]: ProductData } = {
 		Rarity = "Epic",
 		Priority = 5,
 	},
+	[1502632065] = {
+		Name = "Fast Summon",
+		Rarity = "Epic",
+		Priority = 6,
+	},
 }
 
 -- GiftId = ProductId --
@@ -146,6 +151,8 @@ local GiftIds: { [number]: number } = {
 
 	[3391015063] = 1435928862, -- +50 Inventory Space --
 	[3391015167] = 1435582002, -- +100 Inventory Space --
+
+	[3418003609] = 1502632065, -- Fast Summon --
 
 	-- Products --
 	[3370830163] = 3359654911, -- 10 Omen Coins --
