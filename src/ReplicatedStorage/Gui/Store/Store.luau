@@ -31,6 +31,7 @@ local Hooks = require(CoreGame.Hooks)
 local Inventory = Gui.Inventory
 local ProductFrame = require(Inventory.ProductFrame)
 local ResourceFrame = require(Inventory.ResourceFrame)
+local StatsFrame = require(Inventory.StatsFrame)
 
 local StoreFolder = Gui.Store
 local PurchaseContext = require(StoreFolder.PurchaseContext)
@@ -270,9 +271,15 @@ local function CreateStoreFrame(Properties: Properties)
 	local OpenFrame, SetOpenFrame = React.useState("Offers")
 	local HoveredProduct: number?, SetHovered = React.useState(nil :: number?)
 
+	local StatsProduct: string?, SetStatsProduct = React.useState(nil :: string?)
+
 	React.useLayoutEffect(function()
 		SetHovered(nil)
 	end, { OpenFrame })
+
+	local StatsCloseClick = React.useCallback(function()
+		SetStatsProduct(nil)
+	end, {})
 
 	local OnFrameButtonClick = React.useCallback(function(OpenFrameInput: string)
 		SetOpenFrame(OpenFrameInput)
@@ -280,6 +287,22 @@ local function CreateStoreFrame(Properties: Properties)
 
 	local GiftFrameData: { ProductId: number, GiftId: number }?, SetGiftFrameData =
 		React.useState(nil :: { ProductId: number, GiftId: number }?)
+
+	local GiftCloseClick = React.useCallback(function()
+		SetGiftFrameData(nil)
+	end, {})
+
+	local StatsClick = React.useCallback(function()
+		if not HoveredProduct then
+			return
+		end
+
+		local Data = ProductInfo.GetProductFromIdOnly(HoveredProduct)
+
+		if Data then
+			SetStatsProduct(Data.Name)
+		end
+	end, { HoveredProduct, PurchaseData } :: { unknown })
 
 	local MainFrames = React.useMemo(function()
 		if not PurchaseData.Loaded then
@@ -448,12 +471,17 @@ local function CreateStoreFrame(Properties: Properties)
 			BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
 		}, Properties.native),
 	}, {
+		StatsFrame = e(StatsFrame, {
+			Type = "Product",
+			Level = 1,
+			Visible = StatsProduct ~= nil,
+			Name = StatsProduct,
+			CloseClick = StatsCloseClick,
+		}),
 		GiftFrame = GiftFrameData and e(GiftFrame, {
 			ProductId = GiftFrameData.ProductId,
 			GiftId = GiftFrameData.GiftId,
-			CloseClick = function()
-				SetGiftFrameData(nil)
-			end,
+			CloseClick = GiftCloseClick,
 		}),
 		UISizeConstraint = e("UISizeConstraint", {
 			MinSize = Vector2.new(340, 220),
@@ -543,6 +571,7 @@ local function CreateStoreFrame(Properties: Properties)
 					Position = UDim2.fromScale(0.78, 0.67),
 					Size = UDim2.fromScale(0.21, 0.12),
 					Image = "rbxassetid://77078349522524",
+					[React.Event.MouseButton1Click] = StatsClick,
 				},
 			}, {
 				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {

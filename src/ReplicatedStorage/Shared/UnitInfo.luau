@@ -49,7 +49,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Alexander The Great"] = {
 		Rarity = "Mythic",
-		Description = "A fearless conqueror who united empires with unmatched strategy and ambition. His legacy shaped the ancient world—and your battlefield.",
+		Description = "Powerful single-target fighter; delivers timed strikes to priority enemies.",
 		Image = "rbxassetid://88336644068695",
 
 		UnitData = {
@@ -83,7 +83,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Leonidas"] = {
 		Rarity = "Godly",
-		Description = "Spartan king who defied fate with 300 warriors. A wall of muscle, honor, and pure determination. Enemies fear his final stand.",
+		Description = "Frontline melee; consistent single-target hits with solid stats.",
 		Image = "rbxassetid://90542218956315",
 
 		UnitData = {
@@ -117,7 +117,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Pericles"] = {
 		Rarity = "Epic",
-		Description = "Master of politics and warfare. A golden-tongued leader who boosts allies, inspires armies, and fortifies defenses with sharp intellect.",
+		Description = "Support aura (Damage): passively increases nearby allies' damage.",
 		Image = "rbxassetid://106430561053468",
 
 		UnitData = {
@@ -152,7 +152,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Pyrrhus"] = {
 		Rarity = "Common",
-		Description = "A brilliant tactician whose costly victories coined the phrase “Pyrrhic victory.” He wins—but at what price?",
+		Description = "Reliable single-target melee; straightforward damage dealer.",
 		Image = "rbxassetid://112207752049885",
 
 		UnitData = {
@@ -180,7 +180,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Socrates"] = {
 		Rarity = "Rare",
-		Description = "A philosopher-warrior who questions everything—especially your enemies' life choices. Wields wisdom like a weapon, breaking minds before bodies.",
+		Description = "Economy unit: generates coins every wave (does not attack).",
 		Image = "rbxassetid://92733001424959",
 
 		UnitData = {
@@ -218,7 +218,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Themistocles"] = {
 		Rarity = "Legendary",
-		Description = "Naval genius of Athens. His cunning tactics crushed Persia at sea. Commands water-based units and outmaneuvers enemies with ease.",
+		Description = "Support aura (Range): passively increases nearby allies' range.",
 		Image = "rbxassetid://101001750083065",
 
 		UnitData = {
@@ -253,7 +253,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Julius Caesar"] = {
 		Rarity = "Legendary",
-		Description = "The conqueror of Gaul. Strategic, ruthless, and charismatic. Leads elite troops with cold precision—cross him, and you’ll regret it.",
+		Description = "Fast single-target melee; quick, precise strikes.",
 		Image = "rbxassetid://96743852473893",
 
 		UnitData = {
@@ -287,7 +287,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Pompey"] = {
 		Rarity = "Common",
-		Description = "The general who ruled the seas. Commands disciplined legions and swift naval support. His tactics are as sharp as his ambition.",
+		Description = "Ranged archer: fires traveling arrows at distant targets.",
 		Image = "rbxassetid://99439817623832",
 
 		UnitData = {
@@ -315,7 +315,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Trajan"] = {
 		Rarity = "Godly",
-		Description = "Rome's greatest builder and conqueror. Expands your base, strengthens structures, and commands with both hammer and sword.",
+		Description = "Summoner: periodically summons Legionaries to fight alongside him.",
 		Image = "rbxassetid://97945746294799",
 		UnitData = {
 			[0] = {
@@ -348,31 +348,31 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Spartacus"] = {
 		Rarity = "Rare",
-		Description = "The rebel gladiator. Breaks chains, bones, and expectations. Leads slave uprisings with unstoppable rage and raw strength.",
+		Description = "Melee attacker with activatable Rage: after a brief windup, greatly increases his attack speed.",
 		Image = "rbxassetid://121520471894961",
 
 		UnitData = {
 			[0] = {
-				Damage = { 12 },
-				FireRate = 2,
-				Range = 13,
+				Damage = { 15 },
+				FireRate = 1.3,
+				Range = 12,
 				Cost = 300,
 			},
 			[1] = {
-				Damage = { 21 },
-				FireRate = 1.5,
+				Damage = { 30 },
+				FireRate = 1.2,
 				Range = 13,
 				Cost = 400,
 			},
 			[2] = {
-				Damage = { 32 },
-				FireRate = 1.5,
+				Damage = { 50 },
+				FireRate = 1,
 				Range = 15,
 				Cost = 600,
 			},
 			[3] = {
-				Damage = { 50 },
-				FireRate = 1.25,
+				Damage = { 80 },
+				FireRate = 0.8,
 				Range = 15,
 				Cost = 1000,
 			},
@@ -383,7 +383,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 				MinimumLevel = 0,
 				BackgroundColor = ColorSequence.new(Color3.new(0.803922, 0.133333, 0.133333)),
 				Cooldown = 30,
-				Icon = "rbxassetid://103266364834335",
+				Icon = "rbxassetid://77775640392808",
 				Length = 10,
 				Name = "Rage",
 			},
@@ -391,7 +391,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Cicero"] = {
 		Rarity = "Epic",
-		Description = "Master of rhetoric and reason. Weak in battle but buffs allies with persuasive speeches and cripples foes with sharp logic.",
+		Description = "Economy unit: generates coins every wave (does not attack).",
 		Image = "rbxassetid://80438308188618",
 
 		UnitData = {
@@ -429,7 +429,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Augustus"] = {
 		Rarity = "Mythic",
-		Description = "The first emperor. Stabilizer of empires and perfectionist of control. Boosts economy, morale, and order across your defenses.",
+		Description = "Solid single-target melee with improving speed and damage.",
 		Image = "rbxassetid://125386565080263",
 
 		UnitData = {
@@ -463,7 +463,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["William the Conqueror"] = {
 		Rarity = "Mythic",
-		Description = "Master of invasion. Crushes defenses with calculated aggression and powerful siege support. The battlefield bends to his rule.",
+		Description = "Multi-strike attacker: lands 3 consecutive hits per attack cycle.",
 		Image = "rbxassetid://127237964660825",
 
 		UnitData = {
@@ -497,7 +497,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Robert the Bruce"] = {
 		Rarity = "Common",
-		Description = "Scottish king and freedom fighter. Fights with guerrilla tactics, rallying peasants and knights alike in a storm of resistance.",
+		Description = "Single-target melee; dependable early-game damage.",
 		Image = "rbxassetid://72392021367991",
 
 		UnitData = {
@@ -525,7 +525,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Richard the Lionheart"] = {
 		Rarity = "Godly",
-		Description = "Crusader king with unmatched bravery. Leads knights into battle with roaring strength and undying loyalty to the cross.",
+		Description = "Line AOE: slashes in a line, damaging multiple enemies along the path.",
 		Image = "rbxassetid://131934169872463",
 
 		UnitData = {
@@ -559,7 +559,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Charlemagne"] = {
 		Rarity = "Epic",
-		Description = "Father of Europe. Commands holy knights and scholars. Spreads law and steel across the battlefield with unstoppable unity.",
+		Description = "Single-target melee; balanced stats through upgrades.",
 		Image = "rbxassetid://135616277878704",
 
 		UnitData = {
@@ -593,7 +593,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Joan of Arc"] = {
 		Rarity = "Legendary",
-		Description = "Divinely inspired warrior-maiden. Fights with faith-fueled fervor and inspires troops with holy conviction and fierce courage.",
+		Description = "Support aura (Attack Speed): passively increases nearby allies' fire rate.",
 		Image = "rbxassetid://75620746945992",
 
 		UnitData = {
@@ -628,7 +628,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Leif Erikson"] = {
 		Rarity = "Rare",
-		Description = "Viking explorer. Strikes from sea and snow. Hardy, wild, and fearless—his raids weaken enemies before the real battle begins.",
+		Description = "Summoner: periodically calls Viking allies to fight; stronger allies at higher levels.",
 		Image = "rbxassetid://111147011911639",
 
 		UnitData = {
@@ -668,7 +668,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Ptolemy"] = {
 		Rarity = "Common",
-		Description = "Scholar, general, and ruler. Blends Hellenistic knowledge with Egyptian power. Summons star charts—and maybe meteor showers.",
+		Description = "Ranged archer: fires swift projectiles at long range.",
 		Image = "rbxassetid://84772192162069",
 
 		UnitData = {
@@ -696,7 +696,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Cleopatra"] = {
 		Rarity = "Rare",
-		Description = "Queen of charm and cunning. Commands loyalty and strikes with political precision. Beauty and brains make her battlefield royalty.",
+		Description = "Ranged archer: very fast arrows with excellent range.",
 		Image = "rbxassetid://128569882185944",
 
 		UnitData = {
@@ -730,7 +730,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Narmer"] = {
 		Rarity = "Epic",
-		Description = "The first pharaoh. United Upper and Lower Egypt through conquest and will. Ancient but deadly—commands unity and brute force.",
+		Description = "Single-target melee; steady damage output.",
 		Image = "rbxassetid://123302243147194",
 
 		UnitData = {
@@ -764,7 +764,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Akhenaten"] = {
 		Rarity = "Legendary",
-		Description = "The heretic king. Worshipper of one god, master of disruption. Alters enemy formations with divine chaos and radiant power.",
+		Description = "Support (Base Heal): heals the base after each wave based on his Damage stat.",
 		Image = "rbxassetid://140319991588251",
 
 		UnitData = {
@@ -799,7 +799,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Ramesses II"] = {
 		Rarity = "Mythic",
-		Description = "The living god of war. Leads with overwhelming might and divine authority. His name alone strikes fear into enemy lines.",
+		Description = "Double-strike attacker: hits twice per attack for burst damage.",
 		Image = "rbxassetid://84378323969306",
 
 		UnitData = {
@@ -839,7 +839,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Tutankhamun"] = {
 		Rarity = "Godly",
-		Description = "The boy king, shrouded in mystery and gold. His ancient magic resurrects fallen allies and curses trespassers of his legacy.",
+		Description = "Support auras (Triple): boosts allies' Damage, Attack Speed, and Range.",
 		Image = "rbxassetid://127377869922808",
 
 		UnitData = {
@@ -874,7 +874,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Cao Cao"] = {
 		Rarity = "Mythic",
-		Description = "Warlord and poet of the Three Kingdoms. Commands with ruthless efficiency and inspires troops with literary flair.",
+		Description = "Single-target melee; solid stats and scaling.",
 		Image = "rbxassetid://73915227461302",
 
 		UnitData = {
@@ -908,7 +908,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	},
 	["Qin Shi Huang"] = {
 		Rarity = "Godly",
-		Description = "The first emperor of China. Unites warring states and commands legions of terracotta warriors to defend his empire.",
+		Description = "Support auras (Triple): boosts allies' Damage, Attack Speed, and Range.",
 		Image = "rbxassetid://72049353436342",
 
 		UnitData = {

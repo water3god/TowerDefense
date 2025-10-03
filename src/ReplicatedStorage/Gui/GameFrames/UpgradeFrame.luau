@@ -223,16 +223,19 @@ local function CreateAbilityFrame(props: AbilityProps)
 			if Times[3] then
 				return tostring(math.floor(math.clamp(Times[1] - Times[2] + props.Length, 0, props.Length)))
 			else
-				if Times[1] == 0 then
+				return ""
+				--[[if Times[1] == 0 then
 					return ""
 				else
 					return tostring(math.floor(math.clamp(Times[1] - Times[2] + props.Cooldown, 0, props.Cooldown)))
-				end
+				end]]
 			end
 		end),
 		BackgroundColor = props.BackgroundColor,
 		Hovered = true,
-		Icon = props.Icon,
+		MainImage = props.Icon,
+		NameStrokeColor = ColorSequence.new(Color3.new(0, 0, 0)),
+		RightStrokeColor = ColorSequence.new(Color3.new(0, 0, 0)),
 		OnClick = Click,
 		native = Join({}, props.native),
 	}, {
@@ -244,11 +247,14 @@ local function CreateAbilityFrame(props: AbilityProps)
 				Position = UDim2.fromScale(0.5, 1),
 				ZIndex = 5,
 				Size = React.joinBindings({ Time, TotalTime, InAbility }):map(function(Times: any)
-					if Times[3] then
-						return UDim2.fromScale(0, 0)
-					else
-						return UDim2.fromScale(1, math.clamp(Times[1] / Times[2], 0, 1))
-					end
+					local TimeNum = Times[1]
+					local TotalTimeNum = Times[2]
+					local InAbilityBool = Times[3]
+					--if not InAbilityBool then
+					return UDim2.fromScale(0, 0)
+					--else
+					--return UDim2.fromScale(1, math.clamp(TimeNum / TotalTimeNum, 0, 1))
+					--end
 				end),
 			},
 		}),

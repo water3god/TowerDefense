@@ -61,12 +61,12 @@ local Story = {
 				Abilities = {
 					{
 						MinimumLevel = 0,
-						LastUsed = 0,
+						LastUsed = workspace:GetServerTimeNow(),
 						Name = "Rage",
 						Icon = "",
 						Length = 10,
 						Cooldown = 30,
-						BackgroundColor = ColorSequence.new(Color3.new()),
+						BackgroundColor = ColorSequence.new(Color3.new(0.921569, 0.054902, 0.054902)),
 						Func = function() end,
 					},
 				},
@@ -74,6 +74,9 @@ local Story = {
 		}, {
 			UpgradeFrame = e(UpgradeFrame, {
 				IsVisible = true,
+				native = {
+					Size = UDim2.fromScale(0.8, 0.5),
+				},
 			}),
 		})
 		return Component

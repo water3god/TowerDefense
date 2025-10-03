@@ -42,10 +42,13 @@ local function CreateDisplay(props: DisplayProps)
 			AspectRatio = 7.8,
 		}),
 		Border = e(Main.ImageLabel, {
-			Image = "rbxassetid://117640397950526",
+			native = {
+				Image = "rbxassetid://117640397950526",
+				Position = UDim2.fromScale(0.553, 0.5),
+			},
 		}, {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 7,
+				AspectRatio = 6.98,
 			}),
 		}),
 	}, props.children)
@@ -59,4 +62,7 @@ end
 
 local function Connected(props) end
 
-return CreateBossDisplay
+return {
+	Create = CreateDisplay,
+	Connected = Connected,
+}

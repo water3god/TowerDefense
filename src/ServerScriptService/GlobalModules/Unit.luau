@@ -57,6 +57,7 @@ export type UserInput = {
 	CFrame: CFrame,
 	Level: number,
 	Trait: string?,
+	GlobalSpeed: number?,
 
 	ReplicateTo: { Player }?,
 
@@ -92,6 +93,8 @@ type UnitData = {
 	ReplicateTo: { Player },
 	IsGlobal: boolean,
 	TotalCost: number,
+
+	GlobalSpeed: number,
 
 	CFrame: CFrame,
 	RatioData: { [string]: { [string]: { Type: string, Ratio: number, EndTime: number } } },
@@ -138,12 +141,15 @@ type UnitData = {
 
 	Damaged: Signal.Signal<number>,
 	CoinsAdded: Signal.Signal<number>,
+	GlobalSpeedChanged: Signal.Signal<number>,
 
 	Destroying: Signal.Signal<>,
 }
 
 type UnitImpl = {
 	new: (UserInput: UserInput, Data: UnitInput) -> Unit,
+
+	ChangeGlobalSpeed: (self: Unit, Speed: number) -> (),
 
 	Attack: (self: Unit) -> (),
 	ChangePriority: (self: Unit) -> (),
@@ -275,6 +281,7 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 
 	self.Damaged = self._Trove:Construct(Signal)
 	self.CoinsAdded = self._Trove:Construct(Signal)
+	self.GlobalSpeedChanged = self._Trove:Construct(Signal)
 
 	self.Destroying = self._Trove:Construct(Signal)
 
@@ -283,6 +290,7 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 
 	self.CFrame = UserInput.CFrame
 	self.OwnerId = UserInput.OwnerId
+
 	if UserInput.OwnerId then
 		self.Owner = Players:GetPlayerByUserId(UserInput.OwnerId)
 	end
@@ -294,6 +302,8 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 
 	self.DefaultRuns = SyncFuncs(Data.DefaultRuns, HighestLevel)
 	self.AttackFuncs = SyncFuncs(Data.AttackFuncs, HighestLevel)
+
+	self.GlobalSpeed = UserInput.GlobalSpeed or 1
 
 	self.LastFired = 0
 	self.Level = UserInput.Level
@@ -376,9 +386,7 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 			if Cleanup then
 				local DefaultRunTrove = Trove.new()
 
-				DefaultRunTrove:Add(function()
-					Cleanup()
-				end)
+				DefaultRunTrove:Add(Cleanup)
 
 				DefaultRunTrove:Connect(self.Upgraded, DefaultRunTrove:WrapClean())
 				DefaultRunTrove:Connect(self.Destroying, DefaultRunTrove:WrapClean())
@@ -399,10 +407,32 @@ function Unit.new(UserInput: UserInput, Data: UnitInput)
 	OnLevel(self.Level)
 	self.Upgraded:Connect(OnLevel)
 
+	--[[do
+		local function OnSpeedChanged(Speed: number)
+			return
+		end
+
+		local OldSpeed = 1
+		local function HandleGlobalSpeed(Speed: number)
+			if Speed ~= OldSpeed then
+				OnSpeedChanged(Speed)
+			end
+			OldSpeed = Speed
+		end
+
+		HandleGlobalSpeed(self.GlobalSpeed)
+		self.GlobalSpeedChanged:Connect(HandleGlobalSpeed)
+	end]]
+
 	Units[self.UniqueId] = self
 	self.Added:Fire(self)
 
 	return self
+end
+
+function Unit:ChangeGlobalSpeed(Speed: number)
+	self.GlobalSpeed = Speed
+	self.GlobalSpeedChanged:Fire(Speed)
 end
 
 function Unit:UpdateEnemy()

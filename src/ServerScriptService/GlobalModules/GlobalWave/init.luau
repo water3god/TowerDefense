@@ -70,6 +70,8 @@ type Data = {
 	IsInfinite: boolean,
 	XPMultiplier: number,
 
+	WaveSpeed: number,
+
 	MapId: string,
 	StageId: string,
 
@@ -106,6 +108,9 @@ type Data = {
 	EnemyDestroying: Signal.Signal<Enemy.Enemy>,
 
 	UnitAdded: Signal.Signal<Unit.Unit>,
+
+	WaveSpeedChanged: Signal.Signal<number>,
+
 	Ended: Signal.Signal<boolean>,
 }
 
@@ -114,6 +119,7 @@ type Impl = {
 	infinite: (Input: InfiniteInput) -> GlobalWave,
 
 	NextWave: (self: GlobalWave) -> (),
+	ChangeWaveSpeed: (self: GlobalWave, Speed: number) -> (),
 
 	AddCoins: (self: GlobalWave, Coins: number) -> (),
 	HasEnoughCoins: (self: GlobalWave, UserId: number, NeededCoins: number) -> (),
@@ -177,6 +183,7 @@ function GlobalWave.new(Input: Input)
 	self.EnemyDestroying = self.Trove:Construct(Signal)
 
 	self.UnitAdded = self.Trove:Construct(Signal)
+	self.WaveSpeedChanged = self.Trove:Construct(Signal)
 
 	self.Ended = self.Trove:Construct(Signal)
 
@@ -197,6 +204,8 @@ function GlobalWave.new(Input: Input)
 	end
 
 	self.Units = {}
+
+	self.WaveSpeed = 1
 
 	self.MaxHealth = self.DifficultyData.Health
 	self.BaseHealth = self.MaxHealth
@@ -259,6 +268,8 @@ function GlobalWave.new(Input: Input)
 	self.Trove:Connect(AddEnemyEvent, function(AddData: ServerOnly.EnemyData)
 		self:AddEnemy(AddData.Enemy, AddData.Position, AddData.Summoned)
 	end)
+
+	--self.WaveSpeedChanged:Connect(function(WaveSpeed: number) end)
 
 	CurrentWave = self
 	self.Added:Fire(self)
@@ -410,6 +421,11 @@ function GlobalWave:NextWave()
 			end))
 		end
 	end))
+end
+
+function GlobalWave:ChangeWaveSpeed(Speed: number)
+	self.WaveSpeed = Speed
+	self.WaveSpeedChanged:Fire(Speed)
 end
 
 function GlobalWave:SetCoinsUser(UserId: number, CoinsInput: number)
