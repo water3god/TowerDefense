@@ -8,6 +8,7 @@ local RunService = game:GetService("RunService")
 
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
+local RippleLib = require(Packages.Ripple)
 local React = require(Packages.React)
 local e = React.createElement
 
@@ -29,9 +30,25 @@ export type Properties = {
 local Ripple = {}
 
 function Ripple.useMotion<T>(initalValue: T)
+	local Motion = React.useMemo(function()
+		return RippleLib.createMotion(initalValue)
+	end, {})
+
 	local Binding, SetValue = React.useBinding(initalValue)
 
-	return Binding, SetValue
+	Hooks.useEventConnection(RunService.Heartbeat, function(Delta: number)
+		local Value = Motion:step(Delta)
+
+		if Value ~= Binding:getValue() then
+			SetValue(Value)
+		end
+	end, {})
+
+	return Binding, Motion
 end
+
+--[[function Ripple.useSpring(goal: RippleLib.MotionGoal | React.Binding<>)
+
+end]]
 
 return Ripple
