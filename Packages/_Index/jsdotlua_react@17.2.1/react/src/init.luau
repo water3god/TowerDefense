@@ -10,28 +10,26 @@
  *]]
 
 -- ROBLOX deviation: simulates `index.js` and exports React's public interface
-local LuauPolyfill = require(script.Parent:WaitForChild('luau-polyfill'))
+local LuauPolyfill = require(script.Parent:WaitForChild("luau-polyfill"))
 export type Object = LuauPolyfill.Object
 
-local React = require(script:WaitForChild('React'))-- ROBLOX deviation START: bindings support
+local React = require(script:WaitForChild("React")) -- ROBLOX deviation START: bindings support
+
+_G.__DEV__ = game:GetService("RunService"):IsStudio()
 
 export type Binding<T> = React.ReactBinding<T>
 export type BindingUpdater<T> = React.ReactBindingUpdater<T>
 -- ROBLOX deviation END
 
-local ReactLazy = require(script:WaitForChild('ReactLazy'))
+local ReactLazy = require(script:WaitForChild("ReactLazy"))
 export type LazyComponent<T, P> = ReactLazy.LazyComponent<T, P>
 
-local SharedModule = require(script.Parent:WaitForChild('shared'))
-export type StatelessFunctionalComponent<P> =
-	SharedModule.React_StatelessFunctionalComponent<P>
+local SharedModule = require(script.Parent:WaitForChild("shared"))
+export type StatelessFunctionalComponent<P> = SharedModule.React_StatelessFunctionalComponent<P>
 -- ROBLOX deviation START: we use the definitely-typed version of this, which appears to work for flowtype in VirtualizedList, etc
 export type ComponentType<P> = ComponentClass<P> | FC<P>
 -- ROBLOX deviation END
-export type AbstractComponent<Config, Instance> = SharedModule.React_AbstractComponent<
-	Config,
-	Instance
->
+export type AbstractComponent<Config, Instance> = SharedModule.React_AbstractComponent<Config, Instance>
 export type ElementType = SharedModule.React_ElementType
 export type Element<C> = SharedModule.React_Element<C>
 export type Key = SharedModule.React_Key
@@ -51,10 +49,7 @@ export type PureComponent<Props, State = nil> = React.PureComponent<Props, State
 -- ROBLOX deviation END
 
 -- ROBLOX deviation START: definitelytyped typescript exports
-export type ReactElement<Props = Object, ElementType = any> = SharedModule.ReactElement<
-	Props,
-	ElementType
->
+export type ReactElement<Props = Object, ElementType = any> = SharedModule.ReactElement<Props, ElementType>
 -- we don't include ReactText in ReactChild since roblox renderer doesn't support raw text nodes
 export type ReactChild = SharedModule.ReactElement<any, string> | string | number
 export type FC<P> = SharedModule.React_StatelessFunctionalComponent<P>
@@ -62,12 +57,8 @@ export type ReactNode = SharedModule.React_Node
 -- ROBLOX deviation END
 
 -- ROBLOX deviation START: export React types that are flowtype built-ins and used by VirtualizedList, etc
-export type React_AbstractComponent<Props, Instance> = SharedModule.React_Component<
-	Props,
-	Instance
->
-export type React_FowardRefComponent<Props, Instance> =
-	SharedModule.React_ForwardRefComponent<Props, Instance>
+export type React_AbstractComponent<Props, Instance> = SharedModule.React_Component<Props, Instance>
+export type React_FowardRefComponent<Props, Instance> = SharedModule.React_ForwardRefComponent<Props, Instance>
 export type React_MemoComponent<Config, T> = SharedModule.React_MemoComponent<Config, T>
 export type React_Component<Props, State> = SharedModule.React_Component<Props, State>
 export type React_ComponentType<P> = SharedModule.React_ComponentType<P>
