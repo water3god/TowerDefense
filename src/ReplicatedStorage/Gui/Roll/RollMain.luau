@@ -299,7 +299,7 @@ local function CreateRollMain(props: Properties)
 	return e(Main.ImageLabel, {
 		native = Join({
 			Size = UDim2.fromScale(0.6, 0.5),
-			Image = "rbxassetid://100546338175267",
+			Image = "rbxassetid://114227430892447",
 		}, props.native),
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
@@ -338,8 +338,8 @@ local function CreateRollMain(props: Properties)
 		}),
 		Title = e(Title, {
 			Title = "SUMMON",
-			Size = UDim2.fromScale(0.6, 0.4),
-			Position = UDim2.fromScale(0.225, -0.02),
+			Size = UDim2.fromScale(0.6, 0.275),
+			Position = UDim2.fromScale(0.5, 0),
 		}),
 		UnitsButton = e(Main.Animateables.ImageButton, {
 			native = {
@@ -449,12 +449,11 @@ local function CreateRollMain(props: Properties)
 				}),
 			}),
 		}),
-		RightContainer = e(Main.Frame, {
+		RightContainer = e(Main.ImageLabel, {
 			native = {
-				BackgroundTransparency = 0,
 				Size = UDim2.fromScale(0.3, 0.8),
 				Position = UDim2.fromScale(1.2, 0.5),
-				BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
+				Image = "rbxassetid://138837230897413",
 			},
 		}, {
 			MainProductFrame = e(Main.ScrollingFrame, {
@@ -477,31 +476,6 @@ local function CreateRollMain(props: Properties)
 			UICorner = e("UICorner", {
 				CornerRadius = UDim.new(0.02, 0),
 			}),
-			InnerFrame = e(Main.Frame, {
-				native = {
-					Position = UDim2.fromScale(0.5, 0.51),
-					Size = UDim2.fromScale(0.9, 0.9),
-				},
-			}, {
-				UICorner = e("UICorner", {
-					CornerRadius = UDim.new(0.03, 0),
-				}),
-				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Color = Color3.new(0.388235, 0.101961, 0.486275),
-					Stroke = 0.007,
-					native = {
-						Transparency = 0.1,
-						LineJoinMode = Enum.LineJoinMode.Round,
-					},
-				}),
-			}),
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Color = Color3.new(0.866667, 0.866667, 0.866667),
-				Stroke = 0.002,
-				native = {
-					LineJoinMode = Enum.LineJoinMode.Round,
-				},
-			}),
 		}),
 		TimeLeft = e(Main.TextLabel, {
 			native = {
@@ -514,7 +488,7 @@ local function CreateRollMain(props: Properties)
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.02,
+				Stroke = 0.015,
 			}),
 		}),
 	}, UnitFrames, props.children)

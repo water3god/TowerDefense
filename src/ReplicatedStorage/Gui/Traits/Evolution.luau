@@ -169,11 +169,10 @@ local function CreateEvolution(props: Properties)
 		PromptData.SetVisible(false)
 	end, { props.CloseClick, PromptData } :: { unknown })
 
-	return e(Main.Frame, {
+	return e(Main.ImageLabel, {
 		native = Join({
-			BackgroundTransparency = 0,
-			BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
 			Size = UDim2.fromScale(0.7, 0.6),
+			Image = "rbxassetid://123661148493813",
 		}, props.native),
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
@@ -188,13 +187,16 @@ local function CreateEvolution(props: Properties)
 				TextColor3 = Color3.new(1, 1, 1),
 				TextScaled = true,
 			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.01,
+			}),
 		}),
-		InputFrame = e(Main.Frame, {
+		InputFrame = e(Main.ImageLabel, {
 			native = {
 				Size = UDim2.fromScale(0.35, 0.5),
 				Position = UDim2.fromScale(0.25, 0.5),
-				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.new(0.298039, 0.094118, 0.470588),
+				Image = "rbxassetid://138837230897413",
 			},
 		}, {
 			UIListLayout = e("UIListLayout", {
@@ -203,16 +205,6 @@ local function CreateEvolution(props: Properties)
 				FillDirection = Enum.FillDirection.Vertical,
 				HorizontalAlignment = Enum.HorizontalAlignment.Center,
 				VerticalAlignment = Enum.VerticalAlignment.Center,
-			}),
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.05, 0),
-			}),
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Color = Color3.new(0.388235, 0.101961, 0.486275),
-				Stroke = 0.01,
-				native = {
-					LineJoinMode = Enum.LineJoinMode.Round,
-				},
 			}),
 			Plus = not CurrentUnit and e(Plus, {
 				native = {
@@ -257,12 +249,11 @@ local function CreateEvolution(props: Properties)
 				AspectRatio = 1.4,
 			}),
 		}),
-		ProductFrame = e(Main.Frame, {
+		ProductFrame = e(Main.ImageLabel, {
 			native = {
 				Size = UDim2.fromScale(0.35, 0.5),
 				Position = UDim2.fromScale(0.75, 0.5),
-				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.new(0.298039, 0.094118, 0.470588),
+				Image = "rbxassetid://138837230897413",
 			},
 		}, {
 			Empty = not ProductUnit and e(Plus, {
@@ -279,16 +270,6 @@ local function CreateEvolution(props: Properties)
 				native = {
 					Position = UDim2.fromScale(0.5, 0.5),
 					Size = UDim2.fromScale(0.4, 0.4),
-				},
-			}),
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.05, 0),
-			}),
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Color = Color3.new(0.388235, 0.101961, 0.486275),
-				Stroke = 0.01,
-				native = {
-					LineJoinMode = Enum.LineJoinMode.Round,
 				},
 			}),
 		}),
@@ -319,42 +300,14 @@ local function CreateEvolution(props: Properties)
 			AspectRatio = 1.5,
 		}),
 		Title = e(Title, {
-			Position = UDim2.fromScale(0.2, -0.02),
-			Size = UDim2.fromScale(0.6, 0.3),
+			Position = UDim2.fromScale(0.5, 0),
+			Size = UDim2.fromScale(0.6, 0.275),
 			Title = "EVOLUTION",
-		}),
-		UICorner = e("UICorner", {
-			CornerRadius = UDim.new(0.02, 0),
 		}),
 		CloseButton = e(CloseButton, {
 			Position = UDim2.fromScale(1, 0),
 			Size = UDim2.fromScale(0.3, 0.2),
 			OnClick = CloseClick,
-		}),
-		InnerFrame = e(Main.Frame, {
-			native = {
-				Position = UDim2.fromScale(0.5, 0.52),
-				Size = UDim2.fromScale(0.94, 0.9),
-			},
-		}, {
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.015, 0),
-			}),
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Color = Color3.new(0.388235, 0.101961, 0.486275),
-				Stroke = 0.002,
-				native = {
-					Transparency = 0.1,
-					LineJoinMode = Enum.LineJoinMode.Round,
-				},
-			}),
-		}),
-		UIStroke = e(UIStroke.UIStrokeAdvanced, {
-			Color = Color3.new(0.866667, 0.866667, 0.866667),
-			Stroke = 0.002,
-			native = {
-				LineJoinMode = Enum.LineJoinMode.Round,
-			},
 		}),
 	}, props.children)
 end

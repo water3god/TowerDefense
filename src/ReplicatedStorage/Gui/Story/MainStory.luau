@@ -466,7 +466,7 @@ local function CreateMainStory(Properties: Properties)
 		native = Join({
 			Position = UDim2.fromScale(0.4, 0.45),
 			Size = UDim2.fromScale(0.5, 0.6),
-			Image = "rbxassetid://100546338175267",
+			Image = "rbxassetid://114227430892447",
 		}, Properties.native),
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
@@ -607,21 +607,11 @@ local function CreateMainStory(Properties: Properties)
 		}),
 		LevelFrame = e(Main.Frame, {
 			native = {
-				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.new(1, 1, 1),
-				Position = UDim2.fromScale(0.89, 0.525),
+				Position = UDim2.fromScale(0.89, 0.5),
 				Size = UDim2.fromScale(0.12, 0.85),
+				--Image = "rbxassetid://120136577336132",
 			},
 		}, {
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.2, 0),
-			}),
-			UIGradient = e("UIGradient", {
-				Color = ColorSequence.new({
-					ColorSequenceKeypoint.new(0, Color3.new(0.254902, 0.0745098, 0.368627)),
-					ColorSequenceKeypoint.new(1, Color3.new(0.25098, 0.14902, 0.3647067)),
-				}),
-			}),
 			MainFrame = e(Main.ScrollingFrame, {
 				BarSize = 0.05,
 				native = {
@@ -805,8 +795,8 @@ local function CreateMainStory(Properties: Properties)
 		}),
 		Title = e(Title, {
 			Title = "STORY",
-			Position = UDim2.fromScale(0.25, -0.04),
-			Size = UDim2.fromScale(0.7, 0.3),
+			Position = UDim2.fromScale(0.5, 0),
+			Size = UDim2.fromScale(0.7, 0.275),
 		}),
 	}, Properties.children)
 end

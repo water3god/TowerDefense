@@ -508,13 +508,41 @@ local UnitInfo: { [string]: UnitInfo } = {
 				Cost = 125,
 			},
 			[1] = {
-				Damage = { 12 },
+				Damage = { 10 },
 				FireRate = 1.3,
 				Range = 15,
 				Cost = 230,
 			},
 			[2] = {
 				Damage = { 25 },
+				FireRate = 1,
+				Range = 15,
+				Cost = 345,
+			},
+		},
+		CollisionRadius = 3,
+		Abilities = {},
+	},
+	["Robert the Bruce (Bannockburn)"] = {
+		Rarity = "Common",
+		Description = "Single-target melee; dependable early-game damage.",
+		Image = "rbxassetid://72392021367991",
+
+		UnitData = {
+			[0] = {
+				Damage = { 20 },
+				FireRate = 1.3,
+				Range = 15,
+				Cost = 125,
+			},
+			[1] = {
+				Damage = { 50 },
+				FireRate = 1.3,
+				Range = 15,
+				Cost = 230,
+			},
+			[2] = {
+				Damage = { 120 },
 				FireRate = 1,
 				Range = 15,
 				Cost = 345,

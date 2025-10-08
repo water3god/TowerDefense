@@ -79,17 +79,16 @@ local function Popup(props: PopupProps)
 			Size = UDim2.fromScale(0.9, 0.3),
 		}, props.native),
 	}, {
-		Container = e(Main.Frame, {
+		Container = e(Main.ImageLabel, {
 			native = {
-				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
+				Image = "rbxassetid://106098617976543",
 				Size = Styles.alpha:map(function(alpha: number)
 					return UDim2.fromScale(0.8, 0.725):Lerp(UDim2.fromScale(0.9, 0.8), alpha)
 				end),
 			},
 		}, {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 2,
+				AspectRatio = 3,
 			}),
 			Title = e(Main.TextLabel, {
 				native = {
@@ -97,6 +96,10 @@ local function Popup(props: PopupProps)
 					Size = UDim2.fromScale(0.8, 0.15),
 					Text = "Trade Request",
 				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.01,
+				}),
 			}),
 			Description = e(Main.TextLabel, {
 				native = {
@@ -104,11 +107,15 @@ local function Popup(props: PopupProps)
 					Size = UDim2.fromScale(0.8, 0.25),
 					Text = string.format("You have received a trade request from %s", Username),
 				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.01,
+				}),
 			}),
 			AcceptButton = e(Main.Animateables.ImageButton, {
 				native = {
-					Position = UDim2.fromScale(0.3, 0.8),
-					Size = UDim2.fromScale(0.3, 0.2),
+					Position = UDim2.fromScale(0.3, 0.75),
+					Size = UDim2.fromScale(0.2, 0.2),
 					Image = "rbxassetid://80739823452825",
 					ImageColor3 = Color3.fromRGB(0, 255, 0),
 					[React.Event.MouseButton1Click] = Accept,
@@ -127,8 +134,8 @@ local function Popup(props: PopupProps)
 			}),
 			RejectButton = e(Main.Animateables.ImageButton, {
 				native = {
-					Position = UDim2.fromScale(0.7, 0.8),
-					Size = UDim2.fromScale(0.3, 0.2),
+					Position = UDim2.fromScale(0.7, 0.75),
+					Size = UDim2.fromScale(0.2, 0.2),
 					Image = "rbxassetid://80739823452825",
 					ImageColor3 = Color3.fromRGB(255, 0, 0),
 					[React.Event.MouseButton1Click] = Reject,
@@ -147,38 +154,10 @@ local function Popup(props: PopupProps)
 			}),
 			CloseButton = e(CloseButton, {
 				Position = UDim2.fromScale(1, 0),
-				Size = UDim2.fromScale(0.3, 0.3),
+				Size = UDim2.fromScale(0.5, 0.5),
 				OnClick = Reject,
 				native = {
 					ZIndex = 2,
-				},
-			}),
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.03, 0),
-			}),
-			InnerFrame = e(Main.Frame, {
-				native = {
-					Position = UDim2.fromScale(0.5, 0.52),
-					Size = UDim2.fromScale(0.94, 0.9),
-				},
-			}, {
-				UICorner = e("UICorner", {
-					CornerRadius = UDim.new(0.02, 0),
-				}),
-				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Color = Color3.new(0.388235, 0.101961, 0.486275),
-					Stroke = 0.002,
-					native = {
-						Transparency = 0.1,
-						LineJoinMode = Enum.LineJoinMode.Round,
-					},
-				}),
-			}),
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Color = Color3.new(0.866667, 0.866667, 0.866667),
-				Stroke = 0.002,
-				native = {
-					LineJoinMode = Enum.LineJoinMode.Round,
 				},
 			}),
 		}),

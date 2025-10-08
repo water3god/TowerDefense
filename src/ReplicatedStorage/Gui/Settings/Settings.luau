@@ -88,7 +88,7 @@ local function CreateBoolean(props: { Setting: string, Value: boolean })
 	return e(Main.TextButton, {
 		native = {
 			Position = UDim2.fromScale(0.8, 0.5),
-			Size = UDim2.fromScale(0.3, 0.5),
+			Size = UDim2.fromScale(0.25, 0.45),
 			BackgroundTransparency = 0,
 			Text = "",
 			BackgroundColor3 = Color3.new(0.254902, 0.254902, 0.254902),
@@ -186,7 +186,7 @@ local function CreateNumber(props: { Setting: string, Value: number })
 		native = {
 			ref = TouchBox,
 			Position = UDim2.fromScale(0.8, 0.5),
-			Size = UDim2.fromScale(0.3, 0.2),
+			Size = UDim2.fromScale(0.25, 0.175),
 			Text = "",
 			BackgroundTransparency = 0,
 			BackgroundColor3 = Color3.new(0.254902, 0.254902, 0.254902),
@@ -237,14 +237,13 @@ local function CreateSetting(props: SettingProps)
 
 	return e(Main.Frame, {
 		native = Join({
-			Size = UDim2.fromScale(1, 0.15),
+			Size = UDim2.fromScale(1, 0.175),
 		}, props.native),
 	}, {
-		Main = e(Main.Frame, {
+		Main = e(Main.ImageLabel, {
 			native = {
 				Size = UDim2.fromScale(0.9, 0.9),
-				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.new(0.298039, 0.094118, 0.470588),
+				Image = "rbxassetid://103808626575670",
 			},
 		}, {
 			NameLabel = e(Main.TextLabel, {
@@ -254,9 +253,6 @@ local function CreateSetting(props: SettingProps)
 					Text = Name,
 					TextXAlignment = Enum.TextXAlignment.Left,
 				},
-			}),
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.2, 0),
 			}),
 			Value = ValueDeterminer,
 		}),
@@ -286,11 +282,10 @@ local function CreateSettingsFrame(props: Properties)
 		return Frames
 	end, { SettingsData })
 
-	return e(Main.Frame, {
+	return e(Main.ImageLabel, {
 		native = Join({
 			Size = UDim2.fromScale(0.5, 0.7),
-			BackgroundTransparency = 0,
-			BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
+			Image = "rbxassetid://138837230897413",
 		}, props.native),
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
@@ -315,8 +310,8 @@ local function CreateSettingsFrame(props: Properties)
 			}),
 		}, SettingsFrames),
 		Title = e(Title, {
-			Position = UDim2.fromScale(0.3, 0),
-			Size = UDim2.fromScale(1, 0.14),
+			Position = UDim2.fromScale(0.5, 0),
+			Size = UDim2.fromScale(1, 0.15),
 			Title = "SETTINGS",
 		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
@@ -324,36 +319,8 @@ local function CreateSettingsFrame(props: Properties)
 		}),
 		CloseButton = e(CloseButton, {
 			Position = UDim2.fromScale(1, 0),
-			Size = UDim2.fromScale(0.2, 0.3),
+			Size = UDim2.fromScale(0.175, 0.225),
 			OnClick = props.CloseClick,
-		}),
-		UICorner = e("UICorner", {
-			CornerRadius = UDim.new(0.02, 0),
-		}),
-		InnerFrame = e(Main.Frame, {
-			native = {
-				Position = UDim2.fromScale(0.5, 0.52),
-				Size = UDim2.fromScale(0.94, 0.9),
-			},
-		}, {
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.015, 0),
-			}),
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Color = Color3.new(0.388235, 0.101961, 0.486275),
-				Stroke = 0.002,
-				native = {
-					Transparency = 0.1,
-					LineJoinMode = Enum.LineJoinMode.Round,
-				},
-			}),
-		}),
-		UIStroke = e(UIStroke.UIStrokeAdvanced, {
-			Color = Color3.new(0.866667, 0.866667, 0.866667),
-			Stroke = 0.002,
-			native = {
-				LineJoinMode = Enum.LineJoinMode.Round,
-			},
 		}),
 	}, props.children)
 end

@@ -4,6 +4,8 @@
 
 -- Services --
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
 
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
@@ -28,7 +30,7 @@ local Story = {
 	story = function(Properties)
 		local Frame = e(TradeContext.Context.Provider, {
 			value = {
-				[1] = "CanTrade",
+				[LocalPlayer] = "CanTrade",
 			},
 		}, e(TradeMenu, {}))
 		return Frame

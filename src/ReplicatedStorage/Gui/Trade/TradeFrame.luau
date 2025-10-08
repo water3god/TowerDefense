@@ -419,7 +419,7 @@ local function TradeMain(Properties: Properties)
 	return e(Main.ImageLabel, {
 		native = Join({
 			Size = UDim2.fromScale(0.6, 0.6),
-			Image = "rbxassetid://83575157481281",
+			Image = "rbxassetid://114227430892447",
 		}, Properties.native),
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
@@ -463,6 +463,10 @@ local function TradeMain(Properties: Properties)
 				Size = UDim2.fromScale(0.4, 0.08),
 				Text = string.format("Status: %s", YourStatus),
 			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.015,
+			}),
 		}),
 		OtherStatus = e(Main.TextLabel, {
 			native = {
@@ -470,6 +474,10 @@ local function TradeMain(Properties: Properties)
 				Size = UDim2.fromScale(0.4, 0.08),
 				Text = string.format("Status: %s", OtherStatus),
 			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.015,
+			}),
 		}),
 		Status = e(Main.TextLabel, {
 			native = {
@@ -520,6 +528,10 @@ local function TradeMain(Properties: Properties)
 				Size = UDim2.fromScale(0.4, 0.09),
 				Text = OtherName,
 			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.015,
+			}),
 		}),
 		YourName = e(Main.TextLabel, {
 			native = {
@@ -527,11 +539,15 @@ local function TradeMain(Properties: Properties)
 				Size = UDim2.fromScale(0.4, 0.09),
 				Text = Player.Name,
 			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.015,
+			}),
 		}),
 		Title = e(Title, {
 			Title = "TRADING",
-			Position = UDim2.fromScale(0.2, -0.05),
-			Size = UDim2.fromScale(0.6, 0.6),
+			Position = UDim2.fromScale(0.5, 0),
+			Size = UDim2.fromScale(0.6, 0.25),
 		}),
 	}, Properties.children)
 end

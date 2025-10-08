@@ -75,7 +75,7 @@ local function CreateWaitingFrame(Props: Properties)
 		native = Join({
 			Position = UDim2.fromScale(0.5, 0.65),
 			Size = UDim2.fromScale(0.4, 0.25),
-			Image = "rbxassetid://100546338175267",
+			Image = "rbxassetid://114227430892447",
 			ZIndex = 2,
 			Visible = if StoryData.Data and StoryData.Enabled then true else false,
 		}, Props.native),

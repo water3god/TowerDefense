@@ -162,34 +162,41 @@ local function CreateQuest(props: QuestProps)
 			Size = UDim2.fromScale(1, 0.3),
 		}, props.native),
 	}, {
-		Container = e(Main.Frame, {
+		Container = e(Main.ImageLabel, {
 			native = {
 				Size = UDim2.fromScale(1, 0.9),
-				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.new(0.298039, 0.094118, 0.470588),
+				Image = "rbxassetid://103808626575670",
 			},
 		}, {
 			QuestTitle = e(Main.TextLabel, {
 				native = {
 					Text = props.QuestData.Name,
-					Size = UDim2.fromScale(0.5, 0.25),
-					Position = UDim2.fromScale(0.275, 0.225),
+					Size = UDim2.fromScale(0.5, 0.225),
+					Position = UDim2.fromScale(0.3, 0.25),
 					TextXAlignment = Enum.TextXAlignment.Left,
 				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.008,
+				}),
 			}),
 			QuestDescription = e(Main.TextLabel, {
 				native = {
 					Text = props.QuestData.Description,
-					Size = UDim2.fromScale(0.5, 0.15),
-					Position = UDim2.fromScale(0.275, 0.5),
+					Size = UDim2.fromScale(0.5, 0.14),
+					Position = UDim2.fromScale(0.3, 0.5),
 					TextXAlignment = Enum.TextXAlignment.Left,
 				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.008,
+				}),
 			}),
 			QuestBar = e(Main.Frame, {
 				native = {
 					BackgroundTransparency = 0,
 					BackgroundColor3 = Color3.new(0.160784, 0.082353, 0.203922),
-					Position = UDim2.fromScale(0.375, 0.775),
+					Position = UDim2.fromScale(0.4, 0.75),
 					Size = UDim2.fromScale(0.7, 0.25),
 				},
 			}, {
@@ -215,6 +222,10 @@ local function CreateQuest(props: QuestProps)
 						Text = string.format("%u / %u", props.QuestData.CurrentValue, props.QuestData.NeededValue),
 						ZIndex = 2,
 					},
+				}, {
+					UIStroke = e(UIStroke.UIStrokeAdvanced, {
+						Stroke = 0.005,
+					}),
 				}),
 				UICorner = e("UICorner", {
 					CornerRadius = UDim.new(0.2, 0),
@@ -222,8 +233,8 @@ local function CreateQuest(props: QuestProps)
 			}),
 			RedeemButton = e(Main.Animateables.TextButton, {
 				native = {
-					Size = UDim2.fromScale(0.2, 0.3),
-					Position = UDim2.fromScale(0.86, 0.775),
+					Size = UDim2.fromScale(0.2, 0.25),
+					Position = UDim2.fromScale(0.86, 0.75),
 					BackgroundTransparency = 0,
 					BackgroundColor3 = RedeemColor,
 					Text = "",
@@ -250,9 +261,6 @@ local function CreateQuest(props: QuestProps)
 						Stroke = 0.03,
 					}),
 				}),
-			}),
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.1, 0),
 			}),
 			Reward = Reward,
 		}),
@@ -355,11 +363,10 @@ local function CreateQuestsFrame(props: Properties)
 		return Frames
 	end, { OpenFrame, QuestData } :: { unknown })
 
-	return e(Main.Frame, {
+	return e(Main.ImageLabel, {
 		native = Join({
 			Size = UDim2.fromScale(0.7, 0.7),
-			BackgroundTransparency = 0,
-			BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
+			Image = "rbxassetid://82274409188488",
 		}, props.native),
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
@@ -367,8 +374,8 @@ local function CreateQuestsFrame(props: Properties)
 			MaxSize = Vector2.new(840, 920),
 		}),
 		Title = e(Title, {
-			Position = UDim2.fromScale(0.2, 0),
-			Size = UDim2.fromScale(1, 0.14),
+			Position = UDim2.fromScale(0.5, 0),
+			Size = UDim2.fromScale(1, 0.175),
 			Title = "QUESTS",
 		}),
 		QuestButtons = e(Main.Frame, {
@@ -394,49 +401,25 @@ local function CreateQuestsFrame(props: Properties)
 				native = {
 					Position = UDim2.fromScale(0.5, 0.1),
 					Size = UDim2.fromScale(1, 0.07),
-					Text = Time:map(function(t)
+					Text = Time:map(function(t: number)
 						return string.format("Time Left: %s", HelperFunctions.FormatTime(t))
 					end),
 					TextScaled = true,
 					LayoutOrder = 0,
 				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.008,
+				}),
 			}),
 		}, QuestFrames),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 1.2,
 		}),
-		UICorner = e("UICorner", {
-			CornerRadius = UDim.new(0.02, 0),
-		}),
 		CloseButton = e(CloseButton, {
 			Position = UDim2.fromScale(1, 0),
 			Size = UDim2.fromScale(0.2, 0.15),
 			OnClick = props.CloseClick,
-		}),
-		InnerFrame = e(Main.Frame, {
-			native = {
-				Position = UDim2.fromScale(0.5, 0.52),
-				Size = UDim2.fromScale(0.94, 0.9),
-			},
-		}, {
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.015, 0),
-			}),
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Color = Color3.new(0.388235, 0.101961, 0.486275),
-				Stroke = 0.002,
-				native = {
-					Transparency = 0.1,
-					LineJoinMode = Enum.LineJoinMode.Round,
-				},
-			}),
-		}),
-		UIStroke = e(UIStroke.UIStrokeAdvanced, {
-			Color = Color3.new(0.866667, 0.866667, 0.866667),
-			Stroke = 0.002,
-			native = {
-				LineJoinMode = Enum.LineJoinMode.Round,
-			},
 		}),
 	}, props.children)
 end

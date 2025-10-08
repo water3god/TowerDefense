@@ -217,11 +217,10 @@ local function CreateTraitsFrame(props: Properties)
 		return Frames
 	end, { PurchaseData.Loaded })
 
-	return e(Main.Frame, {
+	return e(Main.ImageLabel, {
 		native = Join({
 			Size = UDim2.fromScale(0.5, 0.7),
-			BackgroundTransparency = 0,
-			BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
+			Image = "rbxassetid://138837230897413",
 		}, props.native),
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
@@ -233,18 +232,17 @@ local function CreateTraitsFrame(props: Properties)
 				SetTraitsInfoVisible(false)
 			end,
 		}),
-		MainFrame = e(Main.Frame, {
+		MainFrame = e(Main.ImageLabel, {
 			native = {
-				Size = UDim2.fromScale(0.8, 0.5),
+				Size = UDim2.fromScale(0.85, 0.55),
 				Position = UDim2.fromScale(0.5, 0.475),
-				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.new(0.298039, 0.094118, 0.470588),
+				Image = "rbxassetid://92342153493946",
 			},
 		}, {
 			Plus = not Unit and e(Plus, {
 				native = {
-					Position = UDim2.fromScale(0.5, 0.25),
-					Size = UDim2.fromScale(0.4, 0.4),
+					Position = UDim2.fromScale(0.5, 0.275),
+					Size = UDim2.fromScale(0.375, 0.375),
 					[React.Event.MouseButton1Click] = OnPlusClick,
 				},
 			}),
@@ -258,21 +256,11 @@ local function CreateTraitsFrame(props: Properties)
 					Size = UDim2.fromScale(0.4, 0.4),
 				},
 			}),
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.05, 0),
-			}),
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Color = Color3.new(0.388235, 0.101961, 0.486275),
-				Stroke = 0.01,
-				native = {
-					LineJoinMode = Enum.LineJoinMode.Round,
-				},
-			}),
 			OmenCoinsFrame = e(ResourceFrame, {
 				Name = "Omen Coins",
 				Value = Count,
 				native = {
-					Position = UDim2.fromScale(0.5, 0.75),
+					Position = UDim2.fromScale(0.5, 0.725),
 					Size = UDim2.fromScale(0.4, 0.4),
 				},
 			}),
@@ -317,10 +305,14 @@ local function CreateTraitsFrame(props: Properties)
 		}),
 		InputLabel = e(Main.TextLabel, {
 			native = {
-				Position = UDim2.fromScale(0.5, 0.15),
-				Size = UDim2.fromScale(0.9, 0.1),
+				Position = UDim2.fromScale(0.5, 0.125),
+				Size = UDim2.fromScale(0.8, 0.08),
 				Text = "Select a Unit to change its Trait",
 			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.01,
+			}),
 		}),
 		CurrentTrait = e(Main.TextLabel, {
 			native = {
@@ -344,27 +336,24 @@ local function CreateTraitsFrame(props: Properties)
 			}),
 		}),
 		Title = e(Title, {
-			Position = UDim2.fromScale(0.3, 0),
-			Size = UDim2.fromScale(1, 0.14),
+			Position = UDim2.fromScale(0.5, 0.01),
+			Size = UDim2.fromScale(1, 0.15),
 			Title = "TRAITS",
 		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 0.8,
 		}),
-		UICorner = e("UICorner", {
-			CornerRadius = UDim.new(0.02, 0),
-		}),
 		CloseButton = e(CloseButton, {
-			Position = UDim2.fromScale(1, 0),
-			Size = UDim2.fromScale(0.2, 0.3),
+			Position = UDim2.fromScale(0.99, 0.01),
+			Size = UDim2.fromScale(0.175, 0.25),
 			OnClick = props.CloseClick,
 		}),
-		RightContainer = e(Main.Frame, {
+		RightContainer = e(Main.ImageLabel, {
 			native = {
-				BackgroundTransparency = 0,
 				Size = UDim2.fromScale(0.55, 0.7),
 				Position = UDim2.fromScale(1.32, 0.5),
-				BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
+
+				Image = "rbxassetid://138837230897413",
 			},
 		}, {
 			MainProductFrame = e(Main.ScrollingFrame, {
@@ -384,59 +373,6 @@ local function CreateTraitsFrame(props: Properties)
 					VerticalAlignment = Enum.VerticalAlignment.Top,
 				}),
 			}, ProductFrames),
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.02, 0),
-			}),
-			InnerFrame = e(Main.Frame, {
-				native = {
-					Position = UDim2.fromScale(0.5, 0.51),
-					Size = UDim2.fromScale(0.9, 0.9),
-				},
-			}, {
-				UICorner = e("UICorner", {
-					CornerRadius = UDim.new(0.015, 0),
-				}),
-				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Color = Color3.new(0.388235, 0.101961, 0.486275),
-					Stroke = 0.004,
-					native = {
-						Transparency = 0.1,
-						LineJoinMode = Enum.LineJoinMode.Round,
-					},
-				}),
-			}),
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Color = Color3.new(0.866667, 0.866667, 0.866667),
-				Stroke = 0.002,
-				native = {
-					LineJoinMode = Enum.LineJoinMode.Round,
-				},
-			}),
-		}),
-		InnerFrame = e(Main.Frame, {
-			native = {
-				Position = UDim2.fromScale(0.5, 0.52),
-				Size = UDim2.fromScale(0.94, 0.9),
-			},
-		}, {
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.015, 0),
-			}),
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Color = Color3.new(0.388235, 0.101961, 0.486275),
-				Stroke = 0.002,
-				native = {
-					Transparency = 0.1,
-					LineJoinMode = Enum.LineJoinMode.Round,
-				},
-			}),
-		}),
-		UIStroke = e(UIStroke.UIStrokeAdvanced, {
-			Color = Color3.new(0.866667, 0.866667, 0.866667),
-			Stroke = 0.002,
-			native = {
-				LineJoinMode = Enum.LineJoinMode.Round,
-			},
 		}),
 	}, props.children)
 end

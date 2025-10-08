@@ -47,25 +47,27 @@ local function CreateSelectCount(props: Properties)
 		end
 	end, {})
 
-	return e(Main.Frame, {
+	return e(Main.ImageLabel, {
 		native = Join({
 			BackgroundTransparency = 0,
 			BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
 			Size = UDim2.fromScale(0.7, 0.6),
+			Image = "rbxassetid://138837230897413",
 		}, props.native),
 	}, {
 		Title = e(Main.TextLabel, {
 			native = {
 				Text = "Select Count",
-				Position = UDim2.fromScale(0.5, 0.175),
+				Position = UDim2.fromScale(0.5, 0.15),
 				Size = UDim2.fromScale(0.9, 0.08),
 			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.015,
+			}),
 		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-			AspectRatio = 0.7,
-		}),
-		UICorner = e("UICorner", {
-			CornerRadius = UDim.new(0.02, 0),
+			AspectRatio = 1,
 		}),
 		CloseButton = e(CloseButton, {
 			Position = UDim2.fromScale(1, 0),
@@ -75,34 +77,9 @@ local function CreateSelectCount(props: Properties)
 				ZIndex = 2,
 			},
 		}),
-		InnerFrame = e(Main.Frame, {
-			native = {
-				Position = UDim2.fromScale(0.5, 0.52),
-				Size = UDim2.fromScale(0.94, 0.9),
-			},
-		}, {
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.02, 0),
-			}),
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Color = Color3.new(0.388235, 0.101961, 0.486275),
-				Stroke = 0.003,
-				native = {
-					Transparency = 0.1,
-					LineJoinMode = Enum.LineJoinMode.Round,
-				},
-			}),
-		}),
-		UIStroke = e(UIStroke.UIStrokeAdvanced, {
-			Color = Color3.new(0.866667, 0.866667, 0.866667),
-			Stroke = 0.003,
-			native = {
-				LineJoinMode = Enum.LineJoinMode.Round,
-			},
-		}),
 		ImageFrame = e(Main.Frame, {
 			native = {
-				Position = UDim2.fromScale(0.5, 0.45),
+				Position = UDim2.fromScale(0.5, 0.4),
 				Size = UDim2.fromScale(0.5, 0.4),
 			},
 		}, {
@@ -110,7 +87,7 @@ local function CreateSelectCount(props: Properties)
 		}),
 		BoxFrame = e(Main.Frame, {
 			native = {
-				Position = UDim2.fromScale(0.5, 0.725),
+				Position = UDim2.fromScale(0.5, 0.7),
 				Size = UDim2.fromScale(0.5, 0.1),
 				BackgroundTransparency = 0,
 				BackgroundColor3 = Color3.new(0.2, 0.2, 0.2),
@@ -133,8 +110,8 @@ local function CreateSelectCount(props: Properties)
 		}),
 		EnterButton = e(Main.Animateables.ImageButton, {
 			native = {
-				Position = UDim2.fromScale(0.5, 0.875),
-				Size = UDim2.fromScale(0.5, 0.2),
+				Position = UDim2.fromScale(0.5, 0.85),
+				Size = UDim2.fromScale(0.4, 0.2),
 				Image = "rbxassetid://80739823452825",
 				ImageColor3 = Color3.fromRGB(135, 1, 203),
 				[React.Event.Activated] = EnterClick,

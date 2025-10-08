@@ -127,10 +127,8 @@ local function CreateMessage(props: Properties)
 		}),
 		CloseButton = e(CloseButton, {
 			OnClick = props.CloseClick,
-			native = {
-				Position = UDim2.fromScale(1, 0),
-				Size = UDim2.fromScale(0.4, 0.3),
-			},
+			Position = UDim2.fromScale(1, 0),
+			Size = UDim2.fromScale(0.4, 0.3),
 		}),
 		UIStroke = e(UIStroke.UIStrokeAdvanced, {
 			Color = Color3.new(0.866667, 0.866667, 0.866667),

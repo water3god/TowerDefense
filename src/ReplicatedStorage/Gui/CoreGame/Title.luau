@@ -6,13 +6,14 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Gui = ReplicatedStorage.Gui
-local CoreGame = Gui.CoreGame
-local Main = require(CoreGame.Main)
-
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
 local e = React.createElement
+
+local Gui = ReplicatedStorage.Gui
+local CoreGame = Gui.CoreGame
+local Main = require(CoreGame.Main)
+local UIStroke = require(CoreGame.UIStroke)
 
 export type Properties = {
 	Title: string,
@@ -24,33 +25,60 @@ export type Properties = {
 }
 
 return function(Properties: Properties)
-	return e(Main.ImageLabel, {
+	return e(Main.Frame, {
 		native = {
 			Position = Properties.Position,
 			Size = Properties.Size,
-			Image = "rbxassetid://82588529589997",
 			ZIndex = 2,
 		},
 	}, {
+		InsideImage = e(Main.ImageLabel, {
+			native = {
+				AnchorPoint = Vector2.new(0.5, 0.5),
+				Position = UDim2.fromScale(0.5, 0.5),
+				Size = UDim2.fromScale(1.05, 0.8),
+				Image = "rbxassetid://111182319089503",
+				ZIndex = 2,
+			},
+		}, {}),
+		LeftImage = e(Main.ImageLabel, {
+			native = {
+				AnchorPoint = Vector2.new(1, 0.5),
+				Position = UDim2.fromScale(0, 0.5),
+				Size = UDim2.fromScale(0.4, 1),
+				Image = "rbxassetid://113285065304136",
+			},
+		}, {
+			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+				AspectRatio = 1,
+			}),
+		}),
+		RightImage = e(Main.ImageLabel, {
+			native = {
+				AnchorPoint = Vector2.new(0, 0.5),
+				Position = UDim2.fromScale(1, 0.5),
+				Size = UDim2.fromScale(0.4, 1),
+				Image = "rbxassetid://93132495961595",
+			},
+		}, {
+			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+				AspectRatio = 1,
+			}),
+		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-			AspectRatio = 5.23,
+			AspectRatio = 2,
 		}),
 		TitleLabel = e(Main.TextLabel, {
 			native = {
 				Position = UDim2.fromScale(0.5, 0.55),
-				Size = UDim2.fromScale(0.7, 0.5),
+				Size = UDim2.fromScale(0.9, 0.45),
 				Text = Properties.Title,
-				TextXAlignment = Enum.TextXAlignment.Left,
-				ZIndex = 2,
+
+				ZIndex = 3,
 			},
 		}, {
-			UIGradient = e("UIGradient", {
-				Color = ColorSequence.new({
-					ColorSequenceKeypoint.new(0, Color3.new(0.768627, 0.380392, 1)),
-					ColorSequenceKeypoint.new(0.623, Color3.new(1, 1, 1)),
-					ColorSequenceKeypoint.new(1, Color3.new(1, 1, 1)),
-				}),
-				Rotation = -90,
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.015,
 			}),
 		}),
 	})

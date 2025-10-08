@@ -138,11 +138,10 @@ local function CreateDailyFrame(Properties: Properties)
 		return Frames
 	end, { DailyData } :: { unknown })
 
-	return e(Main.Frame, {
+	return e(Main.ImageLabel, {
 		native = JoinDicts({
 			Size = UDim2.fromScale(0.45, 0.55),
-			BackgroundTransparency = 0,
-			BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
+			Image = "rbxassetid://123661148493813",
 		}, Properties.native),
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
@@ -156,40 +155,14 @@ local function CreateDailyFrame(Properties: Properties)
 			CornerRadius = UDim.new(0.02, 0),
 		}),
 		Title = e(Title, {
-			Position = UDim2.fromScale(0.2, 0),
-			Size = UDim2.fromScale(1, 0.18),
+			Position = UDim2.fromScale(0.5, 0),
+			Size = UDim2.fromScale(1, 0.25),
 			Title = "DAILY REWARDS",
 		}),
 		CloseButton = e(CloseButton, {
 			Position = UDim2.fromScale(1, 0),
-			Size = UDim2.fromScale(0.1, 0.2),
+			Size = UDim2.fromScale(0.125, 0.25),
 			OnClick = Properties.CloseClick,
-		}),
-		InnerFrame = e(Main.Frame, {
-			native = {
-				Position = UDim2.fromScale(0.5, 0.52),
-				Size = UDim2.fromScale(0.94, 0.87),
-				ZIndex = 0,
-			},
-		}, {
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.015, 0),
-			}),
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Color = Color3.new(0.388235, 0.101961, 0.486275),
-				Stroke = 0.002,
-				native = {
-					Transparency = 0.1,
-					LineJoinMode = Enum.LineJoinMode.Round,
-				},
-			}),
-		}),
-		UIStroke = e(UIStroke.UIStrokeAdvanced, {
-			Color = Color3.new(0.866667, 0.866667, 0.866667),
-			Stroke = 0.002,
-			native = {
-				LineJoinMode = Enum.LineJoinMode.Round,
-			},
 		}),
 		DayLabel = e(Main.TextLabel, {
 			native = {
@@ -198,6 +171,10 @@ local function CreateDailyFrame(Properties: Properties)
 				Text = string.format("Day: %u", DailyData.Day),
 				TextXAlignment = Enum.TextXAlignment.Left,
 			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.015,
+			}),
 		}),
 		Timer = e(Main.TextLabel, {
 			native = {
@@ -208,6 +185,10 @@ local function CreateDailyFrame(Properties: Properties)
 				end),
 				TextXAlignment = Enum.TextXAlignment.Right,
 			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.015,
+			}),
 		}),
 		List = e(Main.ScrollingFrame, {
 			BarSize = 0.01,

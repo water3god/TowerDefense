@@ -12,7 +12,9 @@ local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
 
-local Main = require(ReplicatedStorage.Gui.CoreGame.Main)
+local CoreGame = ReplicatedStorage.Gui.CoreGame
+local Main = require(CoreGame.Main)
+local UIStroke = require(CoreGame.UIStroke)
 
 export type Properties = {
 	Position: UDim2?,
@@ -24,16 +26,33 @@ export type Properties = {
 }
 
 return function(Properties: Properties)
-	return e(Main.Animateables.ImageButton, {
-		native = Join({
+	return e(Main.Frame, {
+		native = {
 			Position = Properties.Position,
 			Size = Properties.Size,
-			Image = "rbxassetid://101118925074854",
-			[React.Event.MouseButton1Click] = Properties.OnClick,
-		}, Properties.native),
+		},
 	}, {
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 1,
+		}),
+		Button = e(Main.Animateables.ImageButton, {
+			native = Join({
+				Position = UDim2.fromScale(0.5, 0.5),
+				Image = "rbxassetid://115509365553249",
+				[React.Event.MouseButton1Click] = Properties.OnClick,
+			}, Properties.native),
+		}, {
+			TextLabel = e(Main.TextLabel, {
+				native = {
+					Position = UDim2.fromScale(0.5, 0.5),
+					Size = UDim2.fromScale(0.5, 0.5),
+					Text = "X",
+				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.06,
+				}),
+			}),
 		}),
 	}, Properties.children)
 end

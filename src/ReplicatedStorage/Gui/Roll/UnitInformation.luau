@@ -203,14 +203,13 @@ local function CreateUnitInfo(Props: Props)
 	return e(NewGui, {
 		DisplayOrder = 3,
 	}, {
-		UnitInformation = e(Main.Frame, {
+		UnitInformation = e(Main.ImageLabel, {
 			native = Join({
 				Size = UDim2.fromScale(0.6, 0.8),
-				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
 				Visible = Styles.alpha:map(function(alphaInput: number)
 					return alphaInput ~= 1
 				end),
+				Image = "rbxassetid://138837230897413",
 			}, Props.native),
 		}, {
 			UIScale = e("UIScale", {
@@ -254,33 +253,8 @@ local function CreateUnitInfo(Props: Props)
 			}),
 			Title = e(Title, {
 				Title = "UNIT INFORMATION",
-				Position = UDim2.fromScale(0.3, 0),
-				Size = UDim2.fromScale(0.9, 0.3),
-			}),
-			InnerFrame = e(Main.Frame, {
-				native = {
-					Position = UDim2.fromScale(0.5, 0.5),
-					Size = UDim2.fromScale(0.94, 0.9),
-				},
-			}, {
-				UICorner = e("UICorner", {
-					CornerRadius = UDim.new(0.015, 0),
-				}),
-				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Color = Color3.new(0.388235, 0.101961, 0.486275),
-					Stroke = 0.002,
-					native = {
-						Transparency = 0.1,
-						LineJoinMode = Enum.LineJoinMode.Round,
-					},
-				}),
-			}),
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Color = Color3.new(0.866667, 0.866667, 0.866667),
-				Stroke = 0.002,
-				native = {
-					LineJoinMode = Enum.LineJoinMode.Round,
-				},
+				Position = UDim2.fromScale(0.5, 0),
+				Size = UDim2.fromScale(0.9, 0.175),
 			}),
 		}, Props.children),
 	})

@@ -416,13 +416,12 @@ local function CreateStatsFrame(props: Props)
 	return e(NewGui, {
 		DisplayOrder = 4,
 	}, {
-		StatsFrame = e(Main.Frame, {
+		StatsFrame = e(Main.ImageLabel, {
 			native = Join({
 				Position = UDim2.fromScale(0.5, 0.55),
 				Size = UDim2.fromScale(0.5, 0.5),
-				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
 				Visible = props.Visible,
+				Image = "rbxassetid://114227430892447",
 				ZIndex = 5,
 			}, props.native),
 		}, {
@@ -486,11 +485,15 @@ local function CreateStatsFrame(props: Props)
 					Position = UDim2.fromScale(0.5, 0.75),
 					Text = Description,
 				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.008,
+				}),
 			}),
 			TopRight = TopRight,
 			Title = e(Title, {
 				Title = "STATS",
-				Position = UDim2.fromScale(0.225, -0.04),
+				Position = UDim2.fromScale(0.5, 0.01),
 				Size = UDim2.fromScale(0.65, 0.3),
 			}),
 			UIAspectRatio = e("UIAspectRatioConstraint", {
@@ -503,31 +506,6 @@ local function CreateStatsFrame(props: Props)
 			}),
 			UICorner = e("UICorner", {
 				CornerRadius = UDim.new(0.02, 0),
-			}),
-			InnerFrame = e(Main.Frame, {
-				native = {
-					Position = UDim2.fromScale(0.5, 0.52),
-					Size = UDim2.fromScale(0.94, 0.9),
-				},
-			}, {
-				UICorner = e("UICorner", {
-					CornerRadius = UDim.new(0.015, 0),
-				}),
-				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Color = Color3.new(0.388235, 0.101961, 0.486275),
-					Stroke = 0.003,
-					native = {
-						Transparency = 0.1,
-						LineJoinMode = Enum.LineJoinMode.Round,
-					},
-				}),
-			}),
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Color = Color3.new(0.866667, 0.866667, 0.866667),
-				Stroke = 0.002,
-				native = {
-					LineJoinMode = Enum.LineJoinMode.Round,
-				},
 			}),
 		}, props.children),
 	})

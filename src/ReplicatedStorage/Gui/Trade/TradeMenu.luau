@@ -221,7 +221,7 @@ local function CreateTradeMenu(Properties: Properties)
 	return e(Main.ImageLabel, {
 		native = Join({
 			Size = UDim2.fromScale(0.6, 0.65),
-			Image = "rbxassetid://85379476276657",
+			Image = "rbxassetid://82274409188488",
 		}, Properties.native),
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
@@ -273,13 +273,13 @@ local function CreateTradeMenu(Properties: Properties)
 		}),
 		CloseButton = e(CloseButton, {
 			Position = UDim2.fromScale(1, 0),
-			Size = UDim2.fromScale(0.12, 0.15),
+			Size = UDim2.fromScale(0.15, 0.175),
 			OnClick = Properties.CloseClick,
 		}),
 		Title = e(Title, {
 			Title = "TRADING",
-			Position = UDim2.fromScale(0.2, -0.02),
-			Size = UDim2.fromScale(0.6, 0.6),
+			Position = UDim2.fromScale(0.5, 0),
+			Size = UDim2.fromScale(0.6, 0.225),
 		}),
 	})
 end

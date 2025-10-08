@@ -416,14 +416,12 @@ local function CreateStoreFrame(Properties: Properties)
 	end, { HoveredProduct, OpenFrame } :: { unknown })
 
 	local GiftFunc = React.useCallback(function()
-		print("Ran")
 		if OpenFrame == "Products" or OpenFrame == "Gamepasses" then
 			if GiftId and HoveredProduct then
 				SetGiftFrameData({
 					ProductId = HoveredProduct,
 					GiftId = GiftId,
 				})
-				--MarketplaceService:PromptProductPurchase(Player, GiftId)
 			end
 		elseif OpenFrame == "Offers" then
 			return

@@ -113,11 +113,10 @@ local function CreateGiftFrame(props: Properties)
 	end, { PlayerList, PlayerClick } :: { unknown })
 
 	return e(NewGui, {}, {
-		Container = e(Main.Frame, {
+		Container = e(Main.ImageLabel, {
 			native = Join({
 				Size = UDim2.fromScale(0.4, 0.8),
-				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
+				Image = "rbxassetid://138837230897413",
 			}, props.native),
 		}, {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
@@ -168,37 +167,9 @@ local function CreateGiftFrame(props: Properties)
 				}
 			),
 			CloseButton = e(CloseButton, {
-				Position = UDim2.fromScale(1, 0),
-				Size = UDim2.fromScale(0.175, 0.25),
+				Position = UDim2.fromScale(0.98, 0.02),
+				Size = UDim2.fromScale(0.2, 0.25),
 				OnClick = props.CloseClick,
-			}),
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.02, 0),
-			}),
-			InnerFrame = e(Main.Frame, {
-				native = {
-					Position = UDim2.fromScale(0.5, 0.52),
-					Size = UDim2.fromScale(0.94, 0.9),
-				},
-			}, {
-				UICorner = e("UICorner", {
-					CornerRadius = UDim.new(0.015, 0),
-				}),
-				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Color = Color3.new(0.388235, 0.101961, 0.486275),
-					Stroke = 0.002,
-					native = {
-						Transparency = 0.1,
-						LineJoinMode = Enum.LineJoinMode.Round,
-					},
-				}),
-			}),
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Color = Color3.new(0.866667, 0.866667, 0.866667),
-				Stroke = 0.002,
-				native = {
-					LineJoinMode = Enum.LineJoinMode.Round,
-				},
 			}),
 		}, props.children),
 	})

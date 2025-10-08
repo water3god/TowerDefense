@@ -893,7 +893,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 	return e(Main.ImageLabel, {
 		native = JoinDicts({
 			Size = UDim2.fromScale(0.55, 0.5),
-			Image = "rbxassetid://103903141717286",
+			Image = "rbxassetid://114227430892447",
 		}, Properties.native),
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
@@ -960,7 +960,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 			},
 		}),
 		CloseButton = e(CloseButton, {
-			Position = UDim2.fromScale(1, 0),
+			Position = UDim2.fromScale(0.985, 0.02),
 			Size = UDim2.fromScale(0.1, 0.2),
 			OnClick = Properties.CloseClick,
 		}),
@@ -1075,8 +1075,8 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 		}),
 		Title = e(Title, {
 			Title = "INVENTORY",
-			Position = UDim2.fromScale(0.16, -0.03),
-			Size = UDim2.fromScale(0.5, 0.5),
+			Position = UDim2.fromScale(0.5, 0.02),
+			Size = UDim2.fromScale(0.4, 0.25),
 		}),
 		MaxUnitsCount = e(Main.TextLabel, {
 			native = {
@@ -1085,6 +1085,10 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 				Text = UnitCountText,
 				ZIndex = 5,
 			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.02,
+			}),
 		}),
 	})
 end)
