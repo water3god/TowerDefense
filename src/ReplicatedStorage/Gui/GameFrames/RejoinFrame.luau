@@ -41,11 +41,10 @@ local function CreateRejoinFrame(props: Properties)
 		end
 	end, {})
 
-	return e(Main.Frame, {
+	return e(Main.ImageLabel, {
 		native = Join({
-			BackgroundTransparency = 0,
-			BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
 			Size = UDim2.fromScale(0.3, 0.175),
+			Image = "rbxassetid://124008352699396",
 		}, props.native),
 	}, {
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
@@ -57,6 +56,10 @@ local function CreateRejoinFrame(props: Properties)
 				Position = UDim2.fromScale(0.5, 0.275),
 				Size = UDim2.fromScale(0.8, 0.2),
 			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.015,
+			}),
 		}),
 		RejoinButton = e(Main.Animateables.TextButton, {
 			native = {
@@ -90,40 +93,12 @@ local function CreateRejoinFrame(props: Properties)
 				CornerRadius = UDim.new(0.2, 0),
 			}),
 		}),
-		UICorner = e("UICorner", {
-			CornerRadius = UDim.new(0.05, 0),
-		}),
 		CloseButton = e(CloseButton, {
 			Position = UDim2.fromScale(1, 0),
 			Size = UDim2.fromScale(0.5, 0.4),
 			OnClick = props.CloseClick,
 			native = {
 				ZIndex = 2,
-			},
-		}),
-		InnerFrame = e(Main.Frame, {
-			native = {
-				Position = UDim2.fromScale(0.5, 0.52),
-				Size = UDim2.fromScale(0.94, 0.9),
-			},
-		}, {
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.05, 0),
-			}),
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Color = Color3.new(0.388235, 0.101961, 0.486275),
-				Stroke = 0.003,
-				native = {
-					Transparency = 0.1,
-					LineJoinMode = Enum.LineJoinMode.Round,
-				},
-			}),
-		}),
-		UIStroke = e(UIStroke.UIStrokeAdvanced, {
-			Color = Color3.new(0.866667, 0.866667, 0.866667),
-			Stroke = 0.003,
-			native = {
-				LineJoinMode = Enum.LineJoinMode.Round,
 			},
 		}),
 	}, props.children)

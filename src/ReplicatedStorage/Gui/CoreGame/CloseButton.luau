@@ -27,20 +27,20 @@ export type Properties = {
 
 return function(Properties: Properties)
 	return e(Main.Frame, {
-		native = {
+		native = Join({
 			Position = Properties.Position,
 			Size = Properties.Size,
-		},
+		}, Properties.native),
 	}, {
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 1,
 		}),
 		Button = e(Main.Animateables.ImageButton, {
-			native = Join({
+			native = {
 				Position = UDim2.fromScale(0.5, 0.5),
 				Image = "rbxassetid://115509365553249",
 				[React.Event.MouseButton1Click] = Properties.OnClick,
-			}, Properties.native),
+			},
 		}, {
 			TextLabel = e(Main.TextLabel, {
 				native = {

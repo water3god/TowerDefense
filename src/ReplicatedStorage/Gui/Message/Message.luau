@@ -106,37 +106,29 @@ local function CreateMessage(props: Properties)
 		end
 	end, { CurrentMessageIndex, props.Messages, Translator } :: { unknown })
 
-	return e(Main.TextButton, {
+	return e(Main.Frame, {
 		native = Join({
-			Text = "",
 			Position = UDim2.fromScale(0.5, 0.65),
 			Size = UDim2.fromScale(0.4, 0.25),
-			BackgroundTransparency = 0,
-			BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
 		}, props.native),
 	}, {
+		Image = e(Main.ImageLabel, {
+			native = {
+				Size = UDim2.fromScale(1.1, 1.25),
+				Image = "rbxassetid://91626238417472",
+			},
+		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-			AspectRatio = 3,
+			AspectRatio = 2.9,
 		}),
 		UISizeConstraint = e("UISizeConstraint", {
 			MinSize = Vector2.new(300, 75),
 			MaxSize = Vector2.new(1200, 300),
 		}),
-		UICorner = e("UICorner", {
-			CornerRadius = UDim.new(0.04, 0),
-		}),
 		CloseButton = e(CloseButton, {
 			OnClick = props.CloseClick,
 			Position = UDim2.fromScale(1, 0),
-			Size = UDim2.fromScale(0.4, 0.3),
-		}),
-		UIStroke = e(UIStroke.UIStrokeAdvanced, {
-			Color = Color3.new(0.866667, 0.866667, 0.866667),
-			Stroke = 0.002,
-			native = {
-				LineJoinMode = Enum.LineJoinMode.Round,
-				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-			},
+			Size = UDim2.fromScale(0.4, 0.4),
 		}),
 		SpeakerImage = props.SpeakerImage and e(Main.ImageLabel, {
 			native = {
@@ -156,6 +148,10 @@ local function CreateMessage(props: Properties)
 				Text = props.SpeakerName,
 				TextXAlignment = Enum.TextXAlignment.Left,
 			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.01,
+			}),
 		}),
 		LeftArrow = e(Main.Animateables.ImageButton, {
 			native = {
@@ -180,13 +176,16 @@ local function CreateMessage(props: Properties)
 			native = {
 				AnchorPoint = Vector2.new(0.5, 0),
 				Position = UDim2.fromScale(0.5, 0.3),
-				Size = UDim2.fromScale(0.9, 0.65),
+				Size = UDim2.fromScale(0.9, 0.625),
 				Text = LerpedMessage,
 				AutoLocalize = false,
 				TextXAlignment = Enum.TextXAlignment.Left,
 				TextYAlignment = Enum.TextYAlignment.Top,
 			},
 		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.005,
+			}),
 			UITextSizeConstraint = e("UITextSizeConstraint", {
 				MaxTextSize = 16,
 			}),

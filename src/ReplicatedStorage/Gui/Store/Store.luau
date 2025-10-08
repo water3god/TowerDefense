@@ -72,7 +72,7 @@ local function CreateBasicTable(props: { Grid: boolean, Position: UDim2, Size: U
 	}, {
 		UIGridLayout = props.Grid and e("UIGridLayout", {
 			CellPadding = UDim2.fromScale(0, 0),
-			CellSize = UDim2.fromScale(0.2, 0.3),
+			CellSize = UDim2.fromScale(0.25, 0.3),
 			StartCorner = Enum.StartCorner.TopLeft,
 			SortOrder = Enum.SortOrder.LayoutOrder,
 		}),
@@ -462,11 +462,10 @@ local function CreateStoreFrame(Properties: Properties)
 		end
 	end, { HoveredProduct } :: { unknown })
 
-	return e(Main.Frame, {
+	return e(Main.ImageLabel, {
 		native = JoinDicts({
 			Size = UDim2.fromScale(0.5, 0.6),
-			BackgroundTransparency = 0,
-			BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
+			Image = "rbxassetid://75477724796723",
 		}, Properties.native),
 	}, {
 		StatsFrame = e(StatsFrame, {
@@ -486,46 +485,17 @@ local function CreateStoreFrame(Properties: Properties)
 			MaxSize = Vector2.new(1360, 880),
 		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-			AspectRatio = 1.5,
-		}),
-		UICorner = e("UICorner", {
-			CornerRadius = UDim.new(0.02, 0),
+			AspectRatio = 1.4,
 		}),
 		Title = e(Title, {
-			Position = UDim2.fromScale(0.2, 0),
-			Size = UDim2.fromScale(1, 0.18),
+			Position = UDim2.fromScale(0.5, 0),
+			Size = UDim2.fromScale(1, 0.2),
 			Title = "STORE",
 		}),
 		CloseButton = e(CloseButton, {
 			Position = UDim2.fromScale(1, 0),
 			Size = UDim2.fromScale(0.1, 0.2),
 			OnClick = Properties.CloseClick,
-		}),
-		InnerFrame = e(Main.Frame, {
-			native = {
-				Position = UDim2.fromScale(0.5, 0.52),
-				Size = UDim2.fromScale(0.94, 0.87),
-				ZIndex = 0,
-			},
-		}, {
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.015, 0),
-			}),
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Color = Color3.new(0.388235, 0.101961, 0.486275),
-				Stroke = 0.002,
-				native = {
-					Transparency = 0.1,
-					LineJoinMode = Enum.LineJoinMode.Round,
-				},
-			}),
-		}),
-		UIStroke = e(UIStroke.UIStrokeAdvanced, {
-			Color = Color3.new(0.866667, 0.866667, 0.866667),
-			Stroke = 0.002,
-			native = {
-				LineJoinMode = Enum.LineJoinMode.Round,
-			},
 		}),
 		InfoFrame = e(Main.ImageLabel, {
 			native = {

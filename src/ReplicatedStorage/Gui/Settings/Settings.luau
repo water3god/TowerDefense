@@ -253,6 +253,10 @@ local function CreateSetting(props: SettingProps)
 					Text = Name,
 					TextXAlignment = Enum.TextXAlignment.Left,
 				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.015,
+				}),
 			}),
 			Value = ValueDeterminer,
 		}),

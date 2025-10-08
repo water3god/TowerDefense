@@ -329,7 +329,7 @@ local function CreateRollMain(props: Properties)
 			CloseClick = UnitVisCloseClick,
 		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-			AspectRatio = 1.7,
+			AspectRatio = 1.77,
 		}),
 		CloseButton = e(CloseButton, {
 			Position = UDim2.fromScale(1, 0),

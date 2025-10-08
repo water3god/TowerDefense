@@ -597,22 +597,12 @@ local function CreateUpgradeFrame(Properties: Properties)
 	return e(Main.ImageLabel, {
 		native = Join({
 			Size = UDim2.fromScale(0.8, 0.8),
-			Image = "rbxassetid://127454767718648",
+			Image = "rbxassetid://90052981528808",
 			Visible = TrueVisible,
 		}, Properties.native),
 	}, {
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 1.5,
-		}),
-		UIStroke = e(UIStroke.UIStrokeBasic, {
-			Stroke = 0.001,
-			Color = Color3.new(1, 1, 1),
-			native = {
-				LineJoinMode = Enum.LineJoinMode.Round,
-			},
-		}),
-		UICorner = e("UICorner", {
-			CornerRadius = UDim.new(0.02, 0),
 		}),
 		UIGradient = e("UIGradient", {
 			Color = RarityData.BackgroundColor,

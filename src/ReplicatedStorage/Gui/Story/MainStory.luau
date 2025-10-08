@@ -63,16 +63,13 @@ local function CreateStage(Props: { Hovered: boolean, Number: number, OnClick: (
 			Size = UDim2.fromScale(0.85, 0.225),
 		},
 	}, {
-		Button = e(Main.Animateables.TextButton, {
+		Button = e(Main.Animateables.ImageButton, {
 			native = {
-				BackgroundTransparency = 0,
-				BackgroundColor3 = if Props.Enabled then Color3.fromRGB(127, 32, 165) else Color3.fromRGB(93, 11, 141),
 				Size = UDim2.fromScale(0.9, 0.9),
-				Text = "",
+				Image = "rbxassetid://131934662734362",
 				[React.Event.MouseButton1Click] = Props.Enabled and Props.OnClick or NoLevel,
 			},
 		}, {
-
 			UIStroke = Props.Hovered and e(UIStroke.UIStrokeAdvanced, {
 				Stroke = 0.02,
 				Color = Color3.new(1, 1, 1),
@@ -81,14 +78,16 @@ local function CreateStage(Props: { Hovered: boolean, Number: number, OnClick: (
 					LineJoinMode = Enum.LineJoinMode.Round,
 				},
 			}),
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.2, 0),
-			}),
 			Label = e(Main.TextLabel, {
 				native = {
 					Size = UDim2.fromScale(0.9, 0.55),
 					Text = Props.Number == 0 and "∞" or tostring(Props.Number),
+					TextTransparency = if Props.Enabled then 0 else 0.7,
 				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.02,
+				}),
 			}),
 		}),
 	})
@@ -474,7 +473,7 @@ local function CreateMainStory(Properties: Properties)
 			MaxSize = Vector2.new(1200, 680),
 		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-			AspectRatio = 1.787,
+			AspectRatio = 1.77,
 		}),
 		MapName = e(Main.TextLabel, {
 			native = {
@@ -482,6 +481,10 @@ local function CreateMainStory(Properties: Properties)
 				Size = UDim2.fromScale(0.7, 0.1),
 				Text = FullMapName, --"Colussem: 1 - Survival",
 			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.006,
+			}),
 		}),
 		Bar = e(Main.CanvasGroup, {
 			native = {
@@ -763,6 +766,13 @@ local function CreateMainStory(Properties: Properties)
 				ScaleType = Enum.ScaleType.Crop,
 			},
 		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.015,
+				Color = Color3.new(0.188235, 0.121569, 0.031373),
+				native = {
+					LineJoinMode = Enum.LineJoinMode.Round,
+				},
+			}),
 			UICorner = e("UICorner", {
 				CornerRadius = UDim.new(0.05, 0),
 			}),
@@ -772,17 +782,18 @@ local function CreateMainStory(Properties: Properties)
 		}),
 		StageFrame = e(Main.ImageLabel, {
 			native = {
-				Image = "rbxassetid://94302946042531",
-				Position = UDim2.fromScale(1.2, 0.525),
+				Image = "rbxassetid://78579166773802",
+				Position = UDim2.fromScale(1.25, 0.525),
 				Size = UDim2.fromScale(0.4, 0.95),
 			},
 		}, {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 0.6,
+				AspectRatio = 0.75,
 			}),
 			MainStageFrame = e(Main.ScrollingFrame, {
-				BarSize = 0.002,
+				BarSize = 0.01,
 				native = {
+					Size = UDim2.fromScale(0.9, 0.95),
 					AutomaticCanvasSize = Enum.AutomaticSize.Y,
 				},
 			}, {

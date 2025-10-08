@@ -81,7 +81,7 @@ local function CreateWaitingFrame(Props: Properties)
 		}, Props.native),
 	}, {
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-			AspectRatio = 2,
+			AspectRatio = 1.77,
 		}),
 		CloseButton = e(CloseButton, {
 			Position = UDim2.fromScale(1, 0),
@@ -130,6 +130,10 @@ local function CreateWaitingFrame(Props: Properties)
 				Text = StoryData.Data and GameInfo.GetDifficultyString(StoryData.Data.Difficulty) or "Difficulty: N/A",
 				RichText = true,
 			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.015,
+			}),
 		}),
 		PlayersLabel = e(Main.TextLabel, {
 			native = {
@@ -137,6 +141,10 @@ local function CreateWaitingFrame(Props: Properties)
 				Size = UDim2.fromScale(0.5, 0.1),
 				Text = StoryData.Data and string.format("Players: %u/%u", #StoryData.Data.Players, 4) or "0/4",
 			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.015,
+			}),
 		}),
 		TitleLabel = e(Main.TextLabel, {
 			native = {
@@ -148,6 +156,10 @@ local function CreateWaitingFrame(Props: Properties)
 					GameData.StageData.Name
 				) or "N/A",
 			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.01,
+			}),
 		}),
 		TimeBar = e(Main.CanvasGroup, {
 			native = {
