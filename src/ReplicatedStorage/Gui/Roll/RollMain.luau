@@ -351,24 +351,27 @@ local function CreateRollMain(props: Properties)
 				SetUnitInfoVis(not UnitInfoVis)
 			end,
 			Text = "Units",
+			Color = "Blue",
 		}, {}),
 		AutoRollButton = e(Button, {
 			Size = UDim2.fromScale(0.3, 0.2),
 			Position = UDim2.fromScale(0.82, 0.85),
 			OnClick = OnAutoClick,
 			Text = string.format("Auto Roll: %s", if InAutoSell then "On" else "Off"),
+			Color = if InAutoSell then "Green" else "Red",
 		}, {}),
 		SummonButton = e(Button, {
 			Size = UDim2.fromScale(0.5, 0.25),
 			Position = UDim2.fromScale(0.5, 0.825),
 			OnClick = SummonClick,
 			Text = SummonText,
+			Color = "Yellow",
 		}, {}),
 		SummonCountButton = e(Main.Animateables.ImageButton, {
 			native = {
 				Size = UDim2.fromScale(0.15, 0.15),
 				Position = UDim2.fromScale(0.89, 0.675),
-				Image = "rbxassetid://77645625759735",
+				Image = "rbxassetid://72363371760692",
 				AutoLocalize = false,
 				[React.Event.MouseButton1Click] = OnMultiplierClick,
 			},

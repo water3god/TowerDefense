@@ -40,6 +40,7 @@ local MultiplierContext = require(MiscContexts.GoldMultiplier)
 
 local Components = Gui.Components
 local ProgressBar = require(Components.ProgressBar)
+local Button = require(Components.Button)
 
 local Shared = ReplicatedStorage.Shared
 local GameInfo = require(Shared.GameInfo)
@@ -70,22 +71,16 @@ local function CreateStage(Props: { Hovered: boolean, Number: number, OnClick: (
 			native = {
 				Size = UDim2.fromScale(0.9, 0.9),
 				Image = "rbxassetid://131934662734362",
+				ImageColor3 = Props.Hovered and Color3.new(0.654902, 1, 0.635294) or Color3.new(1, 1, 1),
 				[React.Event.MouseButton1Click] = Props.Enabled and Props.OnClick or NoLevel,
 			},
 		}, {
-			UIStroke = Props.Hovered and e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.02,
-				Color = Color3.new(1, 1, 1),
-				native = {
-					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-					LineJoinMode = Enum.LineJoinMode.Round,
-				},
-			}),
 			Label = e(Main.TextLabel, {
 				native = {
 					Size = UDim2.fromScale(0.9, 0.55),
 					Text = Props.Number == 0 and "∞" or tostring(Props.Number),
 					TextTransparency = if Props.Enabled then 0 else 0.7,
+					TextColor3 = Props.Hovered and Color3.new(0.141176, 1, 0.094118) or Color3.new(1, 1, 1),
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {
@@ -205,8 +200,8 @@ local function CreateMap(Props: {
 	})
 end
 
-local HoveredColor = Color3.fromRGB(183, 42, 255)
-local DefaultColor = Color3.new(0.227451, 0.082353, 0.290196)
+local HoveredColor = Color3.fromRGB(194, 194, 194)
+local DefaultColor = Color3.new(0.211765, 0.211765, 0.211765)
 
 local function CreateMainStory(Properties: Properties)
 	local StoryData = React.useContext(StoryContext.Context)
@@ -501,42 +496,6 @@ local function CreateMainStory(Properties: Properties)
 				Size = UDim2.fromScale(0.9, 0.2),
 			},
 		}),
-		--[[Bar = e(Main.CanvasGroup, {
-			native = {
-				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.fromRGB(93, 11, 141),
-				Position = UDim2.fromScale(0.7, 1.07),
-				Size = UDim2.fromScale(0.9, 0.08),
-			},
-		}, {
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.4, 0),
-			}),
-			InnerBar = e(Main.Frame, {
-				native = {
-					AnchorPoint = Vector2.new(0, 0.5),
-					BackgroundTransparency = 0,
-					BackgroundColor3 = Color3.fromRGB(127, 32, 165),
-					Position = UDim2.fromScale(0, 0.5),
-					Size = React.joinBindings({ Time, TotalTime }):map(function(Times: { number })
-						return UDim2.fromScale(math.clamp(Times[1] / Times[2], 0, 1), 1)
-					end),
-				},
-			}, {
-				UICorner = e("UICorner", {
-					CornerRadius = UDim.new(0.4, 0),
-				}),
-			}),
-			TimeLabel = e(Main.TextLabel, {
-				native = {
-					Size = UDim2.fromScale(0.8, 0.8),
-					Text = Time:map(function(TimeLeft: number)
-						return string.format("Time Left: %u", math.floor(TimeLeft))
-					end),
-					ZIndex = 3,
-				},
-			}),
-		}),]]
 		CloseButton = e(CloseButton, {
 			Size = UDim2.fromScale(0.14, 0.2),
 			Position = UDim2.fromScale(1, 0),
@@ -556,7 +515,7 @@ local function CreateMainStory(Properties: Properties)
 			Normal = e(Main.Animateables.ImageButton, {
 				native = {
 					Size = UDim2.fromScale(1, 1),
-					Image = "rbxassetid://107455378505876",
+					Image = "rbxassetid://127473759461051",
 					ImageColor3 = if Difficulty == "Normal" then HoveredColor else DefaultColor,
 					LayoutOrder = DifficultyLayoutOrder(),
 					[React.Event.MouseButton1Click] = function()
@@ -571,15 +530,19 @@ local function CreateMainStory(Properties: Properties)
 					native = {
 						Text = "Normal",
 						TextColor3 = Color3.fromRGB(88, 226, 65),
-						Position = UDim2.fromScale(0.5, 0.75),
-						Size = UDim2.fromScale(0.7, 0.3),
+						Position = UDim2.fromScale(0.5, 0.5),
+						Size = UDim2.fromScale(0.6, 0.2),
 					},
+				}, {
+					UIStroke = e(UIStroke.UIStrokeAdvanced, {
+						Stroke = 0.02,
+					}),
 				}),
 			}),
 			Hard = e(Main.Animateables.ImageButton, {
 				native = {
 					Size = UDim2.fromScale(1, 1),
-					Image = "rbxassetid://107455378505876",
+					Image = "rbxassetid://77942965108914",
 					ImageColor3 = if Difficulty == "Hard" then HoveredColor else DefaultColor,
 					LayoutOrder = DifficultyLayoutOrder(),
 					[React.Event.MouseButton1Click] = function()
@@ -594,15 +557,19 @@ local function CreateMainStory(Properties: Properties)
 					native = {
 						Text = "Hard",
 						TextColor3 = Color3.fromRGB(224, 47, 57),
-						Position = UDim2.fromScale(0.5, 0.75),
-						Size = UDim2.fromScale(0.7, 0.3),
+						Position = UDim2.fromScale(0.5, 0.5),
+						Size = UDim2.fromScale(0.6, 0.2),
 					},
+				}, {
+					UIStroke = e(UIStroke.UIStrokeAdvanced, {
+						Stroke = 0.02,
+					}),
 				}),
 			}),
 			Insane = e(Main.Animateables.ImageButton, {
 				native = {
 					Size = UDim2.fromScale(1, 1),
-					Image = "rbxassetid://107455378505876",
+					Image = "rbxassetid://100104433181257",
 					ImageColor3 = if Difficulty == "Insane" then HoveredColor else DefaultColor,
 					LayoutOrder = DifficultyLayoutOrder(),
 					[React.Event.MouseButton1Click] = function()
@@ -617,9 +584,13 @@ local function CreateMainStory(Properties: Properties)
 					native = {
 						Text = "Insane",
 						TextColor3 = Color3.fromRGB(187, 85, 211),
-						Position = UDim2.fromScale(0.5, 0.75),
-						Size = UDim2.fromScale(0.7, 0.3),
+						Position = UDim2.fromScale(0.5, 0.5),
+						Size = UDim2.fromScale(0.6, 0.2),
 					},
+				}, {
+					UIStroke = e(UIStroke.UIStrokeAdvanced, {
+						Stroke = 0.02,
+					}),
 				}),
 			}),
 		}),
@@ -753,49 +724,25 @@ local function CreateMainStory(Properties: Properties)
 				}),
 			}),
 		}),
-		CancelButton = e(Main.Animateables.ImageButton, {
+		CancelButton = e(Button, {
+			Text = "Cancel",
+			Color = "Red",
+			Size = UDim2.fromScale(0.175, 0.2),
+			Position = UDim2.fromScale(0.6, 0.89),
+			OnClick = CancelCallback,
 			native = {
-				Image = "rbxassetid://120986367718593",
-				Size = UDim2.fromScale(0.175, 0.175),
-				Position = UDim2.fromScale(0.6, 0.89),
-				[React.Event.MouseButton1Click] = CancelCallback,
+				ZIndex = 2,
 			},
-		}, {
-			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 3.16,
-			}),
-			Label = e(Main.TextLabel, {
-				native = {
-					Size = UDim2.fromScale(0.9, 0.7),
-					Text = "Cancel",
-				},
-			}, {
-				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.03,
-				}),
-			}),
 		}),
-		ConfirmButton = e(Main.Animateables.ImageButton, {
+		ConfirmButton = e(Button, {
+			Text = "Confirm",
+			Color = "Green",
+			Size = UDim2.fromScale(0.175, 0.2),
+			Position = UDim2.fromScale(0.35, 0.89),
+			OnClick = ConfirmCallback,
 			native = {
-				Image = "rbxassetid://76295055563521",
-				Size = UDim2.fromScale(0.175, 0.175),
-				Position = UDim2.fromScale(0.35, 0.89),
-				[React.Event.MouseButton1Click] = ConfirmCallback,
+				ZIndex = 2,
 			},
-		}, {
-			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 3.16,
-			}),
-			Label = e(Main.TextLabel, {
-				native = {
-					Size = UDim2.fromScale(0.9, 0.7),
-					Text = "Confirm",
-				},
-			}, {
-				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.03,
-				}),
-			}),
 		}),
 		MapImage = e(Main.ImageLabel, {
 			native = {

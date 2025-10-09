@@ -122,7 +122,7 @@ local function CreateInfoFrame(Properties: Properties)
 		Background = e(Main.ImageLabel, {
 			native = {
 				Position = UDim2.fromScale(0.5, 0.5),
-				Size = UDim2.fromScale(1.1, 1),
+				Size = UDim2.fromScale(1.05, 1),
 				Image = "rbxassetid://138957161873862",
 				ZIndex = 0,
 			},
@@ -169,7 +169,7 @@ local function CreateInfoFrame(Properties: Properties)
 		}),
 		FirstButton = e(Button, {
 			Text = FirstText,
-			Color = "Blue",
+			Color = FirstText == "Unequip" and "Blue" or "Green",
 			Position = UDim2.fromScale(0.5, 0.9),
 			Size = UDim2.fromScale(1.4, 0.225),
 			OnClick = Properties.OnFirstClick,

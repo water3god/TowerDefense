@@ -28,6 +28,7 @@ local StoryContext = require(Story.StoryContext)
 
 local Components = Gui.Components
 local ProgressBar = require(Components.ProgressBar)
+local Button = require(Components.Button)
 
 local Shared = ReplicatedStorage.Shared
 local GameInfo = require(Shared.GameInfo)
@@ -91,29 +92,19 @@ local function CreateWaitingFrame(Props: Properties)
 			Size = UDim2.fromScale(0.3, 0.3),
 			OnClick = OnLeave,
 		}),
-		StartButton = e(Main.Animateables.ImageButton, {
+		StartButton = e(Button, {
+			Text = "Start",
+			Color = "Green",
+			Position = UDim2.fromScale(0.35, 0.775),
+			Size = UDim2.fromScale(0.4, 0.4),
+			OnClick = StartClick,
 			native = {
-				Position = UDim2.fromScale(0.35, 0.8),
-				Size = UDim2.fromScale(0.4, 0.2),
-				Image = "rbxassetid://121336998793729",
 				Visible = StoryData.Data and Player.UserId == StoryData.Data.OwnerId,
-				[React.Event.MouseButton1Click] = StartClick,
 			},
-		}, {
-			Label = e(Main.TextLabel, {
-				native = {
-					Size = UDim2.fromScale(0.9, 0.7),
-					Text = "Start",
-				},
-			}, {
-				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.02,
-				}),
-			}),
 		}),
 		MapImage = e(Main.ImageLabel, {
 			native = {
-				Position = UDim2.fromScale(0.8, 0.6),
+				Position = UDim2.fromScale(0.775, 0.6),
 				Size = UDim2.fromScale(0.4, 0.55),
 				Image = GameData and GameData.MapData.Image,
 				ScaleType = Enum.ScaleType.Crop,
@@ -128,7 +119,7 @@ local function CreateWaitingFrame(Props: Properties)
 		}),
 		DifficultyLabel = e(Main.TextLabel, {
 			native = {
-				Position = UDim2.fromScale(0.35, 0.575),
+				Position = UDim2.fromScale(0.35, 0.525),
 				Size = UDim2.fromScale(0.5, 0.1),
 				Text = StoryData.Data and GameInfo.GetDifficultyString(StoryData.Data.Difficulty) or "Difficulty: N/A",
 				RichText = true,
@@ -140,7 +131,7 @@ local function CreateWaitingFrame(Props: Properties)
 		}),
 		PlayersLabel = e(Main.TextLabel, {
 			native = {
-				Position = UDim2.fromScale(0.35, 0.4),
+				Position = UDim2.fromScale(0.35, 0.375),
 				Size = UDim2.fromScale(0.5, 0.1),
 				Text = StoryData.Data and string.format("Players: %u/%u", #StoryData.Data.Players, 4) or "0/4",
 			},

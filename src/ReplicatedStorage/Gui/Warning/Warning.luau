@@ -65,7 +65,7 @@ local function CreateWarning(props: Props)
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.008,
+				Stroke = 0.005,
 				native = {
 					Transparency = FadeStyles.Transparency,
 				},
@@ -102,6 +102,9 @@ local function CreateMainFrame(props: any)
 			ZIndex = 100,
 		}, props.native),
 	}, {
+		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
+			AspectRatio = 5,
+		}),
 		UISizeConstraint = e("UISizeConstraint", {
 			MinSize = Vector2.new(200, 80),
 			MaxSize = Vector2.new(800, 320),
