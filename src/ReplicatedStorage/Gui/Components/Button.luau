@@ -28,6 +28,7 @@ export type Properties = {
 	Text: string?,
 	Size: UDim2?,
 	Color: "Black" | "Blue" | "Green" | "Orange" | "Pink" | "Purple" | "Red" | "Yellow"?,
+	OnClick: (() -> ())?,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
 }
@@ -164,6 +165,7 @@ local function CreateButton(props: Properties)
 		native = Join({
 			Text = "",
 			Size = props.Size,
+			[React.Event.Activated] = props.OnClick,
 		}, props.native),
 	}, {
 		Label = props.Text and e(Main.TextLabel, {

@@ -140,13 +140,13 @@ local function CreateProgressBar(props: Properties)
 		}),
 		Label = e(Main.TextLabel, {
 			native = {
-				Size = UDim2.fromScale(0.9, 0.3),
+				Size = UDim2.fromScale(0.95, 0.3),
 				Text = props.Text,
 				ZIndex = 3,
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.01,
+				Stroke = 0.006,
 			}),
 		}),
 		MainBar = e(Main.ImageLabel, {

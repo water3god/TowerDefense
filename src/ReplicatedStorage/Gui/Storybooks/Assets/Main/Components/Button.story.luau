@@ -16,17 +16,19 @@ local Gui = ReplicatedStorage.Gui
 local Button = require(Gui.Components.Button)
 
 -- Controls --
-local controls = {}
+local controls = {
+	Text = "Button",
+}
 
 -- Story --
 local Story = {
 	react = React,
 	reactRoblox = ReactRoblox,
 	controls = controls,
-	story = function()
+	story = function(props)
 		local Frame = e(Button, {
 			Color = "Purple",
-			Text = "Create a button lol hello",
+			Text = props.controls.Text,
 			native = {
 				Size = UDim2.fromScale(0.8, 0.4),
 			},
