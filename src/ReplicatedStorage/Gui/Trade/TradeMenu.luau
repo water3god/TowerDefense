@@ -32,6 +32,9 @@ local TradeContext = require(Trade.TradeContext)
 local SettingsFolder = Gui.Settings
 local SettingsContext = require(SettingsFolder.SettingsContext)
 
+local Components = Gui.Components
+local Button = require(Components.Button)
+
 local Client = ReplicatedStorage.Client
 local TradeService = require(Client.LobbyClient.TradeService)
 
@@ -93,16 +96,16 @@ local function CreatePlayerFrame(Properties: PlayerFrameProps)
 
 	local ButtonColor = React.useMemo(function()
 		if SentId then
-			return Color3.fromRGB(155, 155, 155)
+			return "Black"
 		end
 		if Properties.Status == "CanTrade" then
-			return Color3.fromRGB(0, 255, 0)
+			return "Green"
 		elseif Properties.Status == "Trading" then
-			return Color3.fromRGB(255, 255, 0)
+			return "Yellow"
 		elseif Properties.Status == "TradeDisabled" then
-			return Color3.fromRGB(255, 0, 0)
+			return "Red"
 		else
-			return Color3.fromRGB(255, 0, 0)
+			return "Red"
 		end
 	end, { Properties.Status, SentId } :: { unknown })
 
@@ -124,41 +127,21 @@ local function CreatePlayerFrame(Properties: PlayerFrameProps)
 
 	return e(Main.Frame, {
 		native = {
-			Size = UDim2.fromScale(1, 0.25),
+			Size = UDim2.fromScale(1, 0.3),
 		},
 	}, {
-		Container = e(Main.Frame, {
+		Container = e(Main.ImageLabel, {
 			native = {
-				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.fromRGB(50, 8, 66),
 				Size = UDim2.fromScale(1, 0.9),
+				Image = "rbxassetid://81483731389339",
 			},
 		}, {
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.2, 0),
-			}),
-			PlayerTradeButton = e(Main.Animateables.ImageButton, {
-				native = {
-					Position = UDim2.fromScale(0.8, 0.5),
-					Size = UDim2.fromScale(0.3, 0.6),
-					Image = "rbxassetid://80739823452825",
-					ImageColor3 = ButtonColor,
-					[React.Event.MouseButton1Click] = RequestTrade,
-				},
-			}, {
-				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-					AspectRatio = 3,
-				}),
-				Label = e(Main.TextLabel, {
-					native = {
-						Size = UDim2.fromScale(0.7, 0.7),
-						Text = Status,
-					},
-				}, {
-					UIStroke = e(UIStroke.UIStrokeAdvanced, {
-						Stroke = 0.04,
-					}),
-				}),
+			PlayerTradeButton = e(Button, {
+				Text = Status,
+				Position = UDim2.fromScale(0.8, 0.5),
+				Size = UDim2.fromScale(0.4, 0.8),
+				Color = ButtonColor,
+				OnClick = RequestTrade,
 			}),
 			PlayerImage = e(Main.ImageLabel, {
 				native = {
@@ -188,6 +171,10 @@ local function CreatePlayerFrame(Properties: PlayerFrameProps)
 					Text = Properties.Player.Name,
 					TextXAlignment = Enum.TextXAlignment.Left,
 				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.01,
+				}),
 			}),
 		}),
 	})
@@ -269,6 +256,10 @@ local function CreateTradeMenu(Properties: Properties)
 					Size = UDim2.fromScale(1, 0.8),
 					Text = EquippedUnits.GlobalLevel < 50 and "Level 50 Required" or "Trading Disabled",
 				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.01,
+				}),
 			}),
 		}),
 		CloseButton = e(CloseButton, {

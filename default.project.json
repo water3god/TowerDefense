@@ -114,6 +114,11 @@
       "$className": "ReplicatedStorage",
       "$ignoreUnknownInstances": true,
       "$path": "src/ReplicatedStorage",
+      "Assets": {
+        "$className": "Folder",
+        "$ignoreUnknownInstances": true,
+        "$path": "Assets"
+      },
       "Packages": {
         "$className": "Folder",
         "$ignoreUnknownInstances": true,

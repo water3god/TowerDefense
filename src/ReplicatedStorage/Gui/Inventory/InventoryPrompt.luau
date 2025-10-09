@@ -36,6 +36,10 @@ local BaseButton = require(CoreGame.BaseButton)
 local Hooks = require(CoreGame.Hooks)
 local UIStroke = require(CoreGame.UIStroke)
 
+local Components = Gui.Components
+local Button = require(Components.Button)
+local ProgressBar = require(Components.ProgressBar)
+
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
 local RarityInfo = require(Shared.RarityInfo)
@@ -322,6 +326,26 @@ local function InventoryPrompt(Properties: Properties)
 			SetFilterMethod(Filters[1])
 		end
 	end, { OpenFrame })
+
+	local XPBar, SetXPBar = React.useBinding(0)
+
+	React.useEffect(function()
+		if ClickedUnitData then
+			SetXPBar(ClickedUnitData.CurrentUnit.XP / ClickedUnitData.CurrentUnit.NeededXP)
+		else
+			SetXPBar(0)
+		end
+	end, { ClickedUnitData })
+
+	local XPText, SetXPText = React.useBinding("")
+
+	React.useEffect(function()
+		if ClickedUnitData then
+			SetXPText(string.format("%u/%u", ClickedUnitData.CurrentUnit.XP, ClickedUnitData.CurrentUnit.NeededXP))
+		else
+			SetXPText("")
+		end
+	end, { ClickedUnitData })
 
 	local SortData = React.useMemo(function()
 		local Sorts = {}
@@ -629,10 +653,9 @@ local function InventoryPrompt(Properties: Properties)
 		} :: { unknown }
 	)
 
-	return e(Main.Frame, {
+	return e(Main.ImageLabel, {
 		native = JoinDicts({
-			BackgroundTransparency = 0,
-			BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
+			Image = "rbxassetid://114227430892447",
 			Size = Styles.alpha:map(function(alpha)
 				return UDim2.fromScale(0.475, 0.45):Lerp(UDim2.fromScale(0.55, 0.5), alpha)
 			end),
@@ -642,39 +665,11 @@ local function InventoryPrompt(Properties: Properties)
 		}, Properties.native),
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
-			MinSize = Vector2.new(400, 200),
-			MaxSize = Vector2.new(1600, 800),
+			MinSize = Vector2.new(500, 200),
+			MaxSize = Vector2.new(2000, 800),
 		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 2,
-		}),
-		UICorner = e("UICorner", {
-			CornerRadius = UDim.new(0.02, 0),
-		}),
-		InnerFrame = e(Main.Frame, {
-			native = {
-				Position = UDim2.fromScale(0.5, 0.52),
-				Size = UDim2.fromScale(0.94, 0.9),
-			},
-		}, {
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.015, 0),
-			}),
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Color = Color3.new(0.388235, 0.101961, 0.486275),
-				Stroke = 0.002,
-				native = {
-					Transparency = 0.1,
-					LineJoinMode = Enum.LineJoinMode.Round,
-				},
-			}),
-		}),
-		UIStroke = e(UIStroke.UIStrokeAdvanced, {
-			Color = Color3.new(0.866667, 0.866667, 0.866667),
-			Stroke = 0.002,
-			native = {
-				LineJoinMode = Enum.LineJoinMode.Round,
-			},
 		}),
 		MainDataFrame = e(Main.ScrollingFrame, {
 			BarSize = 0.02,
@@ -703,7 +698,7 @@ local function InventoryPrompt(Properties: Properties)
 			}),
 		}, InventoryNodes),
 		CloseButton = e(CloseButton, {
-			Position = UDim2.fromScale(1, 0),
+			Position = UDim2.fromScale(0.985, 0.02),
 			Size = UDim2.fromScale(0.1, 0.2),
 			OnClick = Properties.CloseClick,
 		}),
@@ -713,42 +708,39 @@ local function InventoryPrompt(Properties: Properties)
 				FirstText = "Use",
 			})
 		),
-		UnitsButton = e(BaseButton, {
+		UnitsButton = e(Button, {
 			Text = "Units",
 			OnClick = function()
 				SetOpenFrame("Unit")
 			end,
-			Highlighted = OpenFrame == "Unit",
-			native = {
-				Position = UDim2.fromScale(0.12, 0.175),
-			},
+			Color = OpenFrame == "Unit" and "Green" or "Black",
+			Position = UDim2.fromScale(0.12, 0.175),
+			Size = UDim2.fromScale(0.1, 0.16),
 		}),
-		GamepassesButton = e(BaseButton, {
+		GamepassesButton = e(Button, {
 			Text = "Products",
 			OnClick = function()
 				SetOpenFrame("Product")
 			end,
-			Highlighted = OpenFrame == "Product",
-			native = {
-				Position = UDim2.fromScale(0.26, 0.175),
-			},
+			Color = OpenFrame == "Product" and "Green" or "Black",
+			Position = UDim2.fromScale(0.26, 0.175),
+			Size = UDim2.fromScale(0.1, 0.16),
 		}),
-		ResourcesButton = e(BaseButton, {
+		ResourcesButton = e(Button, {
 			Text = "Resources",
 			OnClick = function()
 				SetOpenFrame("Resource")
 			end,
-			Highlighted = OpenFrame == "Resource",
-			native = {
-				Position = UDim2.fromScale(0.40, 0.175),
-			},
+			Color = OpenFrame == "Resource" and "Green" or "Black",
+			Position = UDim2.fromScale(0.40, 0.175),
+			Size = UDim2.fromScale(0.1, 0.16),
 		}),
 		Search = e(Main.Frame, {
 			native = {
 				BackgroundTransparency = 0,
 				BackgroundColor3 = Color3.new(0.447059, 0.447059, 0.447059),
 				Size = UDim2.fromScale(0.2, 0.08),
-				Position = UDim2.fromScale(0.63, 0.175),
+				Position = UDim2.fromScale(0.62, 0.175),
 			},
 		}, {
 			Box = e(Main.TextBox, {
@@ -775,42 +767,28 @@ local function InventoryPrompt(Properties: Properties)
 				}),
 			}),
 		}),
-		SortButton = e(Main.Animateables.TextButton, {
-			native = {
-				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.new(0.137255, 0.796078, 0.223529),
-				Size = UDim2.fromScale(0.08, 0.08),
-				Position = UDim2.fromScale(0.79, 0.175),
-				Text = "",
-				[React.Event.MouseButton1Click] = FilterMethodCallback,
-			},
-		}, {
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Color = Color3.new(0.027451, 0.168627, 0.047059),
-				Stroke = 0.03,
-				native = {
-					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-					LineJoinMode = Enum.LineJoinMode.Round,
-				},
-			}),
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.2, 0),
-			}),
-			Label = e(Main.TextLabel, {
-				native = {
-					Size = UDim2.fromScale(0.8, 0.6),
-					Text = FilterMethod,
-				},
-			}, {
-				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.03,
-				}),
-			}),
+		SortButton = e(Button, {
+			Size = UDim2.fromScale(0.08, 0.12),
+			Position = UDim2.fromScale(0.79, 0.175),
+			Text = FilterMethod,
+			Color = "Orange",
+			OnClick = FilterMethodCallback,
 		}),
 		Title = e(Title, {
 			Title = "INVENTORY",
-			Position = UDim2.fromScale(0.16, -0.03),
-			Size = UDim2.fromScale(0.5, 0.5),
+			Position = UDim2.fromScale(0.5, 0.02),
+			Size = UDim2.fromScale(0.4, 0.25),
+		}),
+		XPBar = e(ProgressBar, {
+			Bar = XPBar,
+			Text = XPText,
+			Color = "Purple",
+			native = {
+				Position = UDim2.fromScale(0.35, 0.9),
+				Size = UDim2.fromScale(0.5, 0.1),
+				Visible = if OpenFrame == "Unit" and ClickedUnitData then true else false,
+				ZIndex = 5,
+			},
 		}),
 		MaxUnitsCount = e(Main.TextLabel, {
 			native = {

@@ -49,13 +49,12 @@ local function CreateTipsGui(props: Properties)
 		end)
 	end, { Tip })
 
-	return e(Main.Frame, {
+	return e(Main.ImageLabel, {
 		native = Join({
 			AnchorPoint = Vector2.new(0.5, 0),
-			BackgroundTransparency = 0,
-			BackgroundColor3 = Color3.fromRGB(27, 27, 27),
 			Position = UDim2.fromScale(0.5, 0),
-			Size = UDim2.fromScale(0.48, 0.08),
+			Size = UDim2.fromScale(0.5, 0.1),
+			Image = "rbxassetid://81483731389339",
 			ZIndex = 0,
 		}, props.native),
 	}, {
@@ -66,25 +65,16 @@ local function CreateTipsGui(props: Properties)
 		UIAspectRatio = e("UIAspectRatioConstraint", {
 			AspectRatio = 6,
 		}),
-		UICorner = e("UICorner", {
-			CornerRadius = UDim.new(0.3, 0),
-		}),
-		UIStroke = e(UIStroke.UIStrokeAdvanced, {
-			Stroke = 0.01,
-			native = {
-				LineJoinMode = Enum.LineJoinMode.Round,
-			},
-		}),
 		Label = e(Main.TextLabel, {
 			native = {
 				Text = TipText,
 				TextScaled = true,
-				Size = UDim2.fromScale(0.9, 0.9),
+				Size = UDim2.fromScale(0.8, 0.7),
 				TextTransparency = Styles.Transparency,
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.01,
+				Stroke = 0.005,
 				native = {
 					Transparency = Styles.Transparency,
 				},

@@ -36,7 +36,11 @@ local UIStroke = require(CoreGame.UIStroke)
 local Hooks = require(CoreGame.Hooks)
 local AnimatedGradient = require(CoreGame.AnimatedGradient)
 
-local SettingsContext = require(Gui.Settings.SettingsContext)
+local SettingsFolder = Gui.Settings
+local SettingsContext = require(SettingsFolder.SettingsContext)
+
+local Components = Gui.Components
+local Button = require(Components.Button)
 
 local Client = ReplicatedStorage.Client
 local LobbyClient = Client.LobbyClient
@@ -360,11 +364,11 @@ local function CreateInRoll(props: Properties)
 			elseif Preferred == "Gamepad" then
 				local Gamepad = InputTrove:Construct(Input.Gamepad)
 
-				Gamepad.ButtonPressed:Connect(function(Button: Enum.KeyCode, Processed: boolean)
+				Gamepad.ButtonPressed:Connect(function(ButtonCode: Enum.KeyCode, Processed: boolean)
 					if Processed then
 						return
 					end
-					if Button == Enum.KeyCode.ButtonA then
+					if ButtonCode == Enum.KeyCode.ButtonA then
 						CloseClick()
 					end
 				end)
@@ -399,29 +403,15 @@ local function CreateInRoll(props: Properties)
 			Size = UDim2.fromScale(0.8, 0.6),
 		}, props.native),
 	}, {
-		StopAutoButton = e(Main.Animateables.ImageButton, {
+		StopAutoButton = e(Button, {
+			Color = "Red",
+			Position = UDim2.fromScale(0.5, 1.15),
+			Size = UDim2.fromScale(0.4, 0.3),
+			Text = "Stop Auto Summon",
+			OnClick = CancelAutoRoll,
 			native = {
-				Position = UDim2.fromScale(0.5, 1.15),
-				Size = UDim2.fromScale(0.4, 0.15),
-				Image = "rbxassetid://80739823452825",
-				ImageColor3 = Color3.new(1, 0.12549, 0.12549),
 				Visible = props.AutoRoll,
-				[React.Event.MouseButton1Click] = CancelAutoRoll,
 			},
-		}, {
-			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 3.2,
-			}),
-			Label = e(Main.TextLabel, {
-				native = {
-					Text = "Stop Auto Summon",
-					Size = UDim2.fromScale(0.7, 0.7),
-				},
-			}, {
-				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.02,
-				}),
-			}),
 		}),
 	}, MainFrames, props.children)
 end

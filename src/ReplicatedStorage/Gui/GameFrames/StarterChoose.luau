@@ -27,6 +27,9 @@ local Main = require(CoreGame.Main)
 local UnitView = require(CoreGame.UnitView)
 local UIStroke = require(CoreGame.UIStroke)
 
+local Components = Gui.Components
+local Button = require(Components.Button)
+
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
 local RarityInfo = require(Shared.RarityInfo)
@@ -176,6 +179,15 @@ local function CreateStarterChoose(props: Properties)
 		return Disconnect
 	end, {})
 
+	local ConfirmClick = React.useCallback(function()
+		if Highlighted and DelayHandler("StarterConfirmButton", 0.5) then
+			ChooseStarter.Fire(Units[Highlighted])
+			if props.CloseClick then
+				props.CloseClick()
+			end
+		end
+	end, { Highlighted })
+
 	return e(Main.Frame, {
 		native = Join({
 			Size = UDim2.fromScale(0.7, 0.6),
@@ -222,40 +234,15 @@ local function CreateStarterChoose(props: Properties)
 			SetStrongIndex = ChangeStrongIndex,
 			Index = 3,
 		}),
-		ConfirmButton = e(Main.Animateables.ImageButton, {
-			Position = UDim2.fromScale(0.5, 1.15),
-
+		SelectButton = e(Button, {
+			Text = "Select",
+			Position = UDim2.fromScale(0.5, 0.95),
+			Size = UDim2.fromScale(0.5, 0.2),
+			Color = "Green",
+			OnClick = ConfirmClick,
 			native = {
-				Position = UDim2.fromScale(0.5, 0.95),
-				Size = UDim2.fromScale(0.5, 0.1),
-				Image = "rbxassetid://80739823452825",
-				ImageColor3 = Color3.new(1, 0.12549, 0.12549),
 				Visible = Highlighted ~= nil,
-				[React.Event.MouseButton1Click] = function()
-					if Highlighted and DelayHandler("StarterConfirmButton", 0.5) then
-						ChooseStarter.Fire(Units[Highlighted])
-						if props.CloseClick then
-							props.CloseClick()
-						end
-					end
-				end,
 			},
-		}, {
-			SelectLabel = e(Main.TextLabel, {
-				native = {
-					Position = UDim2.fromScale(0.5, 0.5),
-					Size = UDim2.fromScale(0.8, 0.5),
-					Text = "Select",
-					TextColor3 = Color3.new(1, 1, 1),
-				},
-			}, {
-				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.02,
-				}),
-			}),
-			UIAspectRatio = e("UIAspectRatioConstraint", {
-				AspectRatio = 3,
-			}),
 		}),
 	}, props.children)
 end

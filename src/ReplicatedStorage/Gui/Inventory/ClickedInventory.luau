@@ -125,7 +125,7 @@ local function CreateClickedInventory(props: Properties)
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.015,
+				Stroke = 0.01,
 				Color = Color3.new(0, 0, 0),
 			}),
 		}),
@@ -174,7 +174,7 @@ local function CreateClickedInventory(props: Properties)
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.015,
+					Stroke = 0.01,
 					Color = Color3.new(0, 0, 0),
 				}),
 			}),
@@ -195,14 +195,6 @@ local function Connected(props)
 	local HoveredPosition, SetHoveredPosition = React.useBinding(UDim2.new())
 	local ClickedPosition, SetClickedPosition = React.useBinding(UDim2.new())
 	local Hovered, SetHovered = React.useState(false)
-
-	--[[React.useEffect(function()
-		if Character then
-			RaycastParams.FilterDescendantsInstances = { Character }
-		else
-			RaycastParams.FilterDescendantsInstances = {}
-		end
-	end, { Character })]]
 
 	local Highlight = React.useMemo(function()
 		if not OtherCharacter then
@@ -273,11 +265,11 @@ local function Connected(props)
 					OnClick(TouchPosition)
 				end)
 
-				Touch.TouchMoved:Connect(function(Input: InputObject, Processed: boolean)
+				Touch.TouchMoved:Connect(function(InputObject: InputObject, Processed: boolean)
 					if Processed then
 						return
 					end
-					UpdatePosition(Vector2.new(Input.Position.X, Input.Position.Y))
+					UpdatePosition(Vector2.new(InputObject.Position.X, InputObject.Position.Y))
 				end)
 			elseif PreferredInput == "MouseKeyboard" then
 				local Mouse = ClickedTrove:Construct(Input.Mouse)

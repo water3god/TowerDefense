@@ -23,6 +23,9 @@ local CloseButton = require(CoreGame.CloseButton)
 local UIStroke = require(CoreGame.UIStroke)
 local Hooks = require(CoreGame.Hooks)
 
+local Components = Gui.Components
+local Button = require(Components.Button)
+
 local TradeService = require(ReplicatedStorage.Client.LobbyClient.TradeService)
 
 export type Properties = {
@@ -98,7 +101,7 @@ local function Popup(props: PopupProps)
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.01,
+					Stroke = 0.008,
 				}),
 			}),
 			Description = e(Main.TextLabel, {
@@ -109,52 +112,26 @@ local function Popup(props: PopupProps)
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.01,
+					Stroke = 0.008,
 				}),
 			}),
-			AcceptButton = e(Main.Animateables.ImageButton, {
-				native = {
-					Position = UDim2.fromScale(0.3, 0.75),
-					Size = UDim2.fromScale(0.2, 0.2),
-					Image = "rbxassetid://80739823452825",
-					ImageColor3 = Color3.fromRGB(0, 255, 0),
-					[React.Event.MouseButton1Click] = Accept,
-				},
-			}, {
-				Label = e(Main.TextLabel, {
-					native = {
-						Size = UDim2.fromScale(0.9, 0.7),
-						Text = "Accept Trade",
-					},
-				}, {
-					UIStroke = e(UIStroke.UIStrokeAdvanced, {
-						Stroke = 0.015,
-					}),
-				}),
+			AcceptButton = e(Button, {
+				Text = "Accept Trade",
+				Position = UDim2.fromScale(0.25, 0.7),
+				Size = UDim2.fromScale(0.4, 0.4),
+				OnClick = Accept,
+				Color = "Green",
 			}),
-			RejectButton = e(Main.Animateables.ImageButton, {
-				native = {
-					Position = UDim2.fromScale(0.7, 0.75),
-					Size = UDim2.fromScale(0.2, 0.2),
-					Image = "rbxassetid://80739823452825",
-					ImageColor3 = Color3.fromRGB(255, 0, 0),
-					[React.Event.MouseButton1Click] = Reject,
-				},
-			}, {
-				Label = e(Main.TextLabel, {
-					native = {
-						Size = UDim2.fromScale(0.9, 0.7),
-						Text = "Reject Trade",
-					},
-				}, {
-					UIStroke = e(UIStroke.UIStrokeAdvanced, {
-						Stroke = 0.015,
-					}),
-				}),
+			RejectButton = e(Button, {
+				Text = "Reject Trade",
+				Position = UDim2.fromScale(0.75, 0.7),
+				Size = UDim2.fromScale(0.4, 0.4),
+				OnClick = Reject,
+				Color = "Red",
 			}),
 			CloseButton = e(CloseButton, {
 				Position = UDim2.fromScale(1, 0),
-				Size = UDim2.fromScale(0.5, 0.5),
+				Size = UDim2.fromScale(0.45, 0.45),
 				OnClick = Reject,
 				native = {
 					ZIndex = 2,

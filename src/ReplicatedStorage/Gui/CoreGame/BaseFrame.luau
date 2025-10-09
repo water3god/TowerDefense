@@ -2,8 +2,8 @@
 
 -- By Wa1er_God --
 
-local DefaultBackgroundImage = "rbxassetid://122297615155487"
-local HighlightedBackgroundImage = "rbxassetid://107455378505876"
+local DefaultBackgroundImage = "rbxassetid://131934662734362"
+local HighlightedBackgroundImage = "rbxassetid://131934662734362"
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -161,7 +161,6 @@ local function CreateBaseFrame(Properties: Properties)
 					Rotation = 45,
 				}),
 			}),
-
 			BackgroundImage = e(Main.ImageLabel, {
 				native = {
 					Position = UDim2.fromScale(0.5, 0.5),

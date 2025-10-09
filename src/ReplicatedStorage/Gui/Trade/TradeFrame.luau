@@ -34,6 +34,7 @@ local PromptContext = require(Inventory.PromptContext)
 local Components = Gui.Components
 local Plus = require(Components.Plus)
 local SelectCount = require(Components.SelectCount)
+local Button = require(Components.Button)
 
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
@@ -65,50 +66,29 @@ local function CreateTradeFrame(Properties: any)
 	return e(Main.Frame, {
 		native = Join({
 			Size = UDim2.fromScale(0.45, 0.5),
-			BackgroundTransparency = 0,
-			BackgroundColor3 = BackgroundColor,
 		}, Properties.native),
 	}, {
-		UIStroke = e(UIStroke.UIStrokeAdvanced, {
-			Stroke = 0.005,
-			Color = StrokeColor,
+		Background = e(Main.ImageLabel, {
 			native = {
-				LineJoinMode = Enum.LineJoinMode.Round,
+				Position = UDim2.fromScale(0.5, 0.5),
+				Size = UDim2.fromScale(1, 1.1),
+				Image = "rbxassetid://128193537437202",
+				ZIndex = 0,
 			},
 		}),
-		UICorner = e("UICorner", {
-			CornerRadius = UDim.new(0.1, 0),
-		}),
-		UIGridLayout = e("UIGridLayout", {
-			CellPadding = UDim2.fromScale(0, 0),
-			CellSize = UDim2.fromScale(0.33, 0.5),
-			FillDirection = Enum.FillDirection.Horizontal,
-			SortOrder = Enum.SortOrder.LayoutOrder,
-		}),
-	}, Properties.children)
-end
-
-local function CreateButton(Properties: any)
-	return e(Main.Animateables.ImageButton, {
-		native = Join({
-			Size = UDim2.fromScale(0.2, 0.2),
-			Image = Properties.Image,
-		}, Properties.native),
-	}, {
-		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-			AspectRatio = 3.163,
-		}),
-		TextLabel = e(Main.TextLabel, {
+		Container = e(Main.Frame, {
 			native = {
-				Size = UDim2.fromScale(0.9, 0.7),
-				Text = Properties.Text,
+				Size = UDim2.fromScale(0.9, 0.9),
 			},
 		}, {
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.04,
+			UIGridLayout = e("UIGridLayout", {
+				CellPadding = UDim2.fromScale(0, 0),
+				CellSize = UDim2.fromScale(0.33, 0.5),
+				FillDirection = Enum.FillDirection.Horizontal,
+				SortOrder = Enum.SortOrder.LayoutOrder,
 			}),
-		}),
-	}, Properties.children)
+		}, Properties.children),
+	})
 end
 
 local function ConvertStatus(Status: Types.Status): string
@@ -441,21 +421,19 @@ local function TradeMain(Properties: Properties)
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 1.9,
 		}),
-		NoButton = e(CreateButton, {
-			Image = "rbxassetid://97483072794272",
+		NoButton = e(Button, {
+			Color = "Red",
 			Text = "Cancel",
-			native = {
-				Position = UDim2.fromScale(0.7, 1.1),
-				[React.Event.MouseButton1Click] = CancelClick,
-			},
+			OnClick = CancelClick,
+			Position = UDim2.fromScale(0.7, 1.1),
+			Size = UDim2.fromScale(0.3, 0.25),
 		}),
-		YesButton = e(CreateButton, {
-			Image = "rbxassetid://121336998793729",
+		YesButton = e(Button, {
+			Color = "Green",
 			Text = ProgressText,
-			native = {
-				Position = UDim2.fromScale(0.3, 1.1),
-				[React.Event.MouseButton1Click] = ProgressClick,
-			},
+			OnClick = ProgressClick,
+			Position = UDim2.fromScale(0.3, 1.1),
+			Size = UDim2.fromScale(0.3, 0.25),
 		}),
 		YourStatus = e(Main.TextLabel, {
 			native = {

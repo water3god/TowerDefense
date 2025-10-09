@@ -18,9 +18,11 @@ local AnimatedGradient = require(CoreGame.AnimatedGradient)
 local StoreFolder = Gui.Store
 local PurchaseContext = require(StoreFolder.PurchaseContext)
 
+local Components = Gui.Components
+local Button = require(Components.Button)
+
 local Shared = ReplicatedStorage.Shared
 local GameInfo = require(Shared.GameInfo)
-local ProductInfo = require(Shared.ProductInfo)
 local RarityInfo = require(Shared.RarityInfo)
 local Types = require(Shared.Types)
 
@@ -57,22 +59,6 @@ local function CreateInfoFrame(Properties: Properties)
 	end, { Properties.Type })
 
 	local RotationCFrame = React.useBinding(CFrame.Angles(math.rad(20), 0, 0))
-
-	local BarSize = React.useMemo(function()
-		if IsUnit and Properties.Data then
-			return UDim2.fromScale(Properties.Data.XP / Properties.Data.NeededXP, 0.9)
-		else
-			return UDim2.fromScale(0, 0)
-		end
-	end, { IsUnit, Properties.Data } :: { unknown })
-
-	local XPText = React.useMemo(function()
-		if IsUnit and Properties.Data then
-			return string.format("%u/%u", Properties.Data.XP, Properties.Data.NeededXP)
-		else
-			return ""
-		end
-	end, { IsUnit, Properties.Data } :: { unknown })
 
 	local Icon = React.useMemo(function()
 		if Properties.Type == "Resource" then
@@ -126,21 +112,28 @@ local function CreateInfoFrame(Properties: Properties)
 		end
 	end, { Properties.Name })
 
-	return e(Main.ImageLabel, {
+	return e(Main.Frame, {
 		native = {
 			Position = UDim2.fromScale(0.85, 0.6),
 			Size = UDim2.fromScale(0.2, 0.7),
-			Image = "rbxassetid://75971006528952",
 			Visible = Properties.Visible,
 		},
 	}, {
+		Background = e(Main.ImageLabel, {
+			native = {
+				Position = UDim2.fromScale(0.5, 0.5),
+				Size = UDim2.fromScale(1.1, 1),
+				Image = "rbxassetid://138957161873862",
+				ZIndex = 0,
+			},
+		}),
 		ViewportFrame = e(UnitView, {
 			UnitName = UnitName,
 			Distance = 4,
 			RotationCFrame = RotationCFrame,
 			Offset = Vector3.new(0, -1, 0),
 			native = {
-				Position = Properties.OnSellClick and UDim2.fromScale(0.5, 0.55) or UDim2.fromScale(0.5, 0.6),
+				Position = Properties.OnSellClick and UDim2.fromScale(0.5, 0.475) or UDim2.fromScale(0.5, 0.55),
 				Size = UDim2.fromScale(0.9, 0.5),
 				Visible = IsUnit,
 			},
@@ -160,27 +153,9 @@ local function CreateInfoFrame(Properties: Properties)
 				AspectRatio = 1,
 			}),
 		}),
-		FirstButton = e(Main.Animateables.ImageButton, {
-			native = {
-				Position = UDim2.fromScale(0.5, 0.92),
-				Size = UDim2.fromScale(0.8, 0.125),
-				Image = "rbxassetid://72606508098140",
-				Visible = FirstText ~= "",
-				[React.Event.MouseButton1Click] = Properties.OnFirstClick,
-			},
-		}, {
-			TextLabel = e(Main.TextLabel, {
-				native = {
-					Position = UDim2.fromScale(0.5, 0.5),
-					Size = UDim2.fromScale(0.6, 0.6),
-					Text = FirstText,
-					TextColor3 = Color3.new(1, 1, 1),
-				},
-			}),
-		}),
 		InfoButton = Properties.OnInfoClick and e(Main.Animateables.ImageButton, {
 			native = {
-				Position = UDim2.fromScale(0.78, 0.66),
+				Position = UDim2.fromScale(0.75, 0.58),
 				Size = UDim2.fromScale(0.21, 0.12),
 				Visible = IsUnit,
 				Image = "rbxassetid://77078349522524",
@@ -192,68 +167,26 @@ local function CreateInfoFrame(Properties: Properties)
 				AspectRatio = 1,
 			}),
 		}),
-		SellButton = Properties.OnSellClick and e(Main.Animateables.ImageButton, {
+		FirstButton = e(Button, {
+			Text = FirstText,
+			Color = "Blue",
+			Position = UDim2.fromScale(0.5, 0.9),
+			Size = UDim2.fromScale(1.4, 0.225),
+			OnClick = Properties.OnFirstClick,
 			native = {
-				Position = FirstText == "" and UDim2.fromScale(0.5, 0.92) or UDim2.fromScale(0.5, 0.79),
-				Size = UDim2.fromScale(0.8, 0.125),
-				Image = "rbxassetid://135833754402129",
-				ImageColor3 = Color3.fromRGB(255, 43, 47),
-				[React.Event.MouseButton1Click] = Properties.OnSellClick,
+				Visible = FirstText ~= "",
 			},
-		}, {
-			TextLabel = e(Main.TextLabel, {
-				native = {
-					Position = UDim2.fromScale(0.5, 0.5),
-					Size = UDim2.fromScale(0.6, 0.6),
-					Text = "Sell",
-					TextColor3 = Color3.new(1, 1, 1),
-				},
-			}),
 		}),
-		Bar = e(Main.CanvasGroup, {
-			native = {
-				BackgroundColor3 = Color3.new(0.588235, 0.109804, 0.843137),
-				BackgroundTransparency = 0,
-				Position = UDim2.fromScale(0.5, 0.28),
-				Size = UDim2.fromScale(0.7, 0.055),
-				Visible = IsUnit,
-			},
-		}, {
-			BarOverlay = e(Main.Frame, {
-				native = {
-					Position = UDim2.fromScale(0.5, 0.5),
-					Size = UDim2.fromScale(0.99, 0.9),
-				},
-			}, {
-				InnerBar = e(Main.Frame, {
-					native = {
-						BackgroundTransparency = 0,
-						BackgroundColor3 = Color3.fromRGB(255, 0, 201),
-						AnchorPoint = Vector2.new(0, 0.5),
-						Position = UDim2.fromScale(0, 0.5),
-						Size = BarSize,
-					},
-				}, {
-					UICorner = e("UICorner", {
-						CornerRadius = UDim.new(1, 0),
-					}),
-				}),
-			}),
-			XPLabel = e(Main.TextLabel, {
-				native = {
-					Position = UDim2.fromScale(0.5, 0.5),
-					Size = UDim2.fromScale(0.99, 0.9),
-					Text = XPText,
-					ZIndex = 2,
-				},
-			}),
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(1, 0),
-			}),
+		SellButton = Properties.OnSellClick and e(Button, {
+			Text = "Sell",
+			Color = "Red",
+			Position = FirstText == "" and UDim2.fromScale(0.5, 0.9) or UDim2.fromScale(0.5, 0.75),
+			Size = UDim2.fromScale(1.4, 0.225),
+			OnClick = Properties.OnSellClick,
 		}),
 		NameLabel = e(Main.TextLabel, {
 			native = {
-				Position = UDim2.fromScale(0.5, 0.1),
+				Position = UDim2.fromScale(0.5, 0.125),
 				Size = UDim2.fromScale(0.8, 0.12),
 				Text = Properties.Name,
 				TextXAlignment = Enum.TextXAlignment.Left,
@@ -272,7 +205,7 @@ local function CreateInfoFrame(Properties: Properties)
 		}),
 		RarityLabel = e(Main.TextLabel, {
 			native = {
-				Position = UDim2.fromScale(0.5, 0.19),
+				Position = UDim2.fromScale(0.5, 0.225),
 				Size = UDim2.fromScale(0.8, 0.05),
 				Text = Properties.Rarity,
 				TextXAlignment = Enum.TextXAlignment.Left,

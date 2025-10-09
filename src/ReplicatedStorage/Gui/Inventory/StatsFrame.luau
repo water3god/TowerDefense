@@ -169,6 +169,10 @@ local function CreateUnitStats(props: { UnitData: UnitInfo.UnitInfo, Level: numb
 						LayoutOrder = Layout,
 						TextColor3 = Color,
 					},
+				}, {
+					UIStroke = e(UIStroke.UIStrokeAdvanced, {
+						Stroke = 0.01,
+					}),
 				})
 			end
 
@@ -184,6 +188,10 @@ local function CreateUnitStats(props: { UnitData: UnitInfo.UnitInfo, Level: numb
 						Size = UDim2.fromScale(0.3, 0.6),
 						Position = UDim2.fromScale(0.1, 0.5),
 					},
+				}, {
+					UIStroke = e(UIStroke.UIStrokeAdvanced, {
+						Stroke = 0.01,
+					}),
 				}),
 				MainPropertyFrames = e(Main.Frame, {
 					native = {
@@ -204,17 +212,13 @@ local function CreateUnitStats(props: { UnitData: UnitInfo.UnitInfo, Level: numb
 		return Frames
 	end, { props.UnitData, props.Level, props.Trait } :: { unknown })
 
-	return e(Main.Frame, {
+	return e(Main.ImageLabel, {
 		native = {
 			Position = UDim2.fromScale(0.675, 0.375),
 			Size = UDim2.fromScale(0.55, 0.5),
-			BackgroundTransparency = 0,
-			BackgroundColor3 = Color3.new(0.298039, 0.094118, 0.470588),
+			Image = "rbxassetid://124008352699396",
 		},
 	}, {
-		UICorner = e("UICorner", {
-			CornerRadius = UDim.new(0.04, 0),
-		}),
 		MainFrame = e(Main.ScrollingFrame, {
 			BarSize = 0.01,
 			native = {
@@ -255,6 +259,10 @@ local function CreateTraitStats(props: { TraitName: string? })
 						Position = UDim2.fromScale(0.5, 0.3),
 						TextColor3 = Color,
 					},
+				}, {
+					UIStroke = e(UIStroke.UIStrokeAdvanced, {
+						Stroke = 0.015,
+					}),
 				}),
 				StatValue = e(Main.TextLabel, {
 					native = {
@@ -263,6 +271,10 @@ local function CreateTraitStats(props: { TraitName: string? })
 						Position = UDim2.fromScale(0.5, 0.7),
 						TextColor3 = Color,
 					},
+				}, {
+					UIStroke = e(UIStroke.UIStrokeAdvanced, {
+						Stroke = 0.015,
+					}),
 				}),
 			})
 		end
@@ -270,12 +282,11 @@ local function CreateTraitStats(props: { TraitName: string? })
 		return Frames
 	end, { TraitData })
 
-	return e(Main.Frame, {
+	return e(Main.ImageLabel, {
 		native = {
 			Position = UDim2.fromScale(0.675, 0.35),
 			Size = UDim2.fromScale(0.5, 0.4),
-			BackgroundTransparency = 0,
-			BackgroundColor3 = Color3.new(0.298039, 0.094118, 0.470588),
+			Image = "rbxassetid://124008352699396",
 		},
 	}, {
 		UICorner = e("UICorner", {

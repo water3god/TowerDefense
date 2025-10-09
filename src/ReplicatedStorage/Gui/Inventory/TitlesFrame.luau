@@ -29,8 +29,12 @@ local UIStroke = require(CoreGame.UIStroke)
 local Hooks = require(CoreGame.Hooks)
 local AnimatedGradient = require(CoreGame.AnimatedGradient)
 
+local Components = Gui.Components
+local Button = require(Components.Button)
+
 local Shared = ReplicatedStorage.Shared
 local TitleInfo = require(Shared.Titles)
+
 export type Properties = {
 	Titles: { string },
 	EquippedTitle: string,
@@ -61,17 +65,16 @@ local function CreateTitle(props: TitleProps)
 			ZIndex = TitleData.Priority,
 		}, props.native),
 	}, {
-		Container = e(Main.Frame, {
+		Container = e(Main.ImageLabel, {
 			native = {
-				Size = UDim2.fromScale(0.9, 0.9),
-				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.new(0.298039, 0.094118, 0.470588),
+				Size = UDim2.fromScale(0.95, 0.9),
+				Image = "rbxassetid://81483731389339",
 			},
 		}, {
 			Label = e(Main.TextLabel, {
 				native = {
 					Position = UDim2.fromScale(0.325, 0.35),
-					Size = UDim2.fromScale(0.5, 0.4),
+					Size = UDim2.fromScale(0.55, 0.4),
 					Text = props.TitleName,
 					TextXAlignment = Enum.TextXAlignment.Left,
 				},
@@ -82,46 +85,27 @@ local function CreateTitle(props: TitleProps)
 					Speed = 1,
 				}),
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.02,
+					Stroke = 0.015,
 				}),
 			}),
 			DescriptionLabel = e(Main.TextLabel, {
 				native = {
-					Position = UDim2.fromScale(0.375, 0.7),
-					Size = UDim2.fromScale(0.6, 0.2),
+					Position = UDim2.fromScale(0.325, 0.7),
+					Size = UDim2.fromScale(0.55, 0.2),
 					Text = TitleData and TitleData.Description or "No description available.",
 					TextXAlignment = Enum.TextXAlignment.Left,
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.015,
+					Stroke = 0.01,
 				}),
 			}),
-			ToggleButton = e(Main.Animateables.ImageButton, {
-				native = {
-					Position = UDim2.fromScale(0.8, 0.5),
-					Size = UDim2.fromScale(0.6, 0.5),
-					BackgroundTransparency = 1,
-					Image = "rbxassetid://72606508098140",
-					ImageColor3 = props.Equipped and Color3.new(0.635294, 0.635294, 0.635294) or Color3.new(1, 1, 1),
-					[React.Event.MouseButton1Click] = EquipTitle,
-				},
-			}, {
-				Label = e(Main.TextLabel, {
-					native = {
-						Position = UDim2.fromScale(0.5, 0.5),
-						Size = UDim2.fromScale(0.8, 0.6),
-						BackgroundTransparency = 1,
-						Text = props.Equipped and "Equipped" or "Equip",
-					},
-				}, {
-					UIStroke = e(UIStroke.UIStrokeAdvanced, {
-						Stroke = 0.03,
-					}),
-				}),
-				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-					AspectRatio = 3,
-				}),
+			ToggleButton = e(Button, {
+				Text = props.Equipped and "Equipped" or "Equip",
+				Position = UDim2.fromScale(0.8, 0.5),
+				Size = UDim2.fromScale(0.6, 0.8),
+				OnClick = EquipTitle,
+				Color = props.Equipped and "Gray" or "Green",
 			}),
 			UICorner = e("UICorner", {
 				CornerRadius = UDim.new(0.2, 0),
@@ -149,11 +133,10 @@ local function CreateTitlesFrame(props: Properties)
 		return Frames
 	end, { props.Titles, props.EquippedTitle } :: { unknown })
 
-	return e(Main.Frame, {
+	return e(Main.ImageLabel, {
 		native = Join({
 			Size = UDim2.fromScale(0.5, 0.7),
-			BackgroundTransparency = 0,
-			BackgroundColor3 = Color3.new(0.062745, 0.062745, 0.062745),
+			Image = "rbxassetid://78579166773802",
 		}, props.native),
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
@@ -161,8 +144,8 @@ local function CreateTitlesFrame(props: Properties)
 			MaxSize = Vector2.new(840, 920),
 		}),
 		Title = e(Title, {
-			Position = UDim2.fromScale(0.3, 0),
-			Size = UDim2.fromScale(1, 0.14),
+			Position = UDim2.fromScale(0.5, 0),
+			Size = UDim2.fromScale(1, 0.175),
 			Title = "TITLES",
 		}),
 		MainFrame = e(Main.ScrollingFrame, {
@@ -185,38 +168,10 @@ local function CreateTitlesFrame(props: Properties)
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 0.8,
 		}),
-		UICorner = e("UICorner", {
-			CornerRadius = UDim.new(0.02, 0),
-		}),
 		CloseButton = e(CloseButton, {
 			Position = UDim2.fromScale(1, 0),
-			Size = UDim2.fromScale(0.2, 0.3),
+			Size = UDim2.fromScale(0.175, 0.25),
 			OnClick = props.CloseClick,
-		}),
-		InnerFrame = e(Main.Frame, {
-			native = {
-				Position = UDim2.fromScale(0.5, 0.52),
-				Size = UDim2.fromScale(0.94, 0.9),
-			},
-		}, {
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.015, 0),
-			}),
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Color = Color3.new(0.388235, 0.101961, 0.486275),
-				Stroke = 0.002,
-				native = {
-					Transparency = 0.1,
-					LineJoinMode = Enum.LineJoinMode.Round,
-				},
-			}),
-		}),
-		UIStroke = e(UIStroke.UIStrokeAdvanced, {
-			Color = Color3.new(0.866667, 0.866667, 0.866667),
-			Stroke = 0.002,
-			native = {
-				LineJoinMode = Enum.LineJoinMode.Round,
-			},
 		}),
 	}, props.children)
 end

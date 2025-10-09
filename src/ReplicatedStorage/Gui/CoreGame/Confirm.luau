@@ -21,6 +21,9 @@ local CloseButton = require(CoreGame.CloseButton)
 local UIStroke = require(CoreGame.UIStroke)
 local Main = require(CoreGame.Main)
 
+local Components = Gui.Components
+local Button = require(Components.Button)
+
 local function CreateBasicButton(Props: {
 	OnClick: () -> ()?,
 	native: { [any]: any }?,
@@ -144,7 +147,7 @@ local function CreateConfirm(props: props)
 			native = Join({
 				Position = UDim2.fromScale(0.5, 0.5),
 				Size = UDim2.fromScale(0.25, 0.25),
-				Image = "rbxassetid://100546338175267",
+				Image = "rbxassetid://124008352699396",
 			}, props.native),
 		}, {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
@@ -157,6 +160,10 @@ local function CreateConfirm(props: props)
 					Size = UDim2.fromScale(0.5, 0.175),
 					ZIndex = 2,
 				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.01,
+				}),
 			}),
 			DescriptionLabel = e(Main.TextLabel, {
 				native = {
@@ -166,22 +173,24 @@ local function CreateConfirm(props: props)
 					ZIndex = 2,
 					AutoLocalize = false,
 				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.005,
+				}),
 			}),
-			NoButton = e(CreateBasicButton, {
+			NoButton = e(Button, {
+				Text = props.NoText or "No",
+				Color = "Red",
+				Position = UDim2.fromScale(0.75, 0.75),
+				Size = UDim2.fromScale(0.5, 0.4),
 				OnClick = OnNo,
-				LabelText = props.NoText or "No",
-				Color = Color3.fromRGB(255, 0, 0),
-				native = {
-					Position = UDim2.fromScale(0.75, 0.75),
-				},
 			}),
-			YesButton = e(CreateBasicButton, {
+			YesButton = e(Button, {
+				Text = props.YesText or "Yes",
+				Color = "Green",
+				Position = UDim2.fromScale(0.25, 0.75),
+				Size = UDim2.fromScale(0.5, 0.4),
 				OnClick = OnYes,
-				LabelText = props.YesText or "Yes",
-				Color = Color3.fromRGB(0, 255, 0),
-				native = {
-					Position = UDim2.fromScale(0.25, 0.75),
-				},
 			}),
 			CloseButton = e(CloseButton, {
 				Position = UDim2.fromScale(1, 0),

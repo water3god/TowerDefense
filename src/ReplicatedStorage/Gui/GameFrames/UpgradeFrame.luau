@@ -40,6 +40,9 @@ local WarningContext = require(Gui.Warning.WarningContext)
 local TraitFrame = require(Gui.Components.TraitFrame)
 local Indicator = require(Gui.Message.Indicator)
 
+local Components = Gui.Components
+local Button = require(Components.Button)
+
 local Shared = ReplicatedStorage.Shared
 local UnitInfo = require(Shared.UnitInfo)
 local RarityInfo = require(Shared.RarityInfo)
@@ -140,7 +143,7 @@ local function CreatePropertyFrame(Props: PropertyProperties)
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.05,
+				Stroke = 0.03,
 			}),
 		}),
 		Frame1 = e(Main.Frame, {
@@ -187,7 +190,7 @@ local function CreatePropertyFrame(Props: PropertyProperties)
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.05,
+				Stroke = 0.03,
 			}),
 		}),
 	}, Props.children)
@@ -604,9 +607,6 @@ local function CreateUpgradeFrame(Properties: Properties)
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 1.5,
 		}),
-		UIGradient = e("UIGradient", {
-			Color = RarityData.BackgroundColor,
-		}),
 		CloseButton = e(CloseButton, {
 			Position = UDim2.fromScale(1, 0),
 			Size = UDim2.fromScale(0.2, 0.25),
@@ -665,119 +665,30 @@ local function CreateUpgradeFrame(Properties: Properties)
 				CornerRadius = UDim.new(0.1, 0),
 			}),
 		}),
-		SellButton = e(Main.Animateables.TextButton, {
-			native = {
-				BackgroundColor3 = Color3.new(0.874510, 0.000000, 0.000000),
-				BackgroundTransparency = 0,
-				Position = UDim2.fromScale(0.375, 0.875),
-				Size = UDim2.fromScale(0.2, 0.1),
-				Text = "",
-				[React.Event.MouseButton1Click] = SellClick,
-			},
-		}, {
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.02,
-				Color = Color3.new(0.419608, 0, 0),
-				native = {
-					LineJoinMode = Enum.LineJoinMode.Round,
-					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-				},
-			}),
-			Label = e(Main.TextLabel, {
-				native = {
-					Size = UDim2.fromScale(0.9, 0.7),
-					Text = SellText,
-				},
-			}, {
-				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.04,
-					Color = Color3.new(0, 0, 0),
-					native = {
-						LineJoinMode = Enum.LineJoinMode.Round,
-						ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual,
-					},
-				}),
-			}),
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.3, 0),
-			}),
+		SellButton = e(Button, {
+			Text = SellText,
+			Color = "Red",
+			Position = UDim2.fromScale(0.375, 0.875),
+			Size = UDim2.fromScale(0.2, 0.2),
+			OnClick = SellClick,
 		}),
-		AttackPriorityButton = e(Main.Animateables.TextButton, {
-			native = {
-				BackgroundColor3 = Color3.new(0.443137, 0.443137, 0.443137),
-				BackgroundTransparency = 0,
-				Position = UDim2.fromScale(0.15, 0.875),
-				Size = UDim2.fromScale(0.2, 0.1),
-				Text = "",
-				[React.Event.MouseButton1Click] = PriorityClick,
-			},
-		}, {
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.02,
-				Color = Color3.new(0.207843, 0.207843, 0.207843),
-				native = {
-					LineJoinMode = Enum.LineJoinMode.Round,
-					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-				},
-			}),
-			Label = e(Main.TextLabel, {
-				native = {
-					Size = UDim2.fromScale(0.9, 0.7),
-					Text = UpgradeData.Priority,
-				},
-			}, {
-				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.04,
-					Color = Color3.new(0, 0, 0),
-					native = {
-						ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual,
-					},
-				}),
-			}),
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.3, 0),
-			}),
+
+		AttackPriorityButton = e(Button, {
+			Text = UpgradeData.Priority :: any,
+			Position = UDim2.fromScale(0.15, 0.875),
+			Size = UDim2.fromScale(0.2, 0.2),
+			OnClick = PriorityClick,
+			Color = "Black",
 		}),
-		UpgradeButton = e(Main.Animateables.TextButton, {
-			native = {
-				BackgroundColor3 = if HasNextLevel
-					then Color3.new(0.078431, 1.000000, 0.231373)
-					else Color3.new(0.509804, 0.509804, 0.509804),
-				BackgroundTransparency = 0,
-				Position = UDim2.fromScale(0.7, 0.875),
-				Size = UDim2.fromScale(0.4, 0.1),
-				Text = "",
-				[React.Event.MouseButton1Click] = UpgradeClick,
-			},
+		UpgradeButton = e(Button, {
+			Position = UDim2.fromScale(0.7, 0.875),
+			Size = UDim2.fromScale(1, 0.2),
+			Text = UpgradeText,
+			Color = if HasNextLevel then "Green" else "Black",
+			OnClick = UpgradeClick,
 		}, {
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.015,
-				Color = Color3.new(0.105882, 0.443137, 0.054902),
-				native = {
-					LineJoinMode = Enum.LineJoinMode.Round,
-					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-				},
-			}),
 			Indicator = e(Indicator, {
 				Wave = 2,
-			}),
-			Label = e(Main.TextLabel, {
-				native = {
-					Size = UDim2.fromScale(0.9, 0.7),
-					Text = UpgradeText,
-				},
-			}, {
-				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.02,
-					Color = Color3.new(0, 0, 0),
-					native = {
-						LineJoinMode = Enum.LineJoinMode.Bevel,
-						ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual,
-					},
-				}),
-			}),
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.3, 0),
 			}),
 		}),
 		CurrentData = e(Main.Frame, {
@@ -826,7 +737,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 					},
 				}, {
 					UIStroke = e(UIStroke.UIStrokeAdvanced, {
-						Stroke = 0.05,
+						Stroke = 0.03,
 					}),
 				}),
 				NextLevel = e(Main.TextLabel, {
@@ -839,7 +750,7 @@ local function CreateUpgradeFrame(Properties: Properties)
 					},
 				}, {
 					UIStroke = e(UIStroke.UIStrokeAdvanced, {
-						Stroke = 0.05,
+						Stroke = 0.03,
 					}),
 				}),
 				MaxedLabel = e(Main.TextLabel, {

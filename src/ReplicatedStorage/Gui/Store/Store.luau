@@ -39,6 +39,7 @@ local PurchaseContext = require(StoreFolder.PurchaseContext)
 local Components = Gui.Components
 local UnitLabel = require(Components.UnitLabel)
 local GiftFrame = require(Components.GiftFrame)
+local Button = require(Components.Button)
 
 local Shared = ReplicatedStorage.Shared
 local ProductInfo = require(Shared.ProductInfo)
@@ -497,14 +498,21 @@ local function CreateStoreFrame(Properties: Properties)
 			Size = UDim2.fromScale(0.1, 0.2),
 			OnClick = Properties.CloseClick,
 		}),
-		InfoFrame = e(Main.ImageLabel, {
+		InfoFrame = e(Main.Frame, {
 			native = {
 				Position = UDim2.fromScale(0.825, 0.575),
 				Size = UDim2.fromScale(0.225, 0.7),
-				Image = "rbxassetid://75971006528952",
 				Visible = InfoData.Name ~= "N/A",
 			},
 		}, {
+			Background = e(Main.ImageLabel, {
+				native = {
+					Position = UDim2.fromScale(0.5, 0.5),
+					Size = UDim2.fromScale(1.1, 1.05),
+					Image = "rbxassetid://138957161873862",
+					ZIndex = 0,
+				},
+			}),
 			IconFrame = e(Main.ImageLabel, {
 				native = {
 					Position = UDim2.fromScale(0.5, 0.45),
@@ -516,28 +524,17 @@ local function CreateStoreFrame(Properties: Properties)
 					AspectRatio = 1,
 				}),
 			}),
-			GiftButton = e(Main.Animateables.ImageButton, {
-				native = {
-					Position = UDim2.fromScale(0.5, 0.92),
-					Size = UDim2.fromScale(0.8, 0.125),
-					Image = "rbxassetid://80739823452825",
-					ImageColor3 = Color3.fromRGB(43, 191, 255),
-					[React.Event.MouseButton1Click] = GiftFunc,
-				},
-			}, {
-				TextLabel = e(Main.TextLabel, {
-					native = {
-						Position = UDim2.fromScale(0.5, 0.5),
-						Size = UDim2.fromScale(0.6, 0.6),
-						Text = "Gift",
-						TextColor3 = Color3.new(1, 1, 1),
-					},
-				}),
+			GiftButton = e(Button, {
+				Text = "Gift",
+				Position = UDim2.fromScale(0.5, 0.9),
+				Color = "Blue",
+				Size = UDim2.fromScale(1.2, 0.225),
+				OnClick = GiftFunc,
 			}),
 			InfoButton = e(Main.Animateables.ImageButton, {
 				native = {
-					Position = UDim2.fromScale(0.78, 0.67),
-					Size = UDim2.fromScale(0.21, 0.12),
+					Position = UDim2.fromScale(0.78, 0.6),
+					Size = UDim2.fromScale(0.25, 0.15),
 					Image = "rbxassetid://77078349522524",
 					[React.Event.MouseButton1Click] = StatsClick,
 				},
@@ -546,23 +543,12 @@ local function CreateStoreFrame(Properties: Properties)
 					AspectRatio = 1,
 				}),
 			}),
-			BuyButton = e(Main.Animateables.ImageButton, {
-				native = {
-					Position = UDim2.fromScale(0.5, 0.79),
-					Size = UDim2.fromScale(0.8, 0.125),
-					Image = "rbxassetid://72606508098140",
-					ImageColor3 = Color3.fromRGB(43, 191, 255),
-					[React.Event.MouseButton1Click] = BuyFunc,
-				},
-			}, {
-				TextLabel = e(Main.TextLabel, {
-					native = {
-						Position = UDim2.fromScale(0.5, 0.5),
-						Size = UDim2.fromScale(0.6, 0.6),
-						Text = "Buy",
-						TextColor3 = Color3.new(1, 1, 1),
-					},
-				}),
+			BuyButton = e(Button, {
+				Text = "Buy",
+				Color = "Green",
+				Position = UDim2.fromScale(0.5, 0.75),
+				Size = UDim2.fromScale(1.2, 0.225),
+				OnClick = BuyFunc,
 			}),
 			NameLabel = e(Main.TextLabel, {
 				native = {
@@ -597,37 +583,40 @@ local function CreateStoreFrame(Properties: Properties)
 				}),
 			}),
 		}),
-		Offers = e(BaseButton, {
+		Offers = e(Button, {
 			Text = "Offers",
 			OnClick = function()
 				OnFrameButtonClick("Offers")
 			end,
-			Highlighted = OpenFrame == "Offers",
+			Color = OpenFrame == "Offers" and "Green" or "Black",
+			Position = UDim2.fromScale(0.2, 0.14),
+			Size = UDim2.fromScale(0.2, 0.15),
 			native = {
-				Position = UDim2.fromScale(0.2, 0.15),
-				Size = UDim2.fromScale(0.17, 0.09),
+				ZIndex = 2,
 			},
 		}),
-		Gamepasses = e(BaseButton, {
+		Gamepasses = e(Button, {
 			Text = "Gamepasses",
 			OnClick = function()
 				OnFrameButtonClick("Gamepasses")
 			end,
-			Highlighted = OpenFrame == "Gamepasses",
+			Color = OpenFrame == "Gamepasses" and "Green" or "Black",
+			Position = UDim2.fromScale(0.5, 0.14),
+			Size = UDim2.fromScale(0.2, 0.15),
 			native = {
-				Position = UDim2.fromScale(0.5, 0.15),
-				Size = UDim2.fromScale(0.17, 0.09),
+				ZIndex = 2,
 			},
 		}),
-		Products = e(BaseButton, {
+		Products = e(Button, {
 			Text = "Products",
 			OnClick = function()
 				OnFrameButtonClick("Products")
 			end,
-			Highlighted = OpenFrame == "Products",
+			Color = OpenFrame == "Products" and "Green" or "Black",
+			Position = UDim2.fromScale(0.8, 0.14),
+			Size = UDim2.fromScale(0.2, 0.15),
 			native = {
-				Position = UDim2.fromScale(0.8, 0.15),
-				Size = UDim2.fromScale(0.17, 0.09),
+				ZIndex = 2,
 			},
 		}),
 	}, MainFrames, Properties.children)

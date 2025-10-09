@@ -28,7 +28,7 @@ export type Properties = {
 	Text: string?,
 	Position: UDim2?,
 	Size: UDim2?,
-	Color: "Black" | "Blue" | "Green" | "Orange" | "Pink" | "Purple" | "Red" | "Yellow"?,
+	Color: "Black" | "Blue" | "Green" | "Orange" | "Pink" | "Purple" | "Red" | "Yellow" | string?,
 	OnClick: (() -> ())?,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
@@ -186,7 +186,8 @@ local function CreateButton(props: Properties)
 				Size = UDim2.fromScale(0.2, 1),
 				Image = ColorSlice.Middle,
 				ref = ParentFrame,
-				[React.Change.GuiState] = Callback,
+				[React.Event.MouseButton1Click] = props.OnClick,
+				[React.Change.GuiState] = Callback :: any,
 			},
 		}),
 		ButtonLeft = e(Main.ImageButton, {
@@ -195,7 +196,8 @@ local function CreateButton(props: Properties)
 				Size = UDim2.fromScale(1, 1),
 				Position = UDim2.fromScale(0.4, 0.5),
 				AnchorPoint = Vector2.new(1, 0.5),
-				[React.Change.GuiState] = Callback,
+				[React.Event.MouseButton1Click] = props.OnClick,
+				[React.Change.GuiState] = Callback :: any,
 			},
 		}, {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
@@ -208,7 +210,8 @@ local function CreateButton(props: Properties)
 				Size = UDim2.fromScale(1, 1),
 				Position = UDim2.fromScale(0.6, 0.5),
 				AnchorPoint = Vector2.new(0, 0.5),
-				[React.Change.GuiState] = Callback,
+				[React.Event.MouseButton1Click] = props.OnClick,
+				[React.Change.GuiState] = Callback :: any,
 			},
 		}, {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {

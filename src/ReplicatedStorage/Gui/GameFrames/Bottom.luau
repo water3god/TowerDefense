@@ -353,7 +353,6 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 3.555,
 		}),
-
 		InPlacementLabel = PlacementData and e(Main.TextLabel, {
 			native = {
 				Text = "Placing Unit...",
@@ -366,7 +365,6 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 				Stroke = 0.01,
 			}),
 		}),
-
 		GoldFrame = e(Main.Frame, {
 			native = {
 				Position = UDim2.fromScale(0.5, -0.1),
@@ -435,6 +433,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 			}),
 		}),
 		LevelBar = e(ProgressBar, {
+			Color = "Green",
 			Bar = BarSize,
 			Text = LevelXP,
 			native = {
