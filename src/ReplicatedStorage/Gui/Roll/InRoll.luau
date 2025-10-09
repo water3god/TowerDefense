@@ -406,7 +406,7 @@ local function CreateInRoll(props: Properties)
 		StopAutoButton = e(Button, {
 			Color = "Red",
 			Position = UDim2.fromScale(0.5, 1.15),
-			Size = UDim2.fromScale(0.4, 0.3),
+			Size = UDim2.fromScale(0.4, 0.25),
 			Text = "Stop Auto Summon",
 			OnClick = CancelAutoRoll,
 			native = {

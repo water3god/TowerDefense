@@ -185,7 +185,7 @@ local function CreateButton(props: Properties)
 				Size = LabelSize:map(function(Size: UDim2)
 					return UDim2.fromScale(Size.X.Scale * 1.2, 1)
 				end),
-				[React.Event.Activated] = props.OnClick,
+				[React.Event.MouseButton1Click] = props.OnClick,
 				[React.Change.GuiState] = Callback :: any,
 				ZIndex = 2,
 			},
