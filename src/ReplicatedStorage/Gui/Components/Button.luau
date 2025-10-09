@@ -212,10 +212,7 @@ local function CreateButton(props: Properties)
 			}),
 		}),
 		AnimateScale = e("UIScale", {
-			Scale = Scale.Scale:map(function(t)
-				print(t)
-				return t
-			end),
+			Scale = Scale.Scale,
 		}),
 	}, props.children)
 end
