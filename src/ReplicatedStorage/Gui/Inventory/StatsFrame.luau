@@ -84,6 +84,10 @@ local function CreateUnitStats(props: { UnitData: UnitInfo.UnitInfo, Level: numb
 						LayoutOrder = Layout,
 						TextColor3 = Color,
 					},
+				}, {
+					UIStroke = e(UIStroke.UIStrokeAdvanced, {
+						Stroke = 0.01,
+					}),
 				})
 			end
 

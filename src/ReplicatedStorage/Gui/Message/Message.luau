@@ -119,7 +119,7 @@ local function CreateMessage(props: Properties)
 			},
 		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-			AspectRatio = 2.9,
+			AspectRatio = 3.2,
 		}),
 		UISizeConstraint = e("UISizeConstraint", {
 			MinSize = Vector2.new(300, 75),
