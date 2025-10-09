@@ -38,6 +38,9 @@ local WarningContext = require(WarningFolder.WarningContext)
 local MiscContexts = Gui.MiscContexts
 local MultiplierContext = require(MiscContexts.GoldMultiplier)
 
+local Components = Gui.Components
+local ProgressBar = require(Components.ProgressBar)
+
 local Shared = ReplicatedStorage.Shared
 local GameInfo = require(Shared.GameInfo)
 
@@ -148,7 +151,7 @@ local function CreateMap(Props: {
 					},
 				}, {
 					UIStroke = e(UIStroke.UIStrokeAdvanced, {
-						Stroke = 0.02,
+						Stroke = 0.015,
 						Color = Color3.new(0, 0, 0),
 					}),
 				}),
@@ -178,7 +181,7 @@ local function CreateMap(Props: {
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.02,
+					Stroke = 0.015,
 					Color = Color3.new(0, 0, 0),
 				}),
 			}),
@@ -194,7 +197,7 @@ local function CreateMap(Props: {
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.02,
+					Stroke = 0.015,
 					Color = Color3.new(0, 0, 0),
 				}),
 			}),
@@ -486,7 +489,19 @@ local function CreateMainStory(Properties: Properties)
 				Stroke = 0.006,
 			}),
 		}),
-		Bar = e(Main.CanvasGroup, {
+		ProgressBar = e(ProgressBar, {
+			Bar = React.joinBindings({ Time, TotalTime }):map(function(Times: { number })
+				return math.clamp(Times[1] / Times[2], 0, 1)
+			end),
+			Text = Time:map(function(TimeLeft: number)
+				return string.format("Time Left: %u", math.floor(TimeLeft))
+			end),
+			native = {
+				Position = UDim2.fromScale(0.7, 1.1),
+				Size = UDim2.fromScale(0.9, 0.2),
+			},
+		}),
+		--[[Bar = e(Main.CanvasGroup, {
 			native = {
 				BackgroundTransparency = 0,
 				BackgroundColor3 = Color3.fromRGB(93, 11, 141),
@@ -521,7 +536,7 @@ local function CreateMainStory(Properties: Properties)
 					ZIndex = 3,
 				},
 			}),
-		}),
+		}),]]
 		CloseButton = e(CloseButton, {
 			Size = UDim2.fromScale(0.14, 0.2),
 			Position = UDim2.fromScale(1, 0),
@@ -632,7 +647,7 @@ local function CreateMainStory(Properties: Properties)
 		ResourcesFrame = e(Main.Frame, {
 			native = {
 				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.fromRGB(65, 19, 94),
+				BackgroundColor3 = Color3.fromRGB(49, 33, 10),
 				Position = UDim2.fromScale(0.275, 0.675),
 				Size = UDim2.fromScale(0.35, 0.25),
 			},
@@ -642,10 +657,14 @@ local function CreateMainStory(Properties: Properties)
 			}),
 			ResourcesTitle = e(Main.TextLabel, {
 				native = {
-					Position = UDim2.fromScale(0.5, 0.15),
+					Position = UDim2.fromScale(0.5, 0.16),
 					Size = UDim2.fromScale(0.6, 0.25),
 					Text = "Resources",
 				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.015,
+				}),
 			}),
 			MainFrame = e(Main.ScrollingFrame, {
 				BarSize = 0.002,
@@ -666,7 +685,7 @@ local function CreateMainStory(Properties: Properties)
 		StatsFrame = e(Main.Frame, {
 			native = {
 				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.fromRGB(65, 19, 94),
+				BackgroundColor3 = Color3.fromRGB(49, 33, 10),
 				Position = UDim2.fromScale(0.275, 0.375),
 				Size = UDim2.fromScale(0.35, 0.25),
 			},
@@ -681,6 +700,10 @@ local function CreateMainStory(Properties: Properties)
 					Text = "Total Cleared",
 					TextXAlignment = Enum.TextXAlignment.Left,
 				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.015,
+				}),
 			}),
 			OneValue = e(Main.TextLabel, {
 				native = {
@@ -689,6 +712,10 @@ local function CreateMainStory(Properties: Properties)
 					Text = FirstValue,
 					TextXAlignment = Enum.TextXAlignment.Right,
 				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.015,
+				}),
 			}),
 			StatsTwo = e(Main.TextLabel, {
 				native = {
@@ -697,6 +724,10 @@ local function CreateMainStory(Properties: Properties)
 					Text = "Best Time",
 					TextXAlignment = Enum.TextXAlignment.Left,
 				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.015,
+				}),
 			}),
 			TwoValue = e(Main.TextLabel, {
 				native = {
@@ -705,6 +736,10 @@ local function CreateMainStory(Properties: Properties)
 					Text = SecondValue,
 					TextXAlignment = Enum.TextXAlignment.Right,
 				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.015,
+				}),
 			}),
 			StatsLabel = e(Main.TextLabel, {
 				native = {
@@ -712,6 +747,10 @@ local function CreateMainStory(Properties: Properties)
 					Size = UDim2.fromScale(0.5, 0.25),
 					Text = "Stats",
 				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.015,
+				}),
 			}),
 		}),
 		CancelButton = e(Main.Animateables.ImageButton, {

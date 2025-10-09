@@ -24,6 +24,9 @@ local CloseButton = require(CoreGame.CloseButton)
 local WarningFolder = Gui.Warning
 local WarningContext = require(WarningFolder.WarningContext)
 
+local Components = Gui.Components
+local Button = require(Components.Button)
+
 export type Properties = {
 	OnClick: (Count: number) -> (),
 	CloseClick: (() -> ())?,
@@ -63,7 +66,7 @@ local function CreateSelectCount(props: Properties)
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.015,
+				Stroke = 0.01,
 			}),
 		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
@@ -87,7 +90,7 @@ local function CreateSelectCount(props: Properties)
 		}),
 		BoxFrame = e(Main.Frame, {
 			native = {
-				Position = UDim2.fromScale(0.5, 0.7),
+				Position = UDim2.fromScale(0.5, 0.675),
 				Size = UDim2.fromScale(0.5, 0.1),
 				BackgroundTransparency = 0,
 				BackgroundColor3 = Color3.new(0.2, 0.2, 0.2),
@@ -108,28 +111,11 @@ local function CreateSelectCount(props: Properties)
 				CornerRadius = UDim.new(0.2, 0),
 			}),
 		}),
-		EnterButton = e(Main.Animateables.ImageButton, {
-			native = {
-				Position = UDim2.fromScale(0.5, 0.85),
-				Size = UDim2.fromScale(0.4, 0.2),
-				Image = "rbxassetid://80739823452825",
-				ImageColor3 = Color3.fromRGB(135, 1, 203),
-				[React.Event.Activated] = EnterClick,
-			},
-		}, {
-			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 3.2,
-			}),
-			TextLabel = e(Main.TextLabel, {
-				native = {
-					Size = UDim2.fromScale(0.9, 0.6),
-					Text = "Enter",
-				},
-			}, {
-				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.03,
-				}),
-			}),
+		EnterButton = e(Button, {
+			Position = UDim2.fromScale(0.5, 0.85),
+			Size = UDim2.fromScale(0.4, 0.2),
+			OnClick = EnterClick,
+			Text = "Enter",
 		}),
 	})
 end

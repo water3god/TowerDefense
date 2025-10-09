@@ -14,9 +14,6 @@ local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local Join = HelperFunctions.joinDicts
 
-local NetworkFolder = ReplicatedStorage.Network
-local ServerOnly = require(NetworkFolder.ServerOnly)
-
 -- Reference UI --
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
@@ -25,6 +22,9 @@ local Hooks = require(CoreGame.Hooks)
 
 local Story = Gui.Story
 local BoothContext = require(Story.BoothContext)
+
+local Components = Gui.Components
+local ProgressBar = require(Components.ProgressBar)
 
 local Shared = ReplicatedStorage.Shared
 local GameInfo = require(Shared.GameInfo)
@@ -90,7 +90,7 @@ local function CreateBoothFrame(Props: Properties)
 		native = Join({
 			Position = UDim2.fromScale(0.5, 0.6),
 			Size = UDim2.fromScale(0.35, 0.35),
-			Image = "rbxassetid://128406610117555",
+			Image = "rbxassetid://128193537437202",
 		}, Props.native),
 	}, {
 		Main = e(Main.Frame, {
@@ -140,7 +140,7 @@ local function CreateBoothFrame(Props: Properties)
 			Group = e(Main.CanvasGroup, {
 				native = {
 					BackgroundTransparency = 0,
-					BackgroundColor3 = Color3.fromRGB(93, 11, 141),
+					BackgroundColor3 = Color3.fromRGB(69, 69, 69),
 					Position = UDim2.fromScale(0.5, 0.8),
 					Size = UDim2.fromScale(0.7, 0.15),
 				},
@@ -155,7 +155,7 @@ local function CreateBoothFrame(Props: Properties)
 					native = {
 						AnchorPoint = Vector2.new(0, 0.5),
 						BackgroundTransparency = 0,
-						BackgroundColor3 = Color3.fromRGB(127, 32, 165),
+						BackgroundColor3 = Color3.fromRGB(19, 228, 57),
 						Position = UDim2.fromScale(0, 0.5),
 						Size = UDim2.fromScale(math.clamp(BoothData.PlayerCount / BoothData.MaxPlayerCount, 0, 1), 1),
 					},
@@ -172,43 +172,17 @@ local function CreateBoothFrame(Props: Properties)
 					}),
 				}),
 			}),
-			TimeBar = e(Main.CanvasGroup, {
+			Bar = e(ProgressBar, {
+				Bar = React.joinBindings({ Time, TotalTime }):map(function(Times)
+					return math.clamp(math.floor(Times[1]) / Times[2], 0, 1)
+				end),
+				Text = Time:map(function(TimeInput: number)
+					return string.format("Time Left: %u", TimeInput)
+				end),
 				native = {
-					Position = UDim2.fromScale(0.5, 1.2),
-					Size = UDim2.fromScale(0.8, 0.15),
+					Position = UDim2.fromScale(0.5, 1.1),
+					Size = UDim2.fromScale(1, 0.25),
 				},
-			}, {
-				UICorner = e("UICorner", {
-					CornerRadius = UDim.new(0.3, 0),
-				}),
-				UIStroke = e("UIStroke", {
-					Thickness = 3,
-					Color = Color3.new(1, 1, 1),
-				}),
-				Bar = e(Main.Frame, {
-					native = {
-						BackgroundTransparency = 0,
-						AnchorPoint = Vector2.new(0, 0.5),
-						BackgroundColor3 = Color3.fromRGB(109, 255, 56),
-						Position = UDim2.fromScale(0, 0.5),
-						Size = React.joinBindings({ Time, TotalTime }):map(function(Times)
-							return UDim2.fromScale(math.clamp(math.floor(Times[1]) / Times[2], 0, 1), 1)
-						end),
-					},
-				}),
-				TimeLabel = e(Main.TextLabel, {
-					native = {
-						Size = UDim2.fromScale(1, 0.7),
-						Text = Time:map(function(TimeInput: number)
-							return string.format("Time Left: %u", TimeInput)
-						end),
-						ZIndex = 2,
-					},
-				}, {
-					UIStroke = e("UIStroke", {
-						Thickness = 2,
-					}),
-				}),
 			}),
 		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
@@ -220,6 +194,10 @@ local function CreateBoothFrame(Props: Properties)
 				Size = UDim2.fromScale(0.7, 0.3),
 				Text = MiscText,
 			},
+		}, {
+			UIStroke = e("UIStroke", {
+				Thickness = 3,
+			}),
 		}),
 	}, Props.children)
 end

@@ -52,6 +52,9 @@ local CurrencyContext = require(GameFrames.Currency)
 local Store = Gui.Store
 local PurchaseContext = require(Store.PurchaseContext)
 
+local Components = Gui.Components
+local Button = require(Components.Button)
+
 local Client = ReplicatedStorage.Client
 local LobbyClient = Client.LobbyClient
 local RollService = require(LobbyClient.RollService)
@@ -341,106 +344,41 @@ local function CreateRollMain(props: Properties)
 			Size = UDim2.fromScale(0.6, 0.275),
 			Position = UDim2.fromScale(0.5, 0),
 		}),
-		UnitsButton = e(Main.Animateables.ImageButton, {
+		UnitsButton = e(Button, {
+			Size = UDim2.fromScale(0.3, 0.2),
+			Position = UDim2.fromScale(0.17, 0.85),
+			OnClick = function()
+				SetUnitInfoVis(not UnitInfoVis)
+			end,
+			Text = "Units",
+		}, {}),
+		AutoRollButton = e(Button, {
+			Size = UDim2.fromScale(0.3, 0.2),
+			Position = UDim2.fromScale(0.82, 0.85),
+			OnClick = OnAutoClick,
+			Text = string.format("Auto Roll: %s", if InAutoSell then "On" else "Off"),
+		}, {}),
+		SummonButton = e(Button, {
+			Size = UDim2.fromScale(0.5, 0.25),
+			Position = UDim2.fromScale(0.5, 0.825),
+			OnClick = SummonClick,
+			Text = SummonText,
+		}, {}),
+		SummonCountButton = e(Main.Animateables.ImageButton, {
 			native = {
-				Image = "rbxassetid://80739823452825",
-				Size = UDim2.fromScale(0.25, 0.15),
-				Position = UDim2.fromScale(0.17, 0.88),
-				ImageColor3 = Color3.fromRGB(135, 1, 203),
-				[React.Event.MouseButton1Click] = function()
-					SetUnitInfoVis(not UnitInfoVis)
-				end,
-			},
-		}, {
-			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 3.16,
-			}),
-			Label = e(Main.TextLabel, {
-				native = {
-					Size = UDim2.fromScale(0.6, 0.6),
-					Text = "Units",
-				},
-			}, {
-				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.02,
-				}),
-			}),
-		}),
-		AutoCellButton = e(Main.Animateables.ImageButton, {
-			native = {
-				Image = "rbxassetid://80739823452825",
-				Size = UDim2.fromScale(0.25, 0.15),
-				Position = UDim2.fromScale(0.82, 0.88),
-				ImageColor3 = Color3.fromRGB(135, 1, 203),
-				[React.Event.MouseButton1Click] = OnAutoClick,
-			},
-		}, {
-			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 3.16,
-			}),
-			Label = e(Main.TextLabel, {
-				native = {
-					Size = UDim2.fromScale(0.8, 0.6),
-					Text = string.format("Auto Roll: %s", if InAutoSell then "On" else "Off"),
-				},
-			}, {
-				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.02,
-				}),
-			}),
-		}),
-		SummonButton = e(Main.Animateables.ImageButton, {
-			native = {
-				Image = "rbxassetid://80739823452825",
-				Size = UDim2.fromScale(0.45, 0.16),
-				Position = UDim2.fromScale(0.5, 0.87),
-				ImageColor3 = Color3.fromRGB(135, 1, 203),
-				[React.Event.MouseButton1Click] = SummonClick,
-			},
-		}, {
-			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 3.2,
-			}),
-			Label = e(Main.TextLabel, {
-				native = {
-					Size = UDim2.fromScale(0.8, 0.4),
-					Text = SummonText,
-				},
-			}, {
-				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.02,
-				}),
-			}),
-		}),
-		SummonCountButton = e(Main.Animateables.TextButton, {
-			native = {
-				Size = UDim2.fromScale(0.15, 0.125),
-				Position = UDim2.fromScale(0.9, 0.725),
-				BackgroundTransparency = 0,
-				Text = "",
+				Size = UDim2.fromScale(0.15, 0.15),
+				Position = UDim2.fromScale(0.89, 0.675),
+				Image = "rbxassetid://77645625759735",
 				AutoLocalize = false,
-				BackgroundColor3 = Color3.new(0.376471, 0.066667, 0.564706),
 				[React.Event.MouseButton1Click] = OnMultiplierClick,
 			},
 		}, {
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.16, 0),
-			}),
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 				AspectRatio = 1,
 			}),
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.04,
-				Color = Color3.new(0.376471, 0.066667, 0.564706),
-				native = {
-					LineJoinMode = Enum.LineJoinMode.Round,
-					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-					Transparency = 0.5,
-				},
-			}),
 			Label = e(Main.TextLabel, {
 				native = {
-					Size = UDim2.fromScale(0.7, 0.6),
+					Size = UDim2.fromScale(0.7, 0.5),
 					Text = string.format("x%u", RollMultiplier),
 				},
 			}, {
@@ -480,7 +418,7 @@ local function CreateRollMain(props: Properties)
 		TimeLeft = e(Main.TextLabel, {
 			native = {
 				Size = UDim2.fromScale(0.5, 0.1),
-				Position = UDim2.fromScale(0.5, 0.2),
+				Position = UDim2.fromScale(0.5, 0.175),
 				Text = Time:map(function(TimeInput: number)
 					return string.format("Next Banner: %s", HelperFunctions.FormatTime(TimeInput))
 				end),

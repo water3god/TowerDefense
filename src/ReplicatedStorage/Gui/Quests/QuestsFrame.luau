@@ -30,6 +30,9 @@ local BaseButton = require(CoreGame.BaseButton)
 local Hooks = require(CoreGame.Hooks)
 local AnimatedGradient = require(CoreGame.AnimatedGradient)
 
+local Components = Gui.Components
+local ProgressBar = require(Components.ProgressBar)
+
 local QuestsFolder = Gui.Quests
 local QuestsContext = require(QuestsFolder.QuestsContext)
 
@@ -92,8 +95,8 @@ local function CreateQuest(props: QuestProps)
 			if TitleData then
 				return e(Main.TextLabel, {
 					native = {
-						Position = UDim2.fromScale(0.86, 0.325),
-						Size = UDim2.fromScale(0.25, 0.3),
+						Position = UDim2.fromScale(0.8, 0.325),
+						Size = UDim2.fromScale(0.25, 0.25),
 						Text = QuestReward.Value,
 					},
 				}, {
@@ -114,8 +117,8 @@ local function CreateQuest(props: QuestProps)
 				Name = QuestReward.Value,
 				Value = QuestReward.Count,
 				native = {
-					Position = UDim2.fromScale(0.86, 0.325),
-					Size = UDim2.fromScale(0.3, 0.6),
+					Position = UDim2.fromScale(0.8, 0.35),
+					Size = UDim2.fromScale(0.25, 0.45),
 				},
 			})
 		elseif QuestReward.Type == "Product" then
@@ -130,8 +133,8 @@ local function CreateQuest(props: QuestProps)
 					ProductId = ProductId,
 					Count = QuestReward.Count,
 					native = {
-						Position = UDim2.fromScale(0.86, 0.325),
-						Size = UDim2.fromScale(0.3, 0.6),
+						Position = UDim2.fromScale(0.8, 0.325),
+						Size = UDim2.fromScale(0.25, 0.45),
 					},
 				})
 			else
@@ -142,8 +145,8 @@ local function CreateQuest(props: QuestProps)
 				UnitName = QuestReward.Value,
 				Level = 1,
 				native = {
-					Position = UDim2.fromScale(0.86, 0.325),
-					Size = UDim2.fromScale(0.3, 0.6),
+					Position = UDim2.fromScale(0.8, 0.325),
+					Size = UDim2.fromScale(0.25, 0.45),
 				},
 			})
 		end
@@ -157,22 +160,33 @@ local function CreateQuest(props: QuestProps)
 		end
 	end, {})
 
+	local Bar, SetBar = React.useBinding("")
+	local QuestSize, SetQuestSize = React.useBinding(0)
+
+	React.useEffect(function()
+		SetBar(string.format("%u / %u", props.QuestData.CurrentValue, props.QuestData.NeededValue))
+	end, { props.QuestData })
+
+	React.useEffect(function()
+		SetQuestSize(math.clamp(props.QuestData.CurrentValue / props.QuestData.NeededValue, 0, 1))
+	end, { props.QuestData })
+
 	return e(Main.Frame, {
 		native = Join({
-			Size = UDim2.fromScale(1, 0.3),
+			Size = UDim2.fromScale(1, 0.5),
 		}, props.native),
 	}, {
 		Container = e(Main.ImageLabel, {
 			native = {
 				Size = UDim2.fromScale(1, 0.9),
-				Image = "rbxassetid://103808626575670",
+				Image = "rbxassetid://92055005658102",
 			},
 		}, {
 			QuestTitle = e(Main.TextLabel, {
 				native = {
 					Text = props.QuestData.Name,
-					Size = UDim2.fromScale(0.5, 0.225),
-					Position = UDim2.fromScale(0.3, 0.25),
+					Size = UDim2.fromScale(0.5, 0.2),
+					Position = UDim2.fromScale(0.325, 0.25),
 					TextXAlignment = Enum.TextXAlignment.Left,
 				},
 			}, {
@@ -183,8 +197,8 @@ local function CreateQuest(props: QuestProps)
 			QuestDescription = e(Main.TextLabel, {
 				native = {
 					Text = props.QuestData.Description,
-					Size = UDim2.fromScale(0.5, 0.14),
-					Position = UDim2.fromScale(0.3, 0.5),
+					Size = UDim2.fromScale(0.5, 0.1),
+					Position = UDim2.fromScale(0.325, 0.5),
 					TextXAlignment = Enum.TextXAlignment.Left,
 				},
 			}, {
@@ -192,7 +206,16 @@ local function CreateQuest(props: QuestProps)
 					Stroke = 0.008,
 				}),
 			}),
-			QuestBar = e(Main.Frame, {
+			QuestBar = e(ProgressBar, {
+				Bar = QuestSize,
+				Text = Bar,
+				native = {
+					Position = UDim2.fromScale(0.375, 0.75),
+					Size = UDim2.fromScale(0.475, 0.25),
+				},
+			}),
+
+			--[[QuestBar = e(Main.Frame, {
 				native = {
 					BackgroundTransparency = 0,
 					BackgroundColor3 = Color3.new(0.160784, 0.082353, 0.203922),
@@ -230,11 +253,11 @@ local function CreateQuest(props: QuestProps)
 				UICorner = e("UICorner", {
 					CornerRadius = UDim.new(0.2, 0),
 				}),
-			}),
+			}),]]
 			RedeemButton = e(Main.Animateables.TextButton, {
 				native = {
 					Size = UDim2.fromScale(0.2, 0.25),
-					Position = UDim2.fromScale(0.86, 0.75),
+					Position = UDim2.fromScale(0.8, 0.725),
 					BackgroundTransparency = 0,
 					BackgroundColor3 = RedeemColor,
 					Text = "",

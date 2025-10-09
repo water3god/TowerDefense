@@ -26,6 +26,9 @@ local Hooks = require(CoreGame.Hooks)
 local Story = Gui.Story
 local StoryContext = require(Story.StoryContext)
 
+local Components = Gui.Components
+local ProgressBar = require(Components.ProgressBar)
+
 local Shared = ReplicatedStorage.Shared
 local GameInfo = require(Shared.GameInfo)
 
@@ -161,7 +164,19 @@ local function CreateWaitingFrame(Props: Properties)
 				Stroke = 0.01,
 			}),
 		}),
-		TimeBar = e(Main.CanvasGroup, {
+		TimeBar = e(ProgressBar, {
+			Bar = React.joinBindings({ Time, TotalTime }):map(function(Times: { number })
+				return Times[1] / Times[2]
+			end),
+			Text = Time:map(function(TimeInput: number)
+				return string.format("Time Left: %u", math.floor(TimeInput))
+			end),
+			native = {
+				Position = UDim2.fromScale(0.5, 1.1),
+				Size = UDim2.fromScale(0.8, 0.2),
+			},
+		}, {}),
+		--[[TimeBar = e(Main.CanvasGroup, {
 			native = {
 				BackgroundTransparency = 0,
 				BackgroundColor3 = Color3.new(),
@@ -202,7 +217,7 @@ local function CreateWaitingFrame(Props: Properties)
 					Stroke = 0.006,
 				}),
 			}),
-		}),
+		}),]]
 	}, Props.children)
 end
 

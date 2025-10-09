@@ -43,6 +43,10 @@ local Inventory = Gui.Inventory
 local UnitFrame = require(Inventory.UnitFrame)
 local ResourceFrame = require(Inventory.ResourceFrame)
 
+local Components = Gui.Components
+local ProgressBar = require(Components.ProgressBar)
+local Button = require(Components.Button)
+
 local Client = ReplicatedStorage.Client
 local GlobalClient = Client.GlobalClient
 local WaveService = require(GlobalClient.WaveService)
@@ -151,7 +155,20 @@ local function CreateMainXPFrame(props: MainXPProps)
 		end
 	end, { props.MainXPData })
 
-	return e(Main.CanvasGroup, {
+	return e(ProgressBar, {
+		Bar = XPInfo:map(function(data: UnitXP)
+			return math.clamp(data.XP / data.NeededXP, 0, 1)
+		end),
+		Text = XPInfo:map(function(data: UnitXP)
+			return string.format("Level %u (%u / %u)", data.Level, data.XP, data.NeededXP)
+		end),
+		native = Join({
+			Size = UDim2.fromScale(0.4, 0.125),
+			Position = UDim2.fromScale(0.3, 0.75),
+		}, props.native),
+	}, props.children)
+
+	--[[return e(Main.CanvasGroup, {
 		native = Join({
 			BackgroundColor3 = Color3.new(0.180392, 0.180392, 0.180392),
 			BackgroundTransparency = 0,
@@ -188,7 +205,7 @@ local function CreateMainXPFrame(props: MainXPProps)
 				ZIndex = 2,
 			},
 		}),
-	}, props.children)
+	}, props.children)]]
 end
 
 local function CreateUnitXPFrame(props: UnitXPProps)
@@ -307,10 +324,22 @@ local function CreateUnitXPFrame(props: UnitXPProps)
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.015,
+				Stroke = 0.01,
 			}),
 		}),
-		XPBar = e(Main.CanvasGroup, {
+		XPBar = e(ProgressBar, {
+			Bar = XPInfo:map(function(data: UnitXP)
+				return math.clamp(data.XP / data.NeededXP, 0, 1)
+			end),
+			Text = XPInfo:map(function(data: UnitXP)
+				return string.format("%u / %u", data.XP, data.NeededXP)
+			end),
+			native = {
+				Size = UDim2.fromScale(0.5, 0.4),
+				Position = UDim2.fromScale(0.6, 0.65),
+			},
+		}),
+		--[[XPBar = e(Main.CanvasGroup, {
 			native = {
 				BackgroundColor3 = Color3.new(0.180392, 0.180392, 0.180392),
 				BackgroundTransparency = 0,
@@ -354,7 +383,7 @@ local function CreateUnitXPFrame(props: UnitXPProps)
 					ZIndex = 2,
 				},
 			}),
-		}),
+		}),]]
 	}, props.children)
 end
 
@@ -432,7 +461,7 @@ local function CreateVoteFrame(Props: Props)
 	end, { Props.EndData })
 
 	local ExistingUnits = React.useMemo(function()
-		local Frames = {}
+		local Frames: { [string]: React.Node } = {}
 
 		for Index, UnitData in pairs(Props.EndData.ExistingUnits) do
 			Frames[UnitData.Name .. Index] = e(CreateUnitXPFrame, {
@@ -455,84 +484,41 @@ local function CreateVoteFrame(Props: Props)
 		}, Props.native),
 	}, {
 		CloseButton = e(CloseButton, {
-			Position = UDim2.fromScale(1, 0),
+			Position = UDim2.fromScale(1.02, -0.02),
 			Size = UDim2.fromScale(0.3, 0.2),
 			OnClick = CloseClick,
 			native = {
 				ZIndex = 4,
 			},
 		}),
-		MainBackground = e(Main.Frame, {
+		MainBackground = e(Main.ImageLabel, {
 			native = {
-				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.new(),
-				Size = UDim2.fromScale(1, 1),
+				Size = UDim2.fromScale(1.06, 1.1),
 				ZIndex = 0,
 				Visible = Props.Enabled,
+				Image = "rbxassetid://124008352699396",
 			},
-		}, {
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.05, 0),
-			}),
-			UIStroke = e(UIStroke.UIStrokeGradient, {
-				Stroke = 0.005,
-				GradColor = WinData[Props.Success].StrokeColor,
-				native = {
-					Color = Color3.new(1, 1, 1),
-					LineJoinMode = Enum.LineJoinMode.Round,
-				},
-			}),
 		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 1.75,
 		}),
-		RestartButton = e(Main.Animateables.TextButton, {
+		RestartButton = e(Button, {
+			Text = "Restart",
+			Position = UDim2.fromScale(0.3, 0.9),
+			Size = UDim2.fromScale(0.2, 0.175),
+			OnClick = RestartClick,
 			native = {
-				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.fromRGB(117, 119, 115),
-				Position = UDim2.fromScale(0.3, 0.9),
-				Size = UDim2.fromScale(0.2, 0.08),
-				Text = "",
-				[React.Event.MouseButton1Click] = RestartClick,
+				ZIndex = 3,
 			},
-		}, {
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.4, 0),
-			}),
-			Label = e(Main.TextLabel, {
-				native = {
-					Size = UDim2.fromScale(0.9, 0.8),
-					Text = "Restart",
-				},
-			}, {
-				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.03,
-				}),
-			}),
 		}),
-		ReturnButton = e(Main.Animateables.TextButton, {
+		ReturnButton = e(Button, {
+			Text = "Return",
+			Position = UDim2.fromScale(0.7, 0.9),
+			Size = UDim2.fromScale(0.2, 0.175),
+			OnClick = ReturnClick,
 			native = {
-				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.fromRGB(117, 119, 115),
-				Position = UDim2.fromScale(0.7, 0.9),
-				Size = UDim2.fromScale(0.2, 0.08),
-				Text = "",
-				[React.Event.MouseButton1Click] = ReturnClick,
+				ZIndex = 3,
 			},
-		}, {
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.4, 0),
-			}),
-			Label = e(Main.TextLabel, {
-				native = {
-					Size = UDim2.fromScale(0.9, 0.8),
-					Text = "Return",
-				},
-			}, {
-				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.03,
-				}),
-			}),
 		}),
 		Players = e(Main.TextLabel, {
 			native = {
@@ -542,6 +528,10 @@ local function CreateVoteFrame(Props: Props)
 					return string.format("Play Again: %u/%u", Data.Votes, Data.Total)
 				end),
 			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.01,
+			}),
 		}),
 		Title = e(Main.TextLabel, {
 			native = {
@@ -549,6 +539,10 @@ local function CreateVoteFrame(Props: Props)
 				Position = UDim2.fromScale(0.3, 0.12),
 				Text = if Props.Success then "Game Won" else "Game Lost",
 			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.01,
+			}),
 		}),
 		UnitsContainer = e(Main.Frame, {
 			native = {
@@ -572,7 +566,7 @@ local function CreateVoteFrame(Props: Props)
 					SortOrder = Enum.SortOrder.LayoutOrder,
 					HorizontalAlignment = Enum.HorizontalAlignment.Center,
 				}),
-			}, ExistingUnits :: any),
+			}, ExistingUnits),
 		}),
 		Rewards = e(Main.Frame, {
 			native = {
@@ -591,6 +585,10 @@ local function CreateVoteFrame(Props: Props)
 					Size = UDim2.fromScale(0.6, 0.2),
 					Text = "Rewards",
 				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.015,
+				}),
 			}),
 			MainFrame = e(Main.ScrollingFrame, {
 				BarSize = 0.002,

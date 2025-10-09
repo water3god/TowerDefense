@@ -150,12 +150,12 @@ local function CreateMessage(props: Properties)
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.01,
+				Stroke = 0.008,
 			}),
 		}),
 		LeftArrow = e(Main.Animateables.ImageButton, {
 			native = {
-				Position = UDim2.fromScale(-0.08, 0.5),
+				Position = UDim2.fromScale(-0.1, 0.5),
 				Size = UDim2.fromScale(0.1, 0.25),
 				Image = "rbxassetid://73864431143188",
 				Rotation = 180,
@@ -165,7 +165,7 @@ local function CreateMessage(props: Properties)
 		}),
 		RightArrow = e(Main.Animateables.ImageButton, {
 			native = {
-				Position = UDim2.fromScale(1.08, 0.5),
+				Position = UDim2.fromScale(1.1, 0.5),
 				Size = UDim2.fromScale(0.1, 0.25),
 				Image = "rbxassetid://73864431143188",
 				Visible = CurrentMessageIndex < #props.Messages,

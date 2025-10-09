@@ -26,6 +26,7 @@ local SFXService = require(ReplicatedStorage.Client.GlobalClient.SFXService)
 
 export type Properties = {
 	Text: string?,
+	Position: UDim2?,
 	Size: UDim2?,
 	Color: "Black" | "Blue" | "Green" | "Orange" | "Pink" | "Purple" | "Red" | "Yellow"?,
 	OnClick: (() -> ())?,
@@ -164,6 +165,7 @@ local function CreateButton(props: Properties)
 	return e(Main.TextButton, {
 		native = Join({
 			Text = "",
+			Position = props.Position,
 			Size = props.Size,
 			[React.Event.Activated] = props.OnClick,
 		}, props.native),
@@ -176,7 +178,7 @@ local function CreateButton(props: Properties)
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.01,
+				Stroke = 0.015,
 			}),
 		}),
 		ButtonMiddle = e(Main.ImageButton, {

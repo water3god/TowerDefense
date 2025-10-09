@@ -46,6 +46,9 @@ local WaveContext = require(GameFrames.WaveContext)
 local Message = Gui.Message
 local Indicator = require(Message.Indicator)
 
+local Components = Gui.Components
+local ProgressBar = require(Components.ProgressBar)
+
 local Shared = ReplicatedStorage.Shared
 local LevelRequirements = require(Shared.LevelRequirements)
 local IsLobby = require(Shared.IsLobby)
@@ -298,12 +301,14 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 		return HelperFunctions.NumberScaler.ShortenNumber(CurrencyContext.Value)
 	end, { CurrencyContext.Value })
 
-	local BarSize = React.useMemo(function()
-		return UDim2.fromScale(math.clamp(UnitsContext.XP / UnitsContext.NeededXP, 0, 1), 1)
+	local BarSize, SetBarSize = React.useBinding(0)
+	React.useEffect(function()
+		SetBarSize(math.clamp(UnitsContext.XP / UnitsContext.NeededXP, 0, 1))
 	end, { UnitsContext.XP, UnitsContext.NeededXP })
 
-	local LevelXP = React.useMemo(function()
-		return string.format("Level %u (%u/%u)", UnitsContext.GlobalLevel, UnitsContext.XP, UnitsContext.NeededXP)
+	local LevelXP, SetLevelXP = React.useBinding("")
+	React.useEffect(function()
+		SetLevelXP(string.format("Level %u (%u/%u)", UnitsContext.GlobalLevel, UnitsContext.XP, UnitsContext.NeededXP))
 	end, { UnitsContext.GlobalLevel, UnitsContext.XP, UnitsContext.NeededXP })
 
 	local FirstFrameIndicator = React.useMemo(function()
@@ -429,47 +434,13 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 				}),
 			}),
 		}),
-		LevelBar = e(Main.CanvasGroup, {
+		LevelBar = e(ProgressBar, {
+			Bar = BarSize,
+			Text = LevelXP,
 			native = {
-				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.fromRGB(64, 64, 64),
 				Position = UDim2.fromScale(0.5, 0.8),
-				Size = UDim2.fromScale(0.9, 0.2),
+				Size = UDim2.fromScale(0.8, 0.35),
 			},
-		}, {
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.01,
-				native = {
-					LineJoinMode = Enum.LineJoinMode.Round,
-				},
-			}),
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.5, 0),
-			}),
-			ProgressBar = e(Main.Frame, {
-				native = {
-					BackgroundTransparency = 0,
-					BackgroundColor3 = Color3.fromRGB(35, 35, 35),
-					AnchorPoint = Vector2.new(0, 0.5),
-					Position = UDim2.fromScale(0, 0.5),
-					Size = BarSize,
-				},
-			}, {
-				UICorner = e("UICorner", {
-					CornerRadius = UDim.new(0.5, 0),
-				}),
-			}),
-			LevelLabel = e(Main.TextLabel, {
-				native = {
-					Size = UDim2.fromScale(0.3, 0.8),
-					Text = LevelXP,
-					ZIndex = 2,
-				},
-			}, {
-				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.015,
-				}),
-			}),
 		}),
 	}, CoreFrames, Properties.children)
 end)

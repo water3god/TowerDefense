@@ -46,6 +46,7 @@ local ResourceFrame = require(InventoryFolder.ResourceFrame)
 
 local Components = Gui.Components
 local Plus = require(Components.Plus)
+local Button = require(Components.Button)
 
 local TraitsFolder = Gui.Traits
 local TraitsInfo = require(TraitsFolder.TraitsInfo)
@@ -265,28 +266,11 @@ local function CreateTraitsFrame(props: Properties)
 				},
 			}),
 		}),
-		RerollButton = e(Main.Animateables.ImageButton, {
-			native = {
-				Position = UDim2.fromScale(0.5, 0.89),
-				Size = UDim2.fromScale(0.3, 0.15),
-				Image = "rbxassetid://80739823452825",
-				ImageColor3 = RollColor,
-				[React.Event.MouseButton1Click] = OnRollClick,
-			},
-		}, {
-			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 2.75,
-			}),
-			Label = e(Main.TextLabel, {
-				native = {
-					Size = UDim2.fromScale(0.9, 0.6),
-					Text = "Reroll",
-				},
-			}, {
-				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.03,
-				}),
-			}),
+		RerollButton = e(Button, {
+			Text = "Reroll",
+			Position = UDim2.fromScale(0.5, 0.89),
+			Size = UDim2.fromScale(0.3, 0.15),
+			OnClick = OnRollClick,
 		}),
 		TraitsInfoButton = e(Main.Animateables.ImageButton, {
 			native = {

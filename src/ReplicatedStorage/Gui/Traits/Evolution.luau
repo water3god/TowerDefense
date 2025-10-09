@@ -32,6 +32,7 @@ local Hooks = require(CoreGame.Hooks)
 
 local Components = Gui.Components
 local Plus = require(Components.Plus)
+local Button = require(Components.Button)
 
 local InventoryFolder = Gui.Inventory
 local InventoryContext = require(InventoryFolder.InventoryContext)
@@ -273,28 +274,11 @@ local function CreateEvolution(props: Properties)
 				},
 			}),
 		}),
-		EvolveButton = e(Main.Animateables.ImageButton, {
-			native = {
-				Position = UDim2.fromScale(0.5, 0.875),
-				Size = UDim2.fromScale(0.3, 0.1),
-				Image = "rbxassetid://80739823452825",
-				ImageColor3 = Color3.fromRGB(135, 1, 203),
-				[React.Event.MouseButton1Click] = EvolveClick,
-			},
-		}, {
-			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 3.5,
-			}),
-			Label = e(Main.TextLabel, {
-				native = {
-					Size = UDim2.fromScale(0.7, 0.7),
-					Text = "EVOLVE!",
-				},
-			}, {
-				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.03,
-				}),
-			}),
+		EvolveButton = e(Button, {
+			Position = UDim2.fromScale(0.5, 0.85),
+			Size = UDim2.fromScale(0.5, 0.2),
+			OnClick = EvolveClick,
+			Text = "EVOLVE!",
 		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 1.5,

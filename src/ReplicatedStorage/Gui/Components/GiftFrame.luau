@@ -132,6 +132,10 @@ local function CreateGiftFrame(props: Properties)
 					Size = UDim2.fromScale(0.8, 0.1),
 					Text = "Select a Friend to Send Gift",
 				},
+			}, {
+				UIStroke = e(UIStroke.UIStrokeAdvanced, {
+					Stroke = 0.01,
+				}),
 			}),
 			MainFrame = e(
 				Main.ScrollingFrame,
