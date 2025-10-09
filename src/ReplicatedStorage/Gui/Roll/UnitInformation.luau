@@ -209,7 +209,7 @@ local function CreateUnitInfo(Props: Props)
 				Visible = Styles.alpha:map(function(alphaInput: number)
 					return alphaInput ~= 1
 				end),
-				Image = "rbxassetid://138837230897413",
+				Image = "rbxassetid://85053227818414",
 			}, Props.native),
 		}, {
 			UIScale = e("UIScale", {
@@ -227,7 +227,7 @@ local function CreateUnitInfo(Props: Props)
 			MainFrame = e(Main.ScrollingFrame, {
 				BarSize = 0.01,
 				native = {
-					Position = UDim2.fromScale(0.5, 0.52),
+					Position = UDim2.fromScale(0.5, 0.51),
 					Size = UDim2.fromScale(0.9, 0.9),
 					AutomaticCanvasSize = Enum.AutomaticSize.Y,
 					ZIndex = 3,

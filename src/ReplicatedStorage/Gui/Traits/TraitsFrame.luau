@@ -220,7 +220,7 @@ local function CreateTraitsFrame(props: Properties)
 	return e(Main.ImageLabel, {
 		native = Join({
 			Size = UDim2.fromScale(0.5, 0.7),
-			Image = "rbxassetid://138837230897413",
+			Image = "rbxassetid://78579166773802",
 		}, props.native),
 	}, {
 		UISizeConstraint = e("UISizeConstraint", {
@@ -236,7 +236,7 @@ local function CreateTraitsFrame(props: Properties)
 			native = {
 				Size = UDim2.fromScale(0.85, 0.55),
 				Position = UDim2.fromScale(0.5, 0.475),
-				Image = "rbxassetid://92342153493946",
+				Image = "rbxassetid://128193537437202",
 			},
 		}, {
 			Plus = not Unit and e(Plus, {
@@ -341,7 +341,7 @@ local function CreateTraitsFrame(props: Properties)
 			Title = "TRAITS",
 		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-			AspectRatio = 0.8,
+			AspectRatio = 0.75,
 		}),
 		CloseButton = e(CloseButton, {
 			Position = UDim2.fromScale(0.99, 0.01),
@@ -350,10 +350,9 @@ local function CreateTraitsFrame(props: Properties)
 		}),
 		RightContainer = e(Main.ImageLabel, {
 			native = {
-				Size = UDim2.fromScale(0.55, 0.7),
+				Size = UDim2.fromScale(0.55, 0.6),
 				Position = UDim2.fromScale(1.32, 0.5),
-
-				Image = "rbxassetid://138837230897413",
+				Image = "rbxassetid://85053227818414",
 			},
 		}, {
 			MainProductFrame = e(Main.ScrollingFrame, {

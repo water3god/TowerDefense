@@ -453,7 +453,7 @@ local function CreateRollMain(props: Properties)
 			native = {
 				Size = UDim2.fromScale(0.3, 0.8),
 				Position = UDim2.fromScale(1.2, 0.5),
-				Image = "rbxassetid://138837230897413",
+				Image = "rbxassetid://85053227818414",
 			},
 		}, {
 			MainProductFrame = e(Main.ScrollingFrame, {
@@ -488,7 +488,7 @@ local function CreateRollMain(props: Properties)
 			},
 		}, {
 			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.015,
+				Stroke = 0.01,
 			}),
 		}),
 	}, UnitFrames, props.children)

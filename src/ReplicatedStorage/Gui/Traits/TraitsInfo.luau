@@ -176,7 +176,7 @@ local function CreateTraitsInfo(props: Properties)
 		Main = e(Main.ImageLabel, {
 			native = Join({
 				Size = UDim2.fromScale(0.5, 0.6),
-				Image = "rbxassetid://138837230897413",
+				Image = "rbxassetid://85053227818414",
 			}, props.native),
 		}, {
 			Title = e(Title, {

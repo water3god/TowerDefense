@@ -112,6 +112,7 @@ local assets = {
 				["panel_2048_x_1536.png"] = "rbxassetid://75477724796723",
 				["panel_330_x_330.png"] = "rbxassetid://131934662734362",
 				["panel_345_x_1080.png"] = "rbxassetid://135799653583311",
+				["panel_700_x_1000.png"] = "rbxassetid://85053227818414",
 				["panel_960_x_330.png"] = "rbxassetid://91626238417472",
 			},
 			["inner_panel_color.png"] = "rbxassetid://80019885080716",
