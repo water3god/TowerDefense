@@ -671,6 +671,9 @@ local function CreateUpgradeFrame(Properties: Properties)
 			Position = UDim2.fromScale(0.375, 0.875),
 			Size = UDim2.fromScale(0.2, 0.2),
 			OnClick = SellClick,
+			native = {
+				ZIndex = 2,
+			},
 		}),
 
 		AttackPriorityButton = e(Button, {

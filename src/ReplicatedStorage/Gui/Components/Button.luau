@@ -162,12 +162,10 @@ local function CreateButton(props: Properties)
 
 	local Scale, Callback = ApplyEffect()
 
-	return e(Main.TextButton, {
+	return e(Main.Frame, {
 		native = Join({
-			Text = "",
 			Position = props.Position,
 			Size = props.Size,
-			[React.Event.Activated] = props.OnClick,
 		}, props.native),
 	}, {
 		Label = props.Text and e(Main.TextLabel, {
@@ -181,37 +179,42 @@ local function CreateButton(props: Properties)
 				Stroke = 0.015,
 			}),
 		}),
-		ButtonMiddle = e(Main.ImageButton, {
+		Button = e(Main.TextButton, {
+			native = {
+				Text = "",
+				Size = LabelSize:map(function(Size: UDim2)
+					return UDim2.fromScale(Size.X.Scale * 1.2, 1)
+				end),
+				[React.Event.Activated] = props.OnClick,
+				[React.Change.GuiState] = Callback :: any,
+				ZIndex = 2,
+			},
+		}),
+		ButtonMiddle = e(Main.ImageLabel, {
 			native = {
 				Size = UDim2.fromScale(0.2, 1),
 				Image = ColorSlice.Middle,
 				ref = ParentFrame,
-				[React.Event.MouseButton1Click] = props.OnClick,
-				[React.Change.GuiState] = Callback :: any,
 			},
 		}),
-		ButtonLeft = e(Main.ImageButton, {
+		ButtonLeft = e(Main.ImageLabel, {
 			native = {
 				Image = ColorSlice.Left,
 				Size = UDim2.fromScale(1, 1),
 				Position = UDim2.fromScale(0.4, 0.5),
 				AnchorPoint = Vector2.new(1, 0.5),
-				[React.Event.MouseButton1Click] = props.OnClick,
-				[React.Change.GuiState] = Callback :: any,
 			},
 		}, {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 				AspectRatio = 0.744,
 			}),
 		}),
-		ButtonRight = e(Main.ImageButton, {
+		ButtonRight = e(Main.ImageLabel, {
 			native = {
 				Image = ColorSlice.Right,
 				Size = UDim2.fromScale(1, 1),
 				Position = UDim2.fromScale(0.6, 0.5),
 				AnchorPoint = Vector2.new(0, 0.5),
-				[React.Event.MouseButton1Click] = props.OnClick,
-				[React.Change.GuiState] = Callback :: any,
 			},
 		}, {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {

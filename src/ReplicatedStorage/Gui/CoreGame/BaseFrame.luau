@@ -2,8 +2,8 @@
 
 -- By Wa1er_God --
 
-local DefaultBackgroundImage = "rbxassetid://131934662734362"
-local HighlightedBackgroundImage = "rbxassetid://131934662734362"
+local DefaultBackgroundImage = "rbxassetid://75527211593942"
+local HighlightedBackgroundImage = "rbxassetid://81962131489944"
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -164,7 +164,7 @@ local function CreateBaseFrame(Properties: Properties)
 			BackgroundImage = e(Main.ImageLabel, {
 				native = {
 					Position = UDim2.fromScale(0.5, 0.5),
-					Size = UDim2.fromScale(1, 1),
+					Size = UDim2.fromScale(0.9, 0.9),
 					ZIndex = -1,
 					Image = if Properties.Hovered then HighlightedBackgroundImage else DefaultBackgroundImage,
 					ImageTransparency = if Properties.Hidden then 0.5 else 0,

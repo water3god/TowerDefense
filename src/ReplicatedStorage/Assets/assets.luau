@@ -28,6 +28,7 @@ local assets = {
 		["Trajan.png"] = "rbxassetid://103084517800878",
 		["arrow-right.svg"] = "rbxassetid://138686283797043",
 		["gold-ingot.png"] = "rbxassetid://81695874378087",
+		["highlightedFrame.png"] = "rbxassetid://81962131489944",
 		["loading.png"] = "rbxassetid://100999073202792",
 	},
 	Maps = {
@@ -105,6 +106,7 @@ local assets = {
 				["panel_1000_x_700.png"] = "rbxassetid://90052981528808",
 				["panel_1080_x_1080.png"] = "rbxassetid://75527211593942",
 				["panel_1080_x_1920.png"] = "rbxassetid://138957161873862",
+				["panel_1080_x_345.png"] = "rbxassetid://123753468418522",
 				["panel_1536_x_1080.png"] = "rbxassetid://128193537437202",
 				["panel_1536_x_2048.png"] = "rbxassetid://78579166773802",
 				["panel_1920_x_1080.png"] = "rbxassetid://124008352699396",

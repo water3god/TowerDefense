@@ -32,6 +32,7 @@ local AnimatedGradient = require(CoreGame.AnimatedGradient)
 
 local Components = Gui.Components
 local ProgressBar = require(Components.ProgressBar)
+local Button = require(Components.Button)
 
 local QuestsFolder = Gui.Quests
 local QuestsContext = require(QuestsFolder.QuestsContext)
@@ -178,8 +179,8 @@ local function CreateQuest(props: QuestProps)
 	}, {
 		Container = e(Main.ImageLabel, {
 			native = {
-				Size = UDim2.fromScale(1, 0.9),
-				Image = "rbxassetid://92055005658102",
+				Size = UDim2.fromScale(0.9, 0.9),
+				Image = "rbxassetid://123753468418522",
 			},
 		}, {
 			QuestTitle = e(Main.TextLabel, {
@@ -214,46 +215,6 @@ local function CreateQuest(props: QuestProps)
 					Size = UDim2.fromScale(0.475, 0.25),
 				},
 			}),
-
-			--[[QuestBar = e(Main.Frame, {
-				native = {
-					BackgroundTransparency = 0,
-					BackgroundColor3 = Color3.new(0.160784, 0.082353, 0.203922),
-					Position = UDim2.fromScale(0.4, 0.75),
-					Size = UDim2.fromScale(0.7, 0.25),
-				},
-			}, {
-				InnerBar = e(Main.Frame, {
-					native = {
-						BackgroundTransparency = 0,
-						BackgroundColor3 = Color3.new(0.505882, 0.137255, 0.709804),
-						AnchorPoint = Vector2.new(0, 0.5),
-						Position = UDim2.fromScale(0, 0.5),
-						Size = UDim2.fromScale(
-							math.clamp(props.QuestData.CurrentValue / props.QuestData.NeededValue, 0, 1),
-							1
-						),
-					},
-				}, {
-					UICorner = e("UICorner", {
-						CornerRadius = UDim.new(0.2, 0),
-					}),
-				}),
-				ProgressLabel = e(Main.TextLabel, {
-					native = {
-						Size = UDim2.fromScale(0.9, 0.8),
-						Text = string.format("%u / %u", props.QuestData.CurrentValue, props.QuestData.NeededValue),
-						ZIndex = 2,
-					},
-				}, {
-					UIStroke = e(UIStroke.UIStrokeAdvanced, {
-						Stroke = 0.005,
-					}),
-				}),
-				UICorner = e("UICorner", {
-					CornerRadius = UDim.new(0.2, 0),
-				}),
-			}),]]
 			RedeemButton = e(Main.Animateables.TextButton, {
 				native = {
 					Size = UDim2.fromScale(0.2, 0.25),
@@ -370,15 +331,15 @@ local function CreateQuestsFrame(props: Properties)
 
 		for Name, DisplayName in pairs(Names) do
 			local Priority = Priorities[Name]
-			Frames[Name] = e(BaseButton, {
-				Highlighted = OpenFrame == Name,
+			Frames[Name] = e(Button, {
+				Color = OpenFrame == Name and "Green" or "Black",
 				Text = DisplayName,
 				OnClick = function()
 					SetOpenFrame(Name)
 				end,
 				native = {
 					Position = UDim2.fromScale(0.15 + (0.233 * (Priority - 1)), 0.5),
-					Size = UDim2.fromScale(0.2, 0.9),
+					Size = UDim2.fromScale(0.2, 1.5),
 				},
 			})
 		end
@@ -410,9 +371,10 @@ local function CreateQuestsFrame(props: Properties)
 		MainFrame = e(Main.ScrollingFrame, {
 			BarSize = 0.01,
 			native = {
-				Position = UDim2.fromScale(0.5, 0.55),
+				Position = UDim2.fromScale(0.5, 0.575),
 				Size = UDim2.fromScale(0.9, 0.75),
 				AutomaticCanvasSize = Enum.AutomaticSize.Y,
+				ZIndex = 2,
 			},
 		}, {
 			UIListLayout = e("UIListLayout", {

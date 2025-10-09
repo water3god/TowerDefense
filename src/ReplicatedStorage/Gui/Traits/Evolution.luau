@@ -241,13 +241,13 @@ local function CreateEvolution(props: Properties)
 		}),
 		Arrow = e(Main.ImageLabel, {
 			native = {
-				Size = UDim2.fromScale(0.1, 0.15),
-				Image = "rbxassetid://90650317828395",
-				ImageColor3 = Color3.new(0.376471, 0.117647, 0.588235),
+				Size = UDim2.fromScale(0.1, 0.125),
+				Image = "rbxassetid://138686283797043",
+				ImageColor3 = Color3.new(0.309804, 0.235294, 0.07451),
 			},
 		}, {
 			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 1.4,
+				AspectRatio = 1,
 			}),
 		}),
 		ProductFrame = e(Main.ImageLabel, {
@@ -279,6 +279,7 @@ local function CreateEvolution(props: Properties)
 			Size = UDim2.fromScale(0.5, 0.2),
 			OnClick = EvolveClick,
 			Text = "EVOLVE!",
+			Color = "Purple",
 		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 1.5,

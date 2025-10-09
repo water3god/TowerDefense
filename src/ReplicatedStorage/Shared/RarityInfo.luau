@@ -20,8 +20,8 @@ local RarityInfo: { [Rarity]: RarityInfo } = {
 		Color = ColorSequence.new(Color3.new(1, 1, 1)),
 		StrokeColor = ColorSequence.new(Color3.new(0, 0, 0)),
 		BackgroundColor = ColorSequence.new(
-			Color3.new(0.258824, 0.043137, 0.384314),
-			Color3.new(0.564706, 0.113725, 0.827451)
+			Color3.new(0.27451, 0.196078, 0.035294),
+			Color3.new(0.505882, 0.329412, 0.043137)
 		),
 		Animate = false,
 	},

@@ -124,11 +124,11 @@ end
 local UnitFrameSize = UDim2.fromScale(0.25, 0.65)
 
 local Positions = {
-	0.15,
-	0.325,
+	0.1,
+	0.3,
 	0.5,
-	0.675,
-	0.85,
+	0.7,
+	0.9,
 }
 
 type PlacementData = {
@@ -437,7 +437,7 @@ local CreateBottomFrame = React.forwardRef(function(Properties: Properties, ref)
 			Bar = BarSize,
 			Text = LevelXP,
 			native = {
-				Position = UDim2.fromScale(0.5, 0.8),
+				Position = UDim2.fromScale(0.5, 0.825),
 				Size = UDim2.fromScale(0.8, 0.35),
 			},
 		}),
