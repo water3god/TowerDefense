@@ -18,6 +18,7 @@ local ProgressBar = require(Gui.Components.ProgressBar)
 -- Controls --
 local controls = {
 	Bar = 1,
+	Text = "Progress",
 }
 
 -- Story --
@@ -26,14 +27,20 @@ local Story = {
 	reactRoblox = ReactRoblox,
 	controls = controls,
 	story = function(props)
-		local Binding, setBinding = React.useBinding(props.controls.Bar)
+		local Bar, SetBar = React.useBinding(props.controls.Bar)
+		local Text, SetText = React.useBinding(props.controls.Text)
 
 		React.useEffect(function()
-			setBinding(props.controls.Bar)
+			SetBar(props.controls.Bar)
 		end, { props.controls.Bar })
 
+		React.useEffect(function()
+			SetText(props.controls.Text)
+		end, { props.controls.Text })
+
 		local Frame = e(ProgressBar, {
-			Bar = Binding,
+			Bar = Bar,
+			Text = Text,
 			native = {
 				Size = UDim2.fromScale(0.7, 0.2),
 			},

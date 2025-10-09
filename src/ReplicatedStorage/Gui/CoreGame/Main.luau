@@ -36,7 +36,7 @@ local DefaultProps = {
 }
 
 local DefaultText = {
-	Text = "DefaultText",
+	Text = "",
 	FontFace = DefaultFont,
 	TextScaled = true,
 	TextColor3 = Color3.new(1, 1, 1),

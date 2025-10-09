@@ -18,9 +18,11 @@ local Join = HelperFunctions.joinDicts
 local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Main = require(CoreGame.Main)
+local UIStroke = require(CoreGame.UIStroke)
 
 export type Properties = {
 	Bar: React.Binding<number>,
+	Text: React.Binding<string>?,
 	Color: "Blue" | "Green" | "Orange" | "Pink" | "Purple" | "Red" | "Yellow"?,
 	native: { [any]: any }?,
 	children: { [any]: any }?,
@@ -136,7 +138,17 @@ local function CreateProgressBar(props: Properties)
 				AspectRatio = 0.22,
 			}),
 		}),
-
+		Label = e(Main.TextLabel, {
+			native = {
+				Size = UDim2.fromScale(0.9, 0.3),
+				Text = props.Text,
+				ZIndex = 3,
+			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.01,
+			}),
+		}),
 		MainBar = e(Main.ImageLabel, {
 			native = {
 				Image = "rbxassetid://137236531720016",
