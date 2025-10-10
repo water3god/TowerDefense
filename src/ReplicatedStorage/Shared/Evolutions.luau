@@ -11,6 +11,14 @@ local Evolutions: { [string]: {
 	Evolution: string,
 	Resources: { EvolutionResource },
 } } = {
+	["Robert the Bruce"] = {
+		Evolution = "Robert the Bruce (Bannockburn)",
+		Resources = {
+			{ Name = "Knight's Armor", Amount = 5 },
+			{ Name = "Archer's Bows", Amount = 2 },
+			{ Name = "Queen's Crowns", Amount = 1 },
+		},
+	},
 	--[[["Cleopatra"] = {
 		Evolution = "Cleopatra (Triple)",
 		Resources = {

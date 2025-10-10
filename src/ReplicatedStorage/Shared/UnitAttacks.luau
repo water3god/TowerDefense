@@ -775,6 +775,30 @@ local UnitAttacks: {
 				end,
 			},
 		},
+		["Robert the Bruce (Bannockburn)"] = {
+			[0] = {
+				function(Unit, AttackInput, Enemy, Delay)
+					DefaultAttack(Unit, AttackInput, Enemy, Delay)
+					DelayedAttackHit(Unit, AttackInput, Enemy, 0.5, Delay)
+
+					local DelayTime = CalculateDelay(0.3, AttackInput.SpeedRatio, Delay)
+
+					local DelProm = Promise.delay(DelayTime):andThen(function()
+						Emit(
+							Unit,
+							{ Emitters["Grey-alpha"] },
+							Unit.Root.CFrame + Unit.CFrame.RightVector / 1.2 + Unit.CFrame.LookVector * 2,
+							true,
+							true,
+							2
+						)
+					end)
+
+					DelayedSound(Unit, { Sounds.SwordSwing }, AttackInput, Enemy, 0.2, Delay)
+					Unit:AddAttackPromise(DelProm, "RobertAttackEmit")
+				end,
+			},
+		},
 		["Ptolemy"] = {
 			[0] = {
 				function(Unit, AttackInput, Enemy, Delay)

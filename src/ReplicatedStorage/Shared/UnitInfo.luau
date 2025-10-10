@@ -526,7 +526,7 @@ local UnitInfo: { [string]: UnitInfo } = {
 	["Robert the Bruce (Bannockburn)"] = {
 		Rarity = "Common",
 		Description = "Single-target melee; dependable early-game damage.",
-		Image = "rbxassetid://72392021367991",
+		Image = "rbxassetid://74958975567668",
 
 		UnitData = {
 			[0] = {

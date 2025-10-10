@@ -79,8 +79,16 @@ local function CreateEvolution(props: Properties)
 	local EvolveClick = React.useCallback(function()
 		if CurrentUnit and Resources then
 			for _, Resource in ipairs(Resources) do
-				local ResourceInv = InventoryData.Resources[Resource.Name]
-				if not ResourceInv or ResourceInv.Count < Resource.Amount then
+				local ResourceData = nil
+
+				for _, Res in pairs(InventoryData.Resources) do
+					if Res.Resource == Resource.Name then
+						ResourceData = Res
+						break
+					end
+				end
+
+				if not ResourceData or ResourceData.Count < Resource.Amount then
 					WarningData.Add(string.format("Not enough %s!", Resource.Name))
 					return
 				end
@@ -147,11 +155,19 @@ local function CreateEvolution(props: Properties)
 	local ResourceFrames = React.useMemo(function()
 		local Frames: { [string]: React.Node } = {}
 		for Index, Resource in ipairs(Resources) do
-			local ResourceInv = InventoryData.Resources[Resource.Name]
+			local ResourceData = nil
+
+			for _, Res in pairs(InventoryData.Resources) do
+				if Res.Resource == Resource.Name then
+					ResourceData = Res
+					break
+				end
+			end
+
 			local Count = 0
 
-			if ResourceInv then
-				Count = ResourceInv.Count
+			if ResourceData then
+				Count = ResourceData.Count
 			end
 
 			Frames["Resource" .. Index] = e(ResourceFrame, {
@@ -161,7 +177,7 @@ local function CreateEvolution(props: Properties)
 		end
 
 		return Frames
-	end, { Resources })
+	end, { InventoryData, Resources } :: { unknown })
 
 	local CloseClick = React.useCallback(function()
 		if props.CloseClick then
@@ -268,6 +284,9 @@ local function CreateEvolution(props: Properties)
 				UnitName = ProductUnit.UnitName,
 				Level = ProductUnit.Level,
 				Hidden = if CurrentUnit then true else false,
+				OnClick = function()
+					SetProductUnit(nil)
+				end,
 				native = {
 					Position = UDim2.fromScale(0.5, 0.5),
 					Size = UDim2.fromScale(0.4, 0.4),

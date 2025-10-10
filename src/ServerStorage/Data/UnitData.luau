@@ -431,6 +431,19 @@ local UnitData: { [string]: UnitModule.UnitInput } = {
 		DefaultRuns = {},
 		Abilities = {},
 	},
+	["Robert the Bruce (Bannockburn)"] = {
+		UnitName = "Robert the Bruce (Bannockburn)",
+
+		AttackFuncs = {
+			[0] = {
+				function(Unit: UnitModule.Unit, Damage: number)
+					DelayAttack(Unit, Damage, 0.44)
+				end,
+			},
+		},
+		DefaultRuns = {},
+		Abilities = {},
+	},
 	["Leif Erikson"] = {
 		UnitName = "Leif Erikson",
 
