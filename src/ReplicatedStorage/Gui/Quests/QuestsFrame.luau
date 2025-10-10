@@ -394,7 +394,7 @@ local function CreateQuestsFrame(props: Properties)
 				},
 			}, {
 				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.008,
+					Stroke = 0.005,
 				}),
 			}),
 		}, QuestFrames),

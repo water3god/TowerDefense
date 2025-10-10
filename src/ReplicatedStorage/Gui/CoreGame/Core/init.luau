@@ -666,6 +666,10 @@ local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (strin
 							return
 						end
 
+						if not TouchPosition then
+							return
+						end
+
 						Position = TouchPosition
 						OnPress(TouchPosition)
 					end)

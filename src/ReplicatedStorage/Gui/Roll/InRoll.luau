@@ -403,11 +403,11 @@ local function CreateInRoll(props: Properties)
 			Size = UDim2.fromScale(0.8, 0.6),
 		}, props.native),
 	}, {
-		StopAutoButton = e(Button, {
+		StopSummonButton = e(Button, {
 			Color = "Red",
 			Position = UDim2.fromScale(0.5, 1.15),
 			Size = UDim2.fromScale(0.4, 0.25),
-			Text = "Stop Auto Summon",
+			Text = "Stop Summoning",
 			OnClick = CancelAutoRoll,
 			native = {
 				Visible = props.AutoRoll,

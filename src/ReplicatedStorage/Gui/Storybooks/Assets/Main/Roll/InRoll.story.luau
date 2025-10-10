@@ -44,7 +44,7 @@ local Story = {
 			Frame = e(InRoll.Create, {
 				UnitNames = Units,
 				LastFiredTime = workspace:GetServerTimeNow(),
-				AutoRoll = false,
+				AutoRoll = true,
 			}),
 		})
 		return Frame
