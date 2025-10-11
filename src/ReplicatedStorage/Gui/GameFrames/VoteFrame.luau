@@ -28,6 +28,9 @@ local Main = require(CoreGame.Main)
 local UIStroke = require(CoreGame.UIStroke)
 local Hooks = require(CoreGame.Hooks)
 
+local Components = Gui.Components
+local Button = require(Components.Button)
+
 local SettingsFolder = Gui.Settings
 local SettingsContext = require(SettingsFolder.SettingsContext)
 
@@ -162,11 +165,10 @@ local function CreateVoteFrame(Props: Props)
 		SetVisible(false)
 	end, {})
 
-	return e(Main.Frame, {
+	return e(Main.ImageLabel, {
 		native = Join({
 			AnchorPoint = Vector2.new(0.5, 0),
-			BackgroundTransparency = 0,
-			BackgroundColor3 = Color3.new(),
+			Image = "rbxassetid://124008352699396",
 			Position = UDim2.fromScale(0.5, 0.2),
 			Size = UDim2.fromScale(0.175, 0.175),
 			Visible = Visiblity,
@@ -177,107 +179,59 @@ local function CreateVoteFrame(Props: Props)
 			MaxSize = Vector2.new(480, 200),
 		}),
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-			AspectRatio = 2.15,
+			AspectRatio = 1.77,
 		}),
-		UICorner = e("UICorner", {
-			CornerRadius = UDim.new(0.15, 0),
+		NoButton = e(Button, {
+			Text = "No",
+			Color = "Red",
+			Position = UDim2.fromScale(0.25, 0.75),
+			Size = UDim2.fromScale(0.4, 0.4),
+			OnClick = NoClick,
 		}),
-		UIStroke = e(UIStroke.UIStrokeAdvanced, {
-			Stroke = 0.01,
-			native = {
-				Color = Color3.fromRGB(103, 103, 104),
-				LineJoinMode = Enum.LineJoinMode.Round,
-			},
-		}),
-		NoButton = e(Main.Animateables.TextButton, {
-			native = {
-				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.fromRGB(255, 0, 3),
-				Position = UDim2.fromScale(0.75, 0.75),
-				Size = UDim2.fromScale(0.4, 0.25),
-				Text = "",
-				[React.Event.MouseButton1Click] = NoClick,
-			},
-		}, {
-			UIStroke = e(UIStroke.UIStrokeAdvanced, {
-				Stroke = 0.008,
-				native = {
-					Color = Color3.fromRGB(128, 36, 20),
-				},
-			}),
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.4, 0),
-			}),
-			Label = e(Main.TextLabel, {
-				native = {
-					Size = UDim2.fromScale(0.9, 0.9),
-					Text = "No",
-				},
-			}, {
-				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.002,
-				}),
-			}),
-		}),
-		YesButton = e(Main.Animateables.TextButton, {
-			native = {
-				BackgroundTransparency = 0,
-				BackgroundColor3 = Color3.fromRGB(0, 255, 19),
-				Position = UDim2.fromScale(0.25, 0.75),
-				Size = UDim2.fromScale(0.4, 0.25),
-				Text = "",
-				[React.Event.MouseButton1Click] = YesClick,
-			},
-		}, {
-			UIStroke = e(UIStroke.UIStrokeBasic, {
-				Stroke = 0.002,
-				native = {
-					Color = Color3.fromRGB(40, 93, 28),
-				},
-			}),
-			UICorner = e("UICorner", {
-				CornerRadius = UDim.new(0.4, 0),
-			}),
-			Label = e(Main.TextLabel, {
-				native = {
-					Size = UDim2.fromScale(0.9, 0.9),
-					Text = "Yes",
-				},
-			}, {
-				UIStroke = e(UIStroke.UIStrokeBasic, {
-					Stroke = 0.002,
-				}),
-			}),
+		YesButton = e(Button, {
+			Text = "Yes",
+			Color = "Green",
+			Position = UDim2.fromScale(0.75, 0.75),
+			Size = UDim2.fromScale(0.4, 0.4),
+			OnClick = YesClick,
 		}),
 		PlayerCount = e(Main.TextLabel, {
 			native = {
 				Position = UDim2.fromScale(0.5, 0.45),
-				Size = UDim2.fromScale(0.3, 0.2),
+				Size = UDim2.fromScale(0.3, 0.15),
 				Text = PlayerData:map(function(Data)
 					return string.format("%u/%u", Data.Votes, Data.Total)
 				end),
 				AutoLocalize = false,
 			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.02,
+			}),
 		}),
 		TimeLabel = e(Main.TextLabel, {
 			native = {
 				Position = UDim2.fromScale(0.5, 1.15),
-				Size = UDim2.fromScale(0.6, 0.2),
+				Size = UDim2.fromScale(0.6, 0.15),
 				Text = Time:map(function(TimeInput: number)
 					return string.format("Starts In: %u", math.floor(TimeInput))
 				end),
 			},
 		}, {
-			UIStroke = e(UIStroke.UIStrokeBasic, {
-				Stroke = 0.002,
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.015,
 			}),
 		}),
 		Title = e(Main.TextLabel, {
 			native = {
 				Position = UDim2.fromScale(0.5, 0.2),
-				Size = UDim2.fromScale(0.7, 0.225),
+				Size = UDim2.fromScale(0.7, 0.2),
 				Text = "Vote Start",
 			},
+		}, {
+			UIStroke = e(UIStroke.UIStrokeAdvanced, {
+				Stroke = 0.015,
+			}),
 		}),
 		Scale = e("UIScale", {
 			Scale = Styles.Scale,

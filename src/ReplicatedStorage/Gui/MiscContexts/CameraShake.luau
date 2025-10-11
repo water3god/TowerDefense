@@ -25,10 +25,27 @@ export type Properties = {
 	children: { [any]: any }?,
 }
 
-local function CreateCameraShake(props: Properties)
-	return e(Main.Frame, {
-		native = Join({}, props.native),
-	}, {}, props.children)
-end
+local Camera = workspace.CurrentCamera
 
-return CreateCameraShake
+local CameraShake = CameraShakeModule.new(Enum.RenderPriority.Camera.Value + 1, function(ShakeCF: CFrame)
+	Camera.CFrame *= ShakeCF
+end)
+
+type CameraShakeContext = {
+	CameraShake: typeof(CameraShake),
+
+	Shake: () -> (),
+}
+
+CameraShake:Start()
+
+local Context = React.createContext({
+	CameraShake = CameraShake,
+	Shake = function()
+		CameraShake:ShakeOnce(2, 20, 0, 0.4, Vector3.new(0.3, 0.3, 0.3), Vector3.new(2, 1, 1))
+	end,
+})
+
+return {
+	Context = Context,
+}

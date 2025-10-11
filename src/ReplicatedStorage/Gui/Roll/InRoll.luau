@@ -16,6 +16,7 @@ local SummonSound = SoundService.SoundEffects.Sounds.SummonEffect
 
 -- Libraries --
 local Packages = ReplicatedStorage.Packages
+local Signal = require(Packages.Signal)
 local ReactSpring = require(Packages.ReactSpring)
 local React = require(Packages.React)
 local e = React.createElement
@@ -41,6 +42,9 @@ local SettingsContext = require(SettingsFolder.SettingsContext)
 
 local Components = Gui.Components
 local Button = require(Components.Button)
+
+local MiscContexts = Gui.MiscContexts
+local CameraShake = require(MiscContexts.CameraShake)
 
 local Client = ReplicatedStorage.Client
 local LobbyClient = Client.LobbyClient
@@ -102,6 +106,10 @@ local function ChangeSize(Sequence: NumberSequence, Ratio: number)
 	return NumberSequence.new(NewKeypoints)
 end
 
+local Rendered = 0
+local Total = 0
+local PlaySignal = Signal.new()
+
 local function CreateUnitFrame(props: UnitProperties)
 	local ViewRef = React.useRef(nil :: ViewportFrame?)
 
@@ -114,6 +122,16 @@ local function CreateUnitFrame(props: UnitProperties)
 		},
 		config = { mass = 1, tension = 200, friction = 14 },
 	})
+
+	React.useEffect(function()
+		if Rendered + 1 >= Total then
+			Rendered = 0
+			Total = 0
+			PlaySignal:Fire()
+		else
+			Rendered += 1
+		end
+	end, {})
 
 	local SettingsData = React.useContext(SettingsContext.Context)
 
@@ -279,10 +297,13 @@ local function CreateInRoll(props: Properties)
 
 	local MainFrames = React.useMemo(function()
 		local Frames: { [string]: React.Node } = {}
+
 		local RowCount = math.ceil(#props.UnitNames / MaxPerRow)
 
 		local MaxSize = math.max(math.pow(1 - math.clamp(#props.UnitNames, 0, 4) * 0.12, 1.2), 0.5)
-
+		if Visible == false or Visible == nil then
+			return {}
+		end
 		for i = 1, RowCount, 1 do
 			local UnitFrames: { [string]: React.Node } = {}
 
@@ -420,13 +441,21 @@ local function CreateRollConnected(props: ConnectedProperties)
 	local LastFiredTime, SetLastFiredTime = React.useState(1)
 	local UnitNames, SetUnitNames = React.useState({})
 	local InAutoRoll, SetAutoRoll = React.useState(false)
+	local Shake = React.useContext(CameraShake.Context)
+
+	local Length = React.useRef(0)
+
+	Hooks.useEventConnection(PlaySignal, function()
+		SFXService.PlaySoundGlobal(SummonSound, function(Sound: Sound)
+			Sound.Volume = 0.05 + (0.15 * math.log(Length.current + 1) / math.log(11))
+		end)
+		Shake.Shake()
+	end, {})
 
 	Hooks.useEventConnection(RollService.Rolled, function(RollData: RollService.RollData)
-		task.delay(0.3, function()
-			SFXService.PlaySoundGlobal(SummonSound, function(Sound: Sound)
-				Sound.Volume = 0.05 + (0.15 * math.log(#RollData.Data + 1) / math.log(11))
-			end)
-		end)
+		Rendered = 0
+		Total = HelperFunctions.Len(RollData.Data)
+		Length.current = Total
 
 		SetLastFiredTime(RollData.SentTime)
 		SetUnitNames(RollData.Data)
