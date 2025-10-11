@@ -37,7 +37,7 @@ local Constants = {
 
 	ROLLDELAYTIME = 3,
 	STARTCOINS = 400,
-	ROLLCOSTS = { MAIN = 40 },
+	ROLLCOSTS = { MAIN = 50 },
 	ROLLPERCENT = 1,
 	GroupId = 34745901,
 

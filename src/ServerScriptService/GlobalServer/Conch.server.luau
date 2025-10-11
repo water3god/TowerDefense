@@ -125,6 +125,23 @@ Conch.register("addCoins", {
 	end,
 })
 
+Conch.register("addChest", {
+	permissions = { "economy+" },
+	arguments = function()
+		return Conch.args.player("player", "Player that will receive the chest")
+	end,
+	callback = function(player, chest)
+		local Data = PlayerData.GetPlayerData(player)
+
+		if Data and chest then
+			Data:AddChest(chest)
+			Conch.log("info", "Added chest to player " .. player.Name)
+		else
+			Conch.log("error", "Failed to add chest to player " .. player.Name)
+		end
+	end,
+})
+
 Conch.register("addEnemy", {
 	permissions = { "economy+" },
 	arguments = function()

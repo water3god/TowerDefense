@@ -18,17 +18,20 @@ local Signal = require(Packages.Signal)
 local Modules = ReplicatedStorage.Modules
 local HelperFunctions = require(Modules.HelperFunctions)
 local GenerateId = require(Modules.GenerateId)
+local RandomGenerate = require(Modules.RandomGenerate)
 
 local Shared = ReplicatedStorage.Shared
 local LevelRequirements = require(Shared.LevelRequirements)
 local GameInfo = require(Shared.GameInfo)
 local ProductInfo = require(Shared.ProductInfo)
+local RarityInfo = require(Shared.RarityInfo)
 local DailyRewards = require(Shared.DailyRewards)
 local SettingData = require(Shared.Settings)
 local TitleData = require(Shared.Titles)
 local QuestData = require(Shared.Quests)
 local Traits = require(Shared.Traits)
 local Constants = require(Shared.Constants)
+local ChestsInfo = require(Shared.ChestInfo)
 
 local CalculateUnitXP = GameInfo.XPData.CalculateUnitXP
 local CalculatePlayerXP = GameInfo.XPData.CalculatePlayerXP
@@ -116,6 +119,9 @@ type PlayerDataData<T> = {
 	BoostChanged: Signal.Signal<string, number>,
 	InventorySpaceChanged: Signal.Signal<number>,
 
+	ChestAdded: Signal.Signal<ChestsInfo.Chest, number>,
+	ChestRedeemed: Signal.Signal<number>,
+
 	Destroying: Signal.Signal<>,
 }
 
@@ -127,6 +133,9 @@ type PlayerDataImpl = {
 
 	OwnsUnit: (self: PlayerData, UnitId: string) -> boolean,
 	UnitIsEquipped: (self: PlayerData, UnitId: string) -> boolean,
+
+	AddChest: (self: PlayerData, Rarity: RarityInfo.Rarity?) -> (),
+	RedeemChest: (self: PlayerData, Index: number) -> (),
 
 	EquipUnit: (self: PlayerData, UnitId: string) -> (),
 	UnequipUnit: (self: PlayerData, UnitId: string) -> (),
@@ -345,6 +354,9 @@ function PlayerData.new(Player: Player)
 	self.BoostChanged = self._Trove:Construct(Signal)
 	self.InventorySpaceChanged = self._Trove:Construct(Signal)
 
+	self.ChestAdded = self._Trove:Construct(Signal)
+	self.ChestRedeemed = self._Trove:Construct(Signal)
+
 	self.Destroying = self._Trove:Construct(Signal)
 
 	self.SettingSignals = {}
@@ -483,8 +495,8 @@ function PlayerData.new(Player: Player)
 		return
 	end
 
-	self._Trove:Connect(Players.PlayerRemoving, function(Player: Player)
-		if Player == self.Player then
+	self._Trove:Connect(Players.PlayerRemoving, function(OtherPlayer: Player)
+		if OtherPlayer == self.Player then
 			self:Delete()
 		end
 	end)
@@ -610,6 +622,102 @@ function PlayerData:UnitIsEquipped(UnitId: string)
 	end
 
 	return false
+end
+
+local Rarities = { "Common", "Rare", "Epic", "Legendary", "Mythic", "Godly" }
+
+local UpgradeValues = {
+	["0"] = 0.8,
+	["1"] = 0.10,
+	["2"] = 0.05,
+	["3"] = 0.03,
+	["4"] = 0.01,
+	["5"] = 0.005,
+}
+
+function PlayerData:AddChest(Rarity: RarityInfo.Rarity?)
+	local Data = self.Profile.Data
+
+	local Chest = {
+		Tiers = {},
+	}
+
+	local CurrentNum = 1
+
+	if Rarity then
+		local Found = table.find(Rarities, Rarity)
+		if Found then
+			CurrentNum = Found
+		else
+			warn("Invalid Rarity: " .. Rarity)
+		end
+	end
+
+	table.insert(Chest.Tiers, Rarities[CurrentNum])
+
+	for _ = 1, 5, 1 do
+		local Value = tonumber(RandomGenerate(UpgradeValues)) :: number
+		CurrentNum = math.max(CurrentNum + Value, 7)
+		table.insert(Chest.Tiers, Rarities[CurrentNum])
+	end
+
+	local ChestData = ChestsInfo[Chest.Tiers[#Chest.Tiers]]
+
+	local ChestChances = {}
+
+	for Name, Info in pairs(ChestData.Units) do
+		ChestChances[Name] = Info.Chance
+	end
+
+	local SelectedReward = RandomGenerate(ChestChances) :: string
+	local Reward = table.clone(ChestData[SelectedReward]) :: ChestsInfo.ChestItem
+	Chest.Reward = Reward
+
+	table.insert(Data.Chests, Chest)
+
+	self.ChestAdded:Fire(Chest, #Data.Chests)
+end
+
+function PlayerData:RedeemChest(Index: number)
+	local Data = self.Profile.Data
+
+	if Data.Chests[Index] then
+		local Chest = Data.Chests[Index]
+
+		if Chest.Reward.Type == "Unit" then
+			self:AddUnit(Chest.Reward.Name)
+		elseif Chest.Reward.Type == "Product" then
+			local _, ProductId, IsGamepass = ProductInfo.GetProductFromNameOnly(Chest.Reward.Name)
+			if ProductId then
+				if IsGamepass then
+					if self:OwnsGamepass(ProductId) then
+						self:AddProduct(ProductId, Chest.Reward.Count)
+					else
+						self:RedeemGamepass(ProductId)
+					end
+				else
+					self:AddProduct(ProductId, Chest.Reward.Count)
+				end
+			else
+				warn("Invalid chest product reward name: " .. tostring(Chest.Reward.Name))
+			end
+		elseif Chest.Reward.Type == "Resource" then
+			if Chest.Reward.Name == "Gold" then
+				self:AddGold(Chest.Reward.Count)
+			elseif Chest.Reward.Name == "XP" then
+				self:AddXP(Chest.Reward.Count)
+			else
+				self:AddResource(Chest.Reward.Name, Chest.Reward.Count)
+			end
+		else
+			warn("Invalid chest reward type: " .. tostring(Chest.Reward.Type))
+		end
+
+		table.remove(Data.Chests, Index)
+		self.ChestRedeemed:Fire(Index)
+	else
+		warn("Invalid chest index: " .. tostring(Index))
+	end
 end
 
 function PlayerData:EquipUnit(Id: string)

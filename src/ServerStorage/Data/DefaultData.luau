@@ -5,6 +5,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Shared = ReplicatedStorage.Shared
 local Quests = require(Shared.Quests)
 local Settings = require(Shared.Settings)
+local RarityInfo = require(Shared.RarityInfo)
+
 export type UnitData = {
 	Unit: string,
 	Level: number,
@@ -79,6 +81,7 @@ export type Data = {
 	Referrals: { number },
 	ReferredDate: number,
 	MostRecentGameId: string?,
+	Chests: { { Reward: { Type: string, Name: string, Count: number }, Tiers: { string } } }, -- Tiers - 1 - 5
 }
 
 local Data: Data = {
@@ -95,8 +98,8 @@ local Data: Data = {
 	XP = 0,
 	RollCount = 0,
 	RobuxSpent = 0,
-	Gold = 80,
-	TotalGoldGained = 80,
+	Gold = 100,
+	TotalGoldGained = 100,
 	TotalDamageDone = 0,
 	MaxUnitCount = 100,
 	DailyData = {
@@ -115,6 +118,7 @@ local Data: Data = {
 	RedeemedLevels = {},
 	Referrals = {},
 	ReferredDate = 0,
+	Chests = {},
 }
 
 return Data

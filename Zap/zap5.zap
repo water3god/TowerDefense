@@ -111,3 +111,47 @@ event InventorySpaceChanged = {
 	call: SingleAsync,
 	data: u32,
 }
+
+-- Chests -- 
+
+type Chest = struct {
+	Reward: struct {
+		Type: string.binary,
+		Name: string.binary,
+		Count: f64,
+	},
+	Tiers: string.binary[],
+}
+
+event ChestSync = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: Chest[],
+}
+
+event ChestAdded = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: (
+		Chest,
+		u16,
+	),
+}
+
+event ChestRedeemed = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: (
+		Index: u16,
+	),
+}
+
+event RedeemChest = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: u16,
+}
