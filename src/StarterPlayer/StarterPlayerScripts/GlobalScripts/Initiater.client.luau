@@ -20,11 +20,22 @@ local Gui = ReplicatedStorage.Gui
 local CoreGame = Gui.CoreGame
 local Core = require(CoreGame.Core)
 
+local Shared = ReplicatedStorage.Shared
+local Variables = require(Shared.Variables)
+
+local ClientOnly = require(ReplicatedStorage.Network.ClientOnly)
+
 local GlobalGui = Instance.new("ScreenGui")
 GlobalGui.Name = "GlobalGui"
 GlobalGui.ResetOnSpawn = false
 GlobalGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 GlobalGui.Parent = PlayerGui
+
+GlobalGui.Enabled = Variables.GuiEnabled
+
+ClientOnly.GuiEnabled:Connect(function(Enabled: boolean)
+	GlobalGui.Enabled = Enabled
+end)
 
 local GlobalRoot = ReactRoblox.createRoot(GlobalGui)
 GlobalRoot:render(e(Core))

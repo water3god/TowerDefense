@@ -25,6 +25,7 @@ local ClientOnly = {
 	DailysTouched = Signal.new(),
 
 	NewNPCTalk = Signal.new() :: Signal.Signal<string>,
+	GuiEnabled = Signal.new() :: Signal.Signal<boolean>,
 
 	VFXEmit = Signal.new() :: Signal.Signal<string, (Emitter: ParticleEmitter) -> () | number?>,
 }

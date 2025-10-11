@@ -9,7 +9,9 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Shared = ReplicatedStorage.Shared
 local RarityInfo = require(Shared.RarityInfo)
 
-export type Chest = { Reward: { Type: string, Name: string, Count: number }, Tiers: { string } }
+export type Reward = { Type: string, Name: string, Count: number }
+
+export type Chest = { Reward: Reward, Tiers: { string } }
 
 export type ChestItem = {
 	Type: string,
@@ -20,7 +22,7 @@ export type ChestItem = {
 export type ChestInfo = {
 	[string | RarityInfo.Rarity]: {
 		[string]: ChestItem & {
-			Chance: number?,
+			Chance: number,
 		},
 	},
 }

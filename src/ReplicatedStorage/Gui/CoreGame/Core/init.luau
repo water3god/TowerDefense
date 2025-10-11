@@ -792,6 +792,12 @@ local function Render(props: { OpenFrame: string? })
 
 	local InputBinding, SetInputBinding = React.useBinding(InputTypeValue)
 
+	Hooks.useEventConnection(ClientOnly.GuiEnabled, function(Enabled: boolean)
+		if not Enabled then
+			SetVisibleFrame(nil)
+		end
+	end, {})
+
 	React.useEffect(function()
 		SetInputBinding(InputTypeValue)
 	end, { InputTypeValue })

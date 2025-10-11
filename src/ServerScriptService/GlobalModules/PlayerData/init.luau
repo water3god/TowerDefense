@@ -627,12 +627,12 @@ end
 local Rarities = { "Common", "Rare", "Epic", "Legendary", "Mythic", "Godly" }
 
 local UpgradeValues = {
-	["0"] = 0.8,
+	["0"] = 0.86,
 	["1"] = 0.10,
-	["2"] = 0.05,
-	["3"] = 0.03,
-	["4"] = 0.01,
-	["5"] = 0.005,
+	["2"] = 0.03,
+	["3"] = 0.008,
+	["4"] = 0.004,
+	["5"] = 0.002,
 }
 
 function PlayerData:AddChest(Rarity: RarityInfo.Rarity?)
@@ -657,7 +657,7 @@ function PlayerData:AddChest(Rarity: RarityInfo.Rarity?)
 
 	for _ = 1, 5, 1 do
 		local Value = tonumber(RandomGenerate(UpgradeValues)) :: number
-		CurrentNum = math.max(CurrentNum + Value, 7)
+		CurrentNum = math.min(CurrentNum + Value, 6)
 		table.insert(Chest.Tiers, Rarities[CurrentNum])
 	end
 
@@ -665,7 +665,7 @@ function PlayerData:AddChest(Rarity: RarityInfo.Rarity?)
 
 	local ChestChances = {}
 
-	for Name, Info in pairs(ChestData.Units) do
+	for Name, Info in pairs(ChestData) do
 		ChestChances[Name] = Info.Chance
 	end
 
