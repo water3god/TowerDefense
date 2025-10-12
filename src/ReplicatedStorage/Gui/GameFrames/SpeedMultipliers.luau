@@ -35,6 +35,10 @@ local PurchaseContext = require(Store.PurchaseContext)
 local Warning = Gui.Warning
 local WarningContext = require(Warning.WarningContext)
 
+local Client = ReplicatedStorage.Client
+local GlobalClient = Client.GlobalClient
+local WaveService = require(GlobalClient.WaveService)
+
 export type Properties = {
 	native: { [any]: any }?,
 	children: { [any]: any }?,
@@ -47,6 +51,10 @@ local function CreateSpeedMultipliers(props: Properties)
 
 	local SetMultiplier = React.useCallback(function(Multiplier: number)
 		ChangeMultiplier.Fire(Multiplier)
+	end, {})
+
+	Hooks.useEventConnection(WaveService.Ended, function()
+		SetCurrentMultiplier(1)
 	end, {})
 
 	Hooks.useZapConnection(MultiplierChanged, function(Multiplier: number)
