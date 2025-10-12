@@ -268,6 +268,7 @@ local function CreateTraitsFrame(props: Properties)
 		}),
 		RerollButton = e(Button, {
 			Text = "Reroll",
+			Color = "Blue",
 			Position = UDim2.fromScale(0.5, 0.89),
 			Size = UDim2.fromScale(0.3, 0.15),
 			OnClick = OnRollClick,

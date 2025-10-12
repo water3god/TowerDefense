@@ -563,6 +563,10 @@ local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (strin
 			end
 
 			local function OnFrame(Position: Vector2)
+				if not Position then
+					SetHoveredData(nil)
+					return
+				end
 				local Result = HelperFunctions.Raycast(Position, Params)
 				if Result and Result.Instance then
 					if Result.Instance:IsDescendantOf(GlobalWorkspace) then
@@ -663,7 +667,7 @@ local function HandleToolTips(props: { PlacingUnitId: string?, SetUnitId: (strin
 					InputTrove:Connect(RunService.Heartbeat, function()
 						if Position then
 							SetHoveredData(function(Data)
-								if Data then
+								if Data and Position then
 									OnFrame(Position)
 								else
 									Position = nil
