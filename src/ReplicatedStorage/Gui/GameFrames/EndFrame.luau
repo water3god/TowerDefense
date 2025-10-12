@@ -654,25 +654,14 @@ local function CreateEndFrameButton(props)
 		UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
 			AspectRatio = 3.555,
 		}),
-		Button = e(Main.Animateables.ImageButton, {
-			native = {
-				Image = "rbxassetid://105684513155812",
-				Position = UDim2.fromScale(0.5, -0.8),
-				Size = UDim2.fromScale(0.9, 0.4),
-				[React.Event.MouseButton1Click] = function()
-					props.SetVisible(true)
-				end,
-			},
-		}, {
-			UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-				AspectRatio = 3,
-			}),
-			Label = e(Main.TextLabel, {
-				native = {
-					Size = UDim2.fromScale(0.9, 0.6),
-					Text = "Open End",
-				},
-			}),
+		Button = e(Button, {
+			Text = "Display Stats",
+			Color = "Blue",
+			Position = UDim2.fromScale(0.5, -0.8),
+			Size = UDim2.fromScale(0.9, 0.8),
+			OnClick = function()
+				props.SetVisible(true)
+			end,
 		}),
 	})
 end

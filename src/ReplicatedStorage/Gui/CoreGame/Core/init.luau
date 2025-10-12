@@ -41,7 +41,6 @@ local Main = require(CoreGame.Main)
 local MainButtonFrame = require(CoreGame.MainButtonFrame)
 local Confirm = require(CoreGame.Confirm)
 local NewGui = require(CoreGame.NewGui)
-local UIStroke = require(CoreGame.UIStroke)
 
 local Hooks = require(CoreGame.Hooks)
 
@@ -100,6 +99,9 @@ local TraitsFrame = require(TraitsFolder.TraitsFrame)
 local MessageFolder = Gui.Message
 local Message = require(MessageFolder.Message)
 local Indicator = require(MessageFolder.Indicator)
+
+local Components = Gui.Components
+local Button = require(Components.Button)
 
 local MiscContexts = Gui.MiscContexts
 
@@ -457,43 +459,13 @@ local function HandleTutorial(props: { OpenFrame: string? })
 				and TutorialEnabled,
 			Handler = Handler,
 		}),
-		OpenTutorialButton = not PassedTutorial.PassedGameTutorial
-			and not TutorialEnabled
-			and e(Main.Animateables.TextButton, {
-				native = {
-					BackgroundTransparency = 0,
-					BackgroundColor3 = Color3.fromRGB(22, 229, 11),
-					Text = "",
-					Position = UDim2.fromScale(0.5, 0.2),
-					Size = UDim2.fromScale(0.1, 0.06),
-					[React.Event.MouseButton1Click] = OpenTutorial,
-				},
-			}, {
-				UIAspectRatioConstraint = e("UIAspectRatioConstraint", {
-					AspectRatio = 3,
-				}),
-				Label = e(Main.TextLabel, {
-					native = {
-						Text = "Open Tutorial",
-						Size = UDim2.fromScale(0.9, 0.6),
-					},
-				}, {
-					UIStroke = e(UIStroke.UIStrokeAdvanced, {
-						Stroke = 0.015,
-					}),
-				}),
-				UICorner = e("UICorner", {
-					CornerRadius = UDim.new(0, 8),
-				}),
-				UIStroke = e(UIStroke.UIStrokeAdvanced, {
-					Stroke = 0.01,
-					native = {
-						Color = Color3.fromRGB(13, 119, 7),
-						LineJoinMode = Enum.LineJoinMode.Round,
-						ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-					},
-				}),
-			}),
+		OpenTutorialButton = not PassedTutorial.PassedGameTutorial and not TutorialEnabled and e(Button, {
+			Color = "Green",
+			Text = "Open Tutorial",
+			Position = UDim2.fromScale(0.5, 0.2),
+			Size = UDim2.fromScale(0.1, 0.12),
+			OnClick = OpenTutorial,
+		}),
 	})
 end
 

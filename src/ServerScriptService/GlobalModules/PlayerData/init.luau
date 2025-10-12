@@ -200,8 +200,6 @@ type PlayerDataImpl = {
 	ChangeSetting: (self: PlayerData, Setting: string, Value: any) -> (),
 	GetSettingChangedSignal: (self: PlayerData, Setting: string) -> Signal.Signal<any>,
 
-	ChangeInGame: (self: PlayerData, InGame: boolean) -> (),
-
 	AddTitle: (self: PlayerData, Title: string) -> (),
 	ChangeTitle: (self: PlayerData, Title: string) -> (),
 

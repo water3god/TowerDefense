@@ -35,6 +35,17 @@ local Chances: { [string]: number } = {
 	Godly = 0.01,
 }
 
+-- 16.16 total
+
+--[[
+  Common = 61.88%
+  Rare = 30.94%
+  Epic = 6.19%
+  Legendary = 0.62%
+  Mythic = 0.30%
+  Godly = 0.06%
+]]
+
 local CachedChances = {}
 
 local function CalculateChanceOnLuck(Luck: number, BannerUnits: { string }?)
