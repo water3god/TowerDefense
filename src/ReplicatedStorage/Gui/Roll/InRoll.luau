@@ -162,10 +162,10 @@ local function CreateUnitFrame(props: UnitProperties)
 	end, { SettingsData, Data } :: { unknown })
 
 	React.useEffect(function()
-		if IsSold then
+		if IsSold and props.Visible then
 			InventoryService.SellUnits({ props.UniqueId })
 		end
-	end, { IsSold, props.UniqueId } :: { unknown })
+	end, { IsSold, props.UniqueId, props.Visible } :: { unknown })
 
 	React.useEffect(function()
 		if props.Visible and RunService:IsRunning() and false then

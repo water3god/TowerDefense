@@ -175,6 +175,7 @@ local function CreateInfoFrame(Properties: Properties)
 			OnClick = Properties.OnFirstClick,
 			native = {
 				Visible = FirstText ~= "",
+				ZIndex = 2,
 			},
 		}),
 		SellButton = Properties.OnSellClick and e(Button, {
