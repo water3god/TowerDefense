@@ -599,6 +599,22 @@ function UnitModule:LoadCharacter(Character)
 		self.Animations["Idle"] = self.Animator:LoadAnimation(Default)
 	end
 
+	local function HandleIdleSpeed()
+		for Name, Data in pairs(self.RatioData) do
+			if Name:sub(1, 7) == "__Speed" then
+				local _, InnerData = next(Data)
+
+				if InnerData then
+					local Ratio = InnerData.Ratio
+					self.Animations["Idle"]:AdjustSpeed(1 / Ratio)
+				end
+			end
+		end
+	end
+
+	HandleIdleSpeed()
+	self.PropertyChanged:Connect(HandleIdleSpeed)
+
 	self.Animations.Idle.Looped = true
 	if self.Animations.Attack then
 		self.Animations.Attack.Looped = false

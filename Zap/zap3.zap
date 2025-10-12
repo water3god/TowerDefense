@@ -208,6 +208,7 @@ type WaveData = struct {
 	StartTime: Time,
 	MapId: string.binary,
 	StageId: string.binary,
+	WaveSpeed: u8,
 }
 
 type ResourceData = struct {
@@ -254,7 +255,10 @@ event WavePassed = {
 	from: Server,
 	type: Reliable,
 	call: SingleAsync,
-	data: Wave,
+	data: (
+		Wave,
+		u8,
+	),
 }
 
 event TimeChanged = {
@@ -277,6 +281,20 @@ event WaveEnded = {
 		MainXPData,
 		f64,
 	),
+}
+
+event ChangeMultiplier = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: u8,
+}
+
+event MultiplierChanged = {
+	from: Server,
+	type: Reliable,
+	call: SingleAsync,
+	data: u8,
 }
 
 -- Warning --

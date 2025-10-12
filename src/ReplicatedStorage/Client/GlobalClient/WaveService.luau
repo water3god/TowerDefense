@@ -26,6 +26,7 @@ export type WaveData = {
 	Wave: number,
 	BaseHealth: number,
 	MaxHealth: number,
+	WaveSpeed: number,
 	Time: number,
 	StartTime: number,
 	MapId: string,

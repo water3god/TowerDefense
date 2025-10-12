@@ -115,7 +115,8 @@ local function CreateVoteFrame(Props: Props)
 				Votes = Data.CurrentCount,
 				Total = Data.NeededCount,
 			})
-			SetTime(Data.Time, Data.StartTime)
+			local Wave = WaveService.GetWaveData()
+			SetTime(Data.Time, Data.StartTime, Wave and Wave.WaveSpeed)
 			SetVisible(true)
 		end
 	end, { SettingsData })

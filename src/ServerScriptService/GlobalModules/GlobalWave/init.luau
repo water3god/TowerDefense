@@ -269,7 +269,31 @@ function GlobalWave.new(Input: Input)
 		self:AddEnemy(AddData.Enemy, AddData.Position, AddData.Summoned)
 	end)
 
-	--self.WaveSpeedChanged:Connect(function(WaveSpeed: number) end)
+	local NewTrove = self.Trove:Construct(Trove)
+
+	self.WaveSpeedChanged:Connect(function(WaveSpeed: number)
+		local HugeNumber = 1e10
+		NewTrove:Destroy()
+
+		local TimePassed = workspace:GetServerTimeNow() - self.StartTime
+		local NewTime = (self.Time - TimePassed) / WaveSpeed
+		self:_SetTime(NewTime)
+
+		for _, OtherUnit in pairs(self.Units) do
+			OtherUnit:ChangeRatio("__Speed", "Main", "FireRate", 1 / WaveSpeed, HugeNumber)
+		end
+		for _, OtherEnemy in pairs(Enemy.GetEnemies()) do
+			OtherEnemy:ChangeMultiplier("__Speed", WaveSpeed, HugeNumber)
+		end
+
+		NewTrove:Connect(self.UnitAdded, function(OtherUnit: Unit.Unit)
+			OtherUnit:ChangeRatio("__Speed", "Main", "FireRate", 1 / WaveSpeed, HugeNumber)
+		end)
+
+		NewTrove:Connect(self.EnemyAdded, function(OtherEnemy: Enemy.Enemy)
+			OtherEnemy:ChangeMultiplier("__Speed", WaveSpeed, HugeNumber)
+		end)
+	end)
 
 	CurrentWave = self
 	self.Added:Fire(self)
@@ -345,16 +369,18 @@ function GlobalWave:NextWave()
 		return
 	end
 
-	self:_SetTime(WaveTweenTime)
+	self:_SetTime(WaveTweenTime / self.WaveSpeed)
 
-	self.Trove:Add(task.delay(WaveTweenTime, function()
+	self.Trove:Add(task.delay(WaveTweenTime / self.WaveSpeed, function()
 		self.Wave += 1
 		self.Passed:Fire(self.Wave)
 		local ThisWaveData = self.Data.Data[self.Wave]
 
-		self:_SetTime(ThisWaveData.Length)
+		local Length = ThisWaveData.Length / self.WaveSpeed
 
-		self.WaveTrove:Add(task.delay(ThisWaveData.Length, function()
+		self:_SetTime(Length)
+
+		self.WaveTrove:Add(task.delay(Length, function()
 			self:NextWave()
 		end))
 
@@ -382,6 +408,7 @@ function GlobalWave:NextWave()
 			EnemyDataClone.Speed *= SpeedRatio
 
 			for _, Time in ipairs(Times) do
+				Time /= self.WaveSpeed
 				ThreadCount += 1
 				EnemyCount += 1
 				if Time > LongestTime then
@@ -416,7 +443,7 @@ function GlobalWave:NextWave()
 		end
 
 		if self.Wave ~= #self.Data.Data or self.IsInfinite then
-			self.WaveTrove:Add(task.delay(LongestTime + 2, function()
+			self.WaveTrove:Add(task.delay(LongestTime + 2 / self.WaveSpeed, function()
 				self.OnSkipPrompt:Fire()
 			end))
 		end
@@ -424,8 +451,10 @@ function GlobalWave:NextWave()
 end
 
 function GlobalWave:ChangeWaveSpeed(Speed: number)
-	self.WaveSpeed = Speed
-	self.WaveSpeedChanged:Fire(Speed)
+	if Speed ~= self.WaveSpeed then
+		self.WaveSpeed = Speed
+		self.WaveSpeedChanged:Fire(Speed)
+	end
 end
 
 function GlobalWave:SetCoinsUser(UserId: number, CoinsInput: number)

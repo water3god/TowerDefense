@@ -108,14 +108,14 @@ end
 function Hooks.UseTime()
 	local Time, SetTime = React.useBinding(1)
 	local TotalTime, SetTotalTime = React.useBinding(1)
-	local TimeData, SetTimeData = React.useState({ TotalTime = 0, StartTime = 0 })
+	local TimeData, SetTimeData = React.useState({ TotalTime = 0, StartTime = 0, Multiplier = 1 })
 
 	React.useEffect(function()
 		SetTotalTime(TimeData.TotalTime)
 		local Connection: RBXScriptConnection? = nil
 		Connection = RunService.Heartbeat:Connect(function()
 			local NewTime = math.clamp(
-				TimeData.StartTime - workspace:GetServerTimeNow() + TimeData.TotalTime,
+				TimeData.StartTime - workspace:GetServerTimeNow() + TimeData.TotalTime / TimeData.Multiplier,
 				0,
 				TimeData.TotalTime
 			)
@@ -138,11 +138,12 @@ function Hooks.UseTime()
 
 	return Time,
 		TotalTime,
-		function(NewTotalTime: number, StartTime: number)
+		function(NewTotalTime: number, StartTime: number, MultiplierInput: number?)
 			if TimeData.TotalTime ~= NewTotalTime or TimeData.StartTime ~= StartTime then
 				SetTimeData({
 					TotalTime = NewTotalTime,
 					StartTime = StartTime,
+					Multiplier = MultiplierInput or 1,
 				})
 			end
 		end

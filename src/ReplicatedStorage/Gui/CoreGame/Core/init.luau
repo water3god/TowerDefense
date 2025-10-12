@@ -54,6 +54,7 @@ local UnitToolTip = require(GameFrames.UnitToolTip)
 local EnemyToolTip = require(GameFrames.EnemyToolTip)
 local StarterChoose = require(GameFrames.StarterChoose)
 local RejoinFrame = require(GameFrames.RejoinFrame)
+local SpeedMultipliers = require(GameFrames.SpeedMultipliers)
 
 local Inventory = Gui.Inventory
 local InventoryMain = require(Inventory.InventoryMain)
@@ -1150,6 +1151,7 @@ local function Render(props: { OpenFrame: string? })
 						PlacingUnitId = PlacingUnitId,
 						SetUnitId = SetUnitId,
 					}),
+					SpeedMultipliers = e(SpeedMultipliers),
 				}),
 				LobbyOnly = IsLobby and e("Folder", {}, {
 					TradePopup = e(TradePopup.Connected),

@@ -16,6 +16,8 @@ local TimeChanged = Network.TimeChanged
 local WaveEnded = Network.WaveEnded
 local Passed = Network.WavePassed
 local Added = Network.WaveAdded
+local ChangeMultiplier = Network.ChangeMultiplier
+local MultiplierChanged = Network.MultiplierChanged
 
 local SendWarning = Network.SendWarning
 
@@ -26,6 +28,8 @@ local Random = Random.new()
 
 local GlobalWave = require(script.Parent)
 
+local CurrentSpeed = 1
+
 local function SerializeWave(Wave: GlobalWave.GlobalWave)
 	return {
 		Wave = Wave.Wave,
@@ -35,6 +39,7 @@ local function SerializeWave(Wave: GlobalWave.GlobalWave)
 		StartTime = Wave.StartTime,
 		MapId = Wave.MapId,
 		StageId = Wave.StageId,
+		WaveSpeed = Wave.WaveSpeed,
 	}
 end
 
@@ -92,7 +97,10 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 	end)
 
 	Wave.Passed:Connect(function()
-		Passed.FireAll(Wave.Wave)
+		Passed.FireAll(Wave.Wave, Wave.WaveSpeed)
+		if CurrentSpeed ~= Wave.WaveSpeed then
+			Wave:ChangeWaveSpeed(CurrentSpeed)
+		end
 		if Wave.Wave ~= 1 then
 			SendWarning.FireAll(
 				string.format("Wave Bonus: %u Coins", Wave.Data.Data[Wave.Wave].CoinBonus),
@@ -106,6 +114,7 @@ local function OnAdded(Wave: GlobalWave.GlobalWave)
 	end)
 
 	Wave.Ended:Connect(function(Win: boolean)
+		CurrentSpeed = 1
 		Won = Win
 		local TotalXP = 0
 		if Wave.IsInfinite then
@@ -244,6 +253,9 @@ local function OnDataAdded(Data: PlayerData.PlayerData)
 		if not RunService:IsStudio() then
 			Added.Fire(Data.Player, SerializedWave)
 		end
+		if CurrentSpeed ~= 1 then
+			MultiplierChanged.FireAll(CurrentSpeed)
+		end
 	else
 		WaveEnded.Fire(Data.Player, Won, {
 			Units = {},
@@ -263,3 +275,20 @@ for _, Data in pairs(PlayerData.GetDatas()) do
 end
 
 PlayerData.DataAdded:Connect(OnDataAdded)
+
+ChangeMultiplier.SetCallback(function(Player: Player, Multiplier: number)
+	local PData = PlayerData.GetPlayerData(Player)
+	local CurrentWave = GlobalWave.GetWave()
+
+	if PData and CurrentWave then
+		if Multiplier == 1 or Multiplier == 2 then
+			CurrentSpeed = Multiplier
+			MultiplierChanged.FireAll(Multiplier)
+		elseif Multiplier == 3 then
+			if PData:OwnsGamepass(1531313673) then
+				CurrentSpeed = Multiplier
+				MultiplierChanged.FireAll(Multiplier)
+			end
+		end
+	end
+end)
