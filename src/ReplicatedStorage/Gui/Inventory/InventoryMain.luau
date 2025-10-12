@@ -956,7 +956,7 @@ local CreateInventory = React.forwardRef(function(Properties, ref)
 				Size = UDim2.fromScale(0.65, 0.6),
 				CanvasSize = UDim2.fromScale(0, 0),
 				AutomaticCanvasSize = Enum.AutomaticSize.Y,
-				ScrollBarImageColor3 = Color3.fromRGB(68, 11, 93),
+				ScrollBarImageColor3 = Color3.fromRGB(42, 27, 8),
 				BorderSizePixel = 0,
 			},
 		}, {
