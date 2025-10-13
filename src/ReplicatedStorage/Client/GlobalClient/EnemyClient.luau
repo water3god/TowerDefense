@@ -223,7 +223,10 @@ local function NewEnemy(Input: Types.EnemyInput, SpectateFire: boolean)
 	end
 
 	local function SetColor(Particle: ParticleEmitter)
-		Particle.Color = ColorSequence.new(self.Character["Body Colors"].TorsoColor3)
+		local BodyColors = self.Character:FindFirstChild("Body Colors")
+		if BodyColors then
+			Particle.Color = ColorSequence.new(BodyColors.TorsoColor3)
+		end
 	end
 
 	self.Destroying:Connect(function(Animate: boolean)
