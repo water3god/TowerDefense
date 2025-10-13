@@ -31,6 +31,11 @@ local assets = {
 		["highlightedFrame.png"] = "rbxassetid://81962131489944",
 		["loading.png"] = "rbxassetid://100999073202792",
 	},
+	MapIcons = {
+		["Greece.png"] = "rbxassetid://121358515447055",
+		["Rome.png"] = "rbxassetid://93123215771749",
+		["medieval.png"] = "rbxassetid://86738514662959",
+	},
 	Maps = {
 		["china.png"] = "rbxassetid://136523529237600",
 		["egypt.png"] = "rbxassetid://81730317336118",
