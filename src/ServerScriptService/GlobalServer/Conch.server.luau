@@ -167,6 +167,32 @@ Conch.register("addEnemy", {
 	end,
 })
 
+Conch.register("addAllMaps", {
+	permissions = { "economy+" },
+	arguments = function()
+		return Conch.args.player("player", "Player that will receive all maps")
+	end,
+	callback = function(player)
+		local Data = PlayerData.GetPlayerData(player)
+
+		if Data then
+			for _, GameData in ipairs(GameInfo.GameInfo) do
+				for _, LevelData in ipairs(GameData.LevelInfo) do
+					Data:AddStage({
+						Map = GameData.MapId,
+						Stage = LevelData.Index,
+						Difficulty = "Normal",
+						TimeFinished = 10000,
+					})
+				end
+			end
+			Conch.log("info", "Added all maps to player " .. player.Name)
+		else
+			Conch.log("error", "Failed to add all maps to player " .. player.Name)
+		end
+	end,
+})
+
 local function AboveRank(otherPlayer: Player)
 	local commandContext = Conch.get_command_context()
 	local player = commandContext.executor.player
