@@ -35,6 +35,26 @@ local Offers: Offers = {
 		Color = Color3.new(0.827451, 0.862745, 0.141176),
 		Icon = "rbxassetid://81730317336118",
 	},
+	[3430259940] = {
+		Rewards = {
+			{ Type = "Unit", Name = "Leonidas", Amount = 1 },
+			{ Type = "Unit", Name = "Alexander The Great", Amount = 1 },
+			{ Type = "Resource", Name = "Gold", Amount = 12000 },
+			{ Type = "Resource", Name = "Omen Coins", Amount = 15 },
+		},
+		Color = Color3.new(0.12549, 0.721569, 0.854902),
+		Icon = "rbxassetid://1382164818",
+	},
+	[3430261444] = {
+		Rewards = {
+			{ Type = "Unit", Name = "Richard the Lionheart", Amount = 1 },
+			{ Type = "Unit", Name = "William the Conqueror", Amount = 1 },
+			{ Type = "Resource", Name = "Gold", Amount = 12000 },
+			{ Type = "Resource", Name = "Omen Coins", Amount = 15 },
+		},
+		Color = Color3.new(0.160784, 0.141176, 0.305882),
+		Icon = "rbxassetid://1382164818",
+	},
 }
 
 local ProductInfo: { [number]: ProductData } = {
@@ -48,6 +68,16 @@ local ProductInfo: { [number]: ProductData } = {
 		Name = "Rome Pack",
 		Rarity = "Legendary",
 		Priority = 1003,
+	},
+	[3430259940] = {
+		Name = "Greece Pack",
+		Rarity = "Legendary",
+		Priority = 1002,
+	},
+	[3430261522] = {
+		Name = "Medieval Pack",
+		Rarity = "Legendary",
+		Priority = 1004,
 	},
 
 	-- Products --
@@ -179,6 +209,8 @@ local GiftIds: { [number]: number } = {
 
 	[3385226960] = 3385224877, -- Rome Pack --
 	[3387896408] = 3387895527, -- Egypt Pack --
+	[3430260330] = 3430259940, -- Greece Pack --
+	[3430261522] = 3430261444, -- Medieval Pack --
 }
 
 local function GetProductFromName(Data: { Name: string, IsGamepass: boolean }): (ProductData?, number?)
