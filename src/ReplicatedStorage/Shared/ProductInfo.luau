@@ -43,7 +43,7 @@ local Offers: Offers = {
 			{ Type = "Resource", Name = "Omen Coins", Amount = 15 },
 		},
 		Color = Color3.new(0.12549, 0.721569, 0.854902),
-		Icon = "rbxassetid://1382164818",
+		Icon = "rbxassetid://120734686321148",
 	},
 	[3430261444] = {
 		Rewards = {
@@ -53,7 +53,7 @@ local Offers: Offers = {
 			{ Type = "Resource", Name = "Omen Coins", Amount = 15 },
 		},
 		Color = Color3.new(0.160784, 0.141176, 0.305882),
-		Icon = "rbxassetid://1382164818",
+		Icon = "rbxassetid://80598570223220",
 	},
 }
 
@@ -74,7 +74,7 @@ local ProductInfo: { [number]: ProductData } = {
 		Rarity = "Legendary",
 		Priority = 1002,
 	},
-	[3430261522] = {
+	[3430261444] = {
 		Name = "Medieval Pack",
 		Rarity = "Legendary",
 		Priority = 1004,

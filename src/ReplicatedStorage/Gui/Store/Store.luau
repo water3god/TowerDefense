@@ -25,7 +25,6 @@ local Main = require(CoreGame.Main)
 local CloseButton = require(CoreGame.CloseButton)
 local UIStroke = require(CoreGame.UIStroke)
 local Title = require(CoreGame.Title)
-local BaseButton = require(CoreGame.BaseButton)
 local Hooks = require(CoreGame.Hooks)
 
 local Inventory = Gui.Inventory
